@@ -7,31 +7,24 @@
 //
 
 import Foundation
+import Marshal
 
-class YouGetJSON: NSObject, Decodable {
+struct YouGetJSON: Unmarshaling {
     
     var site: String = ""
     var title: String = ""
     var url: String?
-    var streams: [String: YouGetStream] = [:]
-    private enum CodingKeys: String, CodingKey {
-        case site,
-        title,
-        url,
-        streams
-    }
-    
-    required convenience init(from decoder: Decoder) throws {
-        self.init()
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        site = try values.decode(String.self, forKey: .site)
-        title = try values.decode(String.self, forKey: .title)
-        url = try values.decodeIfPresent(String.self, forKey: .url)
-        streams = try values.decode([String: YouGetStream].self, forKey: .streams)
+    var streams: [String: Stream] = [:]
+
+    init(object: MarshaledObject) throws {
+        site = try object.value(for: "site")
+        title = try object.value(for: "title")
+        url = try? object.value(for: "url")
+        streams = try object.value(for: "streams")
     }
 }
 
-class YouGetStream: NSObject, Decodable {
+struct Stream: Unmarshaling {
     var container: String = ""
     var itag: String = ""
     var mime: String = ""
@@ -43,26 +36,9 @@ class YouGetStream: NSObject, Decodable {
     var size: String = ""
     var src: [String] = []
     
-    
-
-    private enum CodingKeys: String, CodingKey {
-        case container,
-        itag,
-        mime,
-        quality,
-        s,
-        sig,
-        type,
-        url,
-        size,
-        src
-    }
-    
-    required convenience init(from decoder: Decoder) throws {
-        self.init()
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        container = try values.decode(String.self, forKey: .container)
-        src = try values.decodeIfPresent([String].self, forKey: .src) ?? []
-        url = try values.decodeIfPresent(String.self, forKey: .url)
+    init(object: MarshaledObject) throws {
+        container = try object.value(for: "container")
+        src = try object.value(for: "src")
+        url = try? object.value(for: "url")
     }
 }

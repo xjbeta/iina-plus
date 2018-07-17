@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Marshal
 
 class Processes: NSObject {
     
@@ -15,7 +16,14 @@ class Processes: NSObject {
     fileprivate override init() {
     }
     
-    func findYouGet(_ block: @escaping (_ path: String) -> Void) {
+    enum Decoder: String {
+        case youget = "you-get"
+        case ykdl
+//        case youtubedl = "youtube-dl"
+    }
+    
+    func findDecoder(_ decoder: Decoder,
+                     _ block: @escaping (_ path: String) -> Void) {
         // which you-get
         // command -v you-get
         // type -P you-get
@@ -24,7 +32,7 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardOutput = pipe
         task.launchPath = "/usr/bin/which"
-        task.arguments  = ["you-get"]
+        task.arguments  = [decoder.rawValue]
 
         task.launch()
         task.waitUntilExit()
@@ -32,12 +40,11 @@ class Processes: NSObject {
         if let output = String(data: data, encoding: .utf8) {
             print(output)
         }
-        
     }
 
     var decodeTask: Process?
-    
     func decodeURL(_ url: String,
+                   with decoder: Decoder,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
         if let task = decodeTask, task.isRunning {
@@ -51,7 +58,7 @@ class Processes: NSObject {
         let pipe = Pipe()
 
         decodeTask?.standardOutput = pipe
-        decodeTask?.launchPath = "/usr/local/bin/you-get"
+        decodeTask?.launchPath = "/usr/local/bin/" + decoder.rawValue
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
         
@@ -60,19 +67,27 @@ class Processes: NSObject {
                 return
             }
             
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            var data = pipe.fileHandleForReading.readDataToEndOfFile()
+            
+            // https://github.com/zhangn1985/ykdl/issues/304
+            // Remove Invalid value
+            
+            if decoder == .ykdl, let str = String(data: data, encoding: .utf8) {
+                if str.contains("\"size\": Infinity,"),
+                    let newData = str.replacingOccurrences(of: "\"size\": Infinity,", with: "").data(using: .utf8) {
+                    data = newData
+                }
+            }
+            
             do {
-                let re = try JSONDecoder().decode(YouGetJSON.self, from: data)
+                let json = try JSONParser.JSONObjectWithData(data)
+                let re = try YouGetJSON(object: json)
                 block(re)
             } catch let er {
                 error(er)
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    print(json)
-                } catch {
-                    if let str = String(data: data, encoding: .utf8) {
-                        print(str)
-                    }
+                print("json error: \(er)")
+                if let str = String(data: data, encoding: .utf8) {
+                    print(str)
                 }
             }
         }
