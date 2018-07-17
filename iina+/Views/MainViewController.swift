@@ -23,24 +23,6 @@ class MainViewController: NSViewController {
     
     let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
     
-    @IBAction func testB(_ sender: Any) {
-        
-        let testURL = "https://www.youtube.com/watch?v=ee3N4bmBi6Y"
-        
-        Processes.shared.decodeURL(testURL, { (_) in
-            
-        }) { (_) in
-            
-            
-        }
-        
-        
-        
-        
-    }
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         

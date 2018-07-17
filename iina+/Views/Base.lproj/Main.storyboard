@@ -725,17 +725,6 @@
                                     <outlet property="delegate" destination="XfG-lQ-9wD" id="GZg-vm-aQq"/>
                                 </connections>
                             </searchField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X5y-jN-ZEm">
-                                <rect key="frame" x="-6" y="-7" width="81" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LRA-L5-j80">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="testB:" target="XfG-lQ-9wD" id="lMz-Au-gy7"/>
-                                </connections>
-                            </button>
                         </subviews>
                     </view>
                     <connections>
