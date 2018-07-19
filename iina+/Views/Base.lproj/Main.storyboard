@@ -785,6 +785,7 @@
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
+                                                <action selector="hideSuggestions:" target="XfG-lQ-9wD" id="SSX-iv-LU7"/>
                                                 <action trigger="doubleAction" selector="sendURL:" target="XfG-lQ-9wD" id="pLv-ew-OMS"/>
                                                 <outlet property="dataSource" destination="XfG-lQ-9wD" id="lIr-xs-M8B"/>
                                                 <outlet property="delegate" destination="XfG-lQ-9wD" id="h3O-wx-cvL"/>

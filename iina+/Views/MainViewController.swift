@@ -33,6 +33,9 @@ class MainViewController: NSViewController {
             searchField(self)
         }
     }
+    @IBAction func hideSuggestions(_ sender: Any) {
+        suggestionsWindowController.cancelSuggestions()
+    }
     
     lazy var appDelegate: AppDelegate = {
         return NSApp.delegate as! AppDelegate
