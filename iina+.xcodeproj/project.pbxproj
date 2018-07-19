@@ -15,6 +15,7 @@
 		010F0F0D20FCC17F00F33553 /* SwiftHTTP.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0F0020FCC16700F33553 /* SwiftHTTP.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */; };
 		010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */; };
+		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -62,6 +63,7 @@
 		010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftHTTP.framework.dSYM; path = Carthage/Build/Mac/SwiftHTTP.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		010F0F0020FCC16700F33553 /* SwiftHTTP.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftHTTP.framework; path = Carthage/Build/Mac/SwiftHTTP.framework; sourceTree = SOURCE_ROOT; };
 		010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Marshal.framework.dSYM; path = Carthage/Build/Mac/Marshal.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				010F0EF320F8930500F33553 /* Views */,
 				01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */,
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
+				010F0F1220FE1DD100F33553 /* Preferences.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				01AEC8B320EDFD02001406E8 /* Info.plist */,
@@ -254,6 +257,7 @@
 				01AEC8C520F0FCFC001406E8 /* SuggestionsWindowController.swift in Sources */,
 				010F0EF520F8D56200F33553 /* WaitingTableCellView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
+				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
 				010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				01E2BBA320F23DF30082D876 /* SuggestionsTableCellView.swift in Sources */,
