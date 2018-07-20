@@ -11,11 +11,11 @@ import Cocoa
 
 
 extension NSStoryboard.Name {
-    static let main = NSStoryboard.Name(rawValue: "Main")
+    static let main = "Main"
 }
 
 extension NSStoryboard.SceneIdentifier {
-    static let suggestionsWindowController = NSStoryboard.SceneIdentifier(rawValue: "SuggestionsWindowController")
+    static let suggestionsWindowController = "SuggestionsWindowController"
 }
 
 extension NSUserInterfaceItemIdentifier {
