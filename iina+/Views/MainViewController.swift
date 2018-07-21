@@ -19,7 +19,9 @@ class MainViewController: NSViewController {
             return
         }
         
-        suggestionsWindowController.begin(for: searchField, with: str)
+        if checkURL(str) {
+            suggestionsWindowController.begin(for: searchField, with: str)
+        }
     }
     
     @IBOutlet weak var bookmarkTableView: NSTableView!
@@ -62,6 +64,16 @@ class MainViewController: NSViewController {
     
     override func mouseDown(with event: NSEvent) {
         suggestionsWindowController.cancelSuggestions()
+    }
+    
+    func checkURL(_ url: String) -> Bool {
+        do {
+            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            let matches = detector.matches(in: url, options: [], range: NSRange(location: 0, length: url.utf16.count))
+            return matches.count == 1
+        } catch {
+            return false
+        }
     }
 
 }
