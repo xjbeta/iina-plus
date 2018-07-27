@@ -23,3 +23,7 @@ extension NSUserInterfaceItemIdentifier {
     static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
     static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
 }
+
+extension Notification.Name {
+    static let reloadLiveStatus = Notification.Name("com.xjbeta.iina+.ReloadLiveStatus")
+}

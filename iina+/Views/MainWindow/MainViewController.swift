@@ -56,6 +56,8 @@ class MainViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadBookmarks), name: .reloadLiveStatus, object: nil)
     }
 
     override var representedObject: Any? {
@@ -68,7 +70,9 @@ class MainViewController: NSViewController {
         suggestionsWindowController.cancelSuggestions()
     }
     
-
+    @objc func reloadBookmarks() {
+        bookmarkTableView.reloadData()
+    }
     
 }
 
