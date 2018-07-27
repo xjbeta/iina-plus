@@ -576,7 +576,7 @@ Gw
 </string>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="addToBookmarks:" target="Rej-VG-aRz" id="UzO-7p-c5S"/>
+                                    <action selector="cancel:" target="Rej-VG-aRz" id="PdN-fY-PhO"/>
                                 </connections>
                             </button>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ahU-AU-gJz">

@@ -14,11 +14,17 @@ class AddBookmarkViewController: NSViewController {
         let str = urlTextField.stringValue
         if dataManager.checkURL(str) {
             dataManager.addBookmark(str)
-            self.dismiss(nil)
+            dismiss?()
         }
         
     }
+    @IBAction func cancel(_ sender: Any) {
+        dismiss?()
+    }
+    
     let dataManager = DataManager()
+    
+    var dismiss: (() -> Void)?
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.

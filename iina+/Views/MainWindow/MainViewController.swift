@@ -74,6 +74,14 @@ class MainViewController: NSViewController {
         bookmarkTableView.reloadData()
     }
     
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        if let vc = segue.destinationController as? AddBookmarkViewController {
+            vc.dismiss = {
+                self.dismiss(vc)
+            }
+        }
+    }
+    
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
