@@ -16,6 +16,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
+    func windowDidBecomeMain(_ notification: Notification) {
+        NotificationCenter.default.post(name: .reloadLiveStatus, object: nil)
+    }
+    
     func windowDidResignMain(_ notification: Notification) {
         if let view = window?.contentViewController as? MainViewController {
             view.suggestionsWindowController.cancelSuggestions()
