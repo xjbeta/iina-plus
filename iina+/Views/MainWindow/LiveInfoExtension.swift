@@ -53,6 +53,22 @@ struct PandaInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct DouyuInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "room_name")
+        name = try object.value(for: "owner_name")
+        let userCoverURL: String = try object.value(for: "avatar")
+        if let url = URL(string: userCoverURL) {
+            userCover = NSImage(contentsOf: url)
+        }
+        isLiving = "\(try object.any(for: "room_status"))" == "1"
+    }
+}
 
 
 extension MainViewController {
@@ -89,6 +105,16 @@ extension MainViewController {
                     do {
                         let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
                         let info: PandaInfo = try json.value(for: "data")
+                        block(info)
+                    } catch let er {
+                        print(er)
+                    }
+                }
+            case "www.douyu.com":
+                HTTP.GET("http://open.douyucdn.cn/api/RoomApi/room/\(roomID)") {
+                    do {
+                        let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+                        let info: DouyuInfo = try json.value(for: "data")
                         block(info)
                     } catch let er {
                         print(er)
