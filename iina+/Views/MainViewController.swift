@@ -48,6 +48,12 @@ class MainViewController: NSViewController {
     
     let dataManager = DataManager()
     
+    @objc var bookmarks: NSManagedObjectContext
+    required init?(coder: NSCoder) {
+        self.bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+        super.init(coder: coder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }

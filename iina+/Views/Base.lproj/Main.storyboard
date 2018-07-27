@@ -968,6 +968,9 @@
                                                             </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
+                                                    <connections>
+                                                        <binding destination="VY8-9O-I1C" name="value" keyPath="arrangedObjects" id="wNc-Fl-5dd"/>
+                                                    </connections>
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
@@ -1043,6 +1046,11 @@
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <arrayController mode="entity" entityName="Bookmark" editable="NO" automaticallyPreparesContent="YES" id="VY8-9O-I1C">
+                    <connections>
+                        <binding destination="XfG-lQ-9wD" name="managedObjectContext" keyPath="self.bookmarks" id="GE6-HH-Qwv"/>
+                    </connections>
+                </arrayController>
             </objects>
             <point key="canvasLocation" x="677" y="250"/>
         </scene>
