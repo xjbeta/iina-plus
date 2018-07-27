@@ -21,4 +21,5 @@ extension NSStoryboard.SceneIdentifier {
 extension NSUserInterfaceItemIdentifier {
     static let suggestionsTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SuggestionsTableCell")
     static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
+    static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
 }

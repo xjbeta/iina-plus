@@ -19,38 +19,34 @@ class MainViewController: NSViewController {
             return
         }
         
-        if checkURL(str) {
+        if dataManager.checkURL(str) {
             suggestionsWindowController.begin(for: searchField, with: str)
         }
     }
     
     @IBOutlet weak var bookmarkTableView: NSTableView!
-    @IBOutlet var bookmarkArrayController: NSArrayController!
     
     @IBAction func sendURL(_ sender: Any) {
         if bookmarkTableView.selectedRow != -1,
-            let bookmarksArray = bookmarkArrayController.arrangedObjects as? [Bookmark] {
-            searchField.stringValue = bookmarksArray[bookmarkTableView.selectedRow].url ?? ""
+            let url = dataManager.requestData()[bookmarkTableView.selectedRow].url {
+            searchField.stringValue = url
             searchField.becomeFirstResponder()
             searchField(self)
         }
     }
+    
+    let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
     @IBAction func hideSuggestions(_ sender: Any) {
         suggestionsWindowController.cancelSuggestions()
     }
-    
-    lazy var appDelegate: AppDelegate = {
-        return NSApp.delegate as! AppDelegate
-    }()
 
-    let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
-    
-    @objc var bookmarks: NSManagedObjectContext
-    
-    required init?(coder: NSCoder) {
-        self.bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
-        super.init(coder: coder)
+    @IBAction func deleteBookmark(_ sender: Any) {
+        if bookmarkTableView.selectedRow != -1 {
+            dataManager.deleteBookmark(bookmarkTableView.selectedRow)
+        }
     }
+    
+    let dataManager = DataManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,20 +62,36 @@ class MainViewController: NSViewController {
         suggestionsWindowController.cancelSuggestions()
     }
     
-    func checkURL(_ url: String) -> Bool {
-        do {
-            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            let matches = detector.matches(in: url, options: [], range: NSRange(location: 0, length: url.utf16.count))
-            return matches.count == 1
-        } catch {
-            return false
-        }
-    }
 
+    
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
-
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        return dataManager.requestData().count
+    }
+    
+    func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
+        return 55
+    }
+    
+    func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+            let url = dataManager.requestData()[row].url ?? ""
+            view.titleTextField.stringValue = url
+            getInfo(url) { liveInfo in
+                DispatchQueue.main.async {
+                    view.titleTextField.stringValue = liveInfo.title
+                    view.nameTextField.stringValue = liveInfo.name
+                    view.userCoverImageView.image = liveInfo.userCover
+                    view.liveStatusImageView.image = liveInfo.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+                }
+            }
+            return view
+        }
+        return nil
+    }
+    
 
 
 }
