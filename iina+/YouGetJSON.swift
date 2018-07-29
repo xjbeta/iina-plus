@@ -18,7 +18,8 @@ struct YouGetJSON: Unmarshaling {
 
     init(object: MarshaledObject) throws {
         site = try object.value(for: "site")
-        title = try object.value(for: "title")
+        let titleStr: String? = try? object.value(for: "title")
+        title = titleStr ?? ""
         url = try? object.value(for: "url")
         streams = try object.value(for: "streams")
     }
