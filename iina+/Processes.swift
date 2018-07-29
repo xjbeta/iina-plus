@@ -67,17 +67,7 @@ class Processes: NSObject {
                 return
             }
             
-            var data = pipe.fileHandleForReading.readDataToEndOfFile()
-            
-            // https://github.com/zhangn1985/ykdl/issues/304
-            // Remove Invalid value
-            
-            if decoder == .ykdl, let str = String(data: data, encoding: .utf8) {
-                if str.contains("\"size\": Infinity,"),
-                    let newData = str.replacingOccurrences(of: "\"size\": Infinity,", with: "").data(using: .utf8) {
-                    data = newData
-                }
-            }
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
             
             do {
                 let json = try JSONParser.JSONObjectWithData(data)
