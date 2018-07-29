@@ -10,6 +10,26 @@ import Cocoa
 import SwiftHTTP
 import Marshal
 
+enum LiveSupportList {
+    case bilibili
+    case panda
+    case douyu
+    case unsupported
+    
+    init(_ rawValue: String?) {
+        switch rawValue {
+         case "live.bilibili.com":
+            self = .bilibili
+        case "panda.tv", "www.panda.tv":
+            self = .panda
+        case "www.douyu.com":
+            self = .douyu
+        default:
+            self = .unsupported
+        }
+    }
+}
+
 protocol LiveInfo {
     var title: String { get }
     var name: String { get }
@@ -70,59 +90,69 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     }
 }
 
+typealias LiveInfoCallback = () throws -> Bool
 
 extension MainViewController {
-    func getInfo(_ str: String, _ block: @escaping (_ liveInfo: LiveInfo) -> Void) {
-        if let url = URL.init(string: str) {
-            let roomID = url.lastPathComponent
-            switch url.host {
-            case "live.bilibili.com":
-                let header = [
-                    "User-Agent": "花Q pilipili"
-                ]
-                
-                HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)", headers: header) {
-                    let json: JSONObject = try! JSONParser.JSONObjectWithData($0.data)
-                    var roomInfo: JSONObject = try! json.value(for: "data")
-                    let roomIDLong: Int = try! roomInfo.value(for: "room_id")
-                    HTTP.GET("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomIDLong)", headers: header) {
-                        let json: JSONObject = try! JSONParser.JSONObjectWithData($0.data)
-                        let userInfo: JSONObject = try! json.value(for: "data")
-                        
-                        roomInfo.merge(userInfo, uniquingKeysWith: { _,_ in
-                            return ""
-                        })
-                        do {
-                            let info: BilibiliInfo = try BilibiliInfo(object: roomInfo)
-                            block(info)
-                        } catch let er {
+    func getInfo(_ url: URL,
+                 _ completion: @escaping ((LiveInfo) -> Void),
+                 _ error: @escaping ((LiveInfoCallback) -> Void)) {
+        
+        let site = LiveSupportList(url.host)
+        let roomID = url.lastPathComponent
+        switch site {
+        case .bilibili:
+            let header = [
+                "User-Agent": "花Q pilipili"
+            ]
+            
+            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)", headers: header) { response in
+                var roomInfo = JSONObject()
+                var roomIDLong: Int = 0
+                error {
+                    if let error = response.error { throw error }
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    roomInfo = try json.value(for: "data")
+                    roomIDLong = try roomInfo.value(for: "room_id")
+                    HTTP.GET("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomIDLong)", headers: header) { response in
+                        error {
+                            if let error = response.error { throw error }
+                            let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                            let userInfo: JSONObject = try json.value(for: "data")
                             
+                            roomInfo.merge(userInfo, uniquingKeysWith: { _,_ in
+                                return ""
+                            })
+                            let info: BilibiliInfo = try BilibiliInfo(object: roomInfo)
+                            completion(info)
+                            return false
                         }
                     }
+                    return false
                 }
-            case "panda.tv", "www.panda.tv":
-                HTTP.GET("https://room.api.m.panda.tv/index.php?method=room.shareapi&roomid=\(roomID)") {
-                    do {
-                        let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-                        let info: PandaInfo = try json.value(for: "data")
-                        block(info)
-                    } catch let er {
-                        print(er)
-                    }
-                }
-            case "www.douyu.com":
-                HTTP.GET("http://open.douyucdn.cn/api/RoomApi/room/\(roomID)") {
-                    do {
-                        let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-                        let info: DouyuInfo = try json.value(for: "data")
-                        block(info)
-                    } catch let er {
-                        print(er)
-                    }
-                }
-            default:
-                break
             }
+        case .panda:
+            HTTP.GET("https://room.api.m.panda.tv/index.php?method=room.shareapi&roomid=\(roomID)") { response in
+                error {
+                    if let error = response.error { throw error }
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info: PandaInfo = try json.value(for: "data")
+                    completion(info)
+                    return false
+                }
+            }
+        case .douyu:
+            HTTP.GET("http://open.douyucdn.cn/api/RoomApi/room/\(roomID)") { response in
+                error {
+                    if let error = response.error { throw error }
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info: DouyuInfo = try json.value(for: "data")
+                    completion(info)
+                    return false
+                }
+            }
+        case .unsupported:
+            break
         }
+        
     }
 }

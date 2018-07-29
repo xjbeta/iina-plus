@@ -90,22 +90,50 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 55
+        if let str = dataManager.requestData()[row].url,
+            let url = URL(string: str) {
+            switch LiveSupportList(url.host) {
+            case .unsupported:
+                return 17
+            default:
+                return 55
+            }
+        }
+        return 0
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-            let url = dataManager.requestData()[row].url ?? ""
-            view.titleTextField.stringValue = url
-            getInfo(url) { liveInfo in
-                DispatchQueue.main.async {
-                    view.titleTextField.stringValue = liveInfo.title
-                    view.nameTextField.stringValue = liveInfo.name
-                    view.userCoverImageView.image = liveInfo.userCover
-                    view.liveStatusImageView.image = liveInfo.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+        if let str = dataManager.requestData()[row].url,
+            let url = URL(string: str) {
+            switch LiveSupportList(url.host) {
+            case .unsupported:
+                if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
+                    view.textField?.stringValue = str
+                    return view
+                }
+            default:
+                if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+                    getInfo(url, { liveInfo in
+                        DispatchQueue.main.async {
+                            view.titleTextField.stringValue = liveInfo.title
+                            view.nameTextField.stringValue = liveInfo.name
+                            view.userCoverImageView.image = liveInfo.userCover
+                            view.liveStatusImageView.image = liveInfo.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+                        }
+                    }) { re in
+                        do {
+                            let _ = try re()
+                        } catch let error {
+                            print(error)
+                            DispatchQueue.main.async {
+                                view.titleTextField.stringValue = str
+                                view.liveStatusImageView.image = NSImage(named: "NSStatusUnavailable")
+                            }
+                        }
+                    }
+                    return view
                 }
             }
-            return view
         }
         return nil
     }

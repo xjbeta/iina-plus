@@ -346,20 +346,24 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="oVI-B4-xgv">
+                                                        <tableCellView identifier="LiveUrlTableCell" id="oVI-B4-xgv">
                                                             <rect key="frame" x="1" y="1" width="405" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lsr-oh-YEW">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="405" height="17"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="u8x-PO-y1D">
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lsr-oh-YEW">
+                                                                    <rect key="frame" x="6" y="0.0" width="393" height="17"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="u8x-PO-y1D">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                 </textField>
                                                             </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="lsr-oh-YEW" firstAttribute="leading" secondItem="oVI-B4-xgv" secondAttribute="leading" constant="8" id="0r9-ZL-xHc"/>
+                                                                <constraint firstItem="lsr-oh-YEW" firstAttribute="centerY" secondItem="oVI-B4-xgv" secondAttribute="centerY" id="ITc-EO-USW"/>
+                                                                <constraint firstAttribute="trailing" secondItem="lsr-oh-YEW" secondAttribute="trailing" constant="8" id="XkG-VZ-oNv"/>
+                                                            </constraints>
                                                             <connections>
                                                                 <outlet property="textField" destination="lsr-oh-YEW" id="Jbp-ue-iy8"/>
                                                             </connections>

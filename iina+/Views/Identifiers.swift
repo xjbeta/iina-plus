@@ -22,6 +22,8 @@ extension NSUserInterfaceItemIdentifier {
     static let suggestionsTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SuggestionsTableCell")
     static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
     static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
+    static let liveUrlTableCell = NSUserInterfaceItemIdentifier(rawValue: "LiveUrlTableCell")
+    
 }
 
 extension Notification.Name {
