@@ -127,6 +127,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                             print(error)
                             DispatchQueue.main.async {
                                 view.titleTextField.stringValue = str
+                                view.nameTextField.stringValue = ""
+                                view.userCoverImageView.image = nil
                                 view.liveStatusImageView.image = NSImage(named: "NSStatusUnavailable")
                             }
                         }

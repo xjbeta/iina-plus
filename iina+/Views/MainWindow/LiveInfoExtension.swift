@@ -171,7 +171,7 @@ extension MainViewController {
                 }
             }
         case .huya:
-            HTTP.GET("https://www.huya.com/\(roomID)") { response in
+            HTTP.GET(url.absoluteString) { response in
                 error {
                     let roomData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
                     let profileData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8) ?? Data()
