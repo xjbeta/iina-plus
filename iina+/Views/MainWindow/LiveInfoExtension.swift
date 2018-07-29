@@ -14,16 +14,19 @@ enum LiveSupportList {
     case bilibili
     case panda
     case douyu
+    case huya
     case unsupported
     
     init(_ rawValue: String?) {
         switch rawValue {
          case "live.bilibili.com":
             self = .bilibili
-        case "panda.tv", "www.panda.tv":
+        case "www.panda.tv":
             self = .panda
         case "www.douyu.com":
             self = .douyu
+        case "www.huya.com":
+            self = .huya
         default:
             self = .unsupported
         }
@@ -90,6 +93,25 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct HuyaInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "introduction")
+        name = try object.value(for: "nick")
+        var userCoverURL: String = try object.value(for: "avatar")
+        userCoverURL = userCoverURL.replacingOccurrences(of: "http", with: "https")
+        if let url = URL(string: userCoverURL) {
+            userCover = NSImage(contentsOf: url)
+        }
+        isLiving = "\(try object.any(for: "isOn"))" == "1"
+    }
+}
+
+
 typealias LiveInfoCallback = () throws -> Bool
 
 extension MainViewController {
@@ -119,9 +141,7 @@ extension MainViewController {
                             let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                             let userInfo: JSONObject = try json.value(for: "data")
                             
-                            roomInfo.merge(userInfo, uniquingKeysWith: { _,_ in
-                                return ""
-                            })
+                            roomInfo.merge(userInfo) { (current, _) in current }
                             let info: BilibiliInfo = try BilibiliInfo(object: roomInfo)
                             completion(info)
                             return false
@@ -146,6 +166,21 @@ extension MainViewController {
                     if let error = response.error { throw error }
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                     let info: DouyuInfo = try json.value(for: "data")
+                    completion(info)
+                    return false
+                }
+            }
+        case .huya:
+            HTTP.GET("https://www.huya.com/\(roomID)") { response in
+                error {
+                    let roomData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
+                    let profileData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8) ?? Data()
+                    var roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
+                    let profileInfo: JSONObject = try JSONParser.JSONObjectWithData(profileData)
+                    
+                    roomInfo.merge(profileInfo) { (current, _) in current }
+                    
+                    let info: HuyaInfo = try HuyaInfo(object: roomInfo)
                     completion(info)
                     return false
                 }

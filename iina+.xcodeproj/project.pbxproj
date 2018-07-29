@@ -22,6 +22,7 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
+		0161CAFA210E010200AB5D9A /* SubString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0161CAF9210E010200AB5D9A /* SubString.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -79,6 +80,7 @@
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
+		0161CAF9210E010200AB5D9A /* SubString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubString.swift; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				010F0F1220FE1DD100F33553 /* Preferences.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
+				0161CAF9210E010200AB5D9A /* SubString.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				01AEC8B320EDFD02001406E8 /* Info.plist */,
 			);
@@ -310,6 +313,7 @@
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
+				0161CAFA210E010200AB5D9A /* SubString.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				01E2BBA120F23A670082D876 /* SuggestionsViewController.swift in Sources */,
 				01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */,
