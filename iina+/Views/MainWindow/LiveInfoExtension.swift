@@ -103,7 +103,7 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "introduction")
         name = try object.value(for: "nick")
         var userCoverURL: String = try object.value(for: "avatar")
-        userCoverURL = userCoverURL.replacingOccurrences(of: "http", with: "https")
+        userCoverURL = userCoverURL.replacingOccurrences(of: "http://", with: "https://")
         if let url = URL(string: userCoverURL) {
             userCover = NSImage(contentsOf: url)
         }
