@@ -25,5 +25,10 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
             view.suggestionsWindowController.cancelSuggestions()
         }
     }
-
+    
+    func windowWillStartLiveResize(_ notification: Notification) {
+        if let view = window?.contentViewController as? MainViewController {
+            view.suggestionsWindowController.cancelSuggestions()
+        }
+    }
 }
