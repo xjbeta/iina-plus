@@ -17,6 +17,24 @@ class Preferences: NSObject {
     let prefs = UserDefaults.standard
     let keys = PreferenceKeys.self
     
+    var livePlayer: LivePlayer {
+        get {
+            return LivePlayer(raw: defaults(.livePlayer) as? String ?? "")
+        }
+        set {
+            defaultsSet(newValue.rawValue, forKey: .livePlayer)
+        }
+    }
+    
+    var liveDecoder: LiveDecoder {
+        get {
+            return LiveDecoder(raw: defaults(.liveDecoder) as? String ?? "")
+        }
+        set {
+            defaultsSet(newValue.rawValue, forKey: .liveDecoder)
+        }
+    }
+    
 }
 
 private extension Preferences {
@@ -31,7 +49,6 @@ private extension Preferences {
 }
 
 enum PreferenceKeys: String {
-    case bookmarks
-    case yougetPath
-    case ykdlPath
+    case livePlayer
+    case liveDecoder
 }

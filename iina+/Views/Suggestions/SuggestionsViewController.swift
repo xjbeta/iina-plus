@@ -22,7 +22,7 @@ class SuggestionsViewController: NSViewController {
                 urlStr = url
             }
             if url != "" {
-                 Processes.shared.openWithIINA(urlStr, title: yougetObj?.title ?? "")
+                 Processes.shared.openWithPlayer(urlStr, title: yougetObj?.title ?? "")
             }
         }
         if let window = view.window?.windowController as? SuggestionsWindowController {
@@ -49,7 +49,7 @@ class SuggestionsViewController: NSViewController {
     
     func startDecode(_ url: String) {
         yougetObj = nil
-        Processes.shared.decodeURL(url, with: .ykdl, { obj in
+        Processes.shared.decodeURL(url, { obj in
             DispatchQueue.main.async {
                 self.yougetObj = obj
             }

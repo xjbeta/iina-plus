@@ -16,14 +16,7 @@ class Processes: NSObject {
     fileprivate override init() {
     }
     
-    enum Decoder: String {
-        case youget = "you-get"
-        case ykdl
-//        case youtubedl = "youtube-dl"
-    }
-    
-    func findDecoder(_ decoder: Decoder,
-                     _ block: @escaping (_ path: String) -> Void) {
+    func which(_ str: String) -> [String] {
         // which you-get
         // command -v you-get
         // type -P you-get
@@ -31,20 +24,20 @@ class Processes: NSObject {
         let task = Process()
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.launchPath = "/usr/bin/which"
-        task.arguments  = [decoder.rawValue]
-
+        task.launchPath = "/bin/bash"
+        task.arguments  = ["-l", "-c", "which \(str)"]
+        
         task.launch()
         task.waitUntilExit()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         if let output = String(data: data, encoding: .utf8) {
-            print(output)
+            return output.components(separatedBy: "\n").filter({ $0 != "" })
         }
+        return []
     }
 
     var decodeTask: Process?
     func decodeURL(_ url: String,
-                   with decoder: Decoder,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
         if let task = decodeTask, task.isRunning {
@@ -58,7 +51,7 @@ class Processes: NSObject {
         let pipe = Pipe()
 
         decodeTask?.standardOutput = pipe
-        decodeTask?.launchPath = "/usr/local/bin/" + decoder.rawValue
+        decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
         
@@ -83,13 +76,30 @@ class Processes: NSObject {
         }
     }
     
-    
-    func openWithIINA(_ url: String, title: String) {
+    func openWithPlayer(_ url: String, title: String) {
         let task = Process()
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.launchPath = "/Applications/IINA.app/Contents/MacOS/iina-cli"
-        task.arguments  = ["--mpv-force-media-title=\(title)", url, "-w"]
+        var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
+        
+        switch Preferences.shared.livePlayer {
+        case .iina:
+            task.launchPath = Preferences.shared.livePlayer.rawValue
+            mpvArgs = mpvArgs.map {
+                "--mpv-" + $0
+            }
+        case .mpv:
+            task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
+            mpvArgs.append(MPVOption.Terminal.quiet)
+            mpvArgs = mpvArgs.map {
+                "--" + $0
+            }
+        }
+        mpvArgs.append(url)
+        task.arguments = mpvArgs
         task.launch()
+        
     }
+    
+
 }

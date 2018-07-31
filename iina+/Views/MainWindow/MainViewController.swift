@@ -41,9 +41,12 @@ class MainViewController: NSViewController {
     }
 
     @IBAction func deleteBookmark(_ sender: Any) {
-        if bookmarkTableView.selectedRow != -1 {
-            dataManager.deleteBookmark(bookmarkTableView.selectedRow)
+        if let index = bookmarkTableView.selectedIndexs().first {
+            dataManager.deleteBookmark(index)
         }
+    }
+    @IBAction func addBookmark(_ sender: Any) {
+        performSegue(withIdentifier: NSStoryboardSegue.Identifier("showAddBookmarkViewController"), sender: nil)
     }
     
     let dataManager = DataManager()
@@ -56,7 +59,7 @@ class MainViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        bookmarkTableView.backgroundColor = .clear
         NotificationCenter.default.addObserver(self, selector: #selector(reloadBookmarks), name: .reloadLiveStatus, object: nil)
     }
 
@@ -140,8 +143,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         return nil
     }
     
-
-
+    func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
+        return tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("LiveStatusTableRowView"), owner: self) as? LiveStatusTableRowView
+        
+    }
 }
 
 extension MainViewController: NSSearchFieldDelegate {
@@ -154,3 +159,16 @@ extension MainViewController: NSSearchFieldDelegate {
     }
 }
 
+extension NSTableView {
+    func selectedIndexs() -> IndexSet {
+        if clickedRow != -1 {
+            if selectedRowIndexes.contains(clickedRow) {
+                return selectedRowIndexes
+            } else {
+                return IndexSet(integer: clickedRow)
+            }
+        } else {
+            return selectedRowIndexes
+        }
+    }
+}
