@@ -2,6 +2,7 @@
 
 IINA+ is a tiny macOS application to ?.
 
+![](https://i.imgur.com/wQckfMj.jpg)
 
 Are you a Swift programmer? Then check out [the source](https://github.com/xjbeta/iina-plus) and fork it!
 
@@ -22,24 +23,20 @@ pip3 install ykdl
 which you-get
 which ykdl
 ```
-##### Mark sure the output is:
-```
-/usr/local/bin/you-get
-/usr/local/bin/ykdl
-```
 
 
-# TO-DO List
-- [] SearchTextField url check
-- [] Preferences
-- [] MPV support
-- [] Custom you-get and ykdl path
-- [] You-get support list test
-- [] WebDAV account save
-- [] Live bookmark
+# Liev Status Support Live
+
+* bilibili
+* panda (not xingyan)
+* douyu
+* huya
+
 
 # Build
+##### Xcode Version 10.0 beta 5 (10L221o)
 ```
 carthage bootstrap
 ```
 Open `.xcodeproj` file.
+
