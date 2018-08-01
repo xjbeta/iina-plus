@@ -9,6 +9,7 @@
 import Cocoa
 import SwiftHTTP
 import Marshal
+//import JavaScriptCore
 
 enum LiveSupportList: String {
     case bilibili = "live.bilibili.com"
@@ -18,6 +19,7 @@ enum LiveSupportList: String {
     case pandaXingYan = "xingyan.panda.tv"
     case quanmin = "www.quanmin.tv"
     case longzhu = "star.longzhu.com"
+//    case yizhibo = "www.yizhibo.com"
     case unsupported
     
     init(raw: String?) {
@@ -165,6 +167,23 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct YiZhiBo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "nickname")
+        name = try object.value(for: "nickname")
+        let userCoverURL: String = try object.value(for: "avatar")
+        if let url = URL(string: userCoverURL) {
+            userCover = NSImage(contentsOf: url)
+        }
+        isLiving = "\(try object.any(for: "status"))" == "10"
+    }
+}
+
 typealias LiveInfoCallback = () throws -> Bool
 
 extension MainViewController {
@@ -271,8 +290,23 @@ extension MainViewController {
                     return false
                 }
             }
+//        case .yizhibo:
+//            HTTP.GET(url.absoluteString) { response in
+//                error {
+//                    var anchorStr = response.text?.subString(from: "window.anchor = ", to: ";") ?? ""
+//                    anchorStr = "var json = " + anchorStr + "; JSON.stringify(json);"
+//                    let jsContext = JSContext()
+//                    let anchorJSON = jsContext?.evaluateScript(anchorStr)?.toString() ?? ""
+//                    let anchorData = anchorJSON.data(using: .utf8) ?? Data()
+//                    let anchorInfo: JSONObject = try JSONParser.JSONObjectWithData(anchorData)
+//                    let info = try YiZhiBo(object: anchorInfo)
+//                    completion(info)
+//                    return false
+//                }
+//            }
         case .unsupported:
             break
         }
     }
 }
+
