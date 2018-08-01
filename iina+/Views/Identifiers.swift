@@ -11,14 +11,21 @@ import Cocoa
 
 
 extension NSStoryboard.Name {
-    static let main = NSStoryboard.Name(rawValue: "Main")
+    static let main = "Main"
 }
 
 extension NSStoryboard.SceneIdentifier {
-    static let suggestionsWindowController = NSStoryboard.SceneIdentifier(rawValue: "SuggestionsWindowController")
+    static let suggestionsWindowController = "SuggestionsWindowController"
 }
 
 extension NSUserInterfaceItemIdentifier {
     static let suggestionsTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SuggestionsTableCell")
     static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
+    static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
+    static let liveUrlTableCell = NSUserInterfaceItemIdentifier(rawValue: "LiveUrlTableCell")
+    
+}
+
+extension Notification.Name {
+    static let reloadLiveStatus = Notification.Name("com.xjbeta.iina+.ReloadLiveStatus")
 }

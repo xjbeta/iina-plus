@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Marshal
 
 class Processes: NSObject {
     
@@ -15,7 +16,7 @@ class Processes: NSObject {
     fileprivate override init() {
     }
     
-    func findYouGet(_ block: @escaping (_ path: String) -> Void) {
+    func which(_ str: String) -> [String] {
         // which you-get
         // command -v you-get
         // type -P you-get
@@ -23,20 +24,19 @@ class Processes: NSObject {
         let task = Process()
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.launchPath = "/usr/bin/which"
-        task.arguments  = ["you-get"]
-
+        task.launchPath = "/bin/bash"
+        task.arguments  = ["-l", "-c", "which \(str)"]
+        
         task.launch()
         task.waitUntilExit()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         if let output = String(data: data, encoding: .utf8) {
-            print(output)
+            return output.components(separatedBy: "\n").filter({ $0 != "" })
         }
-        
+        return []
     }
 
     var decodeTask: Process?
-    
     func decodeURL(_ url: String,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
@@ -51,7 +51,7 @@ class Processes: NSObject {
         let pipe = Pipe()
 
         decodeTask?.standardOutput = pipe
-        decodeTask?.launchPath = "/usr/local/bin/you-get"
+        decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
         
@@ -61,30 +61,45 @@ class Processes: NSObject {
             }
             
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            
             do {
-                let re = try JSONDecoder().decode(YouGetJSON.self, from: data)
+                let json = try JSONParser.JSONObjectWithData(data)
+                let re = try YouGetJSON(object: json)
                 block(re)
             } catch let er {
                 error(er)
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    print(json)
-                } catch {
-                    if let str = String(data: data, encoding: .utf8) {
-                        print(str)
-                    }
+                print("json error: \(er)")
+                if let str = String(data: data, encoding: .utf8) {
+                    print(str)
                 }
             }
         }
     }
     
-    
-    func openWithIINA(_ url: String, title: String) {
+    func openWithPlayer(_ url: String, title: String) {
         let task = Process()
         let pipe = Pipe()
         task.standardOutput = pipe
-        task.launchPath = "/Applications/IINA.app/Contents/MacOS/iina-cli"
-        task.arguments  = ["--mpv-force-media-title=\(title)", url, "-w"]
+        var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
+        
+        switch Preferences.shared.livePlayer {
+        case .iina:
+            task.launchPath = Preferences.shared.livePlayer.rawValue
+            mpvArgs = mpvArgs.map {
+                "--mpv-" + $0
+            }
+        case .mpv:
+            task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
+            mpvArgs.append(MPVOption.Terminal.quiet)
+            mpvArgs = mpvArgs.map {
+                "--" + $0
+            }
+        }
+        mpvArgs.append(url)
+        task.arguments = mpvArgs
         task.launch()
+        
     }
+    
+
 }

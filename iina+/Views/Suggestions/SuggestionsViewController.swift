@@ -22,7 +22,7 @@ class SuggestionsViewController: NSViewController {
                 urlStr = url
             }
             if url != "" {
-                 Processes.shared.openWithIINA(urlStr, title: yougetObj?.title ?? "")
+                 Processes.shared.openWithPlayer(urlStr, title: yougetObj?.title ?? "")
             }
         }
         if let window = view.window?.windowController as? SuggestionsWindowController {
