@@ -96,7 +96,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         if let str = dataManager.requestData()[row].url,
             let url = URL(string: str) {
-            switch LiveSupportList(url.host) {
+            switch LiveSupportList(raw: url.host) {
             case .unsupported:
                 return 17
             default:
@@ -109,7 +109,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         if let str = dataManager.requestData()[row].url,
             let url = URL(string: str) {
-            switch LiveSupportList(url.host) {
+            switch LiveSupportList(raw: url.host) {
             case .unsupported:
                 if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
                     view.textField?.stringValue = str

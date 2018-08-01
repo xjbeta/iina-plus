@@ -10,24 +10,18 @@ import Cocoa
 import SwiftHTTP
 import Marshal
 
-enum LiveSupportList {
-    case bilibili
-    case panda
-    case douyu
-    case huya
+enum LiveSupportList: String {
+    case bilibili = "live.bilibili.com"
+    case panda = "www.panda.tv"
+    case douyu = "www.douyu.com"
+    case huya = "www.huya.com"
+    case pandaXingYan = "xingyan.panda.tv"
     case unsupported
     
-    init(_ rawValue: String?) {
-        switch rawValue {
-         case "live.bilibili.com":
-            self = .bilibili
-        case "www.panda.tv":
-            self = .panda
-        case "www.douyu.com":
-            self = .douyu
-        case "www.huya.com":
-            self = .huya
-        default:
+    init(raw: String?) {
+        if let list = LiveSupportList.init(rawValue: raw ?? "") {
+            self = list
+        } else {
             self = .unsupported
         }
     }
@@ -111,6 +105,23 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct PandaXingYanInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "roominfo.name")
+        name = try object.value(for: "hostinfo.nickName")
+        let userCoverURL: String = try object.value(for: "hostinfo.avatar")
+        if let str = URL(string: userCoverURL)?.lastPathComponent,
+            let url = URL(string: "https://i.h2.pdim.gs/" + str) {
+            userCover = NSImage(contentsOf: url)
+        }
+        isLiving = "\(try object.any(for: "roominfo.playstatus"))" == "1"
+    }
+}
 
 typealias LiveInfoCallback = () throws -> Bool
 
@@ -119,7 +130,7 @@ extension MainViewController {
                  _ completion: @escaping ((LiveInfo) -> Void),
                  _ error: @escaping ((LiveInfoCallback) -> Void)) {
         
-        let site = LiveSupportList(url.host)
+        let site = LiveSupportList(raw:url.host)
         let roomID = url.lastPathComponent
         switch site {
         case .bilibili:
@@ -185,9 +196,18 @@ extension MainViewController {
                     return false
                 }
             }
+        case .pandaXingYan:
+            HTTP.GET("https://m.api.xingyan.panda.tv/room/baseinfo?xid=\(roomID)") { response in
+                error {
+                    if let error = response.error { throw error }
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info: PandaXingYanInfo = try json.value(for: "data")
+                    completion(info)
+                    return false
+                }
+            }
         case .unsupported:
             break
         }
-        
     }
 }
