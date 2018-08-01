@@ -6,6 +6,13 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>a.img.shouyintv.cn</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludeSubdomains</key>
+                <true/>
+            </dict>
 			<key>open.douyucdn.cn</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

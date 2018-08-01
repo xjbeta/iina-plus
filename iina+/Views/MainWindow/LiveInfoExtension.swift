@@ -16,6 +16,7 @@ enum LiveSupportList: String {
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
     case pandaXingYan = "xingyan.panda.tv"
+    case quanmin = "www.quanmin.tv"
     case unsupported
     
     init(raw: String?) {
@@ -123,6 +124,23 @@ struct PandaXingYanInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct QuanMinInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "title")
+        name = try object.value(for: "nick")
+        let userCoverURL: String = try object.value(for: "avatar")
+        if let url = URL(string: userCoverURL) {
+            userCover = NSImage(contentsOf: url)
+        }
+        isLiving = "\(try object.any(for: "status"))" == "2"
+    }
+}
+
 typealias LiveInfoCallback = () throws -> Bool
 
 extension MainViewController {
@@ -202,6 +220,16 @@ extension MainViewController {
                     if let error = response.error { throw error }
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                     let info: PandaXingYanInfo = try json.value(for: "data")
+                    completion(info)
+                    return false
+                }
+            }
+        case .quanmin:
+            HTTP.GET("https://www.quanmin.tv/json/rooms/\(roomID)/noinfo6.json") { response in
+                error {
+                    if let error = response.error { throw error }
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info = try QuanMinInfo(object: json)
                     completion(info)
                     return false
                 }
