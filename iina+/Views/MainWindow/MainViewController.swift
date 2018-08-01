@@ -43,6 +43,7 @@ class MainViewController: NSViewController {
     @IBAction func deleteBookmark(_ sender: Any) {
         if let index = bookmarkTableView.selectedIndexs().first {
             dataManager.deleteBookmark(index)
+            bookmarkTableView.reloadData()
         }
     }
     @IBAction func addBookmark(_ sender: Any) {
