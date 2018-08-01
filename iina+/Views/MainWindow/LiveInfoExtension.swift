@@ -17,6 +17,7 @@ enum LiveSupportList: String {
     case huya = "www.huya.com"
     case pandaXingYan = "xingyan.panda.tv"
     case quanmin = "www.quanmin.tv"
+    case longzhu = "star.longzhu.com"
     case unsupported
     
     init(raw: String?) {
@@ -141,6 +142,29 @@ struct QuanMinInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct LongZhuInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        if let title: String = try object.value(for: "live.title") {
+            self.title = title
+            isLiving = true
+        } else {
+            self.title = try object.value(for: "defaultTitle")
+            isLiving = false
+        }
+        name = try object.value(for: "username")
+        var userCoverURL: String = try object.value(for: "avatar")
+        userCoverURL = userCoverURL.replacingOccurrences(of: "http://", with: "https://")
+        if let url = URL(string: userCoverURL) {
+            userCover = NSImage(contentsOf: url)
+        }
+    }
+}
+
 typealias LiveInfoCallback = () throws -> Bool
 
 extension MainViewController {
@@ -230,6 +254,20 @@ extension MainViewController {
                     if let error = response.error { throw error }
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                     let info = try QuanMinInfo(object: json)
+                    completion(info)
+                    return false
+                }
+            }
+        case .longzhu:
+            HTTP.GET(url.absoluteString) { response in
+                error {
+                    let pageData = response.text?.subString(from: "var pageData = ", to: ";\n").data(using: .utf8) ?? Data()
+//                    let roomData = response.text?.subString(from: "var roomInfo = ", to: ";\n").data(using: .utf8) ?? Data()
+                    let profileData = response.text?.subString(from: "var roomHost = ", to: ";\n").data(using: .utf8) ?? Data()
+                    var pageInfo: JSONObject = try JSONParser.JSONObjectWithData(pageData)
+                    let profileInfo: JSONObject = try JSONParser.JSONObjectWithData(profileData)
+                    pageInfo.merge(profileInfo) { (current, _) in current }
+                    let info = try LongZhuInfo(object: pageInfo)
                     completion(info)
                     return false
                 }
