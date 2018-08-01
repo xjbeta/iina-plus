@@ -28,7 +28,7 @@ which ykdl
 # Liev Status Support Live
 
 * bilibili
-* panda (not xingyan)
+* panda
 * douyu
 * huya
 
