@@ -196,7 +196,7 @@ extension MainViewController {
         switch site {
         case .bilibili:
             let header = [
-                "User-Agent": "花Q pilipili"
+                "User-Agent": "Hua Q pilipili"
             ]
             
             HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)", headers: header) { response in
