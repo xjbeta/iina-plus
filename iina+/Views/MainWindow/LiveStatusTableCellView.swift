@@ -20,4 +20,20 @@ class LiveStatusTableCellView: NSTableCellView {
         // Drawing code here.
     }
     
+    func resetInfo() {
+        titleTextField.stringValue = ""
+        nameTextField.stringValue = ""
+        userCoverImageView.image = nil
+        liveStatusImageView.image = nil
+    }
+    
+    func setInfo(_ info: LiveInfo) {
+        DispatchQueue.main.async {
+            self.titleTextField.stringValue = info.title
+            self.nameTextField.stringValue = info.name
+            self.userCoverImageView.image = info.userCover
+            self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+        }
+    }
+    
 }

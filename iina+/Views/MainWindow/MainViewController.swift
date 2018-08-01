@@ -117,13 +117,9 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 }
             default:
                 if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+                    view.resetInfo()
                     getInfo(url, { liveInfo in
-                        DispatchQueue.main.async {
-                            view.titleTextField.stringValue = liveInfo.title
-                            view.nameTextField.stringValue = liveInfo.name
-                            view.userCoverImageView.image = liveInfo.userCover
-                            view.liveStatusImageView.image = liveInfo.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
-                        }
+                        view.setInfo(liveInfo)
                     }) { re in
                         do {
                             let _ = try re()
@@ -131,9 +127,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                             print(error)
                             DispatchQueue.main.async {
                                 view.titleTextField.stringValue = str
-                                view.nameTextField.stringValue = ""
-                                view.userCoverImageView.image = nil
-                                view.liveStatusImageView.image = NSImage(named: "NSStatusUnavailable")
+                                view.liveStatusImageView.image = NSImage(named: "NSStatusNone")
                             }
                         }
                     }
