@@ -262,7 +262,6 @@ extension MainViewController {
             HTTP.GET(url.absoluteString) { response in
                 error {
                     let pageData = response.text?.subString(from: "var pageData = ", to: ";\n").data(using: .utf8) ?? Data()
-//                    let roomData = response.text?.subString(from: "var roomInfo = ", to: ";\n").data(using: .utf8) ?? Data()
                     let profileData = response.text?.subString(from: "var roomHost = ", to: ";\n").data(using: .utf8) ?? Data()
                     var pageInfo: JSONObject = try JSONParser.JSONObjectWithData(pageData)
                     let profileInfo: JSONObject = try JSONParser.JSONObjectWithData(profileData)
