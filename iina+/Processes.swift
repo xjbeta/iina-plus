@@ -8,6 +8,7 @@
 
 import Foundation
 import Marshal
+import SwiftHTTP
 
 class Processes: NSObject {
     
@@ -82,6 +83,11 @@ class Processes: NSObject {
         task.standardOutput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
         
+        if url.contains("douyu") {
+            mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
+                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))"])
+        }
+        
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
@@ -102,4 +108,43 @@ class Processes: NSObject {
     }
     
 
+}
+
+private extension Processes {
+    
+    func getCookies(for website: LiveSupportList) -> String {
+        switch website {
+        case .douyu:
+            let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
+            let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
+            srand48(Int(time))
+            let random = "\(drand48())"
+            let parameters = ["client_id": "1",
+                              "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
+            let headers = ["Referer": "http://www.douyu.com"]
+            
+            let httpSemaphore = DispatchSemaphore(value: 0)
+            var cookiesString = ""
+            
+            HTTP.GET(douyuCookie, parameters: parameters, headers: headers) { response in
+                do {
+                    var str = response.text
+                    str = str?.subString(from: "(", to: ")")
+                    let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
+                    let didStr: String = try json.value(for: "data.did")
+                    cookiesString = """
+                    ..douyu.com    TRUE    /    FALSE    1535865698    dy_did    \(didStr)
+                    .www.douyu.com    TRUE    /    FALSE    1535865771    acf_did    \(didStr)
+                    """
+                } catch let error {
+                    print(error)
+                }
+                httpSemaphore.signal()
+            }
+            httpSemaphore.wait()
+            return cookiesString
+        default:
+            return ""
+        }
+    }
 }
