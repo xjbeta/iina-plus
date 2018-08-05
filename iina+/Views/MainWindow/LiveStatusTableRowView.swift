@@ -35,6 +35,25 @@ class LiveStatusTableRowView: NSTableRowView {
 
     let defaultRowColor = NSColor(catalogName: "System", colorName: "controlAlternatingRowColor")
     
+    
+}
+
+
+extension NSView {
+    
+    public func screenshot( _ rect:CGRect?=nil ) -> NSImage {
+        
+        let image = NSImage()
+        let rect = rect ?? self.bounds
+        
+        if let bitmap = self.bitmapImageRepForCachingDisplay( in: rect ) {
+            self.cacheDisplay( in: rect, to: bitmap )
+            image.addRepresentation( bitmap )
+        }
+        
+        return image
+    }
+    
 }
 
 extension NSColor {

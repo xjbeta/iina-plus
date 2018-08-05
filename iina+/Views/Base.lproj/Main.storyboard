@@ -557,6 +557,7 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
+                        <outlet property="bookmarkArrayController" destination="VY8-9O-I1C" id="PeA-ZJ-S3Z"/>
                         <outlet property="bookmarkTableView" destination="9PD-kf-1gB" id="RGX-fP-nIe"/>
                         <outlet property="searchField" destination="fWl-HZ-9Tf" id="FnM-Mh-que"/>
                         <segue destination="Rej-VG-aRz" kind="sheet" identifier="showAddBookmarkViewController" id="iRV-tt-3nd"/>
