@@ -9,6 +9,10 @@
 import Cocoa
 import CoreData
 
+private extension NSPasteboard.PasteboardType {
+    static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
+}
+
 class MainViewController: NSViewController {
 
     @IBOutlet weak var searchField: NSSearchField!
@@ -25,10 +29,11 @@ class MainViewController: NSViewController {
     }
     
     @IBOutlet weak var bookmarkTableView: NSTableView!
+    @IBOutlet var bookmarkArrayController: NSArrayController!
     
     @IBAction func sendURL(_ sender: Any) {
-        if bookmarkTableView.selectedRow != -1,
-            let url = dataManager.requestData()[bookmarkTableView.selectedRow].url {
+        if bookmarkTableView.selectedRow != -1 {
+            let url = dataManager.requestData()[bookmarkTableView.selectedRow].url
             searchField.stringValue = url
             searchField.becomeFirstResponder()
             searchField(self)
@@ -60,7 +65,10 @@ class MainViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.backgroundColor = .clear
+        bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
+        bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadBookmarks), name: .reloadLiveStatus, object: nil)
     }
 
@@ -94,8 +102,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        if let str = dataManager.requestData()[row].url,
-            let url = URL(string: str) {
+        let str = dataManager.requestData()[row].url
+        if let url = URL(string: str) {
             switch LiveSupportList(raw: url.host) {
             case .unsupported:
                 return 17
@@ -107,8 +115,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if let str = dataManager.requestData()[row].url,
-            let url = URL(string: str) {
+        let str = dataManager.requestData()[row].url
+        if let url = URL(string: str) {
             switch LiveSupportList(raw: url.host) {
             case .unsupported:
                 if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
@@ -142,6 +150,75 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         return tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("LiveStatusTableRowView"), owner: self) as? LiveStatusTableRowView
         
     }
+    
+    
+    func tableView(_ tableView: NSTableView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forRowIndexes rowIndexes: IndexSet) {
+        guard let row: Int = rowIndexes.first,
+            let view = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView else {
+                return
+        }
+        let image = view.screenshot()
+
+        session.enumerateDraggingItems(options: .concurrent, for: tableView, classes: [NSPasteboardItem.self], searchOptions: [:]) { draggingItem, idx, stop in
+            
+            var rect = NSRect(origin: draggingItem.draggingFrame.origin, size: image.size)
+            rect.origin.y -= rect.size.height
+            rect.origin.y += draggingItem.draggingFrame.size.height
+            draggingItem.draggingFrame = rect
+
+            let backgroundImageComponent = NSDraggingImageComponent(key: NSDraggingItem.ImageComponentKey(rawValue: "background"))
+            backgroundImageComponent.contents = image
+            backgroundImageComponent.frame = NSRect(origin: NSZeroPoint, size: image.size)
+            draggingItem.imageComponentsProvider = {
+                return [backgroundImageComponent]
+            }
+
+
+        }
+    }
+    
+
+    func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+        let item = NSPasteboardItem()
+        item.setString(String(row), forType: .bookmarkRow)
+        return item
+    }
+    
+    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
+        if dropOperation == .above {
+            return .move
+        }
+        return []
+    }
+    
+    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
+        var oldRows: [Int] = []
+        info.enumerateDraggingItems(options: [], for: tableView, classes: [NSPasteboardItem.self], searchOptions: [:]) {
+            (draggingItem, idx, stop) in
+            guard let item = draggingItem.item as? NSPasteboardItem else { return }
+            guard let rowStr = item.string(forType: .bookmarkRow) else { return }
+            guard let row = Int(rowStr) else { return }
+            oldRows.append(row)
+        }
+        
+        guard oldRows.count == 1, let oldRow = oldRows.first else {
+            return false
+        }
+        
+        tableView.beginUpdates()
+        if oldRow < row {
+            dataManager.moveBookmark(at: oldRow, to: row - 1)
+            tableView.moveRow(at: oldRow, to: row - 1)
+        } else {
+            dataManager.moveBookmark(at: oldRow, to: row)
+            tableView.moveRow(at: oldRow, to: row)
+        }
+        tableView.endUpdates()
+
+        return true
+    }
+    
+
 }
 
 extension MainViewController: NSSearchFieldDelegate {
