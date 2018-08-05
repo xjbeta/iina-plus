@@ -154,7 +154,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     func tableView(_ tableView: NSTableView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint, forRowIndexes rowIndexes: IndexSet) {
         guard let row: Int = rowIndexes.first,
-            let view = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) else {
+            let view = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView else {
                 return
         }
         let image = view.screenshot()
@@ -206,12 +206,12 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         }
         
         tableView.beginUpdates()
-            if oldRow < row {
-                dataManager.moveBookmark(at: oldRow, to: row - 1)
-                tableView.moveRow(at: oldRow, to: row - 1)
-            } else {
-                dataManager.moveBookmark(at: oldRow, to: row)
-                tableView.moveRow(at: oldRow, to: row)
+        if oldRow < row {
+            dataManager.moveBookmark(at: oldRow, to: row - 1)
+            tableView.moveRow(at: oldRow, to: row - 1)
+        } else {
+            dataManager.moveBookmark(at: oldRow, to: row)
+            tableView.moveRow(at: oldRow, to: row)
         }
         tableView.endUpdates()
 
