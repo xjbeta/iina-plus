@@ -59,7 +59,8 @@ class MainViewController: NSViewController {
     
     @objc var bookmarks: NSManagedObjectContext
     required init?(coder: NSCoder) {
-        self.bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+        bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+        bookmarks.undoManager = UndoManager()
         super.init(coder: coder)
     }
     
