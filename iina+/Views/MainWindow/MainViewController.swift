@@ -200,23 +200,18 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             guard let row = Int(rowStr) else { return }
             oldRows.append(row)
         }
+        
         guard oldRows.count == 1, let oldRow = oldRows.first else {
             return false
         }
         
-        
-        
         tableView.beginUpdates()
-        
-        
-        if let objs = bookmarkArrayController.arrangedObjects as? [Bookmark] {
             if oldRow < row {
                 dataManager.moveBookmark(at: oldRow, to: row - 1)
                 tableView.moveRow(at: oldRow, to: row - 1)
             } else {
                 dataManager.moveBookmark(at: oldRow, to: row)
                 tableView.moveRow(at: oldRow, to: row)
-            }
         }
         tableView.endUpdates()
 
