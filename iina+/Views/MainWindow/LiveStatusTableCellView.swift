@@ -14,10 +14,24 @@ class LiveStatusTableCellView: NSTableCellView {
     @IBOutlet weak var liveStatusImageView: NSImageView!
     @IBOutlet weak var titleTextField: NSTextField!
     @IBOutlet weak var nameTextField: NSTextField!
+    
+    var isSelected: Bool = false {
+        didSet {
+            needsDisplay = true
+        }
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        // Drawing code here.
+        let selectionRect = NSInsetRect(bounds, 0, 0)
+        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 6, yRadius: 6)
+        if isSelected {
+            NSColor.selectedControlColor.setFill()
+        } else {
+            NSColor.white.setFill()
+        }
+        selectionPath.fill()
     }
     
     func resetInfo() {
@@ -36,4 +50,23 @@ class LiveStatusTableCellView: NSTableCellView {
         }
     }
     
+    
+    func screenshot(_ rect: CGRect? = nil) -> NSImage {
+        let image = NSImage()
+        let rect = rect ?? self.bounds
+        
+        if let bitmap = self.bitmapImageRepForCachingDisplay( in: rect ) {
+            self.cacheDisplay( in: rect, to: bitmap )
+            image.addRepresentation( bitmap )
+        }
+        
+        return image
+    }
+    
+}
+
+extension NSColor {
+    public class var customBackgroundColor: NSColor {
+        return NSColor(calibratedRed: 0.97, green: 0.95, blue: 0.94, alpha: 1)
+    }
 }

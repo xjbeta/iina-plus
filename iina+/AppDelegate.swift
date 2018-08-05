@@ -40,12 +40,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "DataModel")
+        let shouldInitOrder = !checkForMigration()
+        
         container.loadPersistentStores { _, error in
             if let error = error {
                 fatalError("Unresolved error \(error)")
             }
             container.viewContext.automaticallyMergesChangesFromParent = true
             container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        }
+        
+        if shouldInitOrder {
+            // set dafault value for orders
+            if container.managedObjectModel.entitiesByName["Bookmark"]?.versionHashModifier == "added order" {
+                try? container.viewContext.fetch(NSFetchRequest<NSFetchRequestResult>(entityName: "Bookmark")).enumerated().forEach {
+                    if let bookmark = $0.element as? Bookmark {
+                        bookmark.setValue($0.offset, forKey: "order")
+                    }
+                }
+                try? container.viewContext.save()
+            }
         }
         return container
     }()
@@ -118,5 +132,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return .terminateNow
     }
     
+    
+    func checkForMigration() -> Bool {
+        let container = NSPersistentContainer(name: "DataModel")
+        if let storeUrl = container.persistentStoreDescriptions.first?.url,
+            let metadata = try? NSPersistentStoreCoordinator.metadataForPersistentStore(ofType: NSSQLiteStoreType, at: storeUrl) {
+            return container.managedObjectModel.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
+        }
+        return false
+    }
 }
 

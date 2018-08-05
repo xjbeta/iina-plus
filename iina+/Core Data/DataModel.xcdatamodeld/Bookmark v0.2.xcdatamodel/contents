@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.2.4" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Bookmark" representedClassName=".Bookmark" syncable="YES">
+    <entity name="Bookmark" representedClassName=".Bookmark" versionHashModifier="added order" syncable="YES">
+        <attribute name="order" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="remark" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" defaultValueString="https://live.bilibili.com/1010" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Bookmark" positionX="-54" positionY="-9" width="128" height="75"/>
+        <element name="Bookmark" positionX="-103.39453125" positionY="-9" width="177.39453125" height="90"/>
     </elements>
 </model>
