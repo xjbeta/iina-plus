@@ -386,7 +386,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fWl-HZ-9Tf">
-                                <rect key="frame" x="24" y="575" width="402" height="22"/>
+                                <rect key="frame" x="20" y="575" width="410" height="22"/>
                                 <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" id="Tmj-IU-6YE">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -547,9 +547,9 @@
                             </scrollView>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="fWl-HZ-9Tf" firstAttribute="leading" secondItem="0fR-Ao-cHY" secondAttribute="leading" constant="24" id="2TC-2B-Tyo"/>
+                            <constraint firstItem="fWl-HZ-9Tf" firstAttribute="leading" secondItem="0fR-Ao-cHY" secondAttribute="leading" constant="20" id="2TC-2B-Tyo"/>
                             <constraint firstItem="fWl-HZ-9Tf" firstAttribute="top" secondItem="0fR-Ao-cHY" secondAttribute="top" constant="30" id="2ZH-hl-ZAG"/>
-                            <constraint firstAttribute="trailing" secondItem="fWl-HZ-9Tf" secondAttribute="trailing" constant="24" id="69S-dT-rzw"/>
+                            <constraint firstAttribute="trailing" secondItem="fWl-HZ-9Tf" secondAttribute="trailing" constant="20" id="69S-dT-rzw"/>
                             <constraint firstAttribute="bottom" secondItem="txu-4A-pVl" secondAttribute="bottom" constant="15" id="CBr-NQ-kAf"/>
                             <constraint firstItem="txu-4A-pVl" firstAttribute="top" secondItem="fWl-HZ-9Tf" secondAttribute="bottom" constant="6" id="Nfd-Qi-mpS"/>
                             <constraint firstItem="txu-4A-pVl" firstAttribute="leading" secondItem="0fR-Ao-cHY" secondAttribute="leading" constant="20" id="Shn-Ji-3fT"/>
