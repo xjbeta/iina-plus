@@ -80,7 +80,8 @@ class Processes: NSObject {
     func openWithPlayer(_ url: String, title: String) {
         let task = Process()
         let pipe = Pipe()
-        task.standardOutput = pipe
+//        task.standardOutput = pipe
+        task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
         
         if url.contains("douyu") {
