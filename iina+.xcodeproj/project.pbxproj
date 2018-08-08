@@ -17,6 +17,9 @@
 		010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
+		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
+		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
+		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
 		01398983210F273200B7042F /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398982210F273200B7042F /* PreferencesView.swift */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* LiveStatusTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* LiveStatusTableRowView.swift */; };
@@ -26,6 +29,9 @@
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
 		0161CAFA210E010200AB5D9A /* SubString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0161CAF9210E010200AB5D9A /* SubString.swift */; };
+		01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */; };
+		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
+		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -38,6 +44,7 @@
 		01CD740E20F634C8002D93BF /* SuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CD740D20F634C7002D93BF /* SuggestionsView.swift */; };
 		01E2BBA120F23A670082D876 /* SuggestionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E2BBA020F23A670082D876 /* SuggestionsViewController.swift */; };
 		01E2BBA320F23DF30082D876 /* SuggestionsTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E2BBA220F23DF30082D876 /* SuggestionsTableCellView.swift */; };
+		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
@@ -78,6 +85,9 @@
 		010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Marshal.framework.dSYM; path = Carthage/Build/Mac/Marshal.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
+		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
+		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
 		01398982210F273200B7042F /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* LiveStatusTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableRowView.swift; sourceTree = "<group>"; };
@@ -88,6 +98,9 @@
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
 		0161CAF9210E010200AB5D9A /* SubString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubString.swift; sourceTree = "<group>"; };
+		01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliLoginViewController.swift; sourceTree = "<group>"; };
+		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
+		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -102,6 +115,7 @@
 		01CD740D20F634C7002D93BF /* SuggestionsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuggestionsView.swift; sourceTree = "<group>"; };
 		01E2BBA020F23A670082D876 /* SuggestionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsViewController.swift; sourceTree = "<group>"; };
 		01E2BBA220F23DF30082D876 /* SuggestionsTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsTableCellView.swift; sourceTree = "<group>"; };
+		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -139,6 +153,7 @@
 				01F46C9F2102EEFB00FE9DAD /* Preferences */,
 				010F0EF020F88C8B00F33553 /* Suggestions */,
 				01479CD8210B35D80046AAAD /* MainWindow */,
+				012601722119BA6D00C9C639 /* Utils */,
 				01AEC8B020EDFD02001406E8 /* Main.storyboard */,
 				01479CD6210B35480046AAAD /* MainMenu.swift */,
 				01AEC8C820F1081C001406E8 /* Identifiers.swift */,
@@ -168,6 +183,20 @@
 			path = "Core Data";
 			sourceTree = "<group>";
 		};
+		012601722119BA6D00C9C639 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				01683DDA2118905D0016A886 /* Bilibili.swift */,
+				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
+				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
+				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
+				01AEC8BD20EE108B001406E8 /* Processes.swift */,
+				0161CAF9210E010200AB5D9A /* SubString.swift */,
+				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		01479CD8210B35D80046AAAD /* MainWindow */ = {
 			isa = PBXGroup;
 			children = (
@@ -175,6 +204,7 @@
 				01AEC8AC20EDFD01001406E8 /* MainViewController.swift */,
 				01F5151F210AE330007C7153 /* LiveInfoExtension.swift */,
 				01F515192109F002007C7153 /* LiveStatusTableCellView.swift */,
+				012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */,
 				01398986210F58E500B7042F /* LiveStatusTableRowView.swift */,
 				01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */,
 			);
@@ -206,11 +236,7 @@
 				010F0F2E20FF414E00F33553 /* Core Data */,
 				010F0EF320F8930500F33553 /* Views */,
 				01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */,
-				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				010F0F1220FE1DD100F33553 /* Preferences.swift */,
-				01AEC8BD20EE108B001406E8 /* Processes.swift */,
-				0161CAF9210E010200AB5D9A /* SubString.swift */,
-				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				01AEC8B320EDFD02001406E8 /* Info.plist */,
 			);
 			path = "iina+";
@@ -227,8 +253,11 @@
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
+				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
+				01683DDD211924160016A886 /* BilibiliViewController.swift */,
 				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
 				01398982210F273200B7042F /* PreferencesView.swift */,
+				01260170211948BF00C9C639 /* PreferencesTabViewController.swift */,
 				01398984210F27A600B7042F /* PreferencesWindowController.swift */,
 			);
 			path = Preferences;
@@ -322,13 +351,16 @@
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
+				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				0161CAFA210E010200AB5D9A /* SubString.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				01E2BBA120F23A670082D876 /* SuggestionsViewController.swift in Sources */,
+				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
 				01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */,
 				01CD740E20F634C8002D93BF /* SuggestionsView.swift in Sources */,
+				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
@@ -340,9 +372,13 @@
 				010F0EF520F8D56200F33553 /* WaitingTableCellView.swift in Sources */,
 				01398987210F58E500B7042F /* LiveStatusTableRowView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
+				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
+				01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */,
 				010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */,
+				01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
+				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
 				01E2BBA320F23DF30082D876 /* SuggestionsTableCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

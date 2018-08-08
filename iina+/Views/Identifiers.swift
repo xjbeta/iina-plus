@@ -23,9 +23,11 @@ extension NSUserInterfaceItemIdentifier {
     static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
     static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
     static let liveUrlTableCell = NSUserInterfaceItemIdentifier(rawValue: "LiveUrlTableCell")
+    static let bilibiliCardTableCell = NSUserInterfaceItemIdentifier(rawValue: "BilibiliCardTableCell")
+    
     
 }
 
 extension Notification.Name {
-    static let reloadLiveStatus = Notification.Name("com.xjbeta.iina+.ReloadLiveStatus")
+    static let reloadMainWindowTableView = Notification.Name("com.xjbeta.iina+.ReloadMainWindowTableView")
 }

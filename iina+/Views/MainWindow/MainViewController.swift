@@ -27,10 +27,29 @@ class MainViewController: NSViewController {
             suggestionsWindowController.begin(for: searchField, with: str)
         }
     }
+
+    @IBOutlet weak var mainTabView: NSTabView!
+    @IBOutlet weak var mainSegmentedControl: NSSegmentedControl!
+    @IBAction func segmentSwitch(_ sender: Any) {
+        switch mainSegmentedControl.selectedSegment {
+        case 0:
+            mainSegmentedControl.setImage(NSImage(named: "liveListHighlight"), forSegment: 0)
+            mainSegmentedControl.setImage(NSImage(named: "bilibili"), forSegment: 1)
+            mainTabView.selectTabViewItem(at: 0)
+        case 1:
+            mainSegmentedControl.setImage(NSImage(named: "liveList"), forSegment: 0)
+            mainSegmentedControl.setImage(NSImage(named: "bilibiliHighlight"), forSegment: 1)
+            mainTabView.selectTabViewItem(at: 1)
+        default:
+            break
+        }
+        
+    }
+    let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
     
     @IBOutlet weak var bookmarkTableView: NSTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
-    
+    @objc var bookmarks: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
         if bookmarkTableView.selectedRow != -1 {
             let url = dataManager.requestData()[bookmarkTableView.selectedRow].url
@@ -40,24 +59,37 @@ class MainViewController: NSViewController {
         }
     }
     
-    let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
     @IBAction func hideSuggestions(_ sender: Any) {
         suggestionsWindowController.cancelSuggestions()
     }
-
+    
     @IBAction func deleteBookmark(_ sender: Any) {
         if let index = bookmarkTableView.selectedIndexs().first {
             dataManager.deleteBookmark(index)
             bookmarkTableView.reloadData()
         }
     }
+    
     @IBAction func addBookmark(_ sender: Any) {
         performSegue(withIdentifier: NSStoryboardSegue.Identifier("showAddBookmarkViewController"), sender: nil)
     }
     
+    @IBOutlet weak var bilibiliTableView: NSTableView!
+    @IBOutlet var bilibiliArrayController: NSArrayController!
+    @objc dynamic var bilibiliCards: [BilibiliCard] = []
+    let bilibili = Bilibili()
+    
+    @IBAction func sendBilibiliURL(_ sender: Any) {
+        if bilibiliTableView.selectedRow != -1 {
+            let aid = bilibiliCards[bilibiliTableView.selectedRow].aid
+            searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+            searchField.becomeFirstResponder()
+            searchField(self)
+        }
+    }
+    
     let dataManager = DataManager()
     
-    @objc var bookmarks: NSManagedObjectContext
     required init?(coder: NSCoder) {
         bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
         bookmarks.undoManager = UndoManager()
@@ -66,11 +98,35 @@ class MainViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        segmentSwitch(self)
+        loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.backgroundColor = .clear
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadBookmarks), name: .reloadLiveStatus, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
+        
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(scrollViewDidScroll(_:)),
+            name: NSScrollView.didLiveScrollNotification,
+            object: bilibiliTableView.enclosingScrollView
+        )
+    }
+    
+    
+    
+    @objc dynamic var canLoadMoreBilibiliCards = true
+    
+    @objc func scrollViewDidScroll(_ notification: Notification) {
+        guard canLoadMoreBilibiliCards else { return }
+
+        if let scrollView = notification.object as? NSScrollView {
+            if let value = scrollView.verticalScroller?.doubleValue, value > 0.98 {
+                loadBilibiliCards(false)
+            }
+        }
     }
 
     override var representedObject: Any? {
@@ -83,8 +139,15 @@ class MainViewController: NSViewController {
         suggestionsWindowController.cancelSuggestions()
     }
     
-    @objc func reloadBookmarks() {
-        bookmarkTableView.reloadData()
+    @objc func reloadTableView() {
+        switch mainSegmentedControl.selectedSegment {
+        case 0:
+            bookmarkTableView.reloadData()
+        case 1:
+            loadBilibiliCards()
+        default:
+            break
+        }
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -95,54 +158,109 @@ class MainViewController: NSViewController {
         }
     }
     
+    func loadBilibiliCards( _ isInit: Bool = true) {
+        var dynamicID = -1
+        let group = DispatchGroup()
+        if !isInit {
+            group.enter()
+            canLoadMoreBilibiliCards = false
+            dynamicID = bilibiliCards.last?.dynamicId ?? -1
+            print(dynamicID)
+        }
+        
+        bilibili.dynamicList(dynamicID, { cards in
+            DispatchQueue.main.async {
+                if isInit {
+                    self.bilibiliCards = cards
+                } else {
+                    self.bilibiliCards.append(contentsOf: cards)
+                    group.leave()
+                }
+            }
+        }) { re in
+            do {
+                let _ = try re()
+            } catch let error {
+                print(error)
+                if !isInit {
+                    group.leave()
+                }
+            }
+        }
+        group.notify(queue: .main) {
+            self.canLoadMoreBilibiliCards = true
+        }
+    }
+    
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return dataManager.requestData().count
+        switch tableView {
+        case bookmarkTableView:
+            return dataManager.requestData().count
+        case bilibiliTableView:
+            return tableView.numberOfRows
+        default:
+            break
+        }
+        return 0
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        let str = dataManager.requestData()[row].url
-        if let url = URL(string: str) {
-            switch LiveSupportList(raw: url.host) {
-            case .unsupported:
-                return 17
-            default:
-                return 55
+        switch tableView {
+        case bookmarkTableView:
+            let str = dataManager.requestData()[row].url
+            if let url = URL(string: str) {
+                switch LiveSupportList(raw: url.host) {
+                case .unsupported:
+                    return 17
+                default:
+                    return 55
+                }
             }
+        case bilibiliTableView:
+            return tableView.rowHeight
+        default:
+            break
         }
         return 0
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let str = dataManager.requestData()[row].url
-        if let url = URL(string: str) {
-            switch LiveSupportList(raw: url.host) {
-            case .unsupported:
-                if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
-                    view.textField?.stringValue = str
-                    return view
-                }
-            default:
-                if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                    view.resetInfo()
-                    getInfo(url, { liveInfo in
-                        view.setInfo(liveInfo)
-                    }) { re in
-                        do {
-                            let _ = try re()
-                        } catch let error {
-                            print(error)
-                            DispatchQueue.main.async {
-                                view.titleTextField.stringValue = str
-                                view.liveStatusImageView.image = NSImage(named: "NSStatusNone")
+        switch tableView {
+        case bookmarkTableView:
+            let str = dataManager.requestData()[row].url
+            if let url = URL(string: str) {
+                switch LiveSupportList(raw: url.host) {
+                case .unsupported:
+                    if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
+                        view.textField?.stringValue = str
+                        return view
+                    }
+                default:
+                    if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+//                        view.resetInfo()
+                        getInfo(url, { liveInfo in
+                            view.setInfo(liveInfo)
+                        }) { re in
+                            do {
+                                let _ = try re()
+                            } catch let error {
+                                print(error)
+                                view.setErrorInfo(str)
                             }
                         }
+                        return view
                     }
-                    return view
                 }
             }
+        case bilibiliTableView:
+            if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCell, owner: nil) as? BilibiliCardTableCellView {
+                            return view
+            }
+        default:
+            break
         }
         return nil
     }
@@ -173,13 +291,14 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             draggingItem.imageComponentsProvider = {
                 return [backgroundImageComponent]
             }
-
-
         }
     }
     
 
     func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+        guard tableView == bookmarkTableView else {
+            return nil
+        }
         let item = NSPasteboardItem()
         item.setString(String(row), forType: .bookmarkRow)
         return item
@@ -193,6 +312,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
+
         var oldRows: [Int] = []
         info.enumerateDraggingItems(options: [], for: tableView, classes: [NSPasteboardItem.self], searchOptions: [:]) {
             (draggingItem, idx, stop) in

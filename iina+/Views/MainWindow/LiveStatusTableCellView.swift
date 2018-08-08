@@ -27,7 +27,7 @@ class LiveStatusTableCellView: NSTableCellView {
         let selectionRect = NSInsetRect(bounds, 0, 0)
         let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 6, yRadius: 6)
         if isSelected {
-            NSColor.selectedControlColor.setFill()
+            NSColor.customHighlightColor.setFill()
         } else {
             NSColor.white.setFill()
         }
@@ -50,6 +50,17 @@ class LiveStatusTableCellView: NSTableCellView {
         }
     }
     
+    func setErrorInfo(_ str: String) {
+        DispatchQueue.main.async {
+            if self.userCoverImageView.image == nil {
+                self.titleTextField.stringValue = str
+                self.userCoverImageView.image = nil
+                self.nameTextField.stringValue = ""
+            }
+            self.liveStatusImageView.image = NSImage(named: "NSStatusNone")
+        }
+    }
+    
     
     func screenshot(_ rect: CGRect? = nil) -> NSImage {
         let image = NSImage()
@@ -66,7 +77,7 @@ class LiveStatusTableCellView: NSTableCellView {
 }
 
 extension NSColor {
-    public class var customBackgroundColor: NSColor {
-        return NSColor(calibratedRed: 0.97, green: 0.95, blue: 0.94, alpha: 1)
+    public class var customHighlightColor: NSColor {
+        return NSColor(calibratedRed: 0.59, green: 0.75, blue: 0.99, alpha: 1)
     }
 }

@@ -17,7 +17,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
-        NotificationCenter.default.post(name: .reloadLiveStatus, object: nil)
+        NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
     }
     
     func windowDidResignMain(_ notification: Notification) {
