@@ -77,18 +77,32 @@ class Processes: NSObject {
         }
     }
     
-    func openWithPlayer(_ url: String, title: String) {
+    enum PlayerOptions {
+        case douyu, bilibili, withoutYtdl, none
+    }
+    
+    func openWithPlayer(_ urls: [String], title: String, options: PlayerOptions) {
         let task = Process()
         let pipe = Pipe()
-//        task.standardOutput = pipe
         task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
         
-        if url.contains("douyu") {
+        switch options {
+        case .douyu:
             mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
-                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))"])
+                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))",
+                                        MPVOption.ProgramBehavior.noYtdl])
+        case .bilibili:
+            mpvArgs.append(contentsOf: [MPVOption.ProgramBehavior.noYtdl,
+                                        "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+        case .withoutYtdl:
+            mpvArgs.append(MPVOption.ProgramBehavior.noYtdl)
+        case .none: break
         }
         
+        if urls.count > 1 {
+            mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+        }
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
@@ -102,13 +116,16 @@ class Processes: NSObject {
                 "--" + $0
             }
         }
-        mpvArgs.append(url)
+        if urls.count == 1 {
+            mpvArgs.append(urls.first ?? "")
+        } else if urls.count > 1 {
+            mpvArgs.append(contentsOf: urls)
+        }
+        
         task.arguments = mpvArgs
         task.launch()
         
     }
-    
-
 }
 
 private extension Processes {

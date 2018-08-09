@@ -15,14 +15,27 @@ class SuggestionsViewController: NSViewController {
         let row = suggestionsTableView.selectedRow
         if let key = yougetObj?.streams.keys.sorted()[row],
             let stream = yougetObj?.streams[key] {
-            var urlStr = ""
-            if let url = stream.url {
-                urlStr = url
-            } else if let url = stream.src.first {
-                urlStr = url
+            var urlStr: [String] = []
+            if let videoUrl = stream.url {
+                urlStr = [videoUrl]
+            } else {
+                urlStr = stream.src
             }
-            if url != "" {
-                 Processes.shared.openWithPlayer(urlStr, title: yougetObj?.title ?? "")
+            
+            if let host = URL(string: url)?.host {
+                let title = yougetObj?.title ?? ""
+                switch LiveSupportList(raw: host) {
+                case .douyu:
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
+                case .bilibili, .huya, .longzhu, .panda, .pandaXingYan, .quanmin:
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+                case .unsupported:
+                    if host == "www.bilibili.com" {
+                        Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+                    } else {
+                        Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
+                    }
+                }
             }
         }
         if let window = view.window?.windowController as? SuggestionsWindowController {
