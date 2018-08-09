@@ -100,9 +100,13 @@ class Processes: NSObject {
         case .none: break
         }
         
-        if urls.count > 1 {
-            mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+        let mergeWithEdl = true
+        if !mergeWithEdl {
+            if urls.count > 1 {
+                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+            }
         }
+
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
@@ -119,7 +123,20 @@ class Processes: NSObject {
         if urls.count == 1 {
             mpvArgs.append(urls.first ?? "")
         } else if urls.count > 1 {
-            mpvArgs.append(contentsOf: urls)
+            if mergeWithEdl {
+                var edlString = urls.reduce(String()) { result, url in
+                    var re = result
+                    re += "%\(url.count)%\(url)"
+                    print(url)
+                    return re
+                }
+                edlString = "edl://" + edlString
+                
+                mpvArgs.append(edlString)
+            } else {
+                mpvArgs.append(contentsOf: urls)
+            }
+
         }
         
         task.arguments = mpvArgs
