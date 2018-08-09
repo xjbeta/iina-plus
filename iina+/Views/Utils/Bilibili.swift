@@ -47,6 +47,10 @@ class BilibiliCard: NSObject, Unmarshaling {
     }
 }
 
+enum BilibiliDynamicAction {
+    case `init`, new, history
+}
+
 class Bilibili: NSObject {
 
     func isLogin(_ isLoginBlock: ((Bool) -> Void)?,
@@ -91,19 +95,22 @@ class Bilibili: NSObject {
         }
     }
     
-    func dynamicList(_ dynamicID: Int = -1,
+    func dynamicList(_ action: BilibiliDynamicAction = .init,
+                     _ dynamicID: Int = -1,
                      _ block: (([BilibiliCard]) -> Void)?,
                      _ error: @escaping ((HTTPErrorCallback) -> Void)) {
         getUid({ uid in
             var http: HTTP? = nil
+            let headers = ["referer": "https://www.bilibili.com"]
             
-            
-            let par = ["referer": "https://www.bilibili.com"]
-            
-            if dynamicID > 0 {
-                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", parameters: par)
-            } else {
-                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: par)
+            switch action {
+            case .init:
+                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
+            case .history:
+                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", headers: headers)
+            case .new:
+                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&current_dynamic_id=\(dynamicID)&type=8", headers: headers)
+            default: break
             }
             
             http?.onFinish = { response in

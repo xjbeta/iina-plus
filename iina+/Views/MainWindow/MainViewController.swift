@@ -123,8 +123,10 @@ class MainViewController: NSViewController {
         guard canLoadMoreBilibiliCards else { return }
 
         if let scrollView = notification.object as? NSScrollView {
-            if let value = scrollView.verticalScroller?.doubleValue, value > 0.98 {
-                loadBilibiliCards(false)
+            let visibleRect = scrollView.contentView.documentVisibleRect
+            let documentRect = scrollView.contentView.documentRect
+            if documentRect.height - visibleRect.height - visibleRect.origin.y < 10 {
+                loadBilibiliCards(.history)
             }
         }
     }
@@ -158,33 +160,40 @@ class MainViewController: NSViewController {
         }
     }
     
-    func loadBilibiliCards( _ isInit: Bool = true) {
+    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init) {
         var dynamicID = -1
         let group = DispatchGroup()
-        if !isInit {
-            group.enter()
-            canLoadMoreBilibiliCards = false
+        
+        
+        switch action {
+        case .history:
             dynamicID = bilibiliCards.last?.dynamicId ?? -1
-            print(dynamicID)
+        case .new:
+            dynamicID = bilibiliCards.first?.dynamicId ?? -1
+        default: break
         }
         
-        bilibili.dynamicList(dynamicID, { cards in
+        canLoadMoreBilibiliCards = false
+        group.enter()
+        bilibili.dynamicList(action, dynamicID, { cards in
             DispatchQueue.main.async {
-                if isInit {
+                switch action {
+                case .init:
                     self.bilibiliCards = cards
-                } else {
+                case .history:
                     self.bilibiliCards.append(contentsOf: cards)
-                    group.leave()
+                case .new:
+                    self.bilibiliCards.insert(contentsOf: cards, at: 0)
+                default: break
                 }
+                group.leave()
             }
         }) { re in
             do {
                 let _ = try re()
             } catch let error {
                 print(error)
-                if !isInit {
-                    group.leave()
-                }
+                group.leave()
             }
         }
         group.notify(queue: .main) {
