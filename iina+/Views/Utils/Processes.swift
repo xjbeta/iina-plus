@@ -115,7 +115,7 @@ class Processes: NSObject {
             }
         case .mpv:
             task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
-            mpvArgs.append(MPVOption.Terminal.quiet)
+            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
             mpvArgs = mpvArgs.map {
                 "--" + $0
             }
