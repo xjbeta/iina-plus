@@ -15,37 +15,12 @@ private extension NSPasteboard.PasteboardType {
 
 class MainViewController: NSViewController {
 
-    @IBOutlet weak var searchField: NSSearchField!
-    @IBAction func searchField(_ sender: Any) {
-        let str = searchField.stringValue
-        guard str != "" else {
-            suggestionsWindowController.cancelSuggestions()
-            return
-        }
-        
-        if dataManager.checkURL(str) {
-            suggestionsWindowController.begin(for: searchField, with: str)
-        }
-    }
-
     @IBOutlet weak var mainTabView: NSTabView!
-    @IBOutlet weak var mainSegmentedControl: NSSegmentedControl!
-    @IBAction func segmentSwitch(_ sender: Any) {
-        switch mainSegmentedControl.selectedSegment {
-        case 0:
-            mainSegmentedControl.setImage(NSImage(named: "liveListHighlight"), forSegment: 0)
-            mainSegmentedControl.setImage(NSImage(named: "bilibili"), forSegment: 1)
-            mainTabView.selectTabViewItem(at: 0)
-        case 1:
-            mainSegmentedControl.setImage(NSImage(named: "liveList"), forSegment: 0)
-            mainSegmentedControl.setImage(NSImage(named: "bilibiliHighlight"), forSegment: 1)
-            mainTabView.selectTabViewItem(at: 1)
-        default:
-            break
-        }
-        
+    @objc dynamic var mainTabViewSelectedIndex = 0
+    
+    var mainWindowController: MainWindowController {
+        return view.window?.windowController as! MainWindowController
     }
-    let suggestionsWindowController = NSStoryboard(name: .main, bundle: nil).instantiateController(withIdentifier:.suggestionsWindowController) as! SuggestionsWindowController
     
     @IBOutlet weak var bookmarkTableView: NSTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
@@ -53,14 +28,14 @@ class MainViewController: NSViewController {
     @IBAction func sendURL(_ sender: Any) {
         if bookmarkTableView.selectedRow != -1 {
             let url = dataManager.requestData()[bookmarkTableView.selectedRow].url
-            searchField.stringValue = url
-            searchField.becomeFirstResponder()
-            searchField(self)
+            mainWindowController.searchField.stringValue = url
+            mainWindowController.searchField.becomeFirstResponder()
+            mainWindowController.startSearch(self)
         }
     }
     
     @IBAction func hideSuggestions(_ sender: Any) {
-        suggestionsWindowController.cancelSuggestions()
+        mainWindowController.suggestionsWindowController.cancelSuggestions()
     }
     
     @IBAction func deleteBookmark(_ sender: Any) {
@@ -82,9 +57,9 @@ class MainViewController: NSViewController {
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
             let aid = bilibiliCards[bilibiliTableView.selectedRow].aid
-            searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
-            searchField.becomeFirstResponder()
-            searchField(self)
+            mainWindowController.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+            mainWindowController.searchField.becomeFirstResponder()
+            mainWindowController.startSearch(self)
         }
     }
     
@@ -98,7 +73,6 @@ class MainViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        segmentSwitch(self)
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.backgroundColor = .clear
@@ -138,11 +112,11 @@ class MainViewController: NSViewController {
     }
     
     override func mouseDown(with event: NSEvent) {
-        suggestionsWindowController.cancelSuggestions()
+        mainWindowController.suggestionsWindowController.cancelSuggestions()
     }
     
     @objc func reloadTableView() {
-        switch mainSegmentedControl.selectedSegment {
+        switch mainTabViewSelectedIndex {
         case 0:
             bookmarkTableView.reloadData()
         case 1:

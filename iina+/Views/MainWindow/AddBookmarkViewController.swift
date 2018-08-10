@@ -12,12 +12,12 @@ class AddBookmarkViewController: NSViewController {
     @IBOutlet weak var urlTextField: NSTextField!
     @IBAction func addToBookmarks(_ sender: Any) {
         let str = urlTextField.stringValue
-        if dataManager.checkURL(str) {
+        if str.isUrl {
             dataManager.addBookmark(str)
             dismiss?()
         }
-        
     }
+    
     @IBAction func cancel(_ sender: Any) {
         dismiss?()
     }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01010125211DBC27002F0F7F /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010124211DBC27002F0F7F /* StringExtension.swift */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0EF520F8D56200F33553 /* WaitingTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF420F8D56200F33553 /* WaitingTableCellView.swift */; };
 		010F0F0A20FCC17F00F33553 /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; };
@@ -28,7 +29,6 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
-		0161CAFA210E010200AB5D9A /* SubString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0161CAF9210E010200AB5D9A /* SubString.swift */; };
 		01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */; };
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
@@ -77,6 +77,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01010124211DBC27002F0F7F /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0EF420F8D56200F33553 /* WaitingTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingTableCellView.swift; sourceTree = "<group>"; };
 		010F0EFE20FCC16600F33553 /* Marshal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Marshal.framework; path = Carthage/Build/Mac/Marshal.framework; sourceTree = SOURCE_ROOT; };
@@ -97,7 +98,6 @@
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
-		0161CAF9210E010200AB5D9A /* SubString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubString.swift; sourceTree = "<group>"; };
 		01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliLoginViewController.swift; sourceTree = "<group>"; };
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
@@ -191,7 +191,7 @@
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
-				0161CAF9210E010200AB5D9A /* SubString.swift */,
+				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 			);
 			path = Utils;
@@ -354,7 +354,7 @@
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
-				0161CAFA210E010200AB5D9A /* SubString.swift in Sources */,
+				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				01E2BBA120F23A670082D876 /* SuggestionsViewController.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,

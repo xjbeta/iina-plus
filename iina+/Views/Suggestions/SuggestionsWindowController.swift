@@ -28,11 +28,19 @@ class SuggestionsWindowController: NSWindowController {
             suggesttionsWindow.setContentSize(size)
             
             
-            let rect = parentWindow.convertToScreen(searchField.frame)
-            var origin = rect.origin
-            origin.y -= 5
+//            let rect = parentWindow.convertToScreen(searchField.frame)
+//            var origin = rect.origin
+//            origin.y -= 5
+//
+//            suggesttionsWindow.setFrameTopLeftPoint(origin)
             
-            suggesttionsWindow.setFrameTopLeftPoint(origin)
+            var rect = parentWindow.frame
+            rect.origin.y += rect.size.height
+            rect.origin.x += 77
+            rect.origin.y -= 42
+            
+            suggesttionsWindow.setFrameTopLeftPoint(rect.origin)
+            
             parentWindow.addChildWindow(suggesttionsWindow, ordered: .above)
             
             suggestionsVC.url = str
