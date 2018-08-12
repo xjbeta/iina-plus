@@ -23,14 +23,14 @@ class MainMenu: NSObject {
             }
         }
         
-        if menuItem.action == #selector(reloadLiveStatus) {
+        if menuItem.action == #selector(reloadMainWindow) {
             return NSApp.keyWindow?.windowController is MainWindowController
         }
         return false
     }
     
-    @IBAction func reloadLiveStatus(_ sender: Any) {
-        NotificationCenter.default.post(name: .reloadLiveStatus, object: nil)
+    @IBAction func reloadMainWindow(_ sender: Any) {
+        NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
     }
     
     @IBAction func undo(_ sender: Any) {

@@ -13,6 +13,10 @@ class PreferencesWindowController: NSWindowController {
     override func windowDidLoad() {
         super.windowDidLoad()
         window?.isMovableByWindowBackground = true
+        window?.backgroundColor = .customHighlightColor
+        if let preferencesTabViewController = contentViewController as? PreferencesTabViewController {
+            preferencesTabViewController.autoResizeWindow(preferencesTabViewController.tabView.selectedTabViewItem, animate: false)
+        }
     }
 
 }

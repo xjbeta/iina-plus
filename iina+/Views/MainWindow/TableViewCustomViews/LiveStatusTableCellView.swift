@@ -25,13 +25,14 @@ class LiveStatusTableCellView: NSTableCellView {
         super.draw(dirtyRect)
 
         let selectionRect = NSInsetRect(bounds, 0, 0)
-        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 6, yRadius: 6)
+        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
         if isSelected {
-            NSColor.selectedControlColor.setFill()
+            NSColor.customHighlightColor.setFill()
         } else {
             NSColor.white.setFill()
         }
         selectionPath.fill()
+        
     }
     
     func resetInfo() {
@@ -47,6 +48,17 @@ class LiveStatusTableCellView: NSTableCellView {
             self.nameTextField.stringValue = info.name
             self.userCoverImageView.image = info.userCover
             self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+        }
+    }
+    
+    func setErrorInfo(_ str: String) {
+        DispatchQueue.main.async {
+            if self.userCoverImageView.image == nil {
+                self.titleTextField.stringValue = str
+                self.userCoverImageView.image = nil
+                self.nameTextField.stringValue = ""
+            }
+            self.liveStatusImageView.image = NSImage(named: "NSStatusNone")
         }
     }
     
@@ -66,7 +78,7 @@ class LiveStatusTableCellView: NSTableCellView {
 }
 
 extension NSColor {
-    public class var customBackgroundColor: NSColor {
-        return NSColor(calibratedRed: 0.97, green: 0.95, blue: 0.94, alpha: 1)
+    public class var customHighlightColor: NSColor {
+        return NSColor(red:0.49, green:0.70, blue:0.89, alpha:1.00)
     }
 }

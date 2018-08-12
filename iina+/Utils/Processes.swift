@@ -77,18 +77,36 @@ class Processes: NSObject {
         }
     }
     
-    func openWithPlayer(_ url: String, title: String) {
+    enum PlayerOptions {
+        case douyu, bilibili, withoutYtdl, none
+    }
+    
+    func openWithPlayer(_ urls: [String], title: String, options: PlayerOptions) {
         let task = Process()
         let pipe = Pipe()
-//        task.standardOutput = pipe
         task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
         
-        if url.contains("douyu") {
+        switch options {
+        case .douyu:
             mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
-                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))"])
+                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))",
+                                        MPVOption.ProgramBehavior.noYtdl])
+        case .bilibili:
+            mpvArgs.append(contentsOf: [MPVOption.ProgramBehavior.noYtdl,
+                                        "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+        case .withoutYtdl:
+            mpvArgs.append(MPVOption.ProgramBehavior.noYtdl)
+        case .none: break
         }
         
+        let mergeWithEdl = true
+        if !mergeWithEdl {
+            if urls.count > 1 {
+                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+            }
+        }
+
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
@@ -97,18 +115,34 @@ class Processes: NSObject {
             }
         case .mpv:
             task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
-            mpvArgs.append(MPVOption.Terminal.quiet)
+            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
             mpvArgs = mpvArgs.map {
                 "--" + $0
             }
         }
-        mpvArgs.append(url)
+        if urls.count == 1 {
+            mpvArgs.append(urls.first ?? "")
+        } else if urls.count > 1 {
+            if mergeWithEdl {
+                var edlString = urls.reduce(String()) { result, url in
+                    var re = result
+                    re += "%\(url.count)%\(url)"
+                    print(url)
+                    return re
+                }
+                edlString = "edl://" + edlString
+                
+                mpvArgs.append(edlString)
+            } else {
+                mpvArgs.append(contentsOf: urls)
+            }
+
+        }
+        
         task.arguments = mpvArgs
         task.launch()
         
     }
-    
-
 }
 
 private extension Processes {

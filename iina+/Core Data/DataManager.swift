@@ -58,15 +58,5 @@ class DataManager: NSObject {
         }        
         try? context.save()
     }
-    
-    func checkURL(_ url: String) -> Bool {
-        do {
-            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            let matches = detector.matches(in: url, options: [], range: NSRange(location: 0, length: url.utf16.count))
-            return matches.count == 1
-        } catch {
-            return false
-        }
-    }
 
 }
