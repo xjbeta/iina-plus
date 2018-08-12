@@ -17,7 +17,7 @@ class WaitingTableCellView: NSTableCellView {
         super.draw(dirtyRect)
         
         let selectionRect = NSInsetRect(bounds, 0, 0)
-        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 6, yRadius: 6)
+        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
         NSColor.white.setFill()
         selectionPath.fill()
     }
