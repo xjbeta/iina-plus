@@ -1,19 +1,22 @@
 //
-//  BilibiliCardTableCellView.swift
+//  MainTabView.swift
 //  iina+
 //
-//  Created by xjbeta on 2018/8/8.
+//  Created by xjbeta on 2018/8/11.
 //  Copyright © 2018 xjbeta. All rights reserved.
 //
 
 import Cocoa
 
-class BilibiliCardTableCellView: NSTableCellView {
+class MainTabView: NSTabView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-//        imageView
+
         // Drawing code here.
     }
     
+    override var mouseDownCanMoveWindow: Bool {
+        return true
+    }
 }

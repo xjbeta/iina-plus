@@ -39,7 +39,8 @@ struct Stream: Unmarshaling {
     
     init(object: MarshaledObject) throws {
         container = try object.value(for: "container")
-        src = try object.value(for: "src")
+        let srcArray: [String]? = try? object.value(for: "src")
+        src = srcArray ?? []
         url = try? object.value(for: "url")
     }
 }

@@ -45,6 +45,7 @@ class BilibiliViewController: NSViewController {
         if let vc = segue.destinationController as? BilibiliLoginViewController {
             vc.dismiss = {
                 self.dismiss(vc)
+                self.initStatus()
             }
         }
     }

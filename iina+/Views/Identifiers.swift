@@ -19,15 +19,20 @@ extension NSStoryboard.SceneIdentifier {
 }
 
 extension NSUserInterfaceItemIdentifier {
-    static let suggestionsTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SuggestionsTableCell")
-    static let waitingTableCell = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCell")
-    static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCell")
-    static let liveUrlTableCell = NSUserInterfaceItemIdentifier(rawValue: "LiveUrlTableCell")
-    static let bilibiliCardTableCell = NSUserInterfaceItemIdentifier(rawValue: "BilibiliCardTableCell")
+    static let suggestionsTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SuggestionsTableCellView")
+    static let waitingTableCellView = NSUserInterfaceItemIdentifier(rawValue: "WaitingTableCellView")
+    static let liveStatusTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveStatusTableCellView")
+    static let liveUrlTableCellView = NSUserInterfaceItemIdentifier(rawValue: "LiveUrlTableCellView")
+    static let bilibiliCardTableCellView = NSUserInterfaceItemIdentifier(rawValue: "BilibiliCardTableCellView")
+    static let sidebarTableCellView = NSUserInterfaceItemIdentifier(rawValue: "SidebarTableCellView")
     
     
 }
 
 extension Notification.Name {
     static let reloadMainWindowTableView = Notification.Name("com.xjbeta.iina+.ReloadMainWindowTableView")
+    static let sideBarSelectionChanged = Notification.Name("com.xjbeta.iina+.SideBarSelectionChanged")
+    static let startSearch = Notification.Name("com.xjbeta.iina+.StartSearch")
+    static let progressStatusChanged = Notification.Name("com.xjbeta.iina+.ProgressStatusChanged")
+    static let biliStatusChanged = Notification.Name("com.xjbeta.iina+.BiliStatusChanged")
 }

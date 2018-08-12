@@ -61,6 +61,7 @@ class Bilibili: NSObject {
                 if let error = response.error { throw error }
                 let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                 let isLogin: Bool = try json.value(for: "data.isLogin")
+                NotificationCenter.default.post(name: .biliStatusChanged, object: nil, userInfo: ["isLogin": isLogin])
                 isLoginBlock?(isLogin)
                 if isLogin {
                     let name: String = try json.value(for: "data.uname")

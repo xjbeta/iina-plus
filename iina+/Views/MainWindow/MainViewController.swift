@@ -28,15 +28,12 @@ class MainViewController: NSViewController {
     @IBAction func sendURL(_ sender: Any) {
         if bookmarkTableView.selectedRow != -1 {
             let url = dataManager.requestData()[bookmarkTableView.selectedRow].url
-            mainWindowController.searchField.stringValue = url
-            mainWindowController.searchField.becomeFirstResponder()
-            mainWindowController.startSearch(self)
+            searchField.stringValue = url
+            searchField.becomeFirstResponder()
+            startSearch(self)
         }
     }
     
-    @IBAction func hideSuggestions(_ sender: Any) {
-        mainWindowController.suggestionsWindowController.cancelSuggestions()
-    }
     
     @IBAction func deleteBookmark(_ sender: Any) {
         if let index = bookmarkTableView.selectedIndexs().first {
@@ -49,6 +46,13 @@ class MainViewController: NSViewController {
         performSegue(withIdentifier: NSStoryboardSegue.Identifier("showAddBookmarkViewController"), sender: nil)
     }
     
+    let dataManager = DataManager()
+    required init?(coder: NSCoder) {
+        bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+        bookmarks.undoManager = UndoManager()
+        super.init(coder: coder)
+    }
+    
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
@@ -57,18 +61,92 @@ class MainViewController: NSViewController {
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
             let aid = bilibiliCards[bilibiliTableView.selectedRow].aid
-            mainWindowController.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
-            mainWindowController.searchField.becomeFirstResponder()
-            mainWindowController.startSearch(self)
+            searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+            searchField.becomeFirstResponder()
+            startSearch(self)
         }
     }
     
-    let dataManager = DataManager()
+    @IBOutlet weak var searchField: NSSearchField!
+    @IBAction func startSearch(_ sender: Any) {
+        let group = DispatchGroup()
+        group.enter()
+        progressStatusChanged(true)
+        let str = searchField.stringValue
+        guard str != "", str.isUrl else {
+            return
+        }
+        yougetResult = nil
+        isSearching = true
+        
+        NotificationCenter.default.post(name: .startSearch, object: nil)
+        
+        Processes.shared.decodeURL(str, { obj in
+            DispatchQueue.main.async {
+                self.yougetResult = obj
+                group.leave()
+            }
+        }) { error in
+            DispatchQueue.main.async {
+                if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                    view.setStatus(.error)
+                }
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            self.progressStatusChanged(false)
+        }
+    }
     
-    required init?(coder: NSCoder) {
-        bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
-        bookmarks.undoManager = UndoManager()
-        super.init(coder: coder)
+    @IBOutlet weak var suggestionsTableView: NSTableView!
+    
+    var isSearching = false {
+        didSet {
+            suggestionsTableView.reloadData()
+        }
+    }
+    
+    var yougetResult: YouGetJSON? = nil {
+        didSet {
+            suggestionsTableView.reloadData()
+        }
+    }
+    
+    @IBAction func openSelectedSuggestion(_ sender: Any) {
+        let row = suggestionsTableView.selectedRow
+        guard row != -1 else {
+            yougetResult = nil
+            isSearching = false
+            return
+        }
+        if let key = yougetResult?.streams.keys.sorted()[row],
+            let stream = yougetResult?.streams[key] {
+            var urlStr: [String] = []
+            if let videoUrl = stream.url {
+                urlStr = [videoUrl]
+            } else {
+                urlStr = stream.src
+            }
+            
+            if let host = URL(string: searchField.stringValue)?.host {
+                let title = yougetResult?.title ?? ""
+                switch LiveSupportList(raw: host) {
+                case .douyu:
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
+                case .bilibili, .huya, .longzhu, .panda, .pandaXingYan, .quanmin:
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+                case .unsupported:
+                    if host == "www.bilibili.com" {
+                        Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+                    } else {
+                        Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
+                    }
+                }
+            }
+        }
+        isSearching = false
+        yougetResult = nil
     }
     
     override func viewDidLoad() {
@@ -79,19 +157,27 @@ class MainViewController: NSViewController {
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
-        
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(scrollViewDidScroll(_:)),
-            name: NSScrollView.didLiveScrollNotification,
-            object: bilibiliTableView.enclosingScrollView
-        )
+        NotificationCenter.default.addObserver(forName: .sideBarSelectionChanged, object: nil, queue: .main) {
+            if let userInfo = $0.userInfo as? [String: String],
+                let str = userInfo["selectedItem"],
+                let item = SidebarItem(raw: str) {
+                switch item {
+                case .live:
+                    self.mainTabView.selectTabViewItem(at: 0)
+                case .bilibili:
+                    self.mainTabView.selectTabViewItem(at: 1)
+                case .search:
+                    self.mainTabView.selectTabViewItem(at: 2)
+                default: break
+                }
+            }
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
     }
     
     
     
-    @objc dynamic var canLoadMoreBilibiliCards = true
+    var canLoadMoreBilibiliCards = true
     
     @objc func scrollViewDidScroll(_ notification: Notification) {
         guard canLoadMoreBilibiliCards else { return }
@@ -109,10 +195,6 @@ class MainViewController: NSViewController {
         didSet {
         // Update the view, if already loaded.
         }
-    }
-    
-    override func mouseDown(with event: NSEvent) {
-        mainWindowController.suggestionsWindowController.cancelSuggestions()
     }
     
     @objc func reloadTableView() {
@@ -138,7 +220,6 @@ class MainViewController: NSViewController {
         var dynamicID = -1
         let group = DispatchGroup()
         
-        
         switch action {
         case .history:
             dynamicID = bilibiliCards.last?.dynamicId ?? -1
@@ -148,6 +229,7 @@ class MainViewController: NSViewController {
         }
         
         canLoadMoreBilibiliCards = false
+        progressStatusChanged(!canLoadMoreBilibiliCards)
         group.enter()
         bilibili.dynamicList(action, dynamicID, { cards in
             DispatchQueue.main.async {
@@ -172,9 +254,15 @@ class MainViewController: NSViewController {
         }
         group.notify(queue: .main) {
             self.canLoadMoreBilibiliCards = true
+            self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
         }
     }
     
+    func progressStatusChanged(_ inProgress: Bool) {
+        NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
+    }
+    
+
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
@@ -184,6 +272,12 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             return dataManager.requestData().count
         case bilibiliTableView:
             return tableView.numberOfRows
+        case suggestionsTableView:
+            if let obj = yougetResult {
+                return obj.streams.count
+            } else if isSearching {
+                return 1
+            }
         default:
             break
         }
@@ -204,6 +298,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             }
         case bilibiliTableView:
             return tableView.rowHeight
+        case suggestionsTableView:
+            return 30
         default:
             break
         }
@@ -217,7 +313,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             if let url = URL(string: str) {
                 switch LiveSupportList(raw: url.host) {
                 case .unsupported:
-                    if let view = tableView.makeView(withIdentifier: .liveUrlTableCell, owner: nil) as? NSTableCellView {
+                    if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
                         view.textField?.stringValue = str
                         return view
                     }
@@ -239,8 +335,20 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 }
             }
         case bilibiliTableView:
-            if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCell, owner: nil) as? BilibiliCardTableCellView {
-                            return view
+            if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
+                return view
+            }
+        case suggestionsTableView:
+            if let obj = yougetResult {
+                if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
+                    view.textField?.stringValue = obj.streams.keys.sorted()[row]
+                    return view
+                }
+            } else {
+                if let view = tableView.makeView(withIdentifier: .waitingTableCellView, owner: self) as? WaitingTableCellView {
+                    view.setStatus(.waiting)
+                    return view
+                }
             }
         default:
             break
@@ -249,7 +357,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
-        return tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("LiveStatusTableRowView"), owner: self) as? LiveStatusTableRowView
+        return tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("MainWindowTableRowView"), owner: self) as? MainWindowTableRowView
         
     }
     

@@ -25,13 +25,14 @@ class LiveStatusTableCellView: NSTableCellView {
         super.draw(dirtyRect)
 
         let selectionRect = NSInsetRect(bounds, 0, 0)
-        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 6, yRadius: 6)
+        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
         if isSelected {
             NSColor.customHighlightColor.setFill()
         } else {
             NSColor.white.setFill()
         }
         selectionPath.fill()
+        
     }
     
     func resetInfo() {
@@ -78,6 +79,6 @@ class LiveStatusTableCellView: NSTableCellView {
 
 extension NSColor {
     public class var customHighlightColor: NSColor {
-        return NSColor(calibratedRed: 0.59, green: 0.75, blue: 0.99, alpha: 1)
+        return NSColor(red:0.49, green:0.70, blue:0.89, alpha:1.00)
     }
 }
