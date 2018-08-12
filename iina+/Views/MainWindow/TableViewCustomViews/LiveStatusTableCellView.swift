@@ -79,6 +79,6 @@ class LiveStatusTableCellView: NSTableCellView {
 
 extension NSColor {
     public class var customHighlightColor: NSColor {
-        return NSColor(red:0.49, green:0.70, blue:0.89, alpha:1.00)
+        return NSColor(red:0.75, green:0.89, blue:0.99, alpha:1.00)
     }
 }
