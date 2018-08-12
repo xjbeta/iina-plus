@@ -24,7 +24,23 @@ class MainMenu: NSObject {
         }
         
         if menuItem.action == #selector(reloadMainWindow) {
-            return NSApp.keyWindow?.windowController is MainWindowController
+            if let splitViewController = NSApp.keyWindow?.contentViewController as? NSSplitViewController,
+                splitViewController.splitViewItems.count > 1,
+                let mainViewController = splitViewController.splitViewItems[1].viewController as? MainViewController {
+                switch mainViewController.mainTabViewSelectedIndex {
+                case 0:
+                    menuItem.title = "Reload Live Status"
+                    return true
+                case 1:
+                    menuItem.title = "Reload Bilibili List"
+                    return true
+                default: break
+                }   
+            }
+        }
+        
+        if menuItem.action == #selector(help) {
+            return true
         }
         return false
     }
@@ -42,6 +58,11 @@ class MainMenu: NSObject {
     @IBAction func redo(_ sender: Any) {
         if let appDelegate = NSApp.delegate as? AppDelegate {
             appDelegate.persistentContainer.viewContext.redo()
+        }
+    }
+    @IBAction func help(_ sender: Any) {
+        if let url = URL(string: "https://github.com/xjbeta/iina-plus") {
+            NSWorkspace.shared.open(url)
         }
     }
     

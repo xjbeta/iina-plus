@@ -128,12 +128,12 @@
                                     <items>
                                         <menuItem title="Undo" keyEquivalent="z" id="dRJ-4n-Yzg">
                                             <connections>
-                                                <action selector="reloadMainWindow:" target="XfU-aw-sKA" id="SBj-pe-RGV"/>
+                                                <action selector="undo:" target="XfU-aw-sKA" id="oDJ-bV-OCi"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Redo" keyEquivalent="Z" id="6dh-zS-Vam">
                                             <connections>
-                                                <action selector="reloadMainWindow:" target="XfU-aw-sKA" id="nfz-Bz-sfD"/>
+                                                <action selector="redo:" target="XfU-aw-sKA" id="x7y-Bm-Fwv"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="WRV-NI-Exz"/>
@@ -222,7 +222,7 @@
                                     <items>
                                         <menuItem title="iina+ Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                             <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
+                                                <action selector="help:" target="XfU-aw-sKA" id="aAD-oX-DIu"/>
                                             </connections>
                                         </menuItem>
                                     </items>
