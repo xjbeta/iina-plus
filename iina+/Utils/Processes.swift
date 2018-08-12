@@ -91,12 +91,12 @@ class Processes: NSObject {
         case .douyu:
             mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
                                         "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))",
-                                        MPVOption.ProgramBehavior.noYtdl])
+                                        "\(MPVOption.ProgramBehavior.ytdl)=no"])
         case .bilibili:
-            mpvArgs.append(contentsOf: [MPVOption.ProgramBehavior.noYtdl,
+            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
                                         "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
         case .withoutYtdl:
-            mpvArgs.append(MPVOption.ProgramBehavior.noYtdl)
+            mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
         case .none: break
         }
         
