@@ -291,7 +291,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             if let url = URL(string: str) {
                 switch LiveSupportList(raw: url.host) {
                 case .unsupported:
-                    return 17
+                    return 20
                 default:
                     return 55
                 }

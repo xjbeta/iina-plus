@@ -18,6 +18,8 @@ class MainWindowTableRowView: NSTableRowView {
         didSet {
             if let cell = subviews.first as? LiveStatusTableCellView {
                 cell.isSelected = isSelected
+            } else if let cell = subviews.first as? LiveUrlTableCellView {
+                cell.isSelected = isSelected
             } else if let cell = subviews.first as? BilibiliCardTableCellView {
                 cell.isSelected = isSelected
             } else if let cell = subviews.first as? SuggestionsTableCellView {
