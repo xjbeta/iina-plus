@@ -102,8 +102,7 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
             }) { re in
                 do {
                     let _ = try re()
-                } catch let error {
-                    print(error)
+                } catch _ {
                     DispatchQueue.main.async {
                         self.tabView.selectTabViewItem(at: 1)
                     }
@@ -116,7 +115,7 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nserr = error as NSError
         if nserr.code == -1022 {
-            print("NSURLErrorAppTransportSecurityRequiresSecureConnection")
+            Logger.log("NSURLErrorAppTransportSecurityRequiresSecureConnection")
         } else if let err = error as? URLError {
             switch(err.code) {
             case .cancelled:
@@ -125,7 +124,7 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
                 tabView.selectTabViewItem(at: 1)
             default:
                 tabView.selectTabViewItem(at: 1)
-                print("error code: " + String(describing: err.code) + "  does not fall under known failures")
+                Logger.log("Error code: " + String(describing: err.code) + "  does not fall under known failures")
             }
         }
     }

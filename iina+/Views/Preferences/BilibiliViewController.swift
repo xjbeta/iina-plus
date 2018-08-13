@@ -19,7 +19,7 @@ class BilibiliViewController: NSViewController {
             do {
                 let _ = try re()
             } catch let error {
-                print(error)
+                Logger.log("Logout bilibili error: \(error)")
                 self.selectTabViewItem(.error)
             }
         }
@@ -66,7 +66,7 @@ class BilibiliViewController: NSViewController {
             do {
                 let _ = try re()
             } catch let error {
-                print(error)
+                Logger.log("Init bilibili status error: \(error)")
                 self.selectTabViewItem(.error)
             }
         }

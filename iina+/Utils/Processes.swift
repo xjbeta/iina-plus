@@ -69,9 +69,9 @@ class Processes: NSObject {
                 block(re)
             } catch let er {
                 error(er)
-                print("json error: \(er)")
+                Logger.log("JSON decode error: \(er)")
                 if let str = String(data: data, encoding: .utf8) {
-                    print(str)
+                    Logger.log("JSON string: \(str)")
                 }
             }
         }
@@ -137,7 +137,7 @@ class Processes: NSObject {
             }
 
         }
-        
+        Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
         
@@ -171,7 +171,7 @@ private extension Processes {
                     .www.douyu.com    TRUE    /    FALSE    1535865771    acf_did    \(didStr)
                     """
                 } catch let error {
-                    print(error)
+                    Logger.log("DouYu cookies error: \(error)")
                 }
                 httpSemaphore.signal()
             }

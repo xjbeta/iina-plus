@@ -248,7 +248,7 @@ class MainViewController: NSViewController {
             do {
                 let _ = try re()
             } catch let error {
-                print(error)
+                Logger.log("Get bilibili dynamicList error: \(error)")
                 group.leave()
             }
         }
@@ -326,7 +326,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                             do {
                                 let _ = try re()
                             } catch let error {
-                                print(error)
+                                Logger.log("Get live status error: \(error)")
                                 view.setErrorInfo(str)
                             }
                         }
