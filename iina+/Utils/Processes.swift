@@ -57,6 +57,8 @@ class Processes: NSObject {
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
         
+        Logger.log(url)
+        
         decodeTask?.terminationHandler = { _ in
             guard self.decodeTask?.terminationReason != .uncaughtSignal else {
                 return
