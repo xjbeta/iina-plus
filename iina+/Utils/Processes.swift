@@ -126,8 +126,7 @@ class Processes: NSObject {
             if mergeWithEdl {
                 var edlString = urls.reduce(String()) { result, url in
                     var re = result
-                    re += "%\(url.count)%\(url)"
-                    print(url)
+                    re += "%\(url.count)%\(url);"
                     return re
                 }
                 edlString = "edl://" + edlString
