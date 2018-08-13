@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class LiveStatusTableRowView: NSTableRowView {
+class MainWindowTableRowView: NSTableRowView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -17,6 +17,12 @@ class LiveStatusTableRowView: NSTableRowView {
     override var isSelected: Bool {
         didSet {
             if let cell = subviews.first as? LiveStatusTableCellView {
+                cell.isSelected = isSelected
+            } else if let cell = subviews.first as? LiveUrlTableCellView {
+                cell.isSelected = isSelected
+            } else if let cell = subviews.first as? BilibiliCardTableCellView {
+                cell.isSelected = isSelected
+            } else if let cell = subviews.first as? SuggestionsTableCellView {
                 cell.isSelected = isSelected
             }
         }

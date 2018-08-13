@@ -12,12 +12,15 @@ class WaitingTableCellView: NSTableCellView {
 
     @IBOutlet weak var waitProgressIndicator: NSProgressIndicator!
     @IBOutlet weak var errorInfoTextField: NSTextField!
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-
-        // Drawing code here.
+        
+        let selectionRect = NSInsetRect(bounds, 0, 0)
+        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
+        NSColor.white.setFill()
+        selectionPath.fill()
     }
-    
     enum Status {
         case waiting, error
     }

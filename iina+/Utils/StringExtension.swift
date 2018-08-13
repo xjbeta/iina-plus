@@ -1,46 +1,46 @@
 //
-//  SubString.swift
-//  Aria2D
+//  StringExtension.swift
+//  iina+
 //
-//  Created by xjbeta on 2016/12/17.
-//  Copyright © 2016年 xjbeta. All rights reserved.
+//  Created by xjbeta on 2018/8/10.
+//  Copyright © 2018 xjbeta. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 extension String {
-	func subString(from startString: String, to endString: String) -> String {
+    func subString(from startString: String, to endString: String) -> String {
         var str = self
         if let startIndex = self.range(of: startString)?.upperBound {
             str.removeSubrange(str.startIndex ..< startIndex)
             if let endIndex = str.range(of: endString)?.lowerBound {
                 str.removeSubrange(endIndex ..< str.endIndex)
-				return str
-			}
-		}
-		return ""
-	}
-	
-	func subString(from startString: String) -> String {
+                return str
+            }
+        }
+        return ""
+    }
+    
+    func subString(from startString: String) -> String {
         var str = self
         if let startIndex = self.range(of: startString)?.upperBound {
             str.removeSubrange(self.startIndex ..< startIndex)
             return str
-		}
-		return ""
-	}
-	
-	
-	func delete(between startString: String, and endString: String) -> String {
+        }
+        return ""
+    }
+    
+    
+    func delete(between startString: String, and endString: String) -> String {
         var str = self
         if let start = self.range(of: startString), let end = self.range(of: endString) {
             str.removeSubrange(start.upperBound ..< end.lowerBound)
             return str
-		}
-		return ""
-	}
+        }
+        return ""
+    }
     
-//MARK: - String Path
+    //MARK: - String Path
     var pathComponents: [String] {
         get {
             return (self.standardizingPath as NSString).pathComponents
@@ -85,5 +85,16 @@ extension String {
         pathComponents.removeLast()
         return pathComponents == url.pathComponents
     }
-}
 
+    var isUrl: Bool {
+        get {
+            do {
+                let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+                let matches = detector.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+                return matches.count == 1
+            } catch {
+                return false
+            }
+        }
+    }
+}

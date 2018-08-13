@@ -13,6 +13,12 @@ import SwiftHTTP
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        Logger.log("App did finish launch")
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
+        Logger.log("App Version \(version) (Build \(build))")
+        Logger.log("macOS " + ProcessInfo().operatingSystemVersionString)
+        
         HTTP.globalRequest { req in
             req.timeoutInterval = 1.5
             req.allHTTPHeaderFields = ["User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15"]
@@ -27,8 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
             for window in sender.windows {
-                if window.className == "NSWindow",
-                    !(window.windowController is SuggestionsWindowController) {
+                if window.className == "NSWindow" {
                     window.makeKeyAndOrderFront(self)
                 }
             }

@@ -184,12 +184,12 @@ struct YiZhiBo: Unmarshaling, LiveInfo {
     }
 }
 
-typealias LiveInfoCallback = () throws -> Bool
+typealias HTTPErrorCallback = () throws -> Bool
 
 extension MainViewController {
     func getInfo(_ url: URL,
                  _ completion: @escaping ((LiveInfo) -> Void),
-                 _ error: @escaping ((LiveInfoCallback) -> Void)) {
+                 _ error: @escaping ((HTTPErrorCallback) -> Void)) {
         
         let site = LiveSupportList(raw:url.host)
         let roomID = url.lastPathComponent

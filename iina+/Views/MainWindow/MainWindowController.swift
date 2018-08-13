@@ -9,26 +9,18 @@
 import Cocoa
 
 class MainWindowController: NSWindowController, NSWindowDelegate {
-
+    
     override func windowDidLoad() {
         super.windowDidLoad()
         window?.isMovableByWindowBackground = true
+        window?.backgroundColor = NSColor(red:0.86, green:0.89, blue:0.94, alpha:1.00)
         
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
-        NotificationCenter.default.post(name: .reloadLiveStatus, object: nil)
+        NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
     }
     
-    func windowDidResignMain(_ notification: Notification) {
-        if let view = window?.contentViewController as? MainViewController {
-            view.suggestionsWindowController.cancelSuggestions()
-        }
-    }
-    
-    func windowWillStartLiveResize(_ notification: Notification) {
-        if let view = window?.contentViewController as? MainViewController {
-            view.suggestionsWindowController.cancelSuggestions()
-        }
-    }
 }
+
+

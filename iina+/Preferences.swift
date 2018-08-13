@@ -35,6 +35,24 @@ class Preferences: NSObject {
         }
     }
     
+    var enableLogging: Bool {
+        get {
+            return defaults(.enableLogging) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .enableLogging)
+        }
+    }
+    
+    var logLevel: Int {
+        get {
+            return defaults(.logLevel) as? Int ?? Logger.Level.debug.rawValue
+        }
+        set {
+            defaultsSet(newValue, forKey: .logLevel)
+        }
+    }
+    
 }
 
 private extension Preferences {
@@ -51,4 +69,6 @@ private extension Preferences {
 enum PreferenceKeys: String {
     case livePlayer
     case liveDecoder
+    case enableLogging
+    case logLevel
 }

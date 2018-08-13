@@ -69,26 +69,44 @@ class Processes: NSObject {
                 block(re)
             } catch let er {
                 error(er)
-                print("json error: \(er)")
+                Logger.log("JSON decode error: \(er)")
                 if let str = String(data: data, encoding: .utf8) {
-                    print(str)
+                    Logger.log("JSON string: \(str)")
                 }
             }
         }
     }
     
-    func openWithPlayer(_ url: String, title: String) {
+    enum PlayerOptions {
+        case douyu, bilibili, withoutYtdl, none
+    }
+    
+    func openWithPlayer(_ urls: [String], title: String, options: PlayerOptions) {
         let task = Process()
         let pipe = Pipe()
-//        task.standardOutput = pipe
         task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
         
-        if url.contains("douyu") {
+        switch options {
+        case .douyu:
             mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
-                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))"])
+                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))",
+                                        "\(MPVOption.ProgramBehavior.ytdl)=no"])
+        case .bilibili:
+            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
+                                        "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+        case .withoutYtdl:
+            mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
+        case .none: break
         }
         
+        let mergeWithEdl = true
+        if !mergeWithEdl {
+            if urls.count > 1 {
+                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+            }
+        }
+
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
@@ -97,18 +115,33 @@ class Processes: NSObject {
             }
         case .mpv:
             task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
-            mpvArgs.append(MPVOption.Terminal.quiet)
+            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
             mpvArgs = mpvArgs.map {
                 "--" + $0
             }
         }
-        mpvArgs.append(url)
+        if urls.count == 1 {
+            mpvArgs.append(urls.first ?? "")
+        } else if urls.count > 1 {
+            if mergeWithEdl {
+                var edlString = urls.reduce(String()) { result, url in
+                    var re = result
+                    re += "%\(url.count)%\(url);"
+                    return re
+                }
+                edlString = "edl://" + edlString
+                
+                mpvArgs.append(edlString)
+            } else {
+                mpvArgs.append(contentsOf: urls)
+            }
+
+        }
+        Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
         
     }
-    
-
 }
 
 private extension Processes {
@@ -138,7 +171,7 @@ private extension Processes {
                     .www.douyu.com    TRUE    /    FALSE    1535865771    acf_did    \(didStr)
                     """
                 } catch let error {
-                    print(error)
+                    Logger.log("DouYu cookies error: \(error)")
                 }
                 httpSemaphore.signal()
             }
