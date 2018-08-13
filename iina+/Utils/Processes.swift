@@ -174,9 +174,10 @@ private extension Processes {
                     str = str?.subString(from: "(", to: ")")
                     let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
                     let didStr: String = try json.value(for: "data.did")
+                    let date = Int(Date().timeIntervalSince1970)
                     cookiesString = """
-                    ..douyu.com    TRUE    /    FALSE    1535865698    dy_did    \(didStr)
-                    .www.douyu.com    TRUE    /    FALSE    1535865771    acf_did    \(didStr)
+                    ..douyu.com    TRUE    /    FALSE    \(date)    dy_did    \(didStr)
+                    .www.douyu.com    TRUE    /    FALSE    \(date)    acf_did    \(didStr)
                     """
                 } catch let error {
                     Logger.log("DouYu cookies error: \(error)")
