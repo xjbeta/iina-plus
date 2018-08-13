@@ -50,7 +50,8 @@ class Processes: NSObject {
         
         decodeTask = Process()
         let pipe = Pipe()
-
+        let errorPipe = Pipe()
+        decodeTask?.standardError = errorPipe
         decodeTask?.standardOutput = pipe
         decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
         decodeTask?.arguments  = ["--json", url]
@@ -73,6 +74,11 @@ class Processes: NSObject {
                 if let str = String(data: data, encoding: .utf8) {
                     Logger.log("JSON string: \(str)")
                 }
+            }
+            
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            if let str = String(data: errorData, encoding: .utf8) {
+                Logger.log("Decode url error info: \(str)")
             }
         }
     }
