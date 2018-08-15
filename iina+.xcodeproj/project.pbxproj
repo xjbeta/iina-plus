@@ -304,6 +304,7 @@
 				01AEC8A520EDFD01001406E8 /* Resources */,
 				010F0F0E20FCC18000F33553 /* Embed Frameworks */,
 				010F0F0F20FCC1D200F33553 /* CopyFiles */,
+				019BFF5D212485B900E715CC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -370,6 +371,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		019BFF5D212485B900E715CC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\nBUILD_NUMBER=`git rev-parse --short HEAD`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		01AEC8A320EDFD01001406E8 /* Sources */ = {
