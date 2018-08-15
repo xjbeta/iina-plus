@@ -15,6 +15,7 @@ class BilibiliCardTableCellView: NSTableCellView {
             needsDisplay = true
         }
     }
+    @IBOutlet weak var imageBoxView: BilibiliCardImageBoxView!
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
