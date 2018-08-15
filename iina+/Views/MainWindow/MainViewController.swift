@@ -336,6 +336,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             }
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
+                view.imageBoxView.aid = bilibiliCards[row].aid
+                view.imageBoxView.pic = bilibiliCards[row].pic
                 return view
             }
         case suggestionsTableView:
