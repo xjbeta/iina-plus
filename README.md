@@ -2,7 +2,7 @@
 
 IINA+ is a tiny macOS application to ?.
 
-![](https://i.imgur.com/wQckfMj.jpg)
+![](https://i.imgur.com/J5EzSPX.png)
 
 Are you a Swift programmer? Then check out [the source](https://github.com/xjbeta/iina-plus) and fork it!
 
@@ -44,5 +44,9 @@ which ykdl
 ```
 carthage bootstrap
 ```
-Open `.xcodeproj` file.
+Open `.xcodeproj` file.w
 
+## Acknowledgements
+- [SwiftHTTP](https://github.com/daltoniam/SwiftHTTP)
+- [Marshal](https://github.com/utahiosmac/Marshal)
+- [iocns from @freepik](https://www.flaticon.com/authors/freepik)
