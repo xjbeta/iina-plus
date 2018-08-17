@@ -22,9 +22,17 @@ class SuggestionsTableCellView: NSTableCellView {
         let selectionRect = NSInsetRect(bounds, 0, 0)
         let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
         if isSelected {
-            NSColor.customHighlightColor.setFill()
+            if #available(OSX 10.14, *) {
+                NSColor.selectedContentBackgroundColor.setFill()
+            } else {
+                NSColor.customHighlightColor.setFill()
+            }
         } else {
-            NSColor.white.setFill()
+            if #available(OSX 10.14, *) {
+                NSColor.unemphasizedSelectedContentBackgroundColor.setFill()
+            } else {
+                NSColor.white.setFill()
+            }
         }
         selectionPath.fill()
     }
