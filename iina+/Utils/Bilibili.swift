@@ -9,7 +9,6 @@
 import Cocoa
 import SwiftHTTP
 import Marshal
-import PromiseKit
 
 @objc(BilibiliCard)
 class BilibiliCard: NSObject, Unmarshaling {
