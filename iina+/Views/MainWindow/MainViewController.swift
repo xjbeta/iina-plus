@@ -198,14 +198,8 @@ class MainViewController: NSViewController {
     }
     
     @objc func reloadTableView() {
-        switch mainTabViewSelectedIndex {
-        case 0:
-            bookmarkTableView.reloadData()
-        case 1:
-            loadBilibiliCards()
-        default:
-            break
-        }
+        bookmarkTableView.reloadData()
+        loadBilibiliCards()
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
