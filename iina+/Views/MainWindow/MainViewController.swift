@@ -71,7 +71,6 @@ class MainViewController: NSViewController {
     @IBAction func startSearch(_ sender: Any) {
         let group = DispatchGroup()
         group.enter()
-        progressStatusChanged(true)
         let str = searchField.stringValue
         guard str != "", str.isUrl else {
             return
@@ -79,6 +78,7 @@ class MainViewController: NSViewController {
         yougetResult = nil
         isSearching = true
         
+        progressStatusChanged(true)
         NotificationCenter.default.post(name: .startSearch, object: nil)
         
         Processes.shared.decodeURL(str, { obj in
