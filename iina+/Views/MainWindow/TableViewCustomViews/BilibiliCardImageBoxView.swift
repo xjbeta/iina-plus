@@ -21,6 +21,12 @@ class BilibiliCardImageBoxView: NSView {
     var progressView: BilibiliCardProgressView? {
         return self.subviews.compactMap { $0 as? BilibiliCardProgressView }.first
     }
+    
+    var timer: DispatchSourceTimer?
+    let timeOut: DispatchTimeInterval = .seconds(1)
+    
+    var previewPercent: Float = 0
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
@@ -30,40 +36,77 @@ class BilibiliCardImageBoxView: NSView {
     override func mouseMoved(with event: NSEvent) {
         let location = convert(event.locationInWindow, from: nil)
         let per = Float(location.x) / Float(frame.width)
-        progressView?.doubleValue = Double(per)
-        if pImages.count > 0 {
-            let index = lroundf(Float(pImages.count - 1) * per)
-            if index != displayedIndex,
-                index <= pImages.count,
-                index >= 0 {
-                imageView?.image = pImages[index]
-                displayedIndex = index
+        previewPercent = per
+        
+        if let view = progressView {
+            if view.isHidden {
+                timer?.schedule(deadline: .now() + timeOut, repeating: 0)
+            } else {
+                updatePreview(.start, per: per)
             }
         }
     }
     
-    
     override func mouseEntered(with event: NSEvent) {
-        if pImages.count == 0 {
-            Bilibili().getPvideo(aid, {
-                self.pImages = $0.pImages
-            }) { re in
-                do {
-                    let _ = try re()
-                } catch let error {
-                    Logger.log("Error when get pImages: \(error)")
-                }
-            }
+        updatePreview(.init🐴)
+        timer = DispatchSource.makeTimerSource(flags: [], queue: .main)
+        timer?.schedule(deadline: .now() + timeOut, repeating: 0)
+        timer?.setEventHandler {
+            self.updatePreview(.start, per: self.previewPercent)
+            self.stopTimer()
         }
-        
-        progressView?.isHidden = false
+        timer?.resume()
     }
     
     override func mouseExited(with event: NSEvent) {
-        progressView?.isHidden = true
-        imageView?.image = pic
-        displayedIndex = -1
+        updatePreview(.stop)
+        stopTimer()
     }
+    
+    func stopTimer() {
+        if timer != nil {
+            timer?.cancel()
+            timer = nil
+        }
+    }
+    
+    enum PreviewStatus {
+        case stop, start, init🐴
+    }
+    
+    func updatePreview(_ status: PreviewStatus, per: Float = 0) {
+        switch status {
+        case .init🐴:
+            if pImages.count == 0 {
+                Bilibili().getPvideo(aid, {
+                    self.pImages = $0.pImages
+                }) { re in
+                    do {
+                        let _ = try re()
+                    } catch let error {
+                        Logger.log("Error when get pImages: \(error)")
+                    }
+                }
+            }
+        case .stop:
+            progressView?.isHidden = true
+            imageView?.image = pic
+            displayedIndex = -1
+        case .start:
+            progressView?.isHidden = false
+            progressView?.doubleValue = Double(per)
+            if pImages.count > 0 {
+                let index = lroundf(Float(pImages.count - 1) * per)
+                if index != displayedIndex,
+                    index <= pImages.count,
+                    index >= 0 {
+                    imageView?.image = pImages[index]
+                    displayedIndex = index
+                }
+            }
+        }
+    }
+    
     
     override func updateTrackingAreas() {
         trackingAreas.forEach {
