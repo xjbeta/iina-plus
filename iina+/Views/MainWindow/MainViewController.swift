@@ -73,6 +73,7 @@ class MainViewController: NSViewController {
                         DispatchQueue.main.async {
                             self.mainTabView.selectTabViewItem(at: 3)
                             selectVideoViewController.videoInfos = infos
+                            selectVideoViewController.card = card
                         }
                     }
                 }) { re in

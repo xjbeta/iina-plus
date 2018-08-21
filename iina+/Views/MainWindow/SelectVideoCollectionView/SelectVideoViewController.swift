@@ -18,6 +18,8 @@ class SelectVideoViewController: NSViewController {
         }
     }
     
+    var card: BilibiliCard? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,9 +36,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         guard let selectVideoItem = item as? SelectVideoCollectionViewItem else {
             return item
         }
-        
         let info = videoInfos[indexPath.item]
-//        selectVideoItem.titleButton.title = "[\(info.page)] \(info.part)"
         selectVideoItem.titleTextField.stringValue = "[\(info.page)] \(info.part)"
         return selectVideoItem
     }
@@ -50,9 +50,14 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
     }
     
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-        if let item = indexPaths.first?.item {
-            if let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
-                view.isSelected = true
+        if let item = indexPaths.first?.item,
+            let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
+            view.isSelected = true
+            if let main = self.parent as? MainViewController, let card = card {
+                main.searchField.stringValue = "https://www.bilibili.com/video/av\(card.aid)/?p=\(videoInfos[item].page)"
+                main.searchField.becomeFirstResponder()
+                main.startSearch(self)
+                view.isSelected = false
             }
         }
     }
