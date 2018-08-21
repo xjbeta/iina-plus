@@ -1489,8 +1489,8 @@ Gw
                                         <collectionView selectable="YES" id="gZ7-Db-xPu">
                                             <rect key="frame" x="0.0" y="0.0" width="340" height="158"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                            <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="eZr-LF-Oct">
-                                                <size key="itemSize" width="120" height="50"/>
+                                            <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="wgO-8a-Pqw">
+                                                <size key="itemSize" width="190" height="70"/>
                                             </collectionViewFlowLayout>
                                             <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <connections>

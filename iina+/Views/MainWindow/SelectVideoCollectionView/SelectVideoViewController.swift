@@ -14,6 +14,24 @@ class SelectVideoViewController: NSViewController {
     
     var videoInfos: [BilibiliSimpleVideoInfo] = [] {
         didSet {
+            if let max = videoInfos.map({ $0.part.count }).max() {
+                var size: NSSize? = nil
+                switch max {
+                case _ where max > 40:
+                    size = NSSize(width: 190, height: 70)
+                case _ where max > 20:
+                    size = NSSize(width: 190, height: 52)
+                case _ where max > 0:
+                    size = NSSize(width: 190, height: 34)
+                default:
+                    break
+                }
+                if let size = size {
+                    let layout = NSCollectionViewFlowLayout()
+                    layout.itemSize = size
+                    collectionView.collectionViewLayout = layout
+                }
+            }
             collectionView.reloadData()
         }
     }
@@ -56,7 +74,9 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             return item
         }
         let info = videoInfos[indexPath.item]
-        selectVideoItem.titleTextField.stringValue = "[\(info.page)] \(info.part)"
+        let infoStr = "[\(info.page)] \(info.part)"
+        selectVideoItem.titleTextField.stringValue = infoStr
+        selectVideoItem.titleTextField.toolTip = infoStr
         return selectVideoItem
     }
     
