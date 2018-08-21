@@ -48,11 +48,10 @@ class BilibiliCardImageBoxView: NSView {
     }
     
     override func mouseEntered(with event: NSEvent) {
-        updatePreview(.init🐴)
         timer = DispatchSource.makeTimerSource(flags: [], queue: .main)
         timer?.schedule(deadline: .now() + timeOut, repeating: 0)
         timer?.setEventHandler {
-            self.updatePreview(.start, per: self.previewPercent)
+            self.updatePreview(.init🐴)
             self.stopTimer()
         }
         timer?.resume()
@@ -78,8 +77,11 @@ class BilibiliCardImageBoxView: NSView {
         switch status {
         case .init🐴:
             if pImages.count == 0 {
-                Bilibili().getPvideo(aid, {
-                    self.pImages = $0.pImages
+                Bilibili().getPvideo(aid, { pvideo in
+                    DispatchQueue.main.async {
+                        self.pImages = pvideo.pImages
+                        self.updatePreview(.start, per: self.previewPercent)
+                    }
                 }) { re in
                     do {
                         let _ = try re()
@@ -87,6 +89,8 @@ class BilibiliCardImageBoxView: NSView {
                         Logger.log("Error when get pImages: \(error)")
                     }
                 }
+            } else {
+                self.updatePreview(.start, per: self.previewPercent)
             }
         case .stop:
             progressView?.isHidden = true
