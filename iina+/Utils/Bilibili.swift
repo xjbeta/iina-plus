@@ -19,6 +19,7 @@ class BilibiliCard: NSObject, Unmarshaling {
     @objc var name: String = ""
     @objc var duration: TimeInterval = 0
     @objc var views: Int = 0
+    @objc var videos: Int = 0
 //    var pubdate = 1533581945
     
     
@@ -42,6 +43,7 @@ class BilibiliCard: NSObject, Unmarshaling {
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")
+            videos = try json.value(for: "videos")
         }
     }
 }
@@ -133,6 +135,17 @@ struct BilibiliPvideo: Unmarshaling {
     }
 }
 
+struct BilibiliSimpleVideoInfo: Unmarshaling {
+    var page: Int = 0
+    var part: String = ""
+    var duration: TimeInterval = 0
+    
+    init(object: MarshaledObject) throws {
+        page = try object.value(for: "page")
+        part = try object.value(for: "part")
+        duration = try object.value(for: "duration")
+    }
+}
 
 class Bilibili: NSObject {
 
@@ -230,6 +243,18 @@ class Bilibili: NSObject {
         }
     }
     
+    func getVideoList(_ aid: Int,
+                      _ block: @escaping (([BilibiliSimpleVideoInfo]) -> Void),
+                      _ error: @escaping ((HTTPErrorCallback) -> Void)) {
+        HTTP.GET("https://api.bilibili.com/x/player/pagelist?aid=\(aid)") { response in
+            error {
+                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
+                block(infos)
+                return false
+            }
+        }
+    }
 }
 
 
