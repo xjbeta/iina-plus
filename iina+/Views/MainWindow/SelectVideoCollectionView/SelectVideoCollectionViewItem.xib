@@ -20,7 +20,7 @@
             <subviews>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QEQ-A6-bdZ">
                     <rect key="frame" x="6" y="8" width="106" height="17"/>
-                    <textFieldCell key="cell" title="Multiline Label" id="5bp-5w-F86">
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" truncatesLastVisibleLine="YES" title="Multiline Label" id="5bp-5w-F86">
                         <font key="font" usesAppearanceFont="YES"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
