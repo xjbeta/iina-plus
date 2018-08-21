@@ -69,13 +69,7 @@ class MainViewController: NSViewController {
                 startSearch(self)
             } else if card.videos > 1 {
                 bilibili.getVideoList(aid, { infos in
-                    if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
-                        DispatchQueue.main.async {
-                            self.mainTabView.selectTabViewItem(at: 3)
-                            selectVideoViewController.videoInfos = infos
-                            selectVideoViewController.card = card
-                        }
-                    }
+                    self.showSelectVideo(aid, infos: infos)
                 }) { re in
                     do {
                         let _ = try re()
@@ -89,8 +83,13 @@ class MainViewController: NSViewController {
     
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
-        let group = DispatchGroup()
-        group.enter()
+        let group: DispatchGroup? = DispatchGroup()
+        let semaphore = DispatchSemaphore(value: 0)
+        group?.notify(queue: .main) {
+            self.progressStatusChanged(false)
+        }
+        
+        group?.enter()
         let str = searchField.stringValue
         guard str != "", str.isUrl else {
             return
@@ -100,22 +99,49 @@ class MainViewController: NSViewController {
         
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .startSearch, object: nil)
+        if let url = URL(string: str),
+            url.host == "www.bilibili.com",
+            url.lastPathComponent.starts(with: "av"),
+            !str.contains("p=") {
+            let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) ?? 0
+            bilibili.getVideoList(aid, { infos in
+                if infos.count > 1 {
+                    self.showSelectVideo(aid, infos: infos)
+                    group?.leave()
+                    self.isSearching = false
+                    semaphore.signal()
+                } else {
+                    semaphore.signal()
+                }
+                
+            }) { re in
+                do {
+                    let _ = try re()
+                } catch let error {
+                    semaphore.signal()
+                    Logger.log("Get video list error: \(error)")
+                }
+            }
+            semaphore.wait()
+        }
+        
+        guard isSearching else {
+            return
+        }
+        
         
         Processes.shared.decodeURL(str, { obj in
             DispatchQueue.main.async {
                 self.yougetResult = obj
-                group.leave()
+                group?.leave()
             }
         }) { error in
             DispatchQueue.main.async {
                 if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
                     view.setStatus(.error)
                 }
-                group.leave()
+                group?.leave()
             }
-        }
-        group.notify(queue: .main) {
-            self.progressStatusChanged(false)
         }
     }
     
@@ -123,7 +149,9 @@ class MainViewController: NSViewController {
     
     var isSearching = false {
         didSet {
-            suggestionsTableView.reloadData()
+            DispatchQueue.main.async {
+                self.suggestionsTableView.reloadData()
+            }
         }
     }
     
@@ -279,6 +307,20 @@ class MainViewController: NSViewController {
     
     func progressStatusChanged(_ inProgress: Bool) {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
+    }
+    
+    func showSelectVideo(_ aid: Int, infos: [BilibiliSimpleVideoInfo]) {
+        if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
+            DispatchQueue.main.async {
+                self.searchField.stringValue = ""
+                selectVideoViewController.videoInfos = infos
+                selectVideoViewController.aid = aid
+                if let item = self.mainTabView.selectedTabViewItem {
+                    selectVideoViewController.oldTabItem = self.mainTabView.indexOfTabViewItem(item)
+                }
+                self.mainTabView.selectTabViewItem(at: 3)
+            }
+        }
     }
 }
 

@@ -18,7 +18,8 @@ class SelectVideoViewController: NSViewController {
         }
     }
     
-    var card: BilibiliCard? = nil
+    var aid: Int = 0
+    var oldTabItem = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,8 +30,11 @@ class SelectVideoViewController: NSViewController {
                     guard main.mainTabView.selectedTabViewItem?.label == "SelectVideos" else {
                         return event
                     }
-                    main.mainTabView.selectTabViewItem(at: 1)
-                    return nil
+                    if self.oldTabItem > 0,
+                        self.oldTabItem < main.mainTabView.tabViewItems.count {
+                        main.mainTabView.selectTabViewItem(at: self.oldTabItem)
+                        return nil
+                    }
                 }
             default:
                 break
@@ -68,8 +72,10 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         if let item = indexPaths.first?.item,
             let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
             view.isSelected = true
-            if let main = self.parent as? MainViewController, let card = card {
-                main.searchField.stringValue = "https://www.bilibili.com/video/av\(card.aid)/?p=\(videoInfos[item].page)"
+            if let main = self.parent as? MainViewController,
+                let searchItem = main.mainTabView.tabViewItems.filter({ $0.label == "Search" }).first {
+                main.mainTabView.selectTabViewItem(searchItem)
+                main.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)/?p=\(videoInfos[item].page)"
                 main.searchField.becomeFirstResponder()
                 main.startSearch(self)
                 view.isSelected = false

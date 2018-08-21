@@ -1336,7 +1336,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <containerView translatesAutoresizingMaskIntoConstraints="NO" id="HDM-Wo-Iow">
-                                                    <rect key="frame" x="20" y="0.0" width="360" height="649"/>
+                                                    <rect key="frame" x="20" y="0.0" width="372" height="649"/>
                                                     <connections>
                                                         <segue destination="8fg-cx-WNn" kind="embed" id="4hn-6v-UXp"/>
                                                     </connections>
@@ -1346,7 +1346,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="HDM-Wo-Iow" secondAttribute="bottom" id="aCk-vk-ZG4"/>
                                                 <constraint firstItem="HDM-Wo-Iow" firstAttribute="top" secondItem="cz5-5j-ukf" secondAttribute="top" id="huf-Ww-FSO"/>
                                                 <constraint firstItem="HDM-Wo-Iow" firstAttribute="leading" secondItem="cz5-5j-ukf" secondAttribute="leading" constant="20" id="mtF-IP-SgR"/>
-                                                <constraint firstAttribute="trailing" secondItem="HDM-Wo-Iow" secondAttribute="trailing" constant="20" id="rjx-MF-nhH"/>
+                                                <constraint firstAttribute="trailing" secondItem="HDM-Wo-Iow" secondAttribute="trailing" constant="8" id="rjx-MF-nhH"/>
                                             </constraints>
                                         </view>
                                     </tabViewItem>
@@ -1499,10 +1499,11 @@ Gw
                                             </connections>
                                         </collectionView>
                                     </subviews>
+                                    <edgeInsets key="contentInsets" left="0.0" right="12" top="20" bottom="20"/>
                                 </clipView>
                                 <edgeInsets key="contentInsets" left="0.0" right="0.0" top="20" bottom="20"/>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="oix-WB-p64">
-                                    <rect key="frame" x="1" y="341" width="338" height="16"/>
+                                    <rect key="frame" x="0.0" y="322" width="332" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lEE-Hx-lFd">
