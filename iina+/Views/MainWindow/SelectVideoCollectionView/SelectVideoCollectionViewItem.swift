@@ -9,7 +9,6 @@
 import Cocoa
 
 class SelectVideoCollectionViewItem: NSCollectionViewItem {
-    @IBOutlet weak var titleButton: NSButton!
     @IBOutlet weak var titleTextField: NSTextField!
     
     override func viewDidLoad() {

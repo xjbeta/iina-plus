@@ -21,12 +21,7 @@ class SelectVideoViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-//        collectionView.register(NSNib.init(nibNamed: "SelectVideoCollectionViewItem", bundle: nil), forItemWithIdentifier: NSUserInterfaceItemIdentifier.init(rawValue: "SelectVideoCollectionViewItem"))
-        
-        
     }
-    
 }
 
 extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionViewDelegate {
@@ -41,16 +36,24 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         }
         
         let info = videoInfos[indexPath.item]
-        selectVideoItem.titleButton.title = "[\(info.page)] \(info.part)"
+//        selectVideoItem.titleButton.title = "[\(info.page)] \(info.part)"
+        selectVideoItem.titleTextField.stringValue = "[\(info.page)] \(info.part)"
         return selectVideoItem
     }
     
+    func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
+        if let item = indexPaths.first?.item {
+            if let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
+                view.isSelected = false
+            }
+        }
+    }
     
-    
-    
-    
-    
-    
-    
-    
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        if let item = indexPaths.first?.item {
+            if let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
+                view.isSelected = true
+            }
+        }
+    }
 }

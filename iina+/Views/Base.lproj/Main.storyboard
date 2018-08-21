@@ -1495,6 +1495,7 @@ Gw
                                             <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <connections>
                                                 <outlet property="dataSource" destination="8fg-cx-WNn" id="qt6-bD-ARu"/>
+                                                <outlet property="delegate" destination="8fg-cx-WNn" id="C0y-8z-0TB"/>
                                             </connections>
                                         </collectionView>
                                     </subviews>
