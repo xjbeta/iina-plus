@@ -57,13 +57,32 @@ class MainViewController: NSViewController {
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Bilibili()
+    @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
-            let aid = bilibiliCards[bilibiliTableView.selectedRow].aid
-            searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
-            searchField.becomeFirstResponder()
-            startSearch(self)
+            let card = bilibiliCards[bilibiliTableView.selectedRow]
+            let aid = card.aid
+            if card.videos == 1 {
+                searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+                searchField.becomeFirstResponder()
+                startSearch(self)
+            } else if card.videos > 1 {
+                bilibili.getVideoList(aid, { infos in
+                    if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
+                        DispatchQueue.main.async {
+                            self.mainTabView.selectTabViewItem(at: 3)
+                            selectVideoViewController.videoInfos = infos
+                        }
+                    }
+                }) { re in
+                    do {
+                        let _ = try re()
+                    } catch let error {
+                        Logger.log("Get video list error: \(error)")
+                    }
+                }
+            }
         }
     }
     

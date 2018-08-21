@@ -1330,6 +1330,26 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
+                                    <tabViewItem label="Item 3" identifier="" id="gnN-wP-ZUv">
+                                        <view key="view" id="cz5-5j-ukf">
+                                            <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <containerView translatesAutoresizingMaskIntoConstraints="NO" id="HDM-Wo-Iow">
+                                                    <rect key="frame" x="20" y="20" width="360" height="609"/>
+                                                    <connections>
+                                                        <segue destination="8fg-cx-WNn" kind="embed" id="4hn-6v-UXp"/>
+                                                    </connections>
+                                                </containerView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="HDM-Wo-Iow" secondAttribute="bottom" constant="20" id="aCk-vk-ZG4"/>
+                                                <constraint firstItem="HDM-Wo-Iow" firstAttribute="top" secondItem="cz5-5j-ukf" secondAttribute="top" constant="20" id="huf-Ww-FSO"/>
+                                                <constraint firstItem="HDM-Wo-Iow" firstAttribute="leading" secondItem="cz5-5j-ukf" secondAttribute="leading" constant="20" id="mtF-IP-SgR"/>
+                                                <constraint firstAttribute="trailing" secondItem="HDM-Wo-Iow" secondAttribute="trailing" constant="20" id="rjx-MF-nhH"/>
+                                            </constraints>
+                                        </view>
+                                    </tabViewItem>
                                 </tabViewItems>
                                 <connections>
                                     <binding destination="XfG-lQ-9wD" name="selectedIndex" keyPath="self.mainTabViewSelectedIndex" id="U1h-Oe-qlZ"/>
@@ -1351,6 +1371,7 @@
                         <outlet property="mainTabView" destination="P2p-GB-s4i" id="Mrh-N7-7wM"/>
                         <outlet property="searchField" destination="VGm-gL-nOm" id="6m3-nY-x0G"/>
                         <outlet property="suggestionsTableView" destination="XaB-Al-kaU" id="zYV-C2-98k"/>
+                        <outlet property="videoInfosContainerView" destination="HDM-Wo-Iow" id="iXu-FM-N3k"/>
                         <segue destination="Rej-VG-aRz" kind="sheet" identifier="showAddBookmarkViewController" id="iRV-tt-3nd"/>
                     </connections>
                 </viewController>
@@ -1449,7 +1470,59 @@ Gw
                 </viewController>
                 <customObject id="O2b-Oy-PT3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1184" y="1499"/>
+            <point key="canvasLocation" x="1176" y="1231"/>
+        </scene>
+        <!--Select Video View Controller-->
+        <scene sceneID="I5S-Dk-rFP">
+            <objects>
+                <viewController id="8fg-cx-WNn" customClass="SelectVideoViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="YVv-FP-caQ">
+                        <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Je-xh-l9X">
+                                <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                                <clipView key="contentView" drawsBackground="NO" id="hWj-Sa-ztR">
+                                    <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <collectionView selectable="YES" id="gZ7-Db-xPu">
+                                            <rect key="frame" x="0.0" y="0.0" width="340" height="158"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="eZr-LF-Oct">
+                                                <size key="itemSize" width="120" height="50"/>
+                                            </collectionViewFlowLayout>
+                                            <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <connections>
+                                                <outlet property="dataSource" destination="8fg-cx-WNn" id="qt6-bD-ARu"/>
+                                            </connections>
+                                        </collectionView>
+                                    </subviews>
+                                </clipView>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="oix-WB-p64">
+                                    <rect key="frame" x="1" y="341" width="338" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lEE-Hx-lFd">
+                                    <rect key="frame" x="234" y="1" width="15" height="143"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="5Je-xh-l9X" secondAttribute="trailing" id="KOn-eT-OlS"/>
+                            <constraint firstAttribute="bottom" secondItem="5Je-xh-l9X" secondAttribute="bottom" id="MU0-WL-1kF"/>
+                            <constraint firstItem="5Je-xh-l9X" firstAttribute="top" secondItem="YVv-FP-caQ" secondAttribute="top" id="cYI-zS-64T"/>
+                            <constraint firstItem="5Je-xh-l9X" firstAttribute="leading" secondItem="YVv-FP-caQ" secondAttribute="leading" id="vTG-FC-XBt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="collectionView" destination="gZ7-Db-xPu" id="eTw-dt-YRa"/>
+                    </connections>
+                </viewController>
+                <customObject id="Kze-Xj-7vW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1177" y="1614"/>
         </scene>
     </scenes>
     <resources>
