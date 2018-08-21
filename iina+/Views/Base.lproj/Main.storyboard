@@ -1330,7 +1330,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Item 3" identifier="" id="gnN-wP-ZUv">
+                                    <tabViewItem label="SelectVideos" identifier="" id="gnN-wP-ZUv">
                                         <view key="view" id="cz5-5j-ukf">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

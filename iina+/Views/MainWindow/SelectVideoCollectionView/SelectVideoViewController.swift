@@ -22,8 +22,23 @@ class SelectVideoViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            switch event.keyCode {
+            case 53:
+                if let main = self.parent as? MainViewController {
+                    guard main.mainTabView.selectedTabViewItem?.label == "SelectVideos" else {
+                        return event
+                    }
+                    main.mainTabView.selectTabViewItem(at: 1)
+                    return nil
+                }
+            default:
+                break
+            }
+            return event
+        }
     }
+    
 }
 
 extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionViewDelegate {
