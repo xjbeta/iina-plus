@@ -168,6 +168,7 @@ class MainViewController: NSViewController {
                     self.mainTabView.selectTabViewItem(at: 1)
                 case .search:
                     self.mainTabView.selectTabViewItem(at: 2)
+                    self.mainWindowController.window?.makeFirstResponder(self.searchField)
                 default: break
                 }
             }
@@ -200,6 +201,10 @@ class MainViewController: NSViewController {
     @objc func reloadTableView() {
         bookmarkTableView.reloadData()
         loadBilibiliCards()
+        if mainTabView.selectedTabViewItem?.label == "Search" {
+            mainWindowController.window?.makeFirstResponder(searchField)
+        }
+        
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -255,8 +260,6 @@ class MainViewController: NSViewController {
     func progressStatusChanged(_ inProgress: Bool) {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
-    
-
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
