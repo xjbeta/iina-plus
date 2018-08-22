@@ -217,11 +217,11 @@ class MainViewController: NSViewController {
                 let item = SidebarItem(raw: str) {
                 switch item {
                 case .live:
-                    self.mainTabView.selectTabViewItem(at: 0)
+                    self.selectTabItem(.bookmarks)
                 case .bilibili:
-                    self.mainTabView.selectTabViewItem(at: 1)
+                    self.selectTabItem(.bilibili)
                 case .search:
-                    self.mainTabView.selectTabViewItem(at: 2)
+                    self.selectTabItem(.search)
                     self.mainWindowController.window?.makeFirstResponder(self.searchField)
                 default: break
                 }
@@ -229,8 +229,6 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
     }
-    
-    
     
     var canLoadMoreBilibiliCards = true
     
@@ -259,6 +257,20 @@ class MainViewController: NSViewController {
             mainWindowController.window?.makeFirstResponder(searchField)
         }
         
+    }
+    
+    enum MainTabViewItems: String {
+        case bookmarks = "Bookmarks"
+        case bilibili = "Bilibili"
+        case search = "Search"
+        case selectVideos = "SelectVideos"
+        init?(raw: String) {
+            self.init(rawValue: raw)
+        }
+    }
+    
+    func selectTabItem(_ item: MainTabViewItems) {
+        mainTabView.selectTabViewItem(withIdentifier: item.rawValue)
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -321,10 +333,10 @@ class MainViewController: NSViewController {
                 self.searchField.stringValue = ""
                 selectVideoViewController.videoInfos = infos
                 selectVideoViewController.aid = aid
-                if let item = self.mainTabView.selectedTabViewItem {
-                    selectVideoViewController.oldTabItem = self.mainTabView.indexOfTabViewItem(item)
+                if let str = self.mainTabView.selectedTabViewItem?.identifier as? String {
+                    selectVideoViewController.oldTabItem = str
                 }
-                self.mainTabView.selectTabViewItem(at: 3)
+                self.selectTabItem(.selectVideos)
             }
         }
     }

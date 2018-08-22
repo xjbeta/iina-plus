@@ -37,7 +37,7 @@ class SelectVideoViewController: NSViewController {
     }
     
     var aid: Int = 0
-    var oldTabItem = -1
+    var oldTabItem = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,13 +45,13 @@ class SelectVideoViewController: NSViewController {
             switch event.keyCode {
             case 53:
                 if let main = self.parent as? MainViewController {
-                    guard main.mainTabView.selectedTabViewItem?.label == "SelectVideos" else {
+                    guard let str = main.mainTabView.selectedTabViewItem?.identifier as? String,
+                        str == MainViewController.MainTabViewItems.selectVideos.rawValue else {
                         return event
                     }
-                    if self.oldTabItem > 0,
-                        self.oldTabItem < main.mainTabView.tabViewItems.count {
-                        main.mainTabView.selectTabViewItem(at: self.oldTabItem)
-                        return nil
+
+                    if let item = MainViewController.MainTabViewItems(rawValue: self.oldTabItem) {
+                        main.selectTabItem(item)
                     }
                 }
             default:
