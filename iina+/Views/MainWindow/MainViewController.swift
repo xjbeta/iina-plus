@@ -14,14 +14,14 @@ private extension NSPasteboard.PasteboardType {
 }
 
 class MainViewController: NSViewController {
-
+    // MARK: - Main Views
     @IBOutlet weak var mainTabView: NSTabView!
     @objc dynamic var mainTabViewSelectedIndex = 0
     
     var mainWindowController: MainWindowController {
         return view.window?.windowController as! MainWindowController
     }
-    
+    // MARK: - Bookmarks Tab Item
     @IBOutlet weak var bookmarkTableView: NSTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
     @objc var bookmarks: NSManagedObjectContext
@@ -53,49 +53,99 @@ class MainViewController: NSViewController {
         super.init(coder: coder)
     }
     
+    // MARK: - Bilibili Tab Item
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Bilibili()
+    @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
-            let aid = bilibiliCards[bilibiliTableView.selectedRow].aid
-            searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
-            searchField.becomeFirstResponder()
-            startSearch(self)
+            let card = bilibiliCards[bilibiliTableView.selectedRow]
+            let aid = card.aid
+            if card.videos == 1 {
+                searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+                searchField.becomeFirstResponder()
+                startSearch(self)
+            } else if card.videos > 1 {
+                bilibili.getVideoList(aid, { infos in
+                    self.showSelectVideo(aid, infos: infos)
+                }) { re in
+                    do {
+                        let _ = try re()
+                    } catch let error {
+                        Logger.log("Get video list error: \(error)")
+                    }
+                }
+            }
         }
     }
     
+    // MARK: - Search Tab Item
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
-        let group = DispatchGroup()
-        group.enter()
-        progressStatusChanged(true)
+        let group: DispatchGroup? = DispatchGroup()
+        let semaphore = DispatchSemaphore(value: 0)
+        group?.notify(queue: .main) {
+            self.progressStatusChanged(false)
+        }
+        
+        group?.enter()
         let str = searchField.stringValue
+        yougetResult = nil
         guard str != "", str.isUrl else {
+            Processes.shared.stopDecodeURL()
+            isSearching = false
             return
         }
-        yougetResult = nil
         isSearching = true
         
+        progressStatusChanged(true)
         NotificationCenter.default.post(name: .startSearch, object: nil)
+        if let url = URL(string: str),
+            url.host == "www.bilibili.com",
+            url.lastPathComponent.starts(with: "av"),
+            !str.contains("p=") {
+            let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) ?? 0
+            bilibili.getVideoList(aid, { infos in
+                if infos.count > 1 {
+                    self.showSelectVideo(aid, infos: infos)
+                    group?.leave()
+                    self.isSearching = false
+                    semaphore.signal()
+                } else {
+                    semaphore.signal()
+                }
+                
+            }) { re in
+                do {
+                    let _ = try re()
+                } catch let error {
+                    semaphore.signal()
+                    Logger.log("Get video list error: \(error)")
+                }
+            }
+            semaphore.wait()
+        }
+        
+        guard isSearching else {
+            return
+        }
+        
         
         Processes.shared.decodeURL(str, { obj in
             DispatchQueue.main.async {
                 self.yougetResult = obj
-                group.leave()
+                group?.leave()
             }
         }) { error in
             DispatchQueue.main.async {
                 if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
                     view.setStatus(.error)
                 }
-                group.leave()
+                group?.leave()
             }
-        }
-        group.notify(queue: .main) {
-            self.progressStatusChanged(false)
         }
     }
     
@@ -103,7 +153,9 @@ class MainViewController: NSViewController {
     
     var isSearching = false {
         didSet {
-            suggestionsTableView.reloadData()
+            DispatchQueue.main.async {
+                self.suggestionsTableView.reloadData()
+            }
         }
     }
     
@@ -118,6 +170,7 @@ class MainViewController: NSViewController {
         guard row != -1 else {
             yougetResult = nil
             isSearching = false
+            Processes.shared.stopDecodeURL()
             return
         }
         if let key = yougetResult?.streams.keys.sorted()[row],
@@ -149,6 +202,7 @@ class MainViewController: NSViewController {
         yougetResult = nil
     }
     
+    // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         loadBilibiliCards()
@@ -163,19 +217,18 @@ class MainViewController: NSViewController {
                 let item = SidebarItem(raw: str) {
                 switch item {
                 case .live:
-                    self.mainTabView.selectTabViewItem(at: 0)
+                    self.selectTabItem(.bookmarks)
                 case .bilibili:
-                    self.mainTabView.selectTabViewItem(at: 1)
+                    self.selectTabItem(.bilibili)
                 case .search:
-                    self.mainTabView.selectTabViewItem(at: 2)
+                    self.selectTabItem(.search)
+                    self.mainWindowController.window?.makeFirstResponder(self.searchField)
                 default: break
                 }
             }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
     }
-    
-    
     
     var canLoadMoreBilibiliCards = true
     
@@ -198,14 +251,26 @@ class MainViewController: NSViewController {
     }
     
     @objc func reloadTableView() {
-        switch mainTabViewSelectedIndex {
-        case 0:
-            bookmarkTableView.reloadData()
-        case 1:
-            loadBilibiliCards()
-        default:
-            break
+        bookmarkTableView.reloadData()
+        loadBilibiliCards()
+        if mainTabView.selectedTabViewItem?.label == "Search" {
+            mainWindowController.window?.makeFirstResponder(searchField)
         }
+        
+    }
+    
+    enum MainTabViewItems: String {
+        case bookmarks = "Bookmarks"
+        case bilibili = "Bilibili"
+        case search = "Search"
+        case selectVideos = "SelectVideos"
+        init?(raw: String) {
+            self.init(rawValue: raw)
+        }
+    }
+    
+    func selectTabItem(_ item: MainTabViewItems) {
+        mainTabView.selectTabViewItem(withIdentifier: item.rawValue)
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -262,7 +327,19 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-
+    func showSelectVideo(_ aid: Int, infos: [BilibiliSimpleVideoInfo]) {
+        if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
+            DispatchQueue.main.async {
+                self.searchField.stringValue = ""
+                selectVideoViewController.videoInfos = infos
+                selectVideoViewController.aid = aid
+                if let str = self.mainTabView.selectedTabViewItem?.identifier as? String {
+                    selectVideoViewController.oldTabItem = str
+                }
+                self.selectTabItem(.selectVideos)
+            }
+        }
+    }
 }
 
 extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
@@ -336,6 +413,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             }
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
+                view.imageBoxView.aid = bilibiliCards[row].aid
+                view.imageBoxView.pic = bilibiliCards[row].pic
                 return view
             }
         case suggestionsTableView:

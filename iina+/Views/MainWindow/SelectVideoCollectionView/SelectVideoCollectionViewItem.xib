@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.13.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="SelectVideoCollectionViewItem" customModule="iina_" customModuleProvider="target">
+            <connections>
+                <outlet property="titleTextField" destination="QEQ-A6-bdZ" id="Ro8-Nu-lxT"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY" customClass="SelectVideoCollectionViewItemView" customModule="iina_" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="118" height="33"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QEQ-A6-bdZ">
+                    <rect key="frame" x="6" y="8" width="106" height="17"/>
+                    <textFieldCell key="cell" lineBreakMode="charWrapping" truncatesLastVisibleLine="YES" title="Multiline Label" id="5bp-5w-F86">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="QEQ-A6-bdZ" secondAttribute="bottom" constant="8" id="010-Mz-ubV"/>
+                <constraint firstItem="QEQ-A6-bdZ" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="Xxx-ru-Ain"/>
+                <constraint firstItem="QEQ-A6-bdZ" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="hpo-3U-kTX"/>
+                <constraint firstAttribute="trailing" secondItem="QEQ-A6-bdZ" secondAttribute="trailing" constant="8" id="pc0-ir-PAB"/>
+            </constraints>
+            <point key="canvasLocation" x="-37" y="250"/>
+        </customView>
+        <collectionViewItem id="YkQ-tt-uMS" customClass="SelectVideoCollectionViewItem" customModule="iina_" customModuleProvider="target"/>
+    </objects>
+</document>

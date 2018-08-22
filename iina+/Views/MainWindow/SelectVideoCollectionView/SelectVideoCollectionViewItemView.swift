@@ -1,21 +1,20 @@
 //
-//  BilibiliCardTableCellView.swift
+//  SelectVideoCollectionViewItemView.swift
 //  iina+
 //
-//  Created by xjbeta on 2018/8/8.
+//  Created by xjbeta on 2018/8/21.
 //  Copyright © 2018 xjbeta. All rights reserved.
 //
 
 import Cocoa
 
-class BilibiliCardTableCellView: NSTableCellView {
+class SelectVideoCollectionViewItemView: NSView {
 
     var isSelected: Bool = false {
         didSet {
             needsDisplay = true
         }
     }
-    @IBOutlet weak var imageBoxView: BilibiliCardImageBoxView!
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -29,6 +28,5 @@ class BilibiliCardTableCellView: NSTableCellView {
         }
         selectionPath.fill()
     }
-
     
 }

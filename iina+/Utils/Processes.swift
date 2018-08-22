@@ -41,20 +41,18 @@ class Processes: NSObject {
     func decodeURL(_ url: String,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
-        if let task = decodeTask, task.isRunning {
-            decodeTask?.suspend()
-            decodeTask?.terminate()
-            decodeTask?.waitUntilExit()
-            decodeTask = nil
-        }
+        stopDecodeURL()
         
         decodeTask = Process()
         let pipe = Pipe()
-
+        let errorPipe = Pipe()
+        decodeTask?.standardError = errorPipe
         decodeTask?.standardOutput = pipe
         decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
+        
+        Logger.log(url)
         
         decodeTask?.terminationHandler = { _ in
             guard self.decodeTask?.terminationReason != .uncaughtSignal else {
@@ -74,6 +72,20 @@ class Processes: NSObject {
                     Logger.log("JSON string: \(str)")
                 }
             }
+            
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            if let str = String(data: errorData, encoding: .utf8) {
+                Logger.log("Decode url error info: \(str)")
+            }
+        }
+    }
+    
+    func stopDecodeURL() {
+        if let task = decodeTask, task.isRunning {
+            decodeTask?.suspend()
+            decodeTask?.terminate()
+            decodeTask?.waitUntilExit()
+            decodeTask = nil
         }
     }
     
@@ -166,9 +178,10 @@ private extension Processes {
                     str = str?.subString(from: "(", to: ")")
                     let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
                     let didStr: String = try json.value(for: "data.did")
+                    let date = Int(Date().timeIntervalSince1970)
                     cookiesString = """
-                    ..douyu.com    TRUE    /    FALSE    1535865698    dy_did    \(didStr)
-                    .www.douyu.com    TRUE    /    FALSE    1535865771    acf_did    \(didStr)
+                    ..douyu.com    TRUE    /    FALSE    \(date)    dy_did    \(didStr)
+                    .www.douyu.com    TRUE    /    FALSE    \(date)    acf_did    \(didStr)
                     """
                 } catch let error {
                     Logger.log("DouYu cookies error: \(error)")

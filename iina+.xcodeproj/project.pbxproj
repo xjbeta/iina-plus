@@ -28,6 +28,8 @@
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
 		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
+		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
+		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
 		01398983210F273200B7042F /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398982210F273200B7042F /* PreferencesView.swift */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
@@ -36,6 +38,10 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
+		016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E0212BBB43003517A7 /* SelectVideoViewController.swift */; };
+		016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */; };
+		016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */; };
+		016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792ED212C421F003517A7 /* SelectVideoCollectionViewItemView.swift */; };
 		01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */; };
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
@@ -101,6 +107,8 @@
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
 		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
+		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
+		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
 		01398982210F273200B7042F /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
@@ -110,6 +118,10 @@
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
+		016792E0212BBB43003517A7 /* SelectVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoViewController.swift; sourceTree = "<group>"; };
+		016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewItem.swift; sourceTree = "<group>"; };
+		016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewItem.xib; sourceTree = "<group>"; };
+		016792ED212C421F003517A7 /* SelectVideoCollectionViewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewItemView.swift; sourceTree = "<group>"; };
 		01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliLoginViewController.swift; sourceTree = "<group>"; };
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
@@ -164,6 +176,8 @@
 				012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */,
 				0101012F211E987D002F0F7F /* SuggestionsTableCellView.swift */,
 				01010130211E987D002F0F7F /* WaitingTableCellView.swift */,
+				0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */,
+				0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */,
 			);
 			path = TableViewCustomViews;
 			sourceTree = "<group>";
@@ -222,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				01010133211E9AA1002F0F7F /* TableViewCustomViews */,
+				016792E8212BF89A003517A7 /* SelectVideoCollectionView */,
 				010F0EF120F890DB00F33553 /* MainWindowController.swift */,
 				01AEC8AC20EDFD01001406E8 /* MainViewController.swift */,
 				01010134211EC63D002F0F7F /* MainTabView.swift */,
@@ -230,6 +245,17 @@
 				01010136211EFA75002F0F7F /* SuggestionsTableView.swift */,
 			);
 			path = MainWindow;
+			sourceTree = "<group>";
+		};
+		016792E8212BF89A003517A7 /* SelectVideoCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				016792E0212BBB43003517A7 /* SelectVideoViewController.swift */,
+				016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */,
+				016792ED212C421F003517A7 /* SelectVideoCollectionViewItemView.swift */,
+				016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */,
+			);
+			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
 		};
 		01AEC89E20EDFD01001406E8 = {
@@ -298,6 +324,7 @@
 				01AEC8A520EDFD01001406E8 /* Resources */,
 				010F0F0E20FCC18000F33553 /* Embed Frameworks */,
 				010F0F0F20FCC1D200F33553 /* CopyFiles */,
+				019BFF5D212485B900E715CC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -359,11 +386,32 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
+				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		019BFF5D212485B900E715CC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\nBUILD_NUMBER=`git rev-parse --short HEAD`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		01AEC8A320EDFD01001406E8 /* Sources */ = {
@@ -371,6 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
+				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
@@ -378,6 +427,7 @@
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
+				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
@@ -396,6 +446,7 @@
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
+				0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */,
 				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,
 				0196CB62212143D600BCD29E /* Logger.swift in Sources */,
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
@@ -407,6 +458,8 @@
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
+				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
+				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
 				0101012E211DE83B002F0F7F /* SidebarTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.3.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.13.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.3.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -867,7 +867,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
-                                    <tabViewItem label="Tab" identifier="1" id="fmm-kw-xbx" userLabel="Bookmarks">
+                                    <tabViewItem label="Bookmarks" identifier="Bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
                                         <view key="view" id="qi8-ue-hZX">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1026,7 +1026,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Bilibili" identifier="2" id="tzg-rU-KII">
+                                    <tabViewItem label="Bilibili" identifier="Bilibili" id="tzg-rU-KII">
                                         <view key="view" id="n1W-9O-2h1">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1035,7 +1035,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="641"/>
@@ -1061,19 +1061,8 @@
                                                                                 <rect key="frame" x="1" y="6" width="397" height="110"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
-                                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fz7-9I-cWr">
-                                                                                        <rect key="frame" x="8" y="8" width="168" height="94"/>
-                                                                                        <constraints>
-                                                                                            <constraint firstAttribute="width" secondItem="fz7-9I-cWr" secondAttribute="height" multiplier="168:94" id="m8c-li-hNa"/>
-                                                                                        </constraints>
-                                                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="2gK-pa-5zY"/>
-                                                                                        <color key="contentTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                                        <connections>
-                                                                                            <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.pic" id="bzQ-Rs-2kP"/>
-                                                                                        </connections>
-                                                                                    </imageView>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="mwf-9B-2sj">
-                                                                                        <rect key="frame" x="182" y="67" width="4" height="16"/>
+                                                                                        <rect key="frame" x="183" y="67" width="4" height="16"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="w1L-DN-eMK">
                                                                                             <font key="font" metaFont="cellTitle"/>
                                                                                             <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1084,7 +1073,7 @@
                                                                                         </connections>
                                                                                     </textField>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Ouy-dX-dat">
-                                                                                        <rect key="frame" x="182" y="85" width="209" height="17"/>
+                                                                                        <rect key="frame" x="183" y="85" width="208" height="17"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" relation="lessThanOrEqual" constant="38" id="ckQ-5Y-mn5"/>
                                                                                         </constraints>
@@ -1098,7 +1087,7 @@
                                                                                         </connections>
                                                                                     </textField>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fxk-sb-jHl">
-                                                                                        <rect key="frame" x="182" y="51" width="4" height="14"/>
+                                                                                        <rect key="frame" x="183" y="51" width="4" height="14"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="H6X-QJ-IXX">
                                                                                             <customFormatter key="formatter" id="wis-kV-jaR" customClass="VideoViewsFormatter" customModule="iina_" customModuleProvider="target"/>
                                                                                             <font key="font" metaFont="smallSystem"/>
@@ -1109,38 +1098,69 @@
                                                                                             <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.views" id="eva-JF-cIo"/>
                                                                                         </connections>
                                                                                     </textField>
-                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fiY-gH-vb8">
-                                                                                        <rect key="frame" x="168" y="12" width="4" height="16"/>
+                                                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="A3d-KV-bZ7" customClass="BilibiliCardImageBoxView" customModule="iina_" customModuleProvider="target">
+                                                                                        <rect key="frame" x="8" y="8" width="169" height="94"/>
+                                                                                        <subviews>
+                                                                                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fz7-9I-cWr">
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="169" height="94"/>
+                                                                                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="2gK-pa-5zY"/>
+                                                                                                <color key="contentTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                                                <connections>
+                                                                                                    <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.pic" id="bzQ-Rs-2kP"/>
+                                                                                                </connections>
+                                                                                            </imageView>
+                                                                                            <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVj-gu-ivu" customClass="BilibiliCardProgressView" customModule="iina_" customModuleProvider="target">
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="169" height="4"/>
+                                                                                                <constraints>
+                                                                                                    <constraint firstAttribute="height" constant="4" id="eJP-xz-Y7N"/>
+                                                                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="4" id="iQW-Eq-v18"/>
+                                                                                                </constraints>
+                                                                                            </customView>
+                                                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fiY-gH-vb8">
+                                                                                                <rect key="frame" x="160" y="5" width="4" height="16"/>
+                                                                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" drawsBackground="YES" id="Pn8-Yp-6gK">
+                                                                                                    <customFormatter key="formatter" id="pnk-Zb-ENt" customClass="VideoDurationFormatter" customModule="iina_" customModuleProvider="target"/>
+                                                                                                    <font key="font" metaFont="systemSemibold" size="12"/>
+                                                                                                    <color key="textColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                                    <color key="backgroundColor" white="0.0" alpha="0.7537457191780822" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                                </textFieldCell>
+                                                                                                <connections>
+                                                                                                    <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.duration" id="XPe-ct-kRo"/>
+                                                                                                </connections>
+                                                                                            </textField>
+                                                                                        </subviews>
                                                                                         <constraints>
-                                                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="14" id="9ug-BD-YwH"/>
+                                                                                            <constraint firstAttribute="bottom" secondItem="fz7-9I-cWr" secondAttribute="bottom" id="7CK-qq-55W"/>
+                                                                                            <constraint firstItem="fz7-9I-cWr" firstAttribute="top" secondItem="A3d-KV-bZ7" secondAttribute="top" id="Gxb-Zh-iOy"/>
+                                                                                            <constraint firstAttribute="trailing" secondItem="fz7-9I-cWr" secondAttribute="trailing" id="Qmn-18-WRt"/>
+                                                                                            <constraint firstItem="gVj-gu-ivu" firstAttribute="leading" secondItem="A3d-KV-bZ7" secondAttribute="leading" id="RSA-Fm-mDm"/>
+                                                                                            <constraint firstAttribute="trailing" secondItem="fiY-gH-vb8" secondAttribute="trailing" constant="5" id="TqS-DJ-kx2"/>
+                                                                                            <constraint firstAttribute="trailing" secondItem="gVj-gu-ivu" secondAttribute="trailing" id="Z4c-FG-bnj"/>
+                                                                                            <constraint firstAttribute="bottom" secondItem="gVj-gu-ivu" secondAttribute="bottom" id="cIl-Ht-ZOJ"/>
+                                                                                            <constraint firstAttribute="bottom" secondItem="fiY-gH-vb8" secondAttribute="bottom" constant="5" id="jnm-7m-hfP"/>
+                                                                                            <constraint firstAttribute="width" secondItem="A3d-KV-bZ7" secondAttribute="height" multiplier="9:5" id="mOa-rI-h17"/>
+                                                                                            <constraint firstItem="fz7-9I-cWr" firstAttribute="leading" secondItem="A3d-KV-bZ7" secondAttribute="leading" id="uFr-XI-NQE"/>
                                                                                         </constraints>
-                                                                                        <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" drawsBackground="YES" id="Pn8-Yp-6gK">
-                                                                                            <customFormatter key="formatter" id="pnk-Zb-ENt" customClass="VideoDurationFormatter" customModule="iina_" customModuleProvider="target"/>
-                                                                                            <font key="font" metaFont="systemSemibold" size="12"/>
-                                                                                            <color key="textColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" white="0.0" alpha="0.7537457191780822" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                                        </textFieldCell>
-                                                                                        <connections>
-                                                                                            <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.duration" id="XPe-ct-kRo"/>
-                                                                                        </connections>
-                                                                                    </textField>
+                                                                                    </customView>
                                                                                 </subviews>
                                                                                 <constraints>
                                                                                     <constraint firstItem="mwf-9B-2sj" firstAttribute="top" secondItem="Ouy-dX-dat" secondAttribute="bottom" constant="2" id="8PB-bn-alR"/>
-                                                                                    <constraint firstItem="fz7-9I-cWr" firstAttribute="leading" secondItem="kat-6P-xcH" secondAttribute="leading" constant="8" id="Crr-Ar-ji8"/>
-                                                                                    <constraint firstAttribute="bottom" secondItem="fz7-9I-cWr" secondAttribute="bottom" constant="8" id="G3r-Ub-hRh"/>
+                                                                                    <constraint firstItem="A3d-KV-bZ7" firstAttribute="leading" secondItem="kat-6P-xcH" secondAttribute="leading" constant="8" id="8fE-PG-sQY"/>
                                                                                     <constraint firstItem="Fxk-sb-jHl" firstAttribute="top" secondItem="mwf-9B-2sj" secondAttribute="bottom" constant="2" id="G8K-aB-4Tl"/>
                                                                                     <constraint firstItem="Ouy-dX-dat" firstAttribute="top" secondItem="kat-6P-xcH" secondAttribute="top" constant="8" id="GQt-U0-eZd"/>
-                                                                                    <constraint firstItem="Ouy-dX-dat" firstAttribute="leading" secondItem="fz7-9I-cWr" secondAttribute="trailing" constant="8" id="MAq-IL-xwt"/>
+                                                                                    <constraint firstItem="A3d-KV-bZ7" firstAttribute="top" secondItem="kat-6P-xcH" secondAttribute="top" constant="8" id="HED-Ps-lNe"/>
                                                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Fxk-sb-jHl" secondAttribute="trailing" constant="8" id="P3a-04-mev"/>
                                                                                     <constraint firstItem="mwf-9B-2sj" firstAttribute="leading" secondItem="Ouy-dX-dat" secondAttribute="leading" id="RC6-jH-7yZ"/>
-                                                                                    <constraint firstItem="fz7-9I-cWr" firstAttribute="top" secondItem="kat-6P-xcH" secondAttribute="top" constant="8" id="WKv-8L-5Ap"/>
                                                                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mwf-9B-2sj" secondAttribute="trailing" constant="8" id="WaS-qG-JYz"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="Ouy-dX-dat" secondAttribute="trailing" constant="8" id="Xef-PF-eU8"/>
                                                                                     <constraint firstItem="Fxk-sb-jHl" firstAttribute="leading" secondItem="mwf-9B-2sj" secondAttribute="leading" id="cJP-bA-zWj"/>
-                                                                                    <constraint firstItem="Ouy-dX-dat" firstAttribute="leading" secondItem="fiY-gH-vb8" secondAttribute="trailing" constant="12" id="gGk-AY-bS1"/>
-                                                                                    <constraint firstAttribute="bottom" secondItem="fiY-gH-vb8" secondAttribute="bottom" constant="12" id="rg6-6t-IWg"/>
+                                                                                    <constraint firstItem="mwf-9B-2sj" firstAttribute="leading" secondItem="A3d-KV-bZ7" secondAttribute="trailing" constant="8" id="ffY-Ln-j7m"/>
+                                                                                    <constraint firstAttribute="bottom" secondItem="A3d-KV-bZ7" secondAttribute="bottom" constant="8" id="nla-d6-FU0"/>
                                                                                 </constraints>
+                                                                                <connections>
+                                                                                    <outlet property="imageBoxView" destination="A3d-KV-bZ7" id="PcZ-nQ-ZRt"/>
+                                                                                    <outlet property="imageView" destination="fz7-9I-cWr" id="962-c3-3Yc"/>
+                                                                                </connections>
                                                                             </tableCellView>
                                                                             <customView identifier="MainWindowTableRowView" id="25R-ux-QnQ" customClass="MainWindowTableRowView" customModule="iina_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="128" width="397" height="96"/>
@@ -1182,7 +1202,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Item 2" identifier="" id="b8j-z5-B7Q" userLabel="Search">
+                                    <tabViewItem label="Search" identifier="Search" id="b8j-z5-B7Q" userLabel="Search">
                                         <view key="view" id="izq-M8-HsP">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1202,7 +1222,7 @@
                                                     <rect key="frame" x="20" y="20" width="360" height="570"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="UI5-GE-yfn">
                                                         <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="iina_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
@@ -1310,6 +1330,26 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
+                                    <tabViewItem label="SelectVideos" identifier="SelectVideos" id="gnN-wP-ZUv">
+                                        <view key="view" id="cz5-5j-ukf">
+                                            <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <containerView translatesAutoresizingMaskIntoConstraints="NO" id="HDM-Wo-Iow">
+                                                    <rect key="frame" x="20" y="0.0" width="372" height="649"/>
+                                                    <connections>
+                                                        <segue destination="8fg-cx-WNn" kind="embed" id="4hn-6v-UXp"/>
+                                                    </connections>
+                                                </containerView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="HDM-Wo-Iow" secondAttribute="bottom" id="aCk-vk-ZG4"/>
+                                                <constraint firstItem="HDM-Wo-Iow" firstAttribute="top" secondItem="cz5-5j-ukf" secondAttribute="top" id="huf-Ww-FSO"/>
+                                                <constraint firstItem="HDM-Wo-Iow" firstAttribute="leading" secondItem="cz5-5j-ukf" secondAttribute="leading" constant="20" id="mtF-IP-SgR"/>
+                                                <constraint firstAttribute="trailing" secondItem="HDM-Wo-Iow" secondAttribute="trailing" constant="8" id="rjx-MF-nhH"/>
+                                            </constraints>
+                                        </view>
+                                    </tabViewItem>
                                 </tabViewItems>
                                 <connections>
                                     <binding destination="XfG-lQ-9wD" name="selectedIndex" keyPath="self.mainTabViewSelectedIndex" id="U1h-Oe-qlZ"/>
@@ -1331,6 +1371,7 @@
                         <outlet property="mainTabView" destination="P2p-GB-s4i" id="Mrh-N7-7wM"/>
                         <outlet property="searchField" destination="VGm-gL-nOm" id="6m3-nY-x0G"/>
                         <outlet property="suggestionsTableView" destination="XaB-Al-kaU" id="zYV-C2-98k"/>
+                        <outlet property="videoInfosContainerView" destination="HDM-Wo-Iow" id="iXu-FM-N3k"/>
                         <segue destination="Rej-VG-aRz" kind="sheet" identifier="showAddBookmarkViewController" id="iRV-tt-3nd"/>
                     </connections>
                 </viewController>
@@ -1366,7 +1407,7 @@
                     </connections>
                 </arrayController>
             </objects>
-            <point key="canvasLocation" x="666.5" y="1499.5"/>
+            <point key="canvasLocation" x="666" y="1499.5"/>
         </scene>
         <!--Add Bookmark View Controller-->
         <scene sceneID="blH-EK-Tgd">
@@ -1429,7 +1470,62 @@ Gw
                 </viewController>
                 <customObject id="O2b-Oy-PT3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1184" y="1499"/>
+            <point key="canvasLocation" x="1176" y="1231"/>
+        </scene>
+        <!--Select Video View Controller-->
+        <scene sceneID="I5S-Dk-rFP">
+            <objects>
+                <viewController id="8fg-cx-WNn" customClass="SelectVideoViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="YVv-FP-caQ">
+                        <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Je-xh-l9X">
+                                <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                                <clipView key="contentView" drawsBackground="NO" id="hWj-Sa-ztR">
+                                    <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <collectionView selectable="YES" id="gZ7-Db-xPu">
+                                            <rect key="frame" x="0.0" y="0.0" width="340" height="158"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="wgO-8a-Pqw">
+                                                <size key="itemSize" width="190" height="70"/>
+                                            </collectionViewFlowLayout>
+                                            <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <connections>
+                                                <outlet property="dataSource" destination="8fg-cx-WNn" id="qt6-bD-ARu"/>
+                                                <outlet property="delegate" destination="8fg-cx-WNn" id="C0y-8z-0TB"/>
+                                            </connections>
+                                        </collectionView>
+                                    </subviews>
+                                    <edgeInsets key="contentInsets" left="0.0" right="12" top="20" bottom="20"/>
+                                </clipView>
+                                <edgeInsets key="contentInsets" left="0.0" right="0.0" top="20" bottom="20"/>
+                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="oix-WB-p64">
+                                    <rect key="frame" x="0.0" y="322" width="332" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lEE-Hx-lFd">
+                                    <rect key="frame" x="234" y="1" width="15" height="143"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="5Je-xh-l9X" secondAttribute="trailing" id="KOn-eT-OlS"/>
+                            <constraint firstAttribute="bottom" secondItem="5Je-xh-l9X" secondAttribute="bottom" id="MU0-WL-1kF"/>
+                            <constraint firstItem="5Je-xh-l9X" firstAttribute="top" secondItem="YVv-FP-caQ" secondAttribute="top" id="cYI-zS-64T"/>
+                            <constraint firstItem="5Je-xh-l9X" firstAttribute="leading" secondItem="YVv-FP-caQ" secondAttribute="leading" id="vTG-FC-XBt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="collectionView" destination="gZ7-Db-xPu" id="eTw-dt-YRa"/>
+                    </connections>
+                </viewController>
+                <customObject id="Kze-Xj-7vW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1177" y="1614"/>
         </scene>
     </scenes>
     <resources>

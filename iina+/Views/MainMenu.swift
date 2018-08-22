@@ -8,8 +8,9 @@
 
 import Cocoa
 
-class MainMenu: NSObject {
-    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+class MainMenu: NSObject, NSMenuItemValidation {
+    
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         
         if let window = NSApp.keyWindow,
             let appDelegate = NSApp.delegate as? AppDelegate,

@@ -14,6 +14,9 @@ class PreferencesWindowController: NSWindowController {
         super.windowDidLoad()
         window?.isMovableByWindowBackground = true
         window?.backgroundColor = .customHighlightColor
+        window?.titlebarAppearsTransparent = true
+        window?.titleVisibility = .hidden
+        
         if let preferencesTabViewController = contentViewController as? PreferencesTabViewController {
             preferencesTabViewController.autoResizeWindow(preferencesTabViewController.tabView.selectedTabViewItem, animate: false)
         }
