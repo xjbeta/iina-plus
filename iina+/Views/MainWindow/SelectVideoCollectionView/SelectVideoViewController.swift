@@ -37,28 +37,9 @@ class SelectVideoViewController: NSViewController {
     }
     
     var aid: Int = 0
-    var oldTabItem = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            switch event.keyCode {
-            case 53:
-                if let main = self.parent as? MainViewController {
-                    guard let str = main.mainTabView.selectedTabViewItem?.identifier as? String,
-                        str == MainViewController.MainTabViewItems.selectVideos.rawValue else {
-                        return event
-                    }
-
-                    if let item = MainViewController.MainTabViewItems(rawValue: self.oldTabItem) {
-                        main.selectTabItem(item)
-                    }
-                }
-            default:
-                break
-            }
-            return event
-        }
     }
     
 }
