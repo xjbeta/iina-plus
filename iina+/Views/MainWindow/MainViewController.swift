@@ -14,14 +14,14 @@ private extension NSPasteboard.PasteboardType {
 }
 
 class MainViewController: NSViewController {
-
+    // MARK: - Main Views
     @IBOutlet weak var mainTabView: NSTabView!
     @objc dynamic var mainTabViewSelectedIndex = 0
     
     var mainWindowController: MainWindowController {
         return view.window?.windowController as! MainWindowController
     }
-    
+    // MARK: - Bookmarks Tab Item
     @IBOutlet weak var bookmarkTableView: NSTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
     @objc var bookmarks: NSManagedObjectContext
@@ -53,6 +53,7 @@ class MainViewController: NSViewController {
         super.init(coder: coder)
     }
     
+    // MARK: - Bilibili Tab Item
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
@@ -81,6 +82,7 @@ class MainViewController: NSViewController {
         }
     }
     
+    // MARK: - Search Tab Item
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
         let group: DispatchGroup? = DispatchGroup()
@@ -200,6 +202,7 @@ class MainViewController: NSViewController {
         yougetResult = nil
     }
     
+    // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         loadBilibiliCards()
