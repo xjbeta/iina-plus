@@ -243,6 +243,7 @@ class MainViewController: NSViewController {
                         case .bookmarks, .bilibili, .search:
                             NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": oldItem])
                             self.selectTabItem(oldItem)
+                            self.mainTabViewOldItem = .none
                             return nil
                         default:
                             break
