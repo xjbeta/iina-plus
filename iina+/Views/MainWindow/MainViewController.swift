@@ -91,10 +91,12 @@ class MainViewController: NSViewController {
         
         group?.enter()
         let str = searchField.stringValue
+        yougetResult = nil
         guard str != "", str.isUrl else {
+            Processes.shared.stopDecodeURL()
+            isSearching = false
             return
         }
-        yougetResult = nil
         isSearching = true
         
         progressStatusChanged(true)
@@ -166,6 +168,7 @@ class MainViewController: NSViewController {
         guard row != -1 else {
             yougetResult = nil
             isSearching = false
+            Processes.shared.stopDecodeURL()
             return
         }
         if let key = yougetResult?.streams.keys.sorted()[row],

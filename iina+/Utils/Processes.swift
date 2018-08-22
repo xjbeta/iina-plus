@@ -41,12 +41,7 @@ class Processes: NSObject {
     func decodeURL(_ url: String,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
-        if let task = decodeTask, task.isRunning {
-            decodeTask?.suspend()
-            decodeTask?.terminate()
-            decodeTask?.waitUntilExit()
-            decodeTask = nil
-        }
+        stopDecodeURL()
         
         decodeTask = Process()
         let pipe = Pipe()
@@ -82,6 +77,15 @@ class Processes: NSObject {
             if let str = String(data: errorData, encoding: .utf8) {
                 Logger.log("Decode url error info: \(str)")
             }
+        }
+    }
+    
+    func stopDecodeURL() {
+        if let task = decodeTask, task.isRunning {
+            decodeTask?.suspend()
+            decodeTask?.terminate()
+            decodeTask?.waitUntilExit()
+            decodeTask = nil
         }
     }
     
