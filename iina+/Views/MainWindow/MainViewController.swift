@@ -440,7 +440,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
-                    view.textField?.stringValue = obj.streams.keys.sorted()[row]
+                    let key = obj.streams.keys.sorted()[row]
+                    view.textField?.stringValue = key + " - " + (obj.streams[key]?.videoProfile ?? "")
                     return view
                 }
             } else {
