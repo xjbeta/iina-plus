@@ -73,9 +73,8 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         if let item = indexPaths.first?.item,
             let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
             view.isSelected = true
-            if let main = self.parent as? MainViewController,
-                let searchItem = main.mainTabView.tabViewItems.filter({ $0.label == "Search" }).first {
-                main.mainTabView.selectTabViewItem(searchItem)
+            if let main = self.parent as? MainViewController {
+                main.selectTabItem(.search)
                 main.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)/?p=\(videoInfos[item].page)"
                 main.searchField.becomeFirstResponder()
                 main.startSearch(self)
