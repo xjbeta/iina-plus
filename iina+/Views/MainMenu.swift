@@ -66,5 +66,5 @@ class MainMenu: NSObject, NSMenuItemValidation {
             NSWorkspace.shared.open(url)
         }
     }
-    
+
 }

@@ -1,2 +1,3 @@
+github "DevMate/DevMateKit" "v1.8.3"
 github "daltoniam/SwiftHTTP" "3.0.1"
 github "utahiosmac/Marshal" "1.2.7"
