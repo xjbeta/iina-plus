@@ -22,6 +22,12 @@
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Check For Update" id="T8d-hC-pea">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="checkForUpdates:" target="dO5-7Y-WGR" id="txt-bu-6Lt"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
                                             <connections>
@@ -235,6 +241,7 @@
                     </connections>
                 </application>
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="iina_" customModuleProvider="target"/>
+                <customObject id="dO5-7Y-WGR" customClass="SUUpdater"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="XfU-aw-sKA" customClass="MainMenu" customModule="iina_" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -867,7 +874,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
-                                    <tabViewItem label="Bookmarks" identifier="Bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
+                                    <tabViewItem label="bookmarks" identifier="bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
                                         <view key="view" id="qi8-ue-hZX">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1026,7 +1033,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Bilibili" identifier="Bilibili" id="tzg-rU-KII">
+                                    <tabViewItem label="bilibili" identifier="bilibili" id="tzg-rU-KII">
                                         <view key="view" id="n1W-9O-2h1">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1035,7 +1042,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="641"/>
@@ -1202,7 +1209,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="Search" identifier="Search" id="b8j-z5-B7Q" userLabel="Search">
+                                    <tabViewItem label="search" identifier="search" id="b8j-z5-B7Q" userLabel="Search">
                                         <view key="view" id="izq-M8-HsP">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1222,7 +1229,7 @@
                                                     <rect key="frame" x="20" y="20" width="360" height="570"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="UI5-GE-yfn">
                                                         <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="iina_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
@@ -1330,7 +1337,7 @@
                                             </constraints>
                                         </view>
                                     </tabViewItem>
-                                    <tabViewItem label="SelectVideos" identifier="SelectVideos" id="gnN-wP-ZUv">
+                                    <tabViewItem label="selectVideos" identifier="selectVideos" id="gnN-wP-ZUv">
                                         <view key="view" id="cz5-5j-ukf">
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

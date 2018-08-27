@@ -34,7 +34,8 @@ struct Stream: Unmarshaling {
     var sig: String = ""
     var type: String = ""
     var url: String?
-    var size: String = ""
+    var videoProfile: String?
+    var size: Double?
     var src: [String] = []
     
     init(object: MarshaledObject) throws {
@@ -42,5 +43,7 @@ struct Stream: Unmarshaling {
         let srcArray: [String]? = try? object.value(for: "src")
         src = srcArray ?? []
         url = try? object.value(for: "url")
+        videoProfile = try? object.value(for: "video_profile")
+        size = try? object.value(for: "size")
     }
 }

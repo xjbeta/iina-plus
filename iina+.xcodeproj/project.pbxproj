@@ -17,10 +17,6 @@
 		01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010136211EFA75002F0F7F /* SuggestionsTableView.swift */; };
 		0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
-		010F0F0A20FCC17F00F33553 /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; };
-		010F0F0B20FCC17F00F33553 /* Marshal.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		010F0F0C20FCC17F00F33553 /* SwiftHTTP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0F0020FCC16700F33553 /* SwiftHTTP.framework */; };
-		010F0F0D20FCC17F00F33553 /* SwiftHTTP.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0F0020FCC16700F33553 /* SwiftHTTP.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */; };
 		010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
@@ -59,21 +55,15 @@
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
+		01F6C4E9213396560009672A /* DevMateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F6C4E5213396270009672A /* DevMateKit.framework */; };
+		01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01F6C4E5213396270009672A /* DevMateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01F6C4EC213396560009672A /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; };
+		01F6C4ED213396560009672A /* Marshal.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0F0020FCC16700F33553 /* SwiftHTTP.framework */; };
+		01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0F0020FCC16700F33553 /* SwiftHTTP.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		010F0F0E20FCC18000F33553 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				010F0F0D20FCC17F00F33553 /* SwiftHTTP.framework in Embed Frameworks */,
-				010F0F0B20FCC17F00F33553 /* Marshal.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		010F0F0F20FCC1D200F33553 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -83,6 +73,19 @@
 				010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */,
 				010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01F6C4EA213396560009672A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */,
+				01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */,
+				01F6C4ED213396560009672A /* Marshal.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -142,6 +145,8 @@
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
 		01F5151F210AE330007C7153 /* LiveInfoExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveInfoExtension.swift; sourceTree = "<group>"; };
+		01F6C4E5213396270009672A /* DevMateKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DevMateKit.framework; path = Carthage/Build/Mac/DevMateKit.framework; sourceTree = SOURCE_ROOT; };
+		01F6C4F2213396B20009672A /* iina+-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iina+-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,8 +154,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				010F0F0C20FCC17F00F33553 /* SwiftHTTP.framework in Frameworks */,
-				010F0F0A20FCC17F00F33553 /* Marshal.framework in Frameworks */,
+				01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */,
+				01F6C4E9213396560009672A /* DevMateKit.framework in Frameworks */,
+				01F6C4EC213396560009672A /* Marshal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +204,7 @@
 		010F0EFD20FCC15200F33553 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01F6C4E5213396270009672A /* DevMateKit.framework */,
 				010F0EFE20FCC16600F33553 /* Marshal.framework */,
 				010F0F0020FCC16700F33553 /* SwiftHTTP.framework */,
 				010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */,
@@ -286,6 +293,7 @@
 				01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */,
 				010F0F1220FE1DD100F33553 /* Preferences.swift */,
 				01AEC8B320EDFD02001406E8 /* Info.plist */,
+				01F6C4F2213396B20009672A /* iina+-Bridging-Header.h */,
 			);
 			path = "iina+";
 			sourceTree = "<group>";
@@ -322,9 +330,9 @@
 				01AEC8A320EDFD01001406E8 /* Sources */,
 				01AEC8A420EDFD01001406E8 /* Frameworks */,
 				01AEC8A520EDFD01001406E8 /* Resources */,
-				010F0F0E20FCC18000F33553 /* Embed Frameworks */,
 				010F0F0F20FCC1D200F33553 /* CopyFiles */,
 				019BFF5D212485B900E715CC /* ShellScript */,
+				01F6C4EA213396560009672A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -609,9 +617,11 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
@@ -634,9 +644,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;

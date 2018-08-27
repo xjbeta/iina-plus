@@ -9,9 +9,10 @@
 import Cocoa
 
 enum SidebarItem: String {
-    case live
+    case bookmarks
     case bilibili
     case search
+    case selectVideos
     case none
     
     init?(raw: String) {
@@ -23,14 +24,17 @@ class SidebarViewController: NSViewController {
 
     @IBOutlet weak var progressIndicator: NSProgressIndicator!
     @IBOutlet weak var sidebarTableView: NSTableView!
-    var sideBarItems: [SidebarItem] = [.live, .search]
+    var sideBarItems: [SidebarItem] = [.bookmarks, .search]
     var sideBarSelectedItem: SidebarItem = .none
     override func viewDidLoad() {
         super.viewDidLoad()
         sideBarSelectedItem = sideBarItems.first ?? .none
-        NotificationCenter.default.addObserver(forName: .startSearch, object: nil, queue: .main) { _ in
-            if let index = self.sideBarItems.index(of: .search) {
-                self.sidebarTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
+        NotificationCenter.default.addObserver(forName: .updateSideBarSelection, object: nil, queue: .main) {
+            if let userInfo = $0.userInfo as? [String: SidebarItem],
+                let newItem = userInfo["newItem"] {
+                if let index = self.sideBarItems.index(of: newItem) {
+                    self.sidebarTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
+                }
             }
         }
         
@@ -68,7 +72,7 @@ class SidebarViewController: NSViewController {
                     self.sideBarItems.insert(.bilibili, at: 1)
                     self.sidebarTableView.insertRows(at: IndexSet(integer: 1), withAnimation: .effectFade)
                 } else if self.sideBarItems.count != 3 {
-                    self.sideBarItems = [.live, .bilibili, .search]
+                    self.sideBarItems = [.bookmarks, .bilibili, .search]
                     self.sidebarTableView.reloadData()
                 }
             } else {
@@ -76,7 +80,7 @@ class SidebarViewController: NSViewController {
                     self.sideBarItems.remove(at: index)
                     self.sidebarTableView.removeRows(at: IndexSet(integer: index), withAnimation: .effectFade)
                 } else if self.sideBarItems.count != 2 {
-                    self.sideBarItems = [.live, .search]
+                    self.sideBarItems = [.bookmarks, .search]
                     self.sidebarTableView.reloadData()
                 }
             }
@@ -112,7 +116,7 @@ extension SidebarViewController: NSTableViewDelegate, NSTableViewDataSource {
         }
         sideBarSelectedItem = sideBarItems[sidebarTableView.selectedRow]
         
-        NotificationCenter.default.post(name: .sideBarSelectionChanged, object: nil, userInfo: ["selectedItem": sideBarSelectedItem.rawValue])
+        NotificationCenter.default.post(name: .sideBarSelectionChanged, object: nil, userInfo: ["selectedItem": sideBarSelectedItem])
     }
     
     

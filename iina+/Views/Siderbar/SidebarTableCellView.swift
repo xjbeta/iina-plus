@@ -36,7 +36,7 @@ class SidebarTableCellView: NSTableCellView {
         switch item {
         case .bilibili:
             imageName = "bilibiliItem"
-        case .live:
+        case .bookmarks:
             imageName = "bookmarkItem"
         case .search:
             imageName = "searchItem"

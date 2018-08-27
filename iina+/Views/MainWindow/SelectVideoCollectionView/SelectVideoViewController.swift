@@ -37,28 +37,9 @@ class SelectVideoViewController: NSViewController {
     }
     
     var aid: Int = 0
-    var oldTabItem = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            switch event.keyCode {
-            case 53:
-                if let main = self.parent as? MainViewController {
-                    guard let str = main.mainTabView.selectedTabViewItem?.identifier as? String,
-                        str == MainViewController.MainTabViewItems.selectVideos.rawValue else {
-                        return event
-                    }
-
-                    if let item = MainViewController.MainTabViewItems(rawValue: self.oldTabItem) {
-                        main.selectTabItem(item)
-                    }
-                }
-            default:
-                break
-            }
-            return event
-        }
     }
     
 }
@@ -92,9 +73,8 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         if let item = indexPaths.first?.item,
             let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
             view.isSelected = true
-            if let main = self.parent as? MainViewController,
-                let searchItem = main.mainTabView.tabViewItems.filter({ $0.label == "Search" }).first {
-                main.mainTabView.selectTabViewItem(searchItem)
+            if let main = self.parent as? MainViewController {
+                main.selectTabItem(.search)
                 main.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)/?p=\(videoInfos[item].page)"
                 main.searchField.becomeFirstResponder()
                 main.startSearch(self)

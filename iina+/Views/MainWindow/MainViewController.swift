@@ -16,6 +16,7 @@ private extension NSPasteboard.PasteboardType {
 class MainViewController: NSViewController {
     // MARK: - Main Views
     @IBOutlet weak var mainTabView: NSTabView!
+    var mainTabViewOldItem = SidebarItem.none
     @objc dynamic var mainTabViewSelectedIndex = 0
     
     var mainWindowController: MainWindowController {
@@ -102,7 +103,7 @@ class MainViewController: NSViewController {
         isSearching = true
         
         progressStatusChanged(true)
-        NotificationCenter.default.post(name: .startSearch, object: nil)
+        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             url.lastPathComponent.starts(with: "av"),
@@ -212,11 +213,10 @@ class MainViewController: NSViewController {
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
         NotificationCenter.default.addObserver(forName: .sideBarSelectionChanged, object: nil, queue: .main) {
-            if let userInfo = $0.userInfo as? [String: String],
-                let str = userInfo["selectedItem"],
-                let item = SidebarItem(raw: str) {
+            if let userInfo = $0.userInfo as? [String: SidebarItem],
+                let item = userInfo["selectedItem"] {
                 switch item {
-                case .live:
+                case .bookmarks:
                     self.selectTabItem(.bookmarks)
                 case .bilibili:
                     self.selectTabItem(.bilibili)
@@ -228,6 +228,35 @@ class MainViewController: NSViewController {
             }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
+        
+        // esc key down event
+        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            switch event.keyCode {
+            case 53:
+                if let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
+                    let item = SidebarItem(rawValue: str) {
+                    let oldItem = self.mainTabViewOldItem
+                    
+                    switch item {
+                    case .selectVideos, .search:
+                        switch oldItem {
+                        case .bookmarks, .bilibili, .search:
+                            NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": oldItem])
+                            self.selectTabItem(oldItem)
+                            self.mainTabViewOldItem = .none
+                            return nil
+                        default:
+                            break
+                        }
+                    default:
+                        break
+                    }
+                }
+            default:
+                break
+            }
+            return event
+        }
     }
     
     var canLoadMoreBilibiliCards = true
@@ -259,17 +288,11 @@ class MainViewController: NSViewController {
         
     }
     
-    enum MainTabViewItems: String {
-        case bookmarks = "Bookmarks"
-        case bilibili = "Bilibili"
-        case search = "Search"
-        case selectVideos = "SelectVideos"
-        init?(raw: String) {
-            self.init(rawValue: raw)
+    func selectTabItem(_ item: SidebarItem) {
+        if let str = mainTabView.selectedTabViewItem?.identifier as? String,
+            let item = SidebarItem(raw: str) {
+            mainTabViewOldItem = item
         }
-    }
-    
-    func selectTabItem(_ item: MainTabViewItems) {
         mainTabView.selectTabViewItem(withIdentifier: item.rawValue)
     }
     
@@ -333,9 +356,6 @@ class MainViewController: NSViewController {
                 self.searchField.stringValue = ""
                 selectVideoViewController.videoInfos = infos
                 selectVideoViewController.aid = aid
-                if let str = self.mainTabView.selectedTabViewItem?.identifier as? String {
-                    selectVideoViewController.oldTabItem = str
-                }
                 self.selectTabItem(.selectVideos)
             }
         }
@@ -420,7 +440,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
-                    view.textField?.stringValue = obj.streams.keys.sorted()[row]
+                    let key = obj.streams.keys.sorted()[row]
+                    view.textField?.stringValue = key + " - " + (obj.streams[key]?.videoProfile ?? "")
                     return view
                 }
             } else {
