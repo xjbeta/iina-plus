@@ -51,6 +51,7 @@
 		01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8BD20EE108B001406E8 /* Processes.swift */; };
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
+		01C232E92134FABC0021C28F /* ykdl in Copy Executables */ = {isa = PBXBuildFile; fileRef = 01C232E72134FAB20021C28F /* ykdl */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
@@ -73,6 +74,17 @@
 				010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */,
 				010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01C232E52134EBDD0021C28F /* Copy Executables */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				01C232E92134FABC0021C28F /* ykdl in Copy Executables */,
+			);
+			name = "Copy Executables";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01F6C4EA213396560009672A /* Embed Frameworks */ = {
@@ -140,6 +152,7 @@
 		01AEC8BD20EE108B001406E8 /* Processes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processes.swift; sourceTree = "<group>"; };
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
+		01C232E72134FAB20021C28F /* ykdl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ykdl; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
@@ -265,6 +278,14 @@
 			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
 		};
+		016792F1212E57F6003517A7 /* Executables */ = {
+			isa = PBXGroup;
+			children = (
+				01C232E72134FAB20021C28F /* ykdl */,
+			);
+			path = Executables;
+			sourceTree = "<group>";
+		};
 		01AEC89E20EDFD01001406E8 = {
 			isa = PBXGroup;
 			children = (
@@ -286,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
+				016792F1212E57F6003517A7 /* Executables */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
 				010F0F2E20FF414E00F33553 /* Core Data */,
 				012601722119BA6D00C9C639 /* Utils */,
@@ -333,6 +355,7 @@
 				010F0F0F20FCC1D200F33553 /* CopyFiles */,
 				019BFF5D212485B900E715CC /* ShellScript */,
 				01F6C4EA213396560009672A /* Embed Frameworks */,
+				01C232E52134EBDD0021C28F /* Copy Executables */,
 			);
 			buildRules = (
 			);
