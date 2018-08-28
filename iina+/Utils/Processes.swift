@@ -14,6 +14,17 @@ class Processes: NSObject {
     
     static let shared = Processes()
     
+    private var internalYKDL: String? {
+        get {
+            var path = Bundle.main.executablePath
+            path?.deleteLastPathComponent()
+            if let path = path {
+                return path + "/ykdl"
+            }
+            return nil
+        }
+    }
+    
     fileprivate override init() {
     }
     
@@ -48,7 +59,15 @@ class Processes: NSObject {
         let errorPipe = Pipe()
         decodeTask?.standardError = errorPipe
         decodeTask?.standardOutput = pipe
-        decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
+        
+        switch Preferences.shared.liveDecoder {
+        case .internalYKDL:
+            decodeTask?.launchPath = internalYKDL
+        case .ykdl, .youget:
+            decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
+        case .internal😀:
+            return
+        }
         decodeTask?.arguments  = ["--json", url]
         decodeTask?.launch()
         

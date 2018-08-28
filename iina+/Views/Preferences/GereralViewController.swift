@@ -78,14 +78,15 @@ enum LivePlayer: String {
 
 enum LiveDecoder: String {
     case internal😀
+    case internalYKDL
     case ykdl
     case youget = "you-get"
     
     init(raw: String) {
-        if let decoder = LiveDecoder.init(rawValue: raw) {
+        if let decoder = LiveDecoder(rawValue: raw) {
             self = decoder
         } else {
-            self = .ykdl
+            self = .internalYKDL
         }
     }
     
@@ -94,9 +95,11 @@ enum LiveDecoder: String {
         case 0:
             self = .internal😀
         case 2:
+            self = .ykdl
+        case 3:
             self = .youget
         default:
-            self = .ykdl
+            self = .internalYKDL
         }
     }
     
@@ -104,10 +107,12 @@ enum LiveDecoder: String {
         switch self {
         case .internal😀:
             return 0
-        case .ykdl:
+        case .internalYKDL:
             return 1
-        case .youget:
+        case .ykdl:
             return 2
+        case .youget:
+            return 3
         }
     }
 }
