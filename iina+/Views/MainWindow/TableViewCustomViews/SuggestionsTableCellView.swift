@@ -35,7 +35,7 @@ class SuggestionsTableCellView: NSTableCellView {
             strArray.append(videoProfile)
         }
         
-        if let size = stream.value.size {
+        if let size = stream.value.size, size != 0 {
             let formatter = ByteCountFormatter()
             formatter.countStyle = .file
             strArray.append(formatter.string(fromByteCount: size))
