@@ -85,11 +85,17 @@ class Processes: NSObject {
                 let re = try YouGetJSON(object: json)
                 block(re)
             } catch let er {
-                error(er)
                 Logger.log("JSON decode error: \(er)")
                 if let str = String(data: data, encoding: .utf8) {
                     Logger.log("JSON string: \(str)")
+                    if str.contains("Real URL") {
+                        let url = str.subString(from: "['", to: "']")
+                        let re = YouGetJSON.init(url: url)
+                        block(re)
+                        return
+                    }
                 }
+                error(er)
             }
             
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
