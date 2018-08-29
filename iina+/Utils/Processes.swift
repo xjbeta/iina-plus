@@ -103,7 +103,6 @@ class Processes: NSObject {
         if let task = decodeTask, task.isRunning {
             decodeTask?.suspend()
             decodeTask?.terminate()
-            decodeTask?.waitUntilExit()
             decodeTask = nil
         }
     }
