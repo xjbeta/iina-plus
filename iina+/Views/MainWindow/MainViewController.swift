@@ -416,7 +416,6 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                     }
                 default:
                     if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-//                        view.resetInfo()
                         getInfo(url, { liveInfo in
                             view.setInfo(liveInfo)
                         }) { re in
@@ -440,8 +439,11 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
-                    let key = obj.streams.keys.sorted()[row]
-                    view.textField?.stringValue = key + " - " + (obj.streams[key]?.videoProfile ?? "")
+                    let streams = obj.streams.sorted {
+                        $0.value.size ?? 0 > $1.value.size ?? 0
+                    }
+                    let stream = streams[row]
+                    view.setStream(stream)
                     return view
                 }
             } else {

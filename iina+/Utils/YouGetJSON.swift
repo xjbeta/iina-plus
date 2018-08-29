@@ -35,7 +35,7 @@ struct Stream: Unmarshaling {
     var type: String = ""
     var url: String?
     var videoProfile: String?
-    var size: Double?
+    var size: Int64?
     var src: [String] = []
     
     init(object: MarshaledObject) throws {
