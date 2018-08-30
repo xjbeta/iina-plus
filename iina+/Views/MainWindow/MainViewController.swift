@@ -280,7 +280,14 @@ class MainViewController: NSViewController {
     }
     
     @objc func reloadTableView() {
-        bookmarkTableView.reloadData()
+        var row = 0
+        while row < bookmarkTableView.numberOfRows {
+            if let view = bookmarkTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView {
+                view.getInfo()
+            }
+            row += 1
+        }
+        
         loadBilibiliCards()
         if mainTabView.selectedTabViewItem?.label == "Search" {
             mainWindowController.window?.makeFirstResponder(searchField)
@@ -416,16 +423,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                     }
                 default:
                     if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                        getInfo(url, { liveInfo in
-                            view.setInfo(liveInfo)
-                        }) { re in
-                            do {
-                                let _ = try re()
-                            } catch let error {
-                                Logger.log("Get live status error: \(error)")
-                                view.setErrorInfo(str)
-                            }
-                        }
+                        view.url = url
                         return view
                     }
                 }

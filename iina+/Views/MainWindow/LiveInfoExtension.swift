@@ -186,7 +186,7 @@ struct YiZhiBo: Unmarshaling, LiveInfo {
 
 typealias HTTPErrorCallback = () throws -> Bool
 
-extension MainViewController {
+extension LiveStatusTableCellView {
     func getInfo(_ url: URL,
                  _ completion: @escaping ((LiveInfo) -> Void),
                  _ error: @escaping ((HTTPErrorCallback) -> Void)) {
