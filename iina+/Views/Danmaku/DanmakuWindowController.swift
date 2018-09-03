@@ -66,11 +66,14 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
                 guard cid != 0 else { return }
                 
                 HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                    FileManager.default.createFile(atPath: "/Users/xjbeta/Developer/CommentCoreLibrary/download/1.xml", contents: $0.data, attributes: nil)
+                    
+                    let danmakuFilePath = Bundle.main.resourcePath! + "/iina-plus-danmaku.xml"
+                    
+                    FileManager.default.createFile(atPath: danmakuFilePath, contents: $0.data, attributes: nil)
                     
                     if let danmakuViewController = self.contentViewController as? DanmakuViewController {
                         DispatchQueue.main.async {
-                            danmakuViewController.webView.evaluateJavaScript("loadDM(\"../download/1.xml\");") { (_, _) in
+                            danmakuViewController.webView.evaluateJavaScript("loadDM(\"\(danmakuFilePath)\");") { (_, _) in
                             }
                         }
                     }
