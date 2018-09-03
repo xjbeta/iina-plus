@@ -45,10 +45,12 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
                 if vInfo.count == 1 {
                     cid = vInfo[0].cid
                 } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                    let pInt = Int(p),
-                    pInt < vInfo.count,
-                    pInt > 0 {
+                    var pInt = Int(p) {
+                    pInt -= 1
+                    if pInt < vInfo.count,
+                        pInt >= 0 {
                     cid = vInfo[pInt].cid
+                    }
                 }
                 group.leave()
             }) { re in
@@ -62,7 +64,8 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
             
             group.notify(queue: .main) {
                 guard cid != 0 else { return }
-                HTTP.GET("https://api.bilibili.com/x/v1/dm/list.so?oid=\(cid)") {
+                
+                HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
                     FileManager.default.createFile(atPath: "/Users/xjbeta/Developer/CommentCoreLibrary/download/1.xml", contents: $0.data, attributes: nil)
                     
                     if let danmakuViewController = self.contentViewController as? DanmakuViewController {
@@ -78,65 +81,87 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     
     func initMpvSocket() {
         Processes.shared.mpvSocket { socketStr in
-            do {
-                let data = socketStr.data(using: .utf8) ?? Data()
-                let json = try JSONParser.JSONObjectWithData(data)
-                let socketEvent = try MpvSocketEvent(object: json)
-                if let event = socketEvent.event {
-                    switch event {
-                    case .pause:
-                        print("pause")
-                    case .unpause:
-                        print("unpause")
-                    case .propertyChange:
-                        if socketEvent.name == "time-pos" {
-                            
-                            
-                        } else if socketEvent.name == "window-scale" {
-                            print("window-scale")
+            var isPasued = false
+            if let webView = (self.contentViewController as? DanmakuViewController)?.webView {
+                DispatchQueue.main.async {
+                    do {
+                        let data = socketStr.data(using: .utf8) ?? Data()
+                        let json = try JSONParser.JSONObjectWithData(data)
+                        let socketEvent = try MpvSocketEvent(object: json)
+                        if let event = socketEvent.event {
+                            switch event {
+                            case .pause:
+                                webView.evaluateJavaScript("window.cm.stop()") { (_, _) in
+                                }
+                                isPasued = true
+                                Logger.log("iina pasued")
+                            case .unpause:
+                                webView.evaluateJavaScript("window.cm.start()") { (_, _) in
+                                }
+                                isPasued = false
+                                Logger.log("iina unpause")
+                            case .propertyChange:
+                                if socketEvent.name == "time-pos" {
+                                    guard let timeStr = socketEvent.data, let time = Double(timeStr), !isPasued else {
+                                        return
+                                    }
+                                    webView.evaluateJavaScript("window.cm.time(Math.floor(\(time * 1000)))") { (_, _) in
+                                    }
+//                                    Logger.log("iina seek")
+                                } else if socketEvent.name == "window-scale" {
+                                    self.resizeWindow()
+                                    webView.evaluateJavaScript("window.resize()") { (_, _) in
+                                    }
+                                    Logger.log("iina window-scale")
+                                }
+                            case .idle:
+                                self.window?.orderOut(self)
+                                Logger.log("iina idle")
+                            }
+                        } else if let re = socketEvent.success {
+                            Logger.log("iina event success? \(re)")
+                        } else {
+                            Logger.log("iina event \(socketStr)")
                         }
-                    case .idle:
-                        print("idle")
+                    } catch let error {
+                        Logger.log("mpvSocket error \(error)")
                     }
-                } else if let re = socketEvent.success {
-                    print(re)
-                } else {
-                    print(socketStr)
                 }
-            } catch let error {
-                print(error)
             }
         }
     }
     
     
-    
     @objc func foremostAppActivated(_ notification: NSNotification) {
-        if let app = notification.userInfo?["NSWorkspaceApplicationKey"] as? NSRunningApplication {
-            if app.bundleIdentifier == "com.colliderli.iina" || app.bundleIdentifier == "com.xjbeta.iina-plus" {
-                let tt = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .optionOnScreenAboveWindow], kCGNullWindowID) as? [[String: AnyObject]]
-                if let d = tt?.filter ({
-                    if let owner = $0["kCGWindowOwnerName"] as? String,
-                        owner == "IINA",
-                        let title = $0["kCGWindowName"] as? String,
-                        title == targeTitle {
-                        return true
-                    } else {
-                        return false
-                    }
-                }).first {
-                    let w = WindowData(d)
-                    var re = w.frame
-                    re.origin.y = (NSScreen.main?.frame.size.height)! - re.size.height - re.origin.y
-                    window?.setFrame(re, display: true)
-                    window?.orderFront(self)
-                    if waittingSocket {
-                        initMpvSocket()
-                        waittingSocket = false
-                    }
-                }
-            } else {
+        
+        guard let app = notification.userInfo?["NSWorkspaceApplicationKey"] as? NSRunningApplication,
+            app.bundleIdentifier == "com.colliderli.iina" else {
                 window?.orderOut(self)
+                return
+        }
+        resizeWindow()
+    }
+    
+    func resizeWindow() {
+        let tt = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .optionOnScreenAboveWindow], kCGNullWindowID) as? [[String: AnyObject]]
+        if let d = tt?.filter ({
+            if let owner = $0["kCGWindowOwnerName"] as? String,
+                owner == "IINA",
+                let title = $0["kCGWindowName"] as? String,
+                title == targeTitle {
+                return true
+            } else {
+                return false
+            }
+        }).first {
+            let w = WindowData(d)
+            var re = w.frame
+            re.origin.y = (NSScreen.main?.frame.size.height)! - re.size.height - re.origin.y
+            window?.setFrame(re, display: true)
+            window?.orderFront(self)
+            if waittingSocket {
+                initMpvSocket()
+                waittingSocket = false
             }
         }
     }

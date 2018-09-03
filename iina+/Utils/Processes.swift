@@ -194,7 +194,7 @@ class Processes: NSObject {
                 if let obs = "{ \"command\": [\"observe_property_string\", 1, \"time-pos\"] }\n".data(using: .utf8) {
                     try socket.write(from: obs)
                 }
-                if let obs = "{ \"command\": [\"observe_property\", 2, \"window-scale\"] }\n".data(using: .utf8) {
+                if let obs = "{ \"command\": [\"observe_property_string\", 2, \"window-scale\"] }\n".data(using: .utf8) {
                     try socket.write(from: obs)
                 }
                 
@@ -210,7 +210,6 @@ class Processes: NSObject {
                 print(error)
             }
         }
-        
     }
     
     
