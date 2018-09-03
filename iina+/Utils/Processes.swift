@@ -178,11 +178,9 @@ class Processes: NSObject {
         Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
-        completion()
-        
     }
     
-    func mpvSocket(_ block: @escaping () -> Void = {}) {
+    func mpvSocket(_ block: @escaping (_ str: String) -> Void) {
         
         let queue = DispatchQueue(label: "socket.test.iina+")
         queue.async {
@@ -191,19 +189,21 @@ class Processes: NSObject {
             do {
                 let socket = try Socket.create(family: .unix, proto: .unix)
                 try socket.connect(to: server)
-                print(socket.isConnected)
+                Logger.log("mpv socket connect: \(socket.isConnected)")
                 
-                
-                if let obs = "{ \"command\": [\"observe_property\", 1, \"time-pos\"] }\n".data(using: .utf8) {
+                if let obs = "{ \"command\": [\"observe_property_string\", 1, \"time-pos\"] }\n".data(using: .utf8) {
+                    try socket.write(from: obs)
+                }
+                if let obs = "{ \"command\": [\"observe_property\", 2, \"window-scale\"] }\n".data(using: .utf8) {
                     try socket.write(from: obs)
                 }
                 
                 let shouldKeepRunning = true
                 repeat {
                     let str = try socket.readString()
-                    print(str)
-                    
-                    
+                    if let str = str {
+                        block(str)
+                    }
                 } while socket.isConnected && shouldKeepRunning
                 
             } catch let error {

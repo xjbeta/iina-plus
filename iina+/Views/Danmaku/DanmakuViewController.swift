@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftHTTP
 
 class DanmakuViewController: NSViewController {
 
@@ -48,23 +47,7 @@ class DanmakuViewController: NSViewController {
         
     }
     @IBAction func loadDM(_ sender: Any) {
-        // 炮姐测试
-//        let xmlUrl = "https://api.bilibili.com/x/v1/dm/list.so?oid=1176840"
-        
-        //静态弹幕
-//        let xmlUrl = "https://api.bilibili.com/x/v1/dm/list.so?oid=4279031"
-        
-//        let xmlUrl = "https://api.bilibili.com/x/v1/dm/list.so?oid=8346350"
-        let xmlUrl = "https://comment.bilibili.com/53378010.xml"
-//        let xmlUrl = "https://jabbany.github.io/CommentCoreLibrary/test/test.xml"
-        
-        HTTP.GET(xmlUrl) {
-//            print($0.text)
-            FileManager.default.createFile(atPath: "/Users/xjbeta/Developer/CommentCoreLibrary/download/1.xml", contents: $0.data, attributes: nil)
-            DispatchQueue.main.async {
-                self.webView.evaluateJavaScript("loadDM(\"../download/1.xml\");") { (_, _) in
-                }
-            }
+        self.webView.evaluateJavaScript("loadDM(\"../download/1.xml\");") { (_, _) in
         }
     }
     
