@@ -59,6 +59,9 @@
 		01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; };
 		01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CABC213C173F00C4939B /* Socket.framework.dSYM */; };
+		01E8CAC7213D236E00C4939B /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC4213D236E00C4939B /* default.css */; };
+		01E8CAC8213D236E00C4939B /* index.htm in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC5213D236E00C4939B /* index.htm */; };
+		01E8CAC9213D236E00C4939B /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
@@ -166,6 +169,9 @@
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01E8CABC213C173F00C4939B /* Socket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Socket.framework.dSYM; path = Carthage/Build/Mac/Socket.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01E8CABD213C173F00C4939B /* Socket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Socket.framework; path = Carthage/Build/Mac/Socket.framework; sourceTree = SOURCE_ROOT; };
+		01E8CAC4213D236E00C4939B /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
+		01E8CAC5213D236E00C4939B /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
+		01E8CAC6213D236E00C4939B /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -323,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
+				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
 				016792F1212E57F6003517A7 /* Executables */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
 				010F0F2E20FF414E00F33553 /* Core Data */,
@@ -351,6 +358,16 @@
 				01C232EF21358BF80021C28F /* DanmakuViewController.swift */,
 			);
 			path = Danmaku;
+			sourceTree = "<group>";
+		};
+		01E8CAC3213D235A00C4939B /* DanmakuWeb */ = {
+			isa = PBXGroup;
+			children = (
+				01E8CAC4213D236E00C4939B /* default.css */,
+				01E8CAC5213D236E00C4939B /* index.htm */,
+				01E8CAC6213D236E00C4939B /* main.js */,
+			);
+			path = DanmakuWeb;
 			sourceTree = "<group>";
 		};
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
@@ -443,8 +460,11 @@
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01E8CABE213C173F00C4939B /* Socket.framework.dSYM in Resources */,
+				01E8CAC8213D236E00C4939B /* index.htm in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
+				01E8CAC9213D236E00C4939B /* main.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
+				01E8CAC7213D236E00C4939B /* default.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
