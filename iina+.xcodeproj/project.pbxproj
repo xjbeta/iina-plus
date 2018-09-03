@@ -62,6 +62,8 @@
 		01E8CAC7213D236E00C4939B /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC4213D236E00C4939B /* default.css */; };
 		01E8CAC8213D236E00C4939B /* index.htm in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC5213D236E00C4939B /* index.htm */; };
 		01E8CAC9213D236E00C4939B /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
+		01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
+		01E8CACD213D263800C4939B /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
@@ -172,6 +174,8 @@
 		01E8CAC4213D236E00C4939B /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
 		01E8CAC5213D236E00C4939B /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
 		01E8CAC6213D236E00C4939B /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
+		01E8CACA213D263000C4939B /* CommentCoreLibrary.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CommentCoreLibrary.js; sourceTree = "<group>"; };
+		01E8CACC213D263800C4939B /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -366,8 +370,18 @@
 				01E8CAC4213D236E00C4939B /* default.css */,
 				01E8CAC5213D236E00C4939B /* index.htm */,
 				01E8CAC6213D236E00C4939B /* main.js */,
+				01E8CACE213D264300C4939B /* CommentCoreLibrary */,
 			);
 			path = DanmakuWeb;
+			sourceTree = "<group>";
+		};
+		01E8CACE213D264300C4939B /* CommentCoreLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				01E8CACA213D263000C4939B /* CommentCoreLibrary.js */,
+				01E8CACC213D263800C4939B /* style.css */,
+			);
+			path = CommentCoreLibrary;
 			sourceTree = "<group>";
 		};
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
@@ -459,6 +473,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
+				01E8CACD213D263800C4939B /* style.css in Resources */,
+				01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */,
 				01E8CABE213C173F00C4939B /* Socket.framework.dSYM in Resources */,
 				01E8CAC8213D236E00C4939B /* index.htm in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
