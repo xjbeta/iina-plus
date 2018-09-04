@@ -10,6 +10,7 @@ function bind() {
         var defWidth = 680;
         var scale = $("player").offsetWidth / defWidth;
         window.cm.options.scroll.scale = scale;
+        cm.setBounds();
     }
 
     BaseProvider = function (url) {
