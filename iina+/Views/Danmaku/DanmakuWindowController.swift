@@ -9,12 +9,17 @@
 import Cocoa
 import SwiftHTTP
 import Marshal
+import SocketRocket
 
 class DanmakuWindowController: NSWindowController, NSWindowDelegate {
 
     var targeTitle = ""
     var videoUrl = ""
     var waittingSocket = false
+    
+    let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
+    var biliLiveRoomID = 0
+    var socket: SRWebSocket? = nil
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -31,7 +36,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         
     }
     
-    func initDanmaku(_ title: String, url: String) {
+    func initDanmakuForBilibili(_ title: String, url: String) {
         targeTitle = title
         videoUrl = url
         waittingSocket = true
@@ -66,21 +71,55 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
                 guard cid != 0 else { return }
                 
                 HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                    
-                    let danmakuFilePath = Bundle.main.resourcePath! + "/iina-plus-danmaku.xml"
-                    
-                    FileManager.default.createFile(atPath: danmakuFilePath, contents: $0.data, attributes: nil)
-                    
-                    if let danmakuViewController = self.contentViewController as? DanmakuViewController {
-                        DispatchQueue.main.async {
-                            danmakuViewController.webView.evaluateJavaScript("loadDM(\"\(danmakuFilePath)\");") { (_, _) in
-                            }
-                        }
-                    }
+                    self.loadDM($0.data)
                 }
             }
         }
     }
+    
+    func initDanmakuForBiliLive(_ title: String, url: String) {
+        targeTitle = title
+        videoUrl = url
+        waittingSocket = true
+        
+        socket = SRWebSocket(url: biliLiveServer!)
+        socket?.delegate = self
+        
+        let roomID = URL(string: url)?.lastPathComponent ?? ""
+        
+        HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
+            do {
+                let json = try JSONParser.JSONObjectWithData($0.data)
+                self.biliLiveRoomID = try json.value(for: "data.room_id")
+                self.socket?.open()
+                if let danmakuViewController = self.contentViewController as? DanmakuViewController {
+                    DispatchQueue.main.async {
+                        danmakuViewController.webView.evaluateJavaScript("window.initDM();") { (_, _) in
+                        }
+                    }
+                }
+            } catch let error {
+                Logger.log("can't find bilibili live room id \(error)")
+            }
+        }
+    }
+    
+    private var timer: DispatchSourceTimer?
+    
+    private var timerQueue = DispatchQueue(label: "com.xjbeta.iina+.WebSocketKeepLive")
+    
+    private func startTimer() {
+        timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
+        if let timer = timer {
+            timer.schedule(deadline: .now(), repeating: .seconds(30))
+            timer.setEventHandler {
+                try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+            }
+            timer.resume()
+        }
+    }
+    
+    
     
     func initMpvSocket() {
         Processes.shared.mpvSocket { socketStr in
@@ -168,7 +207,97 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         }
     }
     
+    func loadDM(_ data: Data) {
+        let danmakuFilePath = Bundle.main.resourcePath! + "/iina-plus-danmaku.xml"
+        
+        FileManager.default.createFile(atPath: danmakuFilePath, contents: data, attributes: nil)
+        
+        if let danmakuViewController = self.contentViewController as? DanmakuViewController {
+            DispatchQueue.main.async {
+                danmakuViewController.webView.evaluateJavaScript("loadDM(\"\(danmakuFilePath)\");") { (_, _) in
+                }
+            }
+        }
+    }
     
+    func sendDM(_ str: String) {
+        if let webView = (self.contentViewController as? DanmakuViewController)?.webView {
+            webView.evaluateJavaScript("""
+                window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border': false})
+            """) { _, _ in
+            }
+        }
+    }
+    
+}
+
+extension DanmakuWindowController: SRWebSocketDelegate {
+    
+    func webSocketDidOpen(_ webSocket: SRWebSocket) {
+        Logger.log("webSocketDidOpen")
+        
+        let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
+        srand48(Int(time))
+        
+        // test roomid 23058
+        let json = String(format: "{\"roomid\":%d,\"uid\":%ld}", biliLiveRoomID, drand48() * 1000000000000000)
+        let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
+        data.append(json.data(using: .utf8)!)
+        try? webSocket.send(data: data as Data)
+        
+        startTimer()
+    }
+    
+    func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
+        Logger.log("webSocketdidClose \(reason ?? "")")
+        
+        timer?.suspend()
+        
+    }
+    
+    
+    func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
+        var d = data
+        guard d.count > 16 else { return }
+        let range = 16..<d.count
+        d = d.subdata(in: range)
+        
+        struct DanmuMsg: Decodable {
+            struct ResultObj: Decodable {
+                let msg: String?
+                init(from decoder: Decoder) throws {
+                    let unkeyedContainer = try decoder.singleValueContainer()
+                    msg = try? unkeyedContainer.decode(String.self)
+                }
+            }
+            var info: [ResultObj]
+        }
+        
+        if let re = try? JSONDecoder().decode(DanmuMsg.self, from: d), let msg = re.info.compactMap ({ $0.msg }).first {
+            sendDM(msg)
+        }
+    }
+    
+    func pack(format: String, values: [Int]) -> NSMutableData {
+        let data = NSMutableData()
+        
+        format.enumerated().forEach {
+            let value = values[$0.offset]
+            switch $0.element {
+            case "n":
+                let number: UInt16 = UInt16(value)
+                var convertedNumber = CFSwapInt16(number)
+                data.append(&convertedNumber, length: 2)
+            case "N":
+                let number: UInt32 = UInt32(value)
+                var convertedNumber = CFSwapInt32(number)
+                data.append(&convertedNumber, length: 4)
+            default:
+                print("Unrecognized character: \($0.element)")
+            }
+        }
+        return data
+    }
 }
 
 struct WindowData {

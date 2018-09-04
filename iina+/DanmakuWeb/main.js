@@ -38,6 +38,18 @@ function bind() {
         });
     };
 
+    window.initDM = function() {
+        if (window._provider && window._provider instanceof CommentProvider) {
+            window._provider.destroy();
+        }
+        window._provider = new CommentProvider();
+        cm.clear();
+        window._provider.addTarget(cm);
+        resize();
+        cm.init();
+        cm.start();
+    };
+    
     /** Load **/
     window.loadDM = function(dmf, provider) {
         if (window._provider && window._provider instanceof CommentProvider) {

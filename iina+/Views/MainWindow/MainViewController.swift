@@ -193,10 +193,22 @@ class MainViewController: NSViewController {
                 case .unsupported:
                     if host == "www.bilibili.com" {
                         Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
-                        self.danmakuWindowController?.initDanmaku(title, url: searchField.stringValue)
                     } else {
                         Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
                     }
+                }
+                
+                // init Danmaku
+                switch LiveSupportList(raw: host) {
+                case .bilibili:
+                    self.danmakuWindowController?.initDanmakuForBiliLive(title, url: searchField.stringValue)
+                case .unsupported:
+                    if host == "www.bilibili.com" {
+                        self.danmakuWindowController?.initDanmakuForBilibili(title, url: searchField.stringValue)
+                    }
+                default:
+                    break
+
                 }
             }
         }

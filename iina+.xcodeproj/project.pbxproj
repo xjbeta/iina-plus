@@ -64,6 +64,9 @@
 		01E8CAC9213D236E00C4939B /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
 		01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
 		01E8CACD213D263800C4939B /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
+		01E8CAD2213D541700C4939B /* SocketRocket.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */; };
+		01E8CAD4213D542B00C4939B /* SocketRocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
@@ -82,6 +85,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */,
 				01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */,
 				010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */,
 				010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */,
@@ -109,6 +113,7 @@
 				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
 				01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */,
 				01F6C4ED213396560009672A /* Marshal.framework in Embed Frameworks */,
+				01E8CAD4213D542B00C4939B /* SocketRocket.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -176,6 +181,8 @@
 		01E8CAC6213D236E00C4939B /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		01E8CACA213D263000C4939B /* CommentCoreLibrary.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CommentCoreLibrary.js; sourceTree = "<group>"; };
 		01E8CACC213D263800C4939B /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
+		01E8CACF213D541600C4939B /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = Carthage/Build/Mac/SocketRocket.framework; sourceTree = SOURCE_ROOT; };
+		01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SocketRocket.framework.dSYM; path = Carthage/Build/Mac/SocketRocket.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -245,9 +252,11 @@
 				010F0EFE20FCC16600F33553 /* Marshal.framework */,
 				010F0F0020FCC16700F33553 /* SwiftHTTP.framework */,
 				01E8CABD213C173F00C4939B /* Socket.framework */,
+				01E8CACF213D541600C4939B /* SocketRocket.framework */,
 				010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */,
 				010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */,
 				01E8CABC213C173F00C4939B /* Socket.framework.dSYM */,
+				01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -479,6 +488,7 @@
 				01E8CAC8213D236E00C4939B /* index.htm in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E8CAC9213D236E00C4939B /* main.js in Resources */,
+				01E8CAD2213D541700C4939B /* SocketRocket.framework.dSYM in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				01E8CAC7213D236E00C4939B /* default.css in Resources */,
 			);
