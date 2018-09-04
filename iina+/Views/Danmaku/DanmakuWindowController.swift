@@ -157,8 +157,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
                 return false
             }
         }).first {
-            let w = WindowData(d)
-            var re = w.frame
+            var re = WindowData(d).frame
             re.origin.y = (NSScreen.main?.frame.size.height)! - re.size.height - re.origin.y
             window?.setFrame(re, display: true)
             window?.orderFront(self)
@@ -182,8 +181,10 @@ struct WindowData {
     
     init(_ d: [String: AnyObject]) {
         let _r = d[kCGWindowBounds as String] as? [String: Int]
-        frame = NSRect(x: _r?["X"] ?? 0, y: _r?["Y"] ?? 0,
-                          width: _r?["Width"] ?? 0, height: _r?["Height"] ?? 0)
+        frame = NSRect(x: _r?["X"] ?? 0,
+                       y: _r?["Y"] ?? 0,
+                       width: _r?["Width"] ?? 0,
+                       height: _r?["Height"] ?? 0)
         name = d[kCGWindowName as String] as? String ?? ""
         pid = d[kCGWindowOwnerPID as String] as? Int ?? -1
         wid = d[kCGWindowNumber as String] as? Int ?? -1
