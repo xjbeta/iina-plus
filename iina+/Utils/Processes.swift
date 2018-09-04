@@ -9,6 +9,7 @@
 import Foundation
 import Marshal
 import SwiftHTTP
+import Socket
 
 class Processes: NSObject {
     
@@ -146,6 +147,7 @@ class Processes: NSObject {
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
+            mpvArgs.append("\(MPVOption.Input.inputIpcServer)=/tmp/IINA-Plus-Danmaku-socket")
             mpvArgs = mpvArgs.map {
                 "--mpv-" + $0
             }
@@ -176,8 +178,42 @@ class Processes: NSObject {
         Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
+        completion()
         
     }
+    
+    func mpvSocket(_ block: @escaping () -> Void = {}) {
+        
+        let queue = DispatchQueue(label: "socket.test.iina+")
+        queue.async {
+            let server = "/tmp/IINA-Plus-Danmaku-socket"
+            
+            do {
+                let socket = try Socket.create(family: .unix, proto: .unix)
+                try socket.connect(to: server)
+                print(socket.isConnected)
+                
+                
+                if let obs = "{ \"command\": [\"observe_property\", 1, \"time-pos\"] }\n".data(using: .utf8) {
+                    try socket.write(from: obs)
+                }
+                
+                let shouldKeepRunning = true
+                repeat {
+                    let str = try socket.readString()
+                    print(str)
+                    
+                    
+                } while socket.isConnected && shouldKeepRunning
+                
+            } catch let error {
+                print(error)
+            }
+        }
+        
+    }
+    
+    
 }
 
 private extension Processes {

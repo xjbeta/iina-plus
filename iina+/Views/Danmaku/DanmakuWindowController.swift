@@ -10,21 +10,36 @@ import Cocoa
 
 class DanmakuWindowController: NSWindowController, NSWindowDelegate {
 
+    var targeTitle = ""
+    var videoUrl = ""
+    
     override func windowDidLoad() {
         super.windowDidLoad()
-        
         window?.setFrame((NSScreen.main?.frame)!, display: false)
         
-        
-//        window?.level = NSWindow.Level(rawValue: Int(CGShieldingWindowLevel() + 1))
         window?.level = NSWindow.Level(rawValue: Int(kCGStatusWindowLevel))
         window?.backgroundColor = NSColor.clear
         window?.isOpaque = false
-//        window?.ignoresMouseEvents = true
+        window?.ignoresMouseEvents = true
+        window?.orderOut(self)
         
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(foremostAppActivated), name: NSWorkspace.didActivateApplicationNotification, object: nil)
         
         
+    }
+    
+    func initDanmaku(_ title: String, url: String) {
+        targeTitle = title
+        videoUrl = url
+        
+        
+        Processes.shared.mpvSocket {
+            
+            
+            
+            
+            
+        }
     }
     
     
@@ -34,8 +49,10 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
             if app.bundleIdentifier == "com.colliderli.iina" || app.bundleIdentifier == "com.xjbeta.iina-plus" {
                 let tt = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .optionOnScreenAboveWindow], kCGNullWindowID) as? [[String: AnyObject]]
                 if let d = tt?.filter ({
-                    if let str = $0["kCGWindowOwnerName"] as? String,
-                        str == "IINA" {
+                    if let owner = $0["kCGWindowOwnerName"] as? String,
+                        owner == "IINA",
+                        let title = $0["kCGWindowName"] as? String,
+                        title == targeTitle {
                         return true
                     } else {
                         return false

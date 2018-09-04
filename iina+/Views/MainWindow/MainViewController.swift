@@ -193,6 +193,7 @@ class MainViewController: NSViewController {
                 case .unsupported:
                     if host == "www.bilibili.com" {
                         Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+                        self.danmakuWindowController?.initDanmaku(title, url: searchField.stringValue)
                     } else {
                         Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
                     }
@@ -202,6 +203,10 @@ class MainViewController: NSViewController {
         isSearching = false
         yougetResult = nil
     }
+    
+    // MARK: - Danmaku
+    let danmakuWindowController = NSStoryboard(name: "Main", bundle: nil).instantiateController(withIdentifier: "DanmakuWindowController") as? DanmakuWindowController
+    
     
     // MARK: - Functions
     override func viewDidLoad() {

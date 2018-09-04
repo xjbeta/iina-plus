@@ -232,12 +232,6 @@
                                                 <action selector="help:" target="XfU-aw-sKA" id="aAD-oX-DIu"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="test" id="vr2-Oh-Xmj">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <segue destination="yt9-25-AZk" kind="show" id="4Jc-9c-CgC"/>
-                                            </connections>
-                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -258,7 +252,7 @@
         <!--Window Controller-->
         <scene sceneID="Cfq-ZM-8vM">
             <objects>
-                <windowController id="yt9-25-AZk" customClass="DanmakuWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="DanmakuWindowController" id="yt9-25-AZk" customClass="DanmakuWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqI-m4-v8O">
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
@@ -272,7 +266,7 @@
                 </windowController>
                 <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1854" y="-222"/>
+            <point key="canvasLocation" x="2092" y="-125"/>
         </scene>
         <!--Danmaku View Controller-->
         <scene sceneID="YXK-mY-iqp">
@@ -289,125 +283,15 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
-                            <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T4K-u7-epJ">
-                                <rect key="frame" x="321" y="0.0" width="447" height="21"/>
-                                <subviews>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VzV-pP-Wg1">
-                                        <rect key="frame" x="-6" y="-7" width="70" height="32"/>
-                                        <buttonCell key="cell" type="push" title="clear" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cHu-fz-Lxf">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="clear:" target="a9Y-dL-4fO" id="ZHd-hQ-k8D"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x7Q-Dr-aj5">
-                                        <rect key="frame" x="68" y="-7" width="69" height="32"/>
-                                        <buttonCell key="cell" type="push" title="start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="1tO-jh-Ree">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="start:" target="a9Y-dL-4fO" id="Hzi-OL-YBc"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yVj-E8-fVX">
-                                        <rect key="frame" x="141" y="-7" width="67" height="32"/>
-                                        <buttonCell key="cell" type="push" title="stop" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Vb3-FY-wZV">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="stop:" target="a9Y-dL-4fO" id="Qly-cZ-xzW"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cdQ-yM-3Qr">
-                                        <rect key="frame" x="212" y="-7" width="76" height="32"/>
-                                        <buttonCell key="cell" type="push" title="resize" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yCb-6q-Lnr">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="resize:" target="a9Y-dL-4fO" id="Poh-Zm-0f6"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2OP-r6-pdV">
-                                        <rect key="frame" x="292" y="-7" width="70" height="32"/>
-                                        <buttonCell key="cell" type="push" title="send" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zQ9-NL-tP1">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="sendTest:" target="a9Y-dL-4fO" id="NwA-U4-ql6"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lbf-vl-tPb">
-                                        <rect key="frame" x="366" y="-7" width="87" height="32"/>
-                                        <buttonCell key="cell" type="push" title="loadDM" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="arR-Vs-803">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="loadDM:" target="a9Y-dL-4fO" id="Elj-W9-yEZ"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
-                            <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Tys-cf-8tJ">
-                                <rect key="frame" x="334" y="28" width="420" height="19"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="416" id="EOM-xg-7Sd"/>
-                                </constraints>
-                                <sliderCell key="cell" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="T1t-VV-THY"/>
-                                <connections>
-                                    <action selector="testSlider:" target="a9Y-dL-4fO" id="du2-2f-mTn"/>
-                                </connections>
-                            </slider>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OWr-gk-4PB">
-                                <rect key="frame" x="794" y="27" width="204" height="17"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="ycu-SU-urY"/>
-                                </constraints>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="AKy-44-CzH">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="T4K-u7-epJ" firstAttribute="centerX" secondItem="RRw-fA-KUP" secondAttribute="centerX" id="83k-De-MQU"/>
-                            <constraint firstItem="OWr-gk-4PB" firstAttribute="leading" secondItem="Tys-cf-8tJ" secondAttribute="trailing" constant="44" id="A1I-wm-kUD"/>
                             <constraint firstAttribute="trailing" secondItem="xKq-2v-gZV" secondAttribute="trailing" id="OuQ-Lb-gKU"/>
-                            <constraint firstItem="T4K-u7-epJ" firstAttribute="top" secondItem="Tys-cf-8tJ" secondAttribute="bottom" constant="9" id="Ozs-dS-wkc"/>
-                            <constraint firstItem="Tys-cf-8tJ" firstAttribute="centerX" secondItem="RRw-fA-KUP" secondAttribute="centerX" id="Rwr-CN-eDH"/>
                             <constraint firstItem="xKq-2v-gZV" firstAttribute="top" secondItem="RRw-fA-KUP" secondAttribute="top" id="Ycf-Mm-2EN"/>
                             <constraint firstAttribute="bottom" secondItem="xKq-2v-gZV" secondAttribute="bottom" id="iCR-Z0-dIf"/>
                             <constraint firstItem="xKq-2v-gZV" firstAttribute="leading" secondItem="RRw-fA-KUP" secondAttribute="leading" id="kox-p2-yak"/>
-                            <constraint firstAttribute="bottom" secondItem="T4K-u7-epJ" secondAttribute="bottom" id="sNn-lh-bMS"/>
-                            <constraint firstAttribute="bottom" secondItem="OWr-gk-4PB" secondAttribute="bottom" constant="27" id="vDZ-ye-1Qu"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="slider" destination="Tys-cf-8tJ" id="cdc-xn-3Lh"/>
-                        <outlet property="sliderTextField" destination="OWr-gk-4PB" id="kqq-oZ-9Le"/>
                         <outlet property="webView" destination="xKq-2v-gZV" id="64q-83-uzK"/>
                     </connections>
                 </viewController>

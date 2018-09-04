@@ -55,6 +55,10 @@
 		01C232E92134FABC0021C28F /* ykdl in Copy Executables */ = {isa = PBXBuildFile; fileRef = 01C232E72134FAB20021C28F /* ykdl */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		01C232F021358BF80021C28F /* DanmakuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C232EF21358BF80021C28F /* DanmakuViewController.swift */; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
+		01E8CABE213C173F00C4939B /* Socket.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CABC213C173F00C4939B /* Socket.framework.dSYM */; };
+		01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; };
+		01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CABC213C173F00C4939B /* Socket.framework.dSYM */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
@@ -73,6 +77,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */,
 				010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */,
 				010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */,
 			);
@@ -96,6 +101,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */,
+				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
 				01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */,
 				01F6C4ED213396560009672A /* Marshal.framework in Embed Frameworks */,
 			);
@@ -158,6 +164,8 @@
 		01C232E72134FAB20021C28F /* ykdl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ykdl; sourceTree = "<group>"; };
 		01C232EF21358BF80021C28F /* DanmakuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuViewController.swift; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
+		01E8CABC213C173F00C4939B /* Socket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Socket.framework.dSYM; path = Carthage/Build/Mac/Socket.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		01E8CABD213C173F00C4939B /* Socket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Socket.framework; path = Carthage/Build/Mac/Socket.framework; sourceTree = SOURCE_ROOT; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -172,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */,
+				01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */,
 				01F6C4E9213396560009672A /* DevMateKit.framework in Frameworks */,
 				01F6C4EC213396560009672A /* Marshal.framework in Frameworks */,
 			);
@@ -225,8 +234,10 @@
 				01F6C4E5213396270009672A /* DevMateKit.framework */,
 				010F0EFE20FCC16600F33553 /* Marshal.framework */,
 				010F0F0020FCC16700F33553 /* SwiftHTTP.framework */,
+				01E8CABD213C173F00C4939B /* Socket.framework */,
 				010F0F0120FCC16700F33553 /* Marshal.framework.dSYM */,
 				010F0EFF20FCC16600F33553 /* SwiftHTTP.framework.dSYM */,
+				01E8CABC213C173F00C4939B /* Socket.framework.dSYM */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -431,6 +442,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
+				01E8CABE213C173F00C4939B /* Socket.framework.dSYM in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 			);
