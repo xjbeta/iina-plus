@@ -20,6 +20,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
     var socket: SRWebSocket? = nil
+    var liveSite: LiveSupportList = .unsupported
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -78,6 +79,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func initDanmakuForBiliLive(_ title: String, url: String) {
+        liveSite = .bilibili
         targeTitle = title
         videoUrl = url
         waittingSocket = true
@@ -236,46 +238,76 @@ extension DanmakuWindowController: SRWebSocketDelegate {
     func webSocketDidOpen(_ webSocket: SRWebSocket) {
         Logger.log("webSocketDidOpen")
         
-        let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
-        srand48(Int(time))
-        
-        // test roomid 23058
-        let json = String(format: "{\"roomid\":%d,\"uid\":%ld}", biliLiveRoomID, drand48() * 1000000000000000)
-        let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
-        data.append(json.data(using: .utf8)!)
-        try? webSocket.send(data: data as Data)
-        
-        startTimer()
+        switch liveSite {
+        case .bilibili:
+            let json = """
+{"uid":0,"roomid": \(biliLiveRoomID)}
+"""
+            //0000 0060 0010 0001 0000 0007 0000 0001
+            let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
+            data.append(json.data(using: .utf8)!)
+            try? webSocket.send(data: data as Data)
+            
+            startTimer()
+            
+        default:
+            break
+        }
     }
     
     func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
         Logger.log("webSocketdidClose \(reason ?? "")")
+        switch liveSite {
+        case .bilibili:
+            timer?.suspend()
+        default:
+            break
+        }
         
-        timer?.suspend()
         
     }
     
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
-        var d = data
-        guard d.count > 16 else { return }
-        let range = 16..<d.count
-        d = d.subdata(in: range)
         
-        struct DanmuMsg: Decodable {
-            struct ResultObj: Decodable {
-                let msg: String?
-                init(from decoder: Decoder) throws {
-                    let unkeyedContainer = try decoder.singleValueContainer()
-                    msg = try? unkeyedContainer.decode(String.self)
+        switch liveSite {
+        case .bilibili:
+            var datas: [Data] = []
+            var d = data
+            while d.count > 20 {
+                let head = d.subdata(in: 0..<4)
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                datas.append(d.subdata(in: 16..<endIndex))
+                if endIndex < d.endIndex {
+                    d = d.subdata(in: endIndex..<d.endIndex)
+                } else {
+                    d.removeAll()
                 }
             }
-            var info: [ResultObj]
+            
+            struct DanmuMsg: Decodable {
+                struct ResultObj: Decodable {
+                    let msg: String?
+                    init(from decoder: Decoder) throws {
+                        let unkeyedContainer = try decoder.singleValueContainer()
+                        msg = try? unkeyedContainer.decode(String.self)
+                    }
+                }
+                var info: [ResultObj]
+            }
+            
+            datas.compactMap {
+                try? JSONDecoder().decode(DanmuMsg.self, from: $0)
+                }.compactMap {
+                    $0.info.compactMap ({ $0.msg }).first
+                }.forEach {
+                    sendDM($0)
+            }
+            
+        default:
+            break
         }
         
-        if let re = try? JSONDecoder().decode(DanmuMsg.self, from: d), let msg = re.info.compactMap ({ $0.msg }).first {
-            sendDM(msg)
-        }
     }
     
     func pack(format: String, values: [Int]) -> NSMutableData {
