@@ -23,6 +23,8 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     var liveSite: LiveSupportList = .unsupported
     var pandaInitStr = ""
     
+    var isFinish = true
+    
     override func windowDidLoad() {
         super.windowDidLoad()
         window?.setFrame((NSScreen.main?.frame)!, display: false)
@@ -116,16 +118,12 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         
         let roomID = URL(string: url)?.lastPathComponent ?? ""
         HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
-//        HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)") {
             do {
                 let json = try JSONParser.JSONObjectWithData($0.data)
                 let pandaInfo = try PandaChatRoomInfo(object: json)
                 
                 self.pandaInitStr = pandaInfo.initStr()
-                
-                
                 self.socket = SRWebSocket(url: pandaInfo.chatAddr!)
-                
                 self.socket?.delegate = self
                 self.socket?.open()
             } catch let error {
@@ -159,54 +157,51 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     
     
     func initMpvSocket() {
-        Processes.shared.mpvSocket { socketStr in
-            var isPasued = false
+        var isPasued = false
+        Processes.shared.mpvSocket({ socketEvent in
             if let webView = (self.contentViewController as? DanmakuViewController)?.webView {
                 DispatchQueue.main.async {
-                    do {
-                        let data = socketStr.data(using: .utf8) ?? Data()
-                        let json = try JSONParser.JSONObjectWithData(data)
-                        let socketEvent = try MpvSocketEvent(object: json)
-                        if let event = socketEvent.event {
-                            switch event {
-                            case .pause:
-                                webView.evaluateJavaScript("window.cm.stop()") { (_, _) in
-                                }
-                                isPasued = true
-                                Logger.log("iina pasued")
-                            case .unpause:
-                                webView.evaluateJavaScript("window.cm.start()") { (_, _) in
-                                }
-                                isPasued = false
-                                Logger.log("iina unpause")
-                            case .propertyChange:
-                                if socketEvent.name == "time-pos" {
-                                    guard let timeStr = socketEvent.data, let time = Double(timeStr), !isPasued else {
-                                        return
-                                    }
-                                    webView.evaluateJavaScript("window.cm.time(Math.floor(\(time * 1000)))") { (_, _) in
-                                    }
-//                                    Logger.log("iina seek")
-                                } else if socketEvent.name == "window-scale" {
-                                    self.resizeWindow()
-                                    webView.evaluateJavaScript("window.resize()") { (_, _) in
-                                    }
-                                    Logger.log("iina window-scale")
-                                }
-                            case .idle:
-                                self.window?.orderOut(self)
-                                Logger.log("iina idle")
+                    if let event = socketEvent.event {
+                        switch event {
+                        case .pause:
+                            webView.evaluateJavaScript("window.cm.stop()") { (_, _) in
                             }
-                        } else if let re = socketEvent.success {
-                            Logger.log("iina event success? \(re)")
-                        } else {
-                            Logger.log("iina event \(socketStr)")
+                            isPasued = true
+                            Logger.log("iina pasued")
+                        case .unpause:
+                            webView.evaluateJavaScript("window.cm.start()") { (_, _) in
+                            }
+                            isPasued = false
+                            Logger.log("iina unpause")
+                        case .propertyChange:
+                            if socketEvent.name == "time-pos" {
+                                guard let timeStr = socketEvent.data, let time = Double(timeStr), !isPasued else {
+                                    return
+                                }
+                                webView.evaluateJavaScript("window.cm.time(Math.floor(\(time * 1000)))") { (_, _) in
+                                }
+                                //                                    Logger.log("iina seek")
+                            } else if socketEvent.name == "window-scale" {
+                                self.resizeWindow()
+                                webView.evaluateJavaScript("window.resize()") { (_, _) in
+                                }
+                                Logger.log("iina window-scale")
+                            } else if socketEvent.name == "track-switched" {
+                                // Finish
+                                self.isFinish = true
+                                self.socket?.close()
+                            }
+                        case .idle:
+                            self.window?.orderOut(self)
+                            Logger.log("iina idle")
                         }
-                    } catch let error {
-                        Logger.log("mpvSocket error \(error)")
+                    } else if let re = socketEvent.success {
+                        Logger.log("iina event success? \(re)")
                     }
                 }
             }
+        }) {
+            Logger.log("mpv socket disconnected")
         }
     }
     
@@ -476,31 +471,6 @@ struct WindowData {
     }
 }
 
-
-
-
-struct MpvSocketEvent: Unmarshaling {
-    var event: MpvEvent?
-    var id: Int?
-    var name: String?
-    var data: String?
-    var success: Bool?
-    
-    
-    init(object: MarshaledObject) throws {
-        let eventStr: String? = try object.value(for: "event")
-        event = MpvEvent(rawValue: eventStr ?? "")
-        id = try object.value(for: "id")
-        name = try object.value(for: "name")
-        data = try object.value(for: "data")
-        let errorStr: String? = try object.value(for: "error")
-        if errorStr != nil {
-            success = errorStr == "success"
-        }
-    }
-}
-
-
 struct PandaChatRoomInfo: Unmarshaling {
     var appid: String
     var rid: Int
@@ -533,11 +503,4 @@ network:unknown
 compress:none
 """
     }
-}
-
-enum MpvEvent: String {
-    case propertyChange = "property-change"
-    case pause
-    case idle
-    case unpause
 }

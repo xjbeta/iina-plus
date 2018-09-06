@@ -180,7 +180,8 @@ class Processes: NSObject {
         task.launch()
     }
     
-    func mpvSocket(_ block: @escaping (_ str: String) -> Void) {
+    func mpvSocket(_ notice: @escaping (_ str: MpvSocketEvent) -> Void,
+                   _ closed: @escaping () -> Void) {
         
         let queue = DispatchQueue(label: "socket.test.iina+")
         queue.async {
@@ -198,14 +199,20 @@ class Processes: NSObject {
                     try socket.write(from: obs)
                 }
                 
-                let shouldKeepRunning = true
+                var shouldKeepRunning = true
                 repeat {
-                    let str = try socket.readString()
-                    if let str = str {
-                        block(str)
+                    var d = Data()
+                    let _ = try socket.read(into: &d)
+                    if d.count > 0 {
+                        let json = try JSONParser.JSONObjectWithData(d)
+                        let socketEvent = try MpvSocketEvent(object: json)
+                        notice(socketEvent)
+                    } else {
+                        shouldKeepRunning = false
                     }
-                } while socket.isConnected && shouldKeepRunning
-                
+                } while shouldKeepRunning
+                socket.close()
+                closed()
             } catch let error {
                 print(error)
             }
@@ -254,3 +261,32 @@ private extension Processes {
         }
     }
 }
+
+
+struct MpvSocketEvent: Unmarshaling {
+    enum MpvEvent: String {
+        case propertyChange = "property-change"
+        case unpause
+        case pause
+        case idle
+    }
+
+    var event: MpvEvent?
+    var id: Int?
+    var name: String?
+    var data: String?
+    var success: Bool?
+    
+    init(object: MarshaledObject) throws {
+        let eventStr: String? = try object.value(for: "event")
+        event = MpvEvent(rawValue: eventStr ?? "")
+        id = try object.value(for: "id")
+        name = try object.value(for: "name")
+        data = try object.value(for: "data")
+        let errorStr: String? = try object.value(for: "error")
+        if errorStr != nil {
+            success = errorStr == "success"
+        }
+    }
+}
+
