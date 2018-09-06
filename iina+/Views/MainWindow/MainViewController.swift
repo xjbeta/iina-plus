@@ -185,33 +185,26 @@ class MainViewController: NSViewController {
             
             if let host = URL(string: searchField.stringValue)?.host {
                 let title = yougetResult?.title ?? ""
-                switch LiveSupportList(raw: host) {
+                let site = LiveSupportList(raw: host)
+                switch site {
                 case .douyu:
                     Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-                case .bilibili, .huya, .longzhu, .panda, .pandaXingYan, .quanmin:
+                case .biliLive, .huya, .longzhu, .panda, .pandaXingYan, .quanmin:
                     Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+                case .bilibili:
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
                 case .unsupported:
-                    if host == "www.bilibili.com" {
-                        Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
-                    } else {
-                        Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
-                    }
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
                 }
                 
                 // init Danmaku
-                switch LiveSupportList(raw: host) {
-                case .bilibili:
-                    self.danmakuWindowController?.initDanmakuForBiliLive(title, url: searchField.stringValue)
-                case .panda:
-                    self.danmakuWindowController?.initDanmakuForPandaLive(title, url: searchField.stringValue)
-                case .unsupported:
-                    if host == "www.bilibili.com" {
-                        self.danmakuWindowController?.initDanmakuForBilibili(title, url: searchField.stringValue)
-                    }
+                switch site {
+                case .bilibili, .biliLive, .panda:
+                    self.danmakuWindowController?.initDanmaku(site, title, searchField.stringValue)
                 default:
                     break
-
                 }
+                
             }
         }
         isSearching = false
@@ -413,7 +406,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             let str = dataManager.requestData()[row].url
             if let url = URL(string: str) {
                 switch LiveSupportList(raw: url.host) {
-                case .unsupported:
+                case .unsupported, .bilibili:
                     return 20
                 default:
                     return 55
@@ -435,7 +428,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             let str = dataManager.requestData()[row].url
             if let url = URL(string: str) {
                 switch LiveSupportList(raw: url.host) {
-                case .unsupported:
+                case .unsupported, .bilibili:
                     if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
                         view.textField?.stringValue = str
                         return view

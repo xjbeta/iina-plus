@@ -12,7 +12,8 @@ import Marshal
 //import JavaScriptCore
 
 enum LiveSupportList: String {
-    case bilibili = "live.bilibili.com"
+    case biliLive = "live.bilibili.com"
+    case bilibili = "www.bilibili.com"
     case panda = "www.panda.tv"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
@@ -194,7 +195,7 @@ extension LiveStatusTableCellView {
         let site = LiveSupportList(raw:url.host)
         let roomID = url.lastPathComponent
         switch site {
-        case .bilibili:
+        case .biliLive:
             let header = [
                 "User-Agent": "Hua Q pilipili"
             ]
@@ -304,7 +305,7 @@ extension LiveStatusTableCellView {
 //                    return false
 //                }
 //            }
-        case .unsupported:
+        case .unsupported, .bilibili:
             break
         }
     }
