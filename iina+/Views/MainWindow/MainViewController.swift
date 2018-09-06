@@ -202,6 +202,8 @@ class MainViewController: NSViewController {
                 switch LiveSupportList(raw: host) {
                 case .bilibili:
                     self.danmakuWindowController?.initDanmakuForBiliLive(title, url: searchField.stringValue)
+                case .panda:
+                    self.danmakuWindowController?.initDanmakuForPandaLive(title, url: searchField.stringValue)
                 case .unsupported:
                     if host == "www.bilibili.com" {
                         self.danmakuWindowController?.initDanmakuForBilibili(title, url: searchField.stringValue)

@@ -21,6 +21,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     var biliLiveRoomID = 0
     var socket: SRWebSocket? = nil
     var liveSite: LiveSupportList = .unsupported
+    var pandaInitStr = ""
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -106,16 +107,50 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         }
     }
     
+    func initDanmakuForPandaLive(_ title: String, url: String) {
+        liveSite = .panda
+        targeTitle = title
+        videoUrl = url
+        waittingSocket = true
+
+        
+        let roomID = URL(string: url)?.lastPathComponent ?? ""
+        HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
+//        HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)") {
+            do {
+                let json = try JSONParser.JSONObjectWithData($0.data)
+                let pandaInfo = try PandaChatRoomInfo(object: json)
+                
+                self.pandaInitStr = pandaInfo.initStr()
+                
+                
+                self.socket = SRWebSocket(url: pandaInfo.chatAddr!)
+                
+                self.socket?.delegate = self
+                self.socket?.open()
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
     private var timer: DispatchSourceTimer?
     
-    private var timerQueue = DispatchQueue(label: "com.xjbeta.iina+.WebSocketKeepLive")
+    private let timerQueue = DispatchQueue(label: "com.xjbeta.iina+.WebSocketKeepLive")
     
     private func startTimer() {
         timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
             timer.setEventHandler {
-                try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                switch self.liveSite {
+                case .bilibili:
+                    try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                case .panda:
+                    try? self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
+                default:
+                    break
+                }
             }
             timer.resume()
         }
@@ -247,9 +282,13 @@ extension DanmakuWindowController: SRWebSocketDelegate {
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
             data.append(json.data(using: .utf8)!)
             try? webSocket.send(data: data as Data)
-            
             startTimer()
-            
+        case .panda:
+            //0006 0002 00DA
+            let data = pack(format: "nnn", values: [6, 2, pandaInitStr.count])
+            data.append(pandaInitStr.data(using: .utf8)!)
+            try? webSocket.send(data: data as Data)
+            startTimer()
         default:
             break
         }
@@ -272,13 +311,23 @@ extension DanmakuWindowController: SRWebSocketDelegate {
         
         switch liveSite {
         case .bilibili:
+//            0000 0234
+//            0-4 json length + head
+            
+            if data.count == 20 {
+                Logger.log("received heartbeat")
+            } else if data.count == 16 {
+                Logger.log("connect success")
+            }
+            
             var datas: [Data] = []
             var d = data
             while d.count > 20 {
                 let head = d.subdata(in: 0..<4)
                 let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
-                datas.append(d.subdata(in: 16..<endIndex))
-                if endIndex < d.endIndex {
+                
+                if endIndex <= d.endIndex {
+                    datas.append(d.subdata(in: 16..<endIndex))
                     d = d.subdata(in: endIndex..<d.endIndex)
                 } else {
                     d.removeAll()
@@ -303,6 +352,79 @@ extension DanmakuWindowController: SRWebSocketDelegate {
                 }.forEach {
                     sendDM($0)
             }
+            
+        case .panda:
+//            00 06 00 03 00 05 61 63 6B 3A 30 00 00 02 A9 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 48
+//            0 - 15 mark
+//
+//            00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 41
+//            01 41 json length
+            if data.count == 4 {
+                Logger.log("received heartbeat")
+            } else if data.count == 22 {
+                Logger.log("connect success")
+            }
+            
+            var datas: [Data] = []
+            var d = data
+            guard d.count > 15 else { return }
+            d = d.subdata(in: 15..<d.endIndex)
+            
+            while d.count > 22 {
+                let head = d.subdata(in: 12..<16)
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 16
+                
+                if endIndex <= d.endIndex {
+                    datas.append(d.subdata(in: 16..<endIndex))
+                    d = d.subdata(in: endIndex..<d.endIndex)
+                } else {
+                    d.removeAll()
+                }
+            }
+            
+            
+            datas.compactMap { data -> String? in
+                do {
+                    let json = try JSONParser.JSONObjectWithData(data)
+                    let type: String = try json.value(for: "type")
+                    if type == "1" {
+                        let str: String = try json.value(for: "data.content")
+                        return str
+                    } else {
+                        return nil
+                    }
+                } catch let error {
+                    print(error)
+                    print(String(data: data, encoding: .utf8))
+                    return nil
+                }
+                }.forEach {
+                    sendDM($0)
+            }
+
+//            😍[:喜欢]
+//            😢[:哭]
+//            😠[:闭嘴]
+//            😪[:睡]
+//            😺[:惊讶]
+//            😎[:酷]
+//            💦[:流汗]
+//            💪[:努力]
+//            💢[:愤怒]
+//            🤔️[:疑问]
+//            😵[:晕]
+//            🤯[:疯]
+//            😱[:哀]
+//            💀[:骷髅]
+//            😳[:害羞]
+//            🤪[:抠鼻]
+//            😑[:呵欠]
+//            👎[:鄙视]
+//            🎉[:撒花]
+//            😚[:亲]
+//            😞[:可怜]
+//            🤣[:233]
+//            👏[:666]
             
         default:
             break
@@ -378,6 +500,40 @@ struct MpvSocketEvent: Unmarshaling {
     }
 }
 
+
+struct PandaChatRoomInfo: Unmarshaling {
+    var appid: String
+    var rid: Int
+    var sign: String
+    var authType: String
+    var ts: Int
+    var chatAddr: URL?
+    
+    init(object: MarshaledObject) throws {
+        appid = try object.value(for: "data.appid")
+        rid = try object.value(for: "data.rid")
+        sign = try object.value(for: "data.sign")
+        authType = try object.value(for: "data.authType")
+        ts = try object.value(for: "data.ts")
+        let chatList: [String]  = try object.value(for: "data.chat_addr_list")
+        if let str = chatList.first, let url = URL(string: "wss://" + str) {
+            chatAddr = url
+        }
+    }
+    
+    func initStr() -> String {
+        return """
+u:\(rid)@\(appid)
+ts:\(ts)
+sign:\(sign)
+authtype:\(authType)
+plat:jssdk_pc_web
+version:0.5.10
+network:unknown
+compress:none
+"""
+    }
+}
 
 enum MpvEvent: String {
     case propertyChange = "property-change"
