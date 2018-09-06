@@ -266,18 +266,18 @@
                 </windowController>
                 <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2092" y="-125"/>
+            <point key="canvasLocation" x="1942" y="-106"/>
         </scene>
         <!--Danmaku View Controller-->
         <scene sceneID="YXK-mY-iqp">
             <objects>
                 <viewController id="a9Y-dL-4fO" customClass="DanmakuViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="RRw-fA-KUP">
-                        <rect key="frame" x="0.0" y="0.0" width="1088" height="625"/>
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xKq-2v-gZV">
-                                <rect key="frame" x="0.0" y="0.0" width="1088" height="625"/>
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
@@ -297,7 +297,7 @@
                 </viewController>
                 <customObject id="mfy-MR-beA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2993" y="-124.5"/>
+            <point key="canvasLocation" x="2514" y="-106"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
