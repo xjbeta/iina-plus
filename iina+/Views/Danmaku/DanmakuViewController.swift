@@ -126,7 +126,8 @@ class DanmakuViewController: NSViewController {
     private let timerQueue = DispatchQueue(label: "com.xjbeta.iina+.WebSocketKeepLive")
     
     private func startTimer() {
-        timer?.resume()
+        timer?.cancel()
+        timer = nil
         timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
@@ -273,7 +274,8 @@ extension DanmakuViewController: SRWebSocketDelegate {
         Logger.log("webSocketdidClose \(reason ?? "")")
         switch liveSite {
         case .biliLive, .panda:
-            timer?.suspend()
+            timer?.cancel()
+            timer = nil
         default:
             break
         }
