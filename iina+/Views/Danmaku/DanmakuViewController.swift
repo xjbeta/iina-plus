@@ -172,7 +172,6 @@ class DanmakuViewController: NSViewController {
                         self.evaluateJavaScript("window.cm.time(Math.floor(\(time * 1000)));")
                         //                                    Logger.log("iina seek")
                     } else if socketEvent.name == "window-scale" {
-                        
                         self.danmakuWindowController {
                             $0.resizeWindow()
                         }

@@ -214,7 +214,7 @@ class Processes: NSObject {
                 socket.close()
                 closed()
             } catch let error {
-                print(error)
+                Logger.log("mpvSocket error \(error)")
             }
         }
     }

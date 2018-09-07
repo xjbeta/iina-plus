@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-
+import AppKit
 
 class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     var targeTitle = ""
@@ -24,7 +24,32 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(foremostAppActivated), name: NSWorkspace.didActivateApplicationNotification, object: nil)
         
+        NotificationCenter.default.addObserver(forName: .updateDanmakuWindow, object: nil, queue: .main) {_ in
+            self.resizeWindow()
+        }
     }
+    
+    func setObserver(_ pid: pid_t) {
+        
+        let observerCallback: AXObserverCallback = { _,_,_,_  in
+            NotificationCenter.default.post(name: .updateDanmakuWindow, object: nil)
+        }
+        var window: CFTypeRef?
+        
+        let app = AXUIElementCreateApplication(pid)
+        AXUIElementCopyAttributeValue(app, kAXFocusedWindowAttribute as CFString, &window)
+        
+        let observer: UnsafeMutablePointer<AXObserver?> = UnsafeMutablePointer<AXObserver?>.allocate(capacity: 1)
+        AXObserverCreate(pid, observerCallback as AXObserverCallback, observer)
+        
+        if let observer = observer.pointee {
+            let window = window as! AXUIElement
+            AXObserverAddNotification(observer, window, kAXMovedNotification as CFString, nil)
+            AXObserverAddNotification(observer, window, kAXResizedNotification as CFString, nil)
+            CFRunLoopAddSource(CFRunLoopGetCurrent(), AXObserverGetRunLoopSource(observer), CFRunLoopMode.defaultMode)
+        }
+    }
+
     
     func initDanmaku(_ site: LiveSupportList, _ title: String, _ url: String) {
         waittingSocket = true
@@ -43,8 +68,10 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     @objc func foremostAppActivated(_ notification: NSNotification) {
         guard let app = notification.userInfo?["NSWorkspaceApplicationKey"] as? NSRunningApplication,
             app.bundleIdentifier == "com.colliderli.iina" else {
-                window?.orderOut(self)
-                Logger.log("hide danmaku window")
+                if let window = window, window.isVisible {
+                    window.orderOut(self)
+                    Logger.log("hide danmaku window")
+                }
                 return
         }
         resizeWindow()
@@ -64,12 +91,16 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         }).first {
             var re = WindowData(d).frame
             re.origin.y = (NSScreen.main?.frame.size.height)! - re.size.height - re.origin.y
-            window?.setFrame(re, display: true)
-            window?.orderFront(self)
-            Logger.log("show danmaku window")
+            guard let window = window else { return }
+            window.setFrame(re, display: true)
+            if !window.isVisible {
+                window.orderFront(self)
+                Logger.log("show danmaku window")
+            }
             if waittingSocket {
                 initMpvSocket()
                 waittingSocket = false
+                setObserver(pid_t(WindowData(d).pid))
             }
         }
     }
