@@ -10,6 +10,7 @@ import Cocoa
 import SwiftHTTP
 import Marshal
 import SocketRocket
+import Gzip
 
 class DanmakuViewController: NSViewController {
     
@@ -119,6 +120,42 @@ class DanmakuViewController: NSViewController {
         default:
             break
         }
+    }
+    
+    func testedBilibiliAPI() {
+        let p = ["aid": 31027408,
+                 "appkey": "1d8b6e7d45233436",
+                 "build": 5310000,
+                 "mobi_app": "android",
+                 "oid": 54186450,
+                 "plat":2,
+                 "platform": "android",
+                 "ps": 0,
+                 "ts": 1536407932,
+                 "type": 1,
+                 "sign": 0] as [String : Any]
+        HTTP.GET("https://api.bilibili.com/x/v2/dm/list.so", parameters: p) { re in
+            let data = re.data
+            let head = data.subdata(in: 0..<4)
+            let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 4
+            let d1 = data.subdata(in: 4..<endIndex)
+            
+            let d2 = data.subdata(in: endIndex..<data.endIndex)
+            
+            let d3 = try! d2.gunzipped()
+            
+            let str1 = String(data: d1, encoding: .utf8)
+            let str2 = String(data: d3, encoding: .utf8)
+            
+//            FileManager.default.createFile(atPath: "/Users/xjbeta/Downloads/d1", contents: d1, attributes: nil)
+//            
+//            FileManager.default.createFile(atPath: "/Users/xjbeta/Downloads/d2", contents: d3, attributes: nil)
+            
+        }
+        
+        
+        
+        
     }
     
     private var timer: DispatchSourceTimer?

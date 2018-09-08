@@ -1,3 +1,4 @@
+github "1024jp/GzipSwift" "4.0.4"
 github "DevMate/DevMateKit" "v1.9"
 github "IBM-Swift/BlueSocket" "1.0.15"
 github "daltoniam/SwiftHTTP" "3.0.1"
