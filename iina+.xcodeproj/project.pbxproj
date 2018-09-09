@@ -55,6 +55,8 @@
 		01B107D42144094200A66BC1 /* Gzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01B107D22144094200A66BC1 /* Gzip.framework */; };
 		01B107D72144094B00A66BC1 /* Gzip.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01B107D22144094200A66BC1 /* Gzip.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01B107D82144095700A66BC1 /* Gzip.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01B107D32144094200A66BC1 /* Gzip.framework.dSYM */; };
+		01B107D92144FEA300A66BC1 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; };
+		01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01C232E92134FABC0021C28F /* ykdl in Copy Executables */ = {isa = PBXBuildFile; fileRef = 01C232E72134FAB20021C28F /* ykdl */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		01C232F021358BF80021C28F /* DanmakuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C232EF21358BF80021C28F /* DanmakuViewController.swift */; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
@@ -66,7 +68,6 @@
 		01E8CAC9213D236E00C4939B /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
 		01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
 		01E8CACD213D263800C4939B /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
-		01E8CAD4213D542B00C4939B /* SocketRocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
@@ -112,11 +113,11 @@
 			dstSubfolderSpec = 10;
 			files = (
 				01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */,
+				01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */,
 				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
 				01B107D72144094B00A66BC1 /* Gzip.framework in Embed Frameworks */,
 				01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */,
 				01F6C4ED213396560009672A /* Marshal.framework in Embed Frameworks */,
-				01E8CAD4213D542B00C4939B /* SocketRocket.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -202,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */,
+				01B107D92144FEA300A66BC1 /* SocketRocket.framework in Frameworks */,
 				01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */,
 				01F6C4E9213396560009672A /* DevMateKit.framework in Frameworks */,
 				01F6C4EC213396560009672A /* Marshal.framework in Frameworks */,
