@@ -202,7 +202,6 @@ class DanmakuViewController: NSViewController {
                     Logger.log("iina unpause")
                 case .propertyChange:
                     if socketEvent.name == "time-pos" {
-                        guard self.liveSite == .bilibili else { return }
                         guard let timeStr = socketEvent.data, let time = Double(timeStr), !isPasued else {
                             return
                         }
@@ -408,7 +407,7 @@ extension DanmakuViewController: SRWebSocketDelegate {
                     }
                 } catch let error {
                     print(error)
-                    print(String(data: data, encoding: .utf8))
+                    print(String(data: data, encoding: .utf8) ?? "")
                     return nil
                 }
                 }.forEach {
