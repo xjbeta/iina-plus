@@ -21,6 +21,12 @@ class LiveStatusTableCellView: NSTableCellView {
         }
     }
     
+    var url: URL? {
+        didSet {
+            getInfo()
+        }
+    }
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
@@ -33,6 +39,20 @@ class LiveStatusTableCellView: NSTableCellView {
         }
         selectionPath.fill()
         
+    }
+    
+    func getInfo() {
+        guard let url = url else { return }
+        getInfo(url, { liveInfo in
+            self.setInfo(liveInfo)
+        }) { re in
+            do {
+                let _ = try re()
+            } catch let error {
+                Logger.log("Get live status error: \(error)")
+                self.setErrorInfo(url.absoluteString)
+            }
+        }
     }
     
     func resetInfo() {

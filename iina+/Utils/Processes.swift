@@ -9,6 +9,7 @@
 import Foundation
 import Marshal
 import SwiftHTTP
+import Socket
 
 class Processes: NSObject {
     
@@ -52,7 +53,6 @@ class Processes: NSObject {
     func decodeURL(_ url: String,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
-        stopDecodeURL()
         
         decodeTask = Process()
         let pipe = Pipe()
@@ -85,15 +85,21 @@ class Processes: NSObject {
                 let re = try YouGetJSON(object: json)
                 block(re)
             } catch let er {
-                error(er)
                 Logger.log("JSON decode error: \(er)")
                 if let str = String(data: data, encoding: .utf8) {
                     Logger.log("JSON string: \(str)")
+                    if str.contains("Real URL") {
+                        let url = str.subString(from: "['", to: "']")
+                        let re = YouGetJSON.init(url: url)
+                        block(re)
+                        return
+                    }
                 }
+                error(er)
             }
             
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            if let str = String(data: errorData, encoding: .utf8) {
+            if let str = String(data: errorData, encoding: .utf8), str != "" {
                 Logger.log("Decode url error info: \(str)")
             }
         }
@@ -103,7 +109,6 @@ class Processes: NSObject {
         if let task = decodeTask, task.isRunning {
             decodeTask?.suspend()
             decodeTask?.terminate()
-            decodeTask?.waitUntilExit()
             decodeTask = nil
         }
     }
@@ -141,6 +146,7 @@ class Processes: NSObject {
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
+            mpvArgs.append("\(MPVOption.Input.inputIpcServer)=/tmp/IINA-Plus-Danmaku-socket")
             mpvArgs = mpvArgs.map {
                 "--mpv-" + $0
             }
@@ -171,8 +177,48 @@ class Processes: NSObject {
         Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
-        
     }
+    
+    func mpvSocket(_ notice: @escaping (_ str: MpvSocketEvent) -> Void,
+                   _ closed: @escaping () -> Void) {
+        
+        let queue = DispatchQueue(label: "socket.test.iina+")
+        queue.async {
+            let server = "/tmp/IINA-Plus-Danmaku-socket"
+            
+            do {
+                let socket = try Socket.create(family: .unix, proto: .unix)
+                try socket.connect(to: server)
+                Logger.log("mpv socket connect: \(socket.isConnected)")
+                
+                if let obs = "{ \"command\": [\"observe_property_string\", 1, \"time-pos\"] }\n".data(using: .utf8) {
+                    try socket.write(from: obs)
+                }
+                if let obs = "{ \"command\": [\"observe_property_string\", 2, \"window-scale\"] }\n".data(using: .utf8) {
+                    try socket.write(from: obs)
+                }
+                
+                var shouldKeepRunning = true
+                repeat {
+                    var d = Data()
+                    let _ = try socket.read(into: &d)
+                    if d.count > 0 {
+                        let json = try JSONParser.JSONObjectWithData(d)
+                        let socketEvent = try MpvSocketEvent(object: json)
+                        notice(socketEvent)
+                    } else {
+                        shouldKeepRunning = false
+                    }
+                } while shouldKeepRunning
+                socket.close()
+                closed()
+            } catch let error {
+                Logger.log("mpvSocket error \(error)")
+            }
+        }
+    }
+    
+    
 }
 
 private extension Processes {
@@ -214,3 +260,32 @@ private extension Processes {
         }
     }
 }
+
+
+struct MpvSocketEvent: Unmarshaling {
+    enum MpvEvent: String {
+        case propertyChange = "property-change"
+        case unpause
+        case pause
+        case idle
+    }
+
+    var event: MpvEvent?
+    var id: Int?
+    var name: String?
+    var data: String?
+    var success: Bool?
+    
+    init(object: MarshaledObject) throws {
+        let eventStr: String? = try object.value(for: "event")
+        event = MpvEvent(rawValue: eventStr ?? "")
+        id = try object.value(for: "id")
+        name = try object.value(for: "name")
+        data = try object.value(for: "data")
+        let errorStr: String? = try object.value(for: "error")
+        if errorStr != nil {
+            success = errorStr == "success"
+        }
+    }
+}
+

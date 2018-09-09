@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="14313.13.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -246,7 +247,57 @@
                 <customObject id="XfU-aw-sKA" customClass="MainMenu" customModule="iina_" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="-230"/>
+            <point key="canvasLocation" x="1722" y="-287"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="Cfq-ZM-8vM">
+            <objects>
+                <windowController storyboardIdentifier="DanmakuWindowController" id="yt9-25-AZk" customClass="DanmakuWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqI-m4-v8O">
+                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
+                        <connections>
+                            <outlet property="delegate" destination="yt9-25-AZk" id="nu5-TD-Lin"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="a9Y-dL-4fO" kind="relationship" relationship="window.shadowedContentViewController" id="vTD-WC-RMG"/>
+                    </connections>
+                </windowController>
+                <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1133" y="37"/>
+        </scene>
+        <!--Danmaku View Controller-->
+        <scene sceneID="YXK-mY-iqp">
+            <objects>
+                <viewController id="a9Y-dL-4fO" customClass="DanmakuViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="RRw-fA-KUP">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xKq-2v-gZV">
+                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="xKq-2v-gZV" secondAttribute="trailing" id="OuQ-Lb-gKU"/>
+                            <constraint firstItem="xKq-2v-gZV" firstAttribute="top" secondItem="RRw-fA-KUP" secondAttribute="top" id="Ycf-Mm-2EN"/>
+                            <constraint firstAttribute="bottom" secondItem="xKq-2v-gZV" secondAttribute="bottom" id="iCR-Z0-dIf"/>
+                            <constraint firstItem="xKq-2v-gZV" firstAttribute="leading" secondItem="RRw-fA-KUP" secondAttribute="leading" id="kox-p2-yak"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="xKq-2v-gZV" id="64q-83-uzK"/>
+                    </connections>
+                </viewController>
+                <customObject id="mfy-MR-beA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1133" y="463"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
@@ -267,7 +318,7 @@
                 </windowController>
                 <customObject id="1UM-nG-rxv" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="83"/>
+            <point key="canvasLocation" x="1722" y="37"/>
         </scene>
         <!--Preferences Tab View Controller-->
         <scene sceneID="cdr-KH-4tz">
@@ -296,18 +347,18 @@
                 </tabViewController>
                 <customObject id="9vw-kG-oWx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="544"/>
+            <point key="canvasLocation" x="1722" y="498"/>
         </scene>
         <!--Gereral View Controller-->
         <scene sceneID="3e1-6l-J64">
             <objects>
                 <viewController id="LMy-Ki-0Sg" customClass="GereralViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="UAF-uC-alO" customClass="PreferencesView" customModule="iina_" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="136"/>
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="131"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <gridView fixedFrame="YES" xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="xbe-XG-bo4">
-                                <rect key="frame" x="59" y="44" width="183" height="48"/>
+                                <rect key="frame" x="59" y="63" width="183" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <rows>
                                     <gridRow id="iFP-QQ-zUF"/>
@@ -363,9 +414,9 @@
                                     </gridCell>
                                     <gridCell row="W10-gq-hnz" column="vpq-Hh-Xri" id="1fZ-3u-Bpj">
                                         <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Y9-RS-vhV">
-                                            <rect key="frame" x="61" y="-3" width="111" height="26"/>
+                                            <rect key="frame" x="61" y="-3" width="115" height="26"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="90" id="Pn9-wq-fB2"/>
+                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Pn9-wq-fB2"/>
                                             </constraints>
                                             <popUpButtonCell key="cell" type="push" title="internal ykdl" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="8Bd-pk-taY" id="Odr-14-Fna">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -390,6 +441,30 @@
                                     </gridCell>
                                 </gridCells>
                             </gridView>
+                            <gridView fixedFrame="YES" xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="0.0" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="tTo-ss-sDc">
+                                <rect key="frame" x="59" y="20" width="167" height="14"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <rows>
+                                    <gridRow id="ubg-O6-E5M"/>
+                                </rows>
+                                <columns>
+                                    <gridColumn id="Mzz-I5-sjk"/>
+                                </columns>
+                                <gridCells>
+                                    <gridCell row="ubg-O6-E5M" column="Mzz-I5-sjk" id="8wd-Ft-ZGK">
+                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dEe-RI-KK4">
+                                            <rect key="frame" x="-2" y="-2" width="171" height="18"/>
+                                            <buttonCell key="cell" type="check" title="Enable Danmaku (demo)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Voj-BJ-znT">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <binding destination="K8h-eq-wfR" name="value" keyPath="self.enableDanmaku" id="Xfx-r0-Gz5"/>
+                                            </connections>
+                                        </button>
+                                    </gridCell>
+                                </gridCells>
+                            </gridView>
                         </subviews>
                     </view>
                     <connections>
@@ -398,8 +473,9 @@
                     </connections>
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="K8h-eq-wfR" customClass="Preferences" customModule="iina_" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="1165" y="953"/>
+            <point key="canvasLocation" x="1569" y="903.5"/>
         </scene>
         <!--Bilibili View Controller-->
         <scene sceneID="wPy-Mb-sDC">
@@ -560,7 +636,7 @@
                 </viewController>
                 <customObject id="LOv-sC-SiB" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1641" y="934"/>
+            <point key="canvasLocation" x="2108" y="887"/>
         </scene>
         <!--Advanced View Controller-->
         <scene sceneID="Vj7-6k-RdA">
@@ -616,7 +692,7 @@
                 </viewController>
                 <customObject id="hg7-dG-Nf6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2056" y="953"/>
+            <point key="canvasLocation" x="2523" y="906"/>
         </scene>
         <!--Bilibili Login View Controller-->
         <scene sceneID="HYh-0z-JES">
@@ -709,7 +785,7 @@
                 </viewController>
                 <customObject id="XEz-d4-Uu3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1641" y="1346"/>
+            <point key="canvasLocation" x="2108" y="1299"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">

@@ -23,6 +23,10 @@ struct YouGetJSON: Unmarshaling {
         url = try? object.value(for: "url")
         streams = try object.value(for: "streams")
     }
+    
+    init(url: String) {
+        streams = ["url": Stream(url: url)]
+    }
 }
 
 struct Stream: Unmarshaling {
@@ -35,7 +39,7 @@ struct Stream: Unmarshaling {
     var type: String = ""
     var url: String?
     var videoProfile: String?
-    var size: Double?
+    var size: Int64?
     var src: [String] = []
     
     init(object: MarshaledObject) throws {
@@ -45,5 +49,9 @@ struct Stream: Unmarshaling {
         url = try? object.value(for: "url")
         videoProfile = try? object.value(for: "video_profile")
         size = try? object.value(for: "size")
+    }
+    
+    init(url: String) {
+        self.url = url
     }
 }
