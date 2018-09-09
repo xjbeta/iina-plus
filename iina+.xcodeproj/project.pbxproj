@@ -44,6 +44,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0196CB62212143D600BCD29E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB61212143D600BCD29E /* Logger.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
+		019EB39C21453A0F000FD123 /* devmate.pem in Resources */ = {isa = PBXBuildFile; fileRef = 019EB39B21453A0F000FD123 /* devmate.pem */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -165,6 +166,7 @@
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0196CB61212143D600BCD29E /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
+		019EB39B21453A0F000FD123 /* devmate.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = devmate.pem; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -331,6 +333,14 @@
 			path = Executables;
 			sourceTree = "<group>";
 		};
+		019EB39D21453A97000FD123 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				019EB39B21453A0F000FD123 /* devmate.pem */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		01AEC89E20EDFD01001406E8 = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
+				019EB39D21453A97000FD123 /* Resources */,
 				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
 				016792F1212E57F6003517A7 /* Executables */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
@@ -495,6 +506,7 @@
 				01E8CACD213D263800C4939B /* style.css in Resources */,
 				01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */,
 				01E8CAC8213D236E00C4939B /* index.htm in Resources */,
+				019EB39C21453A0F000FD123 /* devmate.pem in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E8CAC9213D236E00C4939B /* main.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
