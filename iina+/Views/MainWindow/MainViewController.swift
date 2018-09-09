@@ -86,6 +86,7 @@ class MainViewController: NSViewController {
     // MARK: - Search Tab Item
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
+        Processes.shared.stopDecodeURL()
         let group: DispatchGroup? = DispatchGroup()
         let semaphore = DispatchSemaphore(value: 0)
         group?.notify(queue: .main) {

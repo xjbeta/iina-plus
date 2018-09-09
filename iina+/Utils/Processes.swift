@@ -53,7 +53,6 @@ class Processes: NSObject {
     func decodeURL(_ url: String,
                    _ block: @escaping (_ youget: YouGetJSON) -> Void,
                    _ error: @escaping (_ error: Error) -> Void) {
-        stopDecodeURL()
         
         decodeTask = Process()
         let pipe = Pipe()
@@ -100,7 +99,7 @@ class Processes: NSObject {
             }
             
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            if let str = String(data: errorData, encoding: .utf8) {
+            if let str = String(data: errorData, encoding: .utf8), str != "" {
                 Logger.log("Decode url error info: \(str)")
             }
         }
