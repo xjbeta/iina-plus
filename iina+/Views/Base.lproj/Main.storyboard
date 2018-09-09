@@ -247,7 +247,7 @@
                 <customObject id="XfU-aw-sKA" customClass="MainMenu" customModule="iina_" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="-230"/>
+            <point key="canvasLocation" x="1722" y="-287"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="Cfq-ZM-8vM">
@@ -266,7 +266,7 @@
                 </windowController>
                 <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1942" y="-106"/>
+            <point key="canvasLocation" x="1133" y="37"/>
         </scene>
         <!--Danmaku View Controller-->
         <scene sceneID="YXK-mY-iqp">
@@ -297,7 +297,7 @@
                 </viewController>
                 <customObject id="mfy-MR-beA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2514" y="-106"/>
+            <point key="canvasLocation" x="1133" y="463"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
@@ -318,7 +318,7 @@
                 </windowController>
                 <customObject id="1UM-nG-rxv" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="83"/>
+            <point key="canvasLocation" x="1722" y="37"/>
         </scene>
         <!--Preferences Tab View Controller-->
         <scene sceneID="cdr-KH-4tz">
@@ -347,18 +347,18 @@
                 </tabViewController>
                 <customObject id="9vw-kG-oWx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1280" y="544"/>
+            <point key="canvasLocation" x="1722" y="498"/>
         </scene>
         <!--Gereral View Controller-->
         <scene sceneID="3e1-6l-J64">
             <objects>
                 <viewController id="LMy-Ki-0Sg" customClass="GereralViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="UAF-uC-alO" customClass="PreferencesView" customModule="iina_" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="136"/>
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="131"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <gridView fixedFrame="YES" xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="xbe-XG-bo4">
-                                <rect key="frame" x="59" y="44" width="183" height="48"/>
+                                <rect key="frame" x="59" y="63" width="183" height="48"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <rows>
                                     <gridRow id="iFP-QQ-zUF"/>
@@ -441,6 +441,30 @@
                                     </gridCell>
                                 </gridCells>
                             </gridView>
+                            <gridView fixedFrame="YES" xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="0.0" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="tTo-ss-sDc">
+                                <rect key="frame" x="59" y="20" width="167" height="14"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <rows>
+                                    <gridRow id="ubg-O6-E5M"/>
+                                </rows>
+                                <columns>
+                                    <gridColumn id="Mzz-I5-sjk"/>
+                                </columns>
+                                <gridCells>
+                                    <gridCell row="ubg-O6-E5M" column="Mzz-I5-sjk" id="8wd-Ft-ZGK">
+                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dEe-RI-KK4">
+                                            <rect key="frame" x="-2" y="-2" width="171" height="18"/>
+                                            <buttonCell key="cell" type="check" title="Enable Danmaku (demo)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Voj-BJ-znT">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <binding destination="K8h-eq-wfR" name="value" keyPath="self.enableDanmaku" id="Xfx-r0-Gz5"/>
+                                            </connections>
+                                        </button>
+                                    </gridCell>
+                                </gridCells>
+                            </gridView>
                         </subviews>
                     </view>
                     <connections>
@@ -449,8 +473,9 @@
                     </connections>
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="K8h-eq-wfR" customClass="Preferences" customModule="iina_" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="1165" y="953"/>
+            <point key="canvasLocation" x="1569" y="903.5"/>
         </scene>
         <!--Bilibili View Controller-->
         <scene sceneID="wPy-Mb-sDC">
@@ -611,7 +636,7 @@
                 </viewController>
                 <customObject id="LOv-sC-SiB" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1641" y="934"/>
+            <point key="canvasLocation" x="2108" y="887"/>
         </scene>
         <!--Advanced View Controller-->
         <scene sceneID="Vj7-6k-RdA">
@@ -667,7 +692,7 @@
                 </viewController>
                 <customObject id="hg7-dG-Nf6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2056" y="953"/>
+            <point key="canvasLocation" x="2523" y="906"/>
         </scene>
         <!--Bilibili Login View Controller-->
         <scene sceneID="HYh-0z-JES">
@@ -760,7 +785,7 @@
                 </viewController>
                 <customObject id="XEz-d4-Uu3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1641" y="1346"/>
+            <point key="canvasLocation" x="2108" y="1299"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
