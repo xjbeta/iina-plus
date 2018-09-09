@@ -1,0 +1,17 @@
+body{
+	padding:0;
+	margin:0;
+	font-family: "open-sans", Verdana, sans-serif;
+	/* color:#fff; */
+	/* background-color:#111; */
+  }
+#player-unit{
+	width:100%; 
+	height:100vh; 
+}
+
+#commentCanvas{
+	width:100%; 
+	height:100vh; 
+}
+

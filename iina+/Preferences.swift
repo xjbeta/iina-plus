@@ -53,6 +53,15 @@ class Preferences: NSObject {
         }
     }
     
+    @objc var enableDanmaku: Bool {
+        get {
+            return defaults(.enableDanmaku) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .enableDanmaku)
+        }
+    }
+    
 }
 
 private extension Preferences {
@@ -71,4 +80,5 @@ enum PreferenceKeys: String {
     case liveDecoder
     case enableLogging
     case logLevel
+    case enableDanmaku
 }
