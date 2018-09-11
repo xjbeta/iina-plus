@@ -11,6 +11,7 @@ import SwiftHTTP
 import Marshal
 import SocketRocket
 import Gzip
+import Socket
 
 class DanmakuViewController: NSViewController {
     
@@ -117,6 +118,9 @@ class DanmakuViewController: NSViewController {
                     Logger.log("can't find panda live room id \(error)")
                 }
             }
+        case .douyu:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            initDouYuSocket(roomID)
         default:
             break
         }
@@ -273,6 +277,73 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
         evaluateJavaScript("""
             window.cm.send({'text': "\(str)",'stime': 0,'mode': 4, 'align': 2,'color': 0xffffff,'border': false});
             """)
+    }
+    
+    
+    func initDouYuSocket(_ roomID: String) {
+        DispatchQueue(label: "com.xjbeta.douyuSocket").async {
+            do {
+                let douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
+                try douyuSocket.connect(to: "openbarrage.douyutv.com", port: 8601)
+                
+                let s1 = "type@=loginreq/roomid@=\(roomID)/\0"
+                let s2 = "type@=joingroup/rid@=\(roomID)/gid@=-9999/\0"
+                let p1 = self.pack(format: "VVV", values: [s1.count + 8, s1.count + 8, 689])
+                let p2 = self.pack(format: "VVV", values: [s2.count + 8, s2.count + 8, 689])
+                
+                p1.append(s1.data(using: .utf8)!)
+                p2.append(s2.data(using: .utf8)!)
+                
+                
+                try douyuSocket.write(from: p1)
+                try douyuSocket.write(from: p2)
+                
+                var savedData = Data()
+                repeat {
+                    
+                    var d = Data()
+                    let _ = try douyuSocket.read(into: &d)
+                    if d.count == 0 {
+                        douyuSocket.close()
+                    }
+                    
+                    if savedData.count != 0 {
+                        savedData.append(d)
+                        d = savedData
+                        savedData = Data()
+                    }
+                    
+                    var msgDatas: [Data] = []
+                    
+                    
+                    while d.count > 12 {
+                        let head = d.subdata(in: 0..<4)
+                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                        if d.count < endIndex+2 {
+                            savedData.append(savedData)
+                            d = Data()
+                        } else {
+                            let msg = d.subdata(in: 12..<endIndex+2)
+                            msgDatas.append(msg)
+                            d = d.subdata(in: endIndex+2..<d.endIndex)
+                        }
+                    }
+                    
+                    msgDatas.compactMap {
+                        String(data: $0, encoding: .utf8)
+                        }.forEach {
+                            if $0.starts(with: "type@=chatmsg") {
+                                let dm = $0.subString(from: "txt@=", to: "/cid@=")
+                                DispatchQueue.main.async {
+                                    self.sendDM(dm)
+                                }
+                            }
+                    }
+                } while true
+            } catch let error {
+                Logger.log("Douyu socket error: \(error)")
+            }
+        }
     }
     
     
@@ -457,6 +528,10 @@ extension DanmakuViewController: SRWebSocketDelegate {
             case "N":
                 let number: UInt32 = UInt32(value)
                 var convertedNumber = CFSwapInt32(number)
+                data.append(&convertedNumber, length: 4)
+            case "V":
+                let number: UInt32 = UInt32(value)
+                var convertedNumber = CFSwapInt32LittleToHost(number)
                 data.append(&convertedNumber, length: 4)
             default:
                 print("Unrecognized character: \($0.element)")
