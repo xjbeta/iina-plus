@@ -40,6 +40,7 @@ class DanmakuViewController: NSViewController {
     }
     
     func initDanmaku(_ site: LiveSupportList, _ url: String) {
+        webView.reload()
         if let danmakuFilePath = danmakuFilePath {
             try? FileManager.default.removeItem(atPath: danmakuFilePath)
         }
@@ -47,7 +48,6 @@ class DanmakuViewController: NSViewController {
         socket?.close()
         socket = nil
         
-        self.initDM()
         
         
         liveSite = site

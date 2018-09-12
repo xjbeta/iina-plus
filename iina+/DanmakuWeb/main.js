@@ -101,5 +101,6 @@ function bind() {
 
 window.addEventListener("load", function() {
     bind();
+    initDM();
 });
 
