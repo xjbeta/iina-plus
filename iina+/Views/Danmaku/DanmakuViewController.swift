@@ -26,6 +26,8 @@ class DanmakuViewController: NSViewController {
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
     var pandaInitStr = ""
+
+    var douyuSocket: Socket? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -173,13 +175,21 @@ class DanmakuViewController: NSViewController {
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
             timer.setEventHandler {
-                switch self.liveSite {
-                case .biliLive:
-                    try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
-                case .panda:
-                    try? self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
-                default:
-                    break
+                do {
+                    switch self.liveSite {
+                    case .biliLive:
+                        try self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                    case .panda:
+                        try self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
+                    case .douyu:
+//                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                        let keeplive = "type@=mrkl/"
+                        try self.douyuSocket?.write(from: self.douyuSocketFormatter(keeplive))
+                    default:
+                        break
+                    }
+                } catch let error {
+                    Logger.log("send keep live pack error: \(error)")
                 }
             }
             timer.resume()
@@ -232,6 +242,8 @@ class DanmakuViewController: NSViewController {
         }) {
             self.socket?.close()
             self.socket = nil
+            self.douyuSocket?.close()
+            self.douyuSocket = nil
             Logger.log("mpv socket disconnected")
         }
     }
@@ -285,28 +297,24 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
     func initDouYuSocket(_ roomID: String) {
         DispatchQueue(label: "com.xjbeta.douyuSocket").async {
             do {
-                let douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
-                try douyuSocket.connect(to: "openbarrage.douyutv.com", port: 8601)
+                self.douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
                 
-                let s1 = "type@=loginreq/roomid@=\(roomID)/\0"
-                let s2 = "type@=joingroup/rid@=\(roomID)/gid@=-9999/\0"
-                let p1 = self.pack(format: "VVV", values: [s1.count + 8, s1.count + 8, 689])
-                let p2 = self.pack(format: "VVV", values: [s2.count + 8, s2.count + 8, 689])
-                
-                p1.append(s1.data(using: .utf8)!)
-                p2.append(s2.data(using: .utf8)!)
-                
-                
-                try douyuSocket.write(from: p1)
-                try douyuSocket.write(from: p2)
+                try self.douyuSocket?.connect(to: "openbarrage.douyutv.com", port: 8601)
+                Logger.log("douyu socket started: \(self.douyuSocket?.isConnected)")
+                let loginreq = "type@=loginreq/roomid@=\(roomID)/"
+                let joingroup = "type@=joingroup/rid@=\(roomID)/gid@=-9999/"
+
+                try self.douyuSocket?.write(from: self.douyuSocketFormatter(loginreq))
+                try self.douyuSocket?.write(from: self.douyuSocketFormatter(joingroup))
+                self.startTimer()
                 
                 var savedData = Data()
                 repeat {
                     
                     var d = Data()
-                    let _ = try douyuSocket.read(into: &d)
+                    let _ = try self.douyuSocket?.read(into: &d)
                     if d.count == 0 {
-                        douyuSocket.close()
+                        self.douyuSocket?.close()
                     }
                     
                     if savedData.count != 0 {
@@ -316,7 +324,6 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
                     }
                     
                     var msgDatas: [Data] = []
-                    
                     
                     while d.count > 12 {
                         let head = d.subdata(in: 0..<4)
@@ -339,6 +346,9 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
                                 DispatchQueue.main.async {
                                     self.sendDM(dm)
                                 }
+                            } else if $0.starts(with: "type@=error") {
+                                Logger.log("douyu socket disconnected: \($0)")
+                                self.douyuSocket?.close()
                             }
                     }
                 } while true
@@ -346,6 +356,13 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
                 Logger.log("Douyu socket error: \(error)")
             }
         }
+    }
+    
+    func douyuSocketFormatter(_ str: String) -> Data {
+        let str = str + "\0"
+        let data = pack(format: "VVV", values: [str.count + 8, str.count + 8, 689])
+        data.append(str.data(using: .utf8) ?? Data())
+        return data as Data
     }
     
     
