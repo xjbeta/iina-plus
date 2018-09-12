@@ -223,6 +223,8 @@ class DanmakuViewController: NSViewController {
                         $0.window?.orderOut(nil)
                     }
                     Logger.log("iina idle")
+                default:
+                    break
                 }
             } else if let re = socketEvent.success {
                 Logger.log("iina event success? \(re)")

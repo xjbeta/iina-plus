@@ -264,10 +264,28 @@ private extension Processes {
 
 struct MpvSocketEvent: Unmarshaling {
     enum MpvEvent: String {
-        case propertyChange = "property-change"
-        case unpause
-        case pause
+        case startFile = "start-file"
+        case endFile = "end-file"
+        case fileLoaded = "file-loaded"
+        case seek
+        case playbackRestart = "playback-restart"
         case idle
+        case tick
+        case shutdown
+        case logMessage = "log-message"
+        case getPropertyReply = "get-property-reply"
+        case setPropertyReply = "set-property-reply"
+        case commandReply = "command-reply"
+        case clientMessage = "client-message"
+        case videoReconfig = "video-reconfig"
+        case audioReconfig = "audio-reconfig"
+        case tracksChanged = "tracks-changed"
+        case trackSwitched = "track-switched"
+        case pause
+        case unpause
+        case metadataUpdate = "metadata-update"
+        case chapterChange = "chapter-change"
+        case propertyChange = "property-change"
     }
 
     var event: MpvEvent?
