@@ -199,13 +199,28 @@ class Processes: NSObject {
                 }
                 
                 var shouldKeepRunning = true
+//                var savedData = Data()
                 repeat {
                     var d = Data()
                     let _ = try socket.read(into: &d)
                     if d.count > 0 {
-                        let json = try JSONParser.JSONObjectWithData(d)
-                        let socketEvent = try MpvSocketEvent(object: json)
-                        notice(socketEvent)
+                        do {
+                            try String(data: d, encoding: .utf8)?.components(separatedBy: "\n").filter {
+                                $0 != ""
+                                }.compactMap {
+                                    $0.data(using: .utf8)
+                                }.forEach {
+                                    let json = try JSONParser.JSONObjectWithData($0)
+                                    let socketEvent = try MpvSocketEvent(object: json)
+                                    if socketEvent.event == nil, socketEvent.success == nil {
+                                        Logger.log("not find the mpv event: \(String(data: $0, encoding: .utf8) ?? "")")
+                                    }
+                                    notice(socketEvent)
+                            }
+                        } catch let error {
+                            Logger.log(String(data: d, encoding: .utf8) ?? "")
+                            Logger.log("mpv socket json decode error: \(error)")
+                        }
                     } else {
                         shouldKeepRunning = false
                     }
