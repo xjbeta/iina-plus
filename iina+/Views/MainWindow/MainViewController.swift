@@ -201,7 +201,7 @@ class MainViewController: NSViewController {
                 // init Danmaku
                 if Preferences.shared.enableDanmaku {
                     switch site {
-                    case .bilibili, .biliLive, .panda:
+                    case .bilibili, .biliLive, .panda, .douyu:
                         self.danmakuWindowController?.initDanmaku(site, title, searchField.stringValue)
                     default:
                         break

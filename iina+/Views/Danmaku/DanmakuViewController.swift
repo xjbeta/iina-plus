@@ -11,6 +11,7 @@ import SwiftHTTP
 import Marshal
 import SocketRocket
 import Gzip
+import Socket
 
 class DanmakuViewController: NSViewController {
     
@@ -25,6 +26,8 @@ class DanmakuViewController: NSViewController {
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
     var pandaInitStr = ""
+
+    var douyuSocket: Socket? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +42,7 @@ class DanmakuViewController: NSViewController {
     }
     
     func initDanmaku(_ site: LiveSupportList, _ url: String) {
+        webView.reload()
         if let danmakuFilePath = danmakuFilePath {
             try? FileManager.default.removeItem(atPath: danmakuFilePath)
         }
@@ -46,7 +50,6 @@ class DanmakuViewController: NSViewController {
         socket?.close()
         socket = nil
         
-        self.initDM()
         
         
         liveSite = site
@@ -117,6 +120,9 @@ class DanmakuViewController: NSViewController {
                     Logger.log("can't find panda live room id \(error)")
                 }
             }
+        case .douyu:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            initDouYuSocket(roomID)
         default:
             break
         }
@@ -169,13 +175,21 @@ class DanmakuViewController: NSViewController {
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
             timer.setEventHandler {
-                switch self.liveSite {
-                case .biliLive:
-                    try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
-                case .panda:
-                    try? self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
-                default:
-                    break
+                do {
+                    switch self.liveSite {
+                    case .biliLive:
+                        try self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                    case .panda:
+                        try self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
+                    case .douyu:
+//                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                        let keeplive = "type@=mrkl/"
+                        try self.douyuSocket?.write(from: self.douyuSocketFormatter(keeplive))
+                    default:
+                        break
+                    }
+                } catch let error {
+                    Logger.log("send keep live pack error: \(error)")
                 }
             }
             timer.resume()
@@ -219,6 +233,8 @@ class DanmakuViewController: NSViewController {
                         $0.window?.orderOut(nil)
                     }
                     Logger.log("iina idle")
+                default:
+                    break
                 }
             } else if let re = socketEvent.success {
                 Logger.log("iina event success? \(re)")
@@ -226,6 +242,8 @@ class DanmakuViewController: NSViewController {
         }) {
             self.socket?.close()
             self.socket = nil
+            self.douyuSocket?.close()
+            self.douyuSocket = nil
             Logger.log("mpv socket disconnected")
         }
     }
@@ -273,6 +291,78 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
         evaluateJavaScript("""
             window.cm.send({'text': "\(str)",'stime': 0,'mode': 4, 'align': 2,'color': 0xffffff,'border': false});
             """)
+    }
+    
+    
+    func initDouYuSocket(_ roomID: String) {
+        DispatchQueue(label: "com.xjbeta.douyuSocket").async {
+            do {
+                self.douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
+                
+                try self.douyuSocket?.connect(to: "openbarrage.douyutv.com", port: 8601)
+                Logger.log("douyu socket started: \(self.douyuSocket?.isConnected ?? false)")
+                let loginreq = "type@=loginreq/roomid@=\(roomID)/"
+                let joingroup = "type@=joingroup/rid@=\(roomID)/gid@=-9999/"
+
+                try self.douyuSocket?.write(from: self.douyuSocketFormatter(loginreq))
+                try self.douyuSocket?.write(from: self.douyuSocketFormatter(joingroup))
+                self.startTimer()
+                
+                var savedData = Data()
+                repeat {
+                    
+                    var d = Data()
+                    let _ = try self.douyuSocket?.read(into: &d)
+                    if d.count == 0 {
+                        self.douyuSocket?.close()
+                    }
+                    
+                    if savedData.count != 0 {
+                        savedData.append(d)
+                        d = savedData
+                        savedData = Data()
+                    }
+                    
+                    var msgDatas: [Data] = []
+                    
+                    while d.count > 12 {
+                        let head = d.subdata(in: 0..<4)
+                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                        if d.count < endIndex+2 {
+                            savedData.append(savedData)
+                            d = Data()
+                        } else {
+                            let msg = d.subdata(in: 12..<endIndex+2)
+                            msgDatas.append(msg)
+                            d = d.subdata(in: endIndex+2..<d.endIndex)
+                        }
+                    }
+                    
+                    msgDatas.compactMap {
+                        String(data: $0, encoding: .utf8)
+                        }.forEach {
+                            if $0.starts(with: "type@=chatmsg") {
+                                let dm = $0.subString(from: "txt@=", to: "/cid@=")
+                                DispatchQueue.main.async {
+                                    self.sendDM(dm)
+                                }
+                            } else if $0.starts(with: "type@=error") {
+                                Logger.log("douyu socket disconnected: \($0)")
+                                self.douyuSocket?.close()
+                            }
+                    }
+                } while true
+            } catch let error {
+                Logger.log("Douyu socket error: \(error)")
+            }
+        }
+    }
+    
+    func douyuSocketFormatter(_ str: String) -> Data {
+        let str = str + "\0"
+        let data = pack(format: "VVV", values: [str.count + 8, str.count + 8, 689])
+        data.append(str.data(using: .utf8) ?? Data())
+        return data as Data
     }
     
     
@@ -457,6 +547,10 @@ extension DanmakuViewController: SRWebSocketDelegate {
             case "N":
                 let number: UInt32 = UInt32(value)
                 var convertedNumber = CFSwapInt32(number)
+                data.append(&convertedNumber, length: 4)
+            case "V":
+                let number: UInt32 = UInt32(value)
+                var convertedNumber = CFSwapInt32LittleToHost(number)
                 data.append(&convertedNumber, length: 4)
             default:
                 print("Unrecognized character: \($0.element)")
