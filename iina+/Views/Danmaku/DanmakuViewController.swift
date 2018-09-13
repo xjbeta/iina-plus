@@ -300,7 +300,7 @@ window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border'
                 self.douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
                 
                 try self.douyuSocket?.connect(to: "openbarrage.douyutv.com", port: 8601)
-                Logger.log("douyu socket started: \(self.douyuSocket?.isConnected)")
+                Logger.log("douyu socket started: \(self.douyuSocket?.isConnected ?? false)")
                 let loginreq = "type@=loginreq/roomid@=\(roomID)/"
                 let joingroup = "type@=joingroup/rid@=\(roomID)/gid@=-9999/"
 
