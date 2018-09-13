@@ -31,7 +31,9 @@ class DanmakuViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        #if DEBUG
         webView.configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
+        #endif
         webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         webView.setValue(false, forKey: "drawsBackground")
         
