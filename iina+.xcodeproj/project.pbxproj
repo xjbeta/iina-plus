@@ -532,7 +532,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/bash\nBUILD_NUMBER=`git rev-parse --short HEAD`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
+			shellScript = "#!/bin/bash\nBUILD_NUMBER=`date +%y%m%d%H`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

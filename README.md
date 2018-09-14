@@ -2,7 +2,7 @@
 
 IINA+ is a tiny macOS application to ?.
 
-![](https://i.imgur.com/wQckfMj.jpg)
+![](https://i.imgur.com/Oil3MUo.png)
 
 Are you a Swift programmer? Then check out [the source](https://github.com/xjbeta/iina-plus) and fork it!
 
@@ -12,22 +12,8 @@ Are you a Swift programmer? Then check out [the source](https://github.com/xjbet
 - [IINA](https://lhc70000.github.io/iina/)
 - [mpv](https://mpv.io/)
 
-# Install you-get
-
-##### [Install you-get](https://github.com/soimort/you-get/blob/develop/README.md#installation) use homebrew:
-```
-brew install you-get
-```
-##### install ykdl
-```
-pip3 install ykdl --upgrade
-```
-##### Check you-get's path with:
-```
-which you-get
-which ykdl
-```
-
+# Check your preferences
+![](https://i.imgur.com/ppvXMNU.png)
 
 # Liev Status Support List
 
@@ -46,3 +32,10 @@ carthage bootstrap
 ```
 Open `.xcodeproj` file.
 
+## Acknowledgements
+- [SwiftHTTP](https://github.com/daltoniam/SwiftHTTP)
+- [Marshal](https://github.com/utahiosmac/Marshal)
+- [DevMateKit](https://github.com/DevMate/DevMateKit)
+- [BlueSocket](https://github.com/IBM-Swift/BlueSocket)
+- [SocketRocket](https://github.com/facebook/SocketRocket)
+- [iocns from @freepik](https://www.flaticon.com/authors/freepik)
