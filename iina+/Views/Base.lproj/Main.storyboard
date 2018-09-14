@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.13.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="14313.13.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -459,7 +459,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <binding destination="K8h-eq-wfR" name="value" keyPath="self.enableDanmaku" id="Xfx-r0-Gz5"/>
+                                                <action selector="enableDanmaku:" target="LMy-Ki-0Sg" id="F2E-R4-BDF"/>
                                             </connections>
                                         </button>
                                     </gridCell>
@@ -469,11 +469,11 @@
                     </view>
                     <connections>
                         <outlet property="decoderPopUpButton" destination="0Y9-RS-vhV" id="4TR-OL-CVY"/>
+                        <outlet property="enableDanmaku" destination="dEe-RI-KK4" id="TIy-iV-lgb"/>
                         <outlet property="playerPopUpButton" destination="bjh-ng-iw0" id="GBM-ep-Aq2"/>
                     </connections>
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <customObject id="K8h-eq-wfR" customClass="Preferences" customModule="iina_" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="1569" y="903.5"/>
         </scene>
