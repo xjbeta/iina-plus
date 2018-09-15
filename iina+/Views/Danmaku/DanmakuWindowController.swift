@@ -66,6 +66,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     }
     
     @objc func foremostAppActivated(_ notification: NSNotification) {
+        guard Preferences.shared.enableDanmaku else { return }
         guard let app = NSWorkspace.shared.frontmostApplication,
             app.bundleIdentifier == "com.colliderli.iina" else {
                 if let window = window, window.isVisible {
