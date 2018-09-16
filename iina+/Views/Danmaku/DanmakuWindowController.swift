@@ -53,7 +53,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     
     func initDanmaku(_ site: LiveSupportList, _ title: String, _ url: String) {
         waittingSocket = true
-        targeTitle = title
+        targeTitle = site == .huya ? "yes" : title
         if let danmakuViewController = self.contentViewController as? DanmakuViewController {
             danmakuViewController.initDanmaku(site, url)
         }

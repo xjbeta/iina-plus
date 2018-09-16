@@ -12,6 +12,7 @@ import Marshal
 import SocketRocket
 import Gzip
 import Socket
+import JavaScriptCore
 
 class DanmakuViewController: NSViewController {
     
@@ -28,6 +29,10 @@ class DanmakuViewController: NSViewController {
     var pandaInitStr = ""
 
     var douyuSocket: Socket? = nil
+    
+    let huyaServer = URL(string: "ws://ws.api.huya.com")
+    let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
+    var huyaSubSid = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,6 +130,17 @@ class DanmakuViewController: NSViewController {
         case .douyu:
             let roomID = URL(string: url)?.lastPathComponent ?? ""
             initDouYuSocket(roomID)
+        case .huya:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
+            
+            HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
+                let id = $0.text?.subString(from: "var SUBSID = '", to: "';") ?? ""
+                self.huyaSubSid = id
+                self.socket = SRWebSocket(url: self.huyaServer!)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }
         default:
             break
         }
@@ -187,6 +203,8 @@ class DanmakuViewController: NSViewController {
 //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                         let keeplive = "type@=mrkl/"
                         try self.douyuSocket?.write(from: self.douyuSocketFormatter(keeplive))
+                    case .huya:
+                        try self.socket?.sendPing(nil)
                     default:
                         break
                     }
@@ -392,6 +410,21 @@ extension DanmakuViewController: SRWebSocketDelegate {
             data.append(pandaInitStr.data(using: .utf8)!)
             try? webSocket.send(data: data as Data)
             startTimer()
+        case .huya:
+            let jsContext = JSContext()
+            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
+            jsContext?.evaluateScript("""
+var wsUserInfo = new HUYA.WSUserInfo;
+wsUserInfo.lSid = "\(huyaSubSid)";
+""")
+            
+            let result = jsContext?.evaluateScript("""
+new Uint8Array(sendRegister(wsUserInfo));
+""")
+            
+            let data = Data(bytes: result?.toArray() as? [UInt8] ?? [])
+            try? webSocket.send(data: data)
+            startTimer()
         default:
             break
         }
@@ -529,6 +562,25 @@ extension DanmakuViewController: SRWebSocketDelegate {
             //            😞[:可怜]
             //            🤣[:233]
             //            👏[:666]
+        case .huya:
+            let jsContext = JSContext()
+            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
+            let bytes = [UInt8](data)
+            
+            if let re = jsContext?.evaluateScript("test(\(bytes));"),
+                re.isString {
+                let str = re.toString() ?? ""
+                guard str != "HUYA.EWebSocketCommandType.EWSCmd_RegisterRsp" else {
+                    Logger.log("huya websocket inited EWSCmd_RegisterRsp")
+                    return
+                }
+                guard str != "HUYA.EWebSocketCommandType.Default" else {
+                    Logger.log("huya websocket WebSocketCommandType.Default \(data)")
+                    return
+                }
+                guard !str.contains("分享了直播间，房间号") else { return }
+                sendDM(str)
+            }
             
         default:
             break

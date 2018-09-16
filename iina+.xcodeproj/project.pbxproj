@@ -26,6 +26,7 @@
 		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
 		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
 		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
+		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
 		01398983210F273200B7042F /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398982210F273200B7042F /* PreferencesView.swift */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
@@ -147,6 +148,7 @@
 		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
 		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
 		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
+		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
 		01398982210F273200B7042F /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 			isa = PBXGroup;
 			children = (
 				019EB39B21453A0F000FD123 /* devmate.pem */,
+				013850F9214EA2AA003817CE /* huya.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -509,6 +512,7 @@
 				019EB39C21453A0F000FD123 /* devmate.pem in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E8CAC9213D236E00C4939B /* main.js in Resources */,
+				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				01E8CAC7213D236E00C4939B /* default.css in Resources */,
 			);
