@@ -12,6 +12,7 @@ import Marshal
 import SocketRocket
 import Gzip
 import Socket
+import JavaScriptCore
 
 class DanmakuViewController: NSViewController {
     
@@ -29,9 +30,15 @@ class DanmakuViewController: NSViewController {
 
     var douyuSocket: Socket? = nil
     
+    let huyaServer = URL(string: "ws://ws.api.huya.com")
+    let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
+    var huyaSubSid = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        #if DEBUG
         webView.configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
+        #endif
         webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         webView.setValue(false, forKey: "drawsBackground")
         
@@ -123,6 +130,17 @@ class DanmakuViewController: NSViewController {
         case .douyu:
             let roomID = URL(string: url)?.lastPathComponent ?? ""
             initDouYuSocket(roomID)
+        case .huya:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
+            
+            HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
+                let id = $0.text?.subString(from: "var SUBSID = '", to: "';") ?? ""
+                self.huyaSubSid = id
+                self.socket = SRWebSocket(url: self.huyaServer!)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }
         default:
             break
         }
@@ -185,6 +203,8 @@ class DanmakuViewController: NSViewController {
 //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                         let keeplive = "type@=mrkl/"
                         try self.douyuSocket?.write(from: self.douyuSocketFormatter(keeplive))
+                    case .huya:
+                        try self.socket?.sendPing(nil)
                     default:
                         break
                     }
@@ -390,6 +410,21 @@ extension DanmakuViewController: SRWebSocketDelegate {
             data.append(pandaInitStr.data(using: .utf8)!)
             try? webSocket.send(data: data as Data)
             startTimer()
+        case .huya:
+            let jsContext = JSContext()
+            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
+            jsContext?.evaluateScript("""
+var wsUserInfo = new HUYA.WSUserInfo;
+wsUserInfo.lSid = "\(huyaSubSid)";
+""")
+            
+            let result = jsContext?.evaluateScript("""
+new Uint8Array(sendRegister(wsUserInfo));
+""")
+            
+            let data = Data(bytes: result?.toArray() as? [UInt8] ?? [])
+            try? webSocket.send(data: data)
+            startTimer()
         default:
             break
         }
@@ -527,6 +562,103 @@ extension DanmakuViewController: SRWebSocketDelegate {
             //            😞[:可怜]
             //            🤣[:233]
             //            👏[:666]
+        case .huya:
+            let jsContext = JSContext()
+            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
+            let bytes = [UInt8](data)
+            
+            if let re = jsContext?.evaluateScript("test(\(bytes));"),
+                re.isString {
+                let str = re.toString() ?? ""
+                guard str != "HUYA.EWebSocketCommandType.EWSCmd_RegisterRsp" else {
+                    Logger.log("huya websocket inited EWSCmd_RegisterRsp")
+                    return
+                }
+                guard str != "HUYA.EWebSocketCommandType.Default" else {
+                    Logger.log("huya websocket WebSocketCommandType.Default \(data)")
+                    return
+                }
+                guard !str.contains("分享了直播间，房间号") else { return }
+                sendDM(str)
+            }
+            
+//            "/{dx" = "[大笑]",
+//            "/{sh" = "[送花]",
+//            "/{tx" = "[偷笑]",
+//            "/{dk" = "[大哭]",
+//            "/{hh" = "[嘿哈]",
+//            "/{66" = "[666]"},
+//            "/{gd" = "[感动]",
+//            "/{yw" = "[疑问]",
+//            "/{xh" = "[喜欢]",
+//            "/{jx" = "[奸笑]",
+//            "/{zan" = "[赞]",
+//            "/{ka" = "[可爱]",
+//            "/{am" = "[傲慢]",
+//            "/{kx" = "[开心]",
+//            "/{88" = "[拜拜]",
+//            "/{hx" = "[害羞]",
+//            "/{zs" = "[衰]",
+//            "/{pu" = "[吐血]",
+//            "/{zc" = "[嘴馋]",
+//            "/{sq" = "[生气]",
+//            "/{fe" = "[扶额]",
+//            "/{bz" = "[闭嘴]",
+//            "/{kw" = "[枯萎]",
+//            "/{xu" = "[嘘]",
+//            "/{xk" = "[笑哭]",
+//            "/{lh" = "[流汗]",
+//            "/{bk" = "[不看]",
+//            "/{hq" = "[哈欠]",
+//            "/{tp" = "[调皮]",
+//            "/{gl" = "[鬼脸]",
+//            "/{cl" = "[戳脸]",
+//            "/{dg" = "[大哥]",
+//            "/{kun" = "[困]",
+//            "/{yb" = "[拥抱]",
+//            "/{zt" = "[猪头]",
+//            "/{kl" = "[骷髅]",
+//            "/{cc" = "[臭臭]",
+//            "/{xd" = "[心动]",
+//            "/{dao" = "[刀]",
+//            "/{wx" = "[微笑]",
+//            "/{ll" = "[流泪]",
+//            "/{dy" = "[得意]",
+//            "/{jy" = "[惊讶]",
+//            "/{pz" = "[撇嘴]",
+//            "/{yun" = "[晕]",
+//            "/{ng" = "[难过]",
+//            "/{se" = "[色]",
+//            "/{cy" = "[抽烟]",
+//            "/{qd" = "[敲打]"},
+//            "/{mg" = "[玫瑰]",
+//            "/{wen" = "[吻]",
+//            "/{xs" = "[心碎]",
+//            "/{zd" = "[*屏蔽的关键字*]",
+//            "/{sj" = "[睡觉]",
+//            "/{hk" = "[很酷]",
+//            "/{by" = "[白眼]",
+//            "/{ot" = "[呕吐]",
+//            "/{fd" = "[奋斗]",
+//            "/{kz" = "[口罩]",
+//            "/{hp" = "[害怕]",
+//            "/{dai" = "[发呆]",
+//            "/{fn" = "[发怒]",
+//            "/{ruo" = "[弱]",
+//            "/{ws" = "[握手]",
+//            "/{sl" = "[胜利]",
+//            "/{lw" = "[礼物]",
+//            "/{sd" = "[闪电]",
+//            "/{gz" = "[鼓掌]",
+//            "/{qq" = "[亲亲]",
+//            "/{kb" = "[抠鼻]",
+//            "/{wq" = "[委屈]",
+//            "/{yx" = "[阴险]",
+//            "/{kel" = "[可怜]",
+//            "/{bs" = "[鄙视]",
+//            "/{zk" = "[抓狂]",
+//            "/{bq" = "[抱拳]",
+//            "/{ok" = "[OK]"
             
         default:
             break

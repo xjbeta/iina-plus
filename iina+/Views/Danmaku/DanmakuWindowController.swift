@@ -16,7 +16,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     override func windowDidLoad() {
         super.windowDidLoad()
         
-        window?.level = NSWindow.Level(NSWindow.Level.floating.rawValue)
+        window?.level = .floating
         window?.backgroundColor = NSColor.clear
         window?.isOpaque = false
         window?.ignoresMouseEvents = true
@@ -53,7 +53,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     
     func initDanmaku(_ site: LiveSupportList, _ title: String, _ url: String) {
         waittingSocket = true
-        targeTitle = title
+        targeTitle = site == .huya ? "yes" : title
         if let danmakuViewController = self.contentViewController as? DanmakuViewController {
             danmakuViewController.initDanmaku(site, url)
         }
@@ -66,7 +66,8 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
     }
     
     @objc func foremostAppActivated(_ notification: NSNotification) {
-        guard let app = notification.userInfo?["NSWorkspaceApplicationKey"] as? NSRunningApplication,
+        guard Preferences.shared.enableDanmaku else { return }
+        guard let app = NSWorkspace.shared.frontmostApplication,
             app.bundleIdentifier == "com.colliderli.iina" else {
                 if let window = window, window.isVisible {
                     window.orderOut(self)
@@ -74,59 +75,58 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
                 }
                 return
         }
+        
+        Logger.log("AXIsProcessTrusted  \(AXIsProcessTrusted())")
+        assert(AXIsProcessTrusted(), "No accessibility API permission.")
+        
         resizeWindow()
+        
+        if waittingSocket {
+            initMpvSocket()
+            waittingSocket = false
+            setObserver(app.processIdentifier)
+        }
     }
     
     func resizeWindow() {
-        let tt = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .optionOnScreenAboveWindow], kCGNullWindowID) as? [[String: AnyObject]]
-        if let d = tt?.filter ({
-            if let owner = $0["kCGWindowOwnerName"] as? String,
-                owner == "IINA",
-                let title = $0["kCGWindowName"] as? String,
-                title == targeTitle {
+        guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier else { return }
+        
+        let app = AXUIElementCreateApplication(pid)
+        var children: CFTypeRef?
+        AXUIElementCopyAttributeValue(app, kAXChildrenAttribute as CFString, &children)
+        
+        guard let windows = children as? [AXUIElement] else { return }
+        
+        let targeWindows = windows.filter { element in
+            var title: CFTypeRef?
+            AXUIElementCopyAttributeValue(element, kAXTitleAttribute as CFString, &title)
+            if let t = title as? String, t == targeTitle {
                 return true
-            } else {
-                return false
             }
-        }).first {
-            var re = WindowData(d).frame
-            re.origin.y = (NSScreen.main?.frame.size.height)! - re.size.height - re.origin.y
-            guard let window = window else { return }
-            window.setFrame(re, display: true)
-            if !window.isVisible {
-                window.orderFront(self)
-                Logger.log("show danmaku window")
-            }
-            if waittingSocket {
-                initMpvSocket()
-                waittingSocket = false
-                setObserver(pid_t(WindowData(d).pid))
-            }
+            return false
+        }
+        
+        guard let targeWindow = targeWindows.first else { return }
+        
+        var position: CFTypeRef?
+        var size: CFTypeRef?
+        var p = CGPoint()
+        var s = CGSize()
+        AXUIElementCopyAttributeValue(targeWindow, kAXPositionAttribute as CFString, &position)
+        AXUIElementCopyAttributeValue(targeWindow, kAXSizeAttribute as CFString, &size)
+
+        guard position != nil, size != nil else { return }
+        AXValueGetValue(position as! AXValue, AXValueType.cgPoint, &p)
+        AXValueGetValue(size as! AXValue, AXValueType.cgSize, &s)
+        
+        var rect = NSRect(origin: p, size: s)
+        
+        rect.origin.y = (NSScreen.main?.frame.size.height)! - rect.size.height - rect.origin.y
+        guard let window = window else { return }
+        window.setFrame(rect, display: true)
+        if !window.isVisible {
+            window.orderFront(self)
+            Logger.log("show danmaku window")
         }
     }
 }
-
-
-
-struct WindowData {
-    public let name: String
-    public let pid: Int
-    public let wid: Int
-    public let layer: Int
-    public let opacity: CGFloat
-    public let frame: CGRect
-    
-    init(_ d: [String: AnyObject]) {
-        let _r = d[kCGWindowBounds as String] as? [String: Int]
-        frame = NSRect(x: _r?["X"] ?? 0,
-                       y: _r?["Y"] ?? 0,
-                       width: _r?["Width"] ?? 0,
-                       height: _r?["Height"] ?? 0)
-        name = d[kCGWindowName as String] as? String ?? ""
-        pid = d[kCGWindowOwnerPID as String] as? Int ?? -1
-        wid = d[kCGWindowNumber as String] as? Int ?? -1
-        layer = d[kCGWindowLayer as String] as? Int ?? 0
-        opacity = d[kCGWindowAlpha as String] as? CGFloat ?? 0.0
-    }
-}
-

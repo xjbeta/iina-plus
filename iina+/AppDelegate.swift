@@ -21,7 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         HTTP.globalRequest { req in
             req.timeoutInterval = 3
-            req.allHTTPHeaderFields = ["User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1.2 Safari/605.1.15"]
         }
 
         DevMateKit.sendTrackingReport(nil, delegate: nil)

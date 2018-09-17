@@ -11,9 +11,23 @@ import Cocoa
 class GereralViewController: NSViewController, NSMenuDelegate {
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
+    @IBOutlet weak var enableDanmaku: NSButton!
+    @IBAction func enableDanmaku(_ sender: Any) {
+        if enableDanmaku.state == .on {
+            acquirePrivileges { success in
+                DispatchQueue.main.async {
+                    Preferences.shared.enableDanmaku = success
+                    self.enableDanmaku.state = success ? .on : .off
+                }
+            }
+        } else {
+            Preferences.shared.enableDanmaku = false
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        enableDanmaku.state = Preferences.shared.enableDanmaku ? .on : .off
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
     }
@@ -39,6 +53,30 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             popUpButton.selectItem(at: Preferences.shared.liveDecoder.index())
         default:
             break
+        }
+    }
+    
+    func acquirePrivileges(_ block: @escaping (Bool) -> Void) {
+        let trusted = kAXTrustedCheckOptionPrompt.takeUnretainedValue()
+        let privOptions = [trusted: true] as CFDictionary
+        let accessEnabled = AXIsProcessTrustedWithOptions(privOptions)
+        Logger.log("accessEnabled: \(accessEnabled)")
+        if !accessEnabled {
+            let alert = NSAlert()
+            alert.messageText = "Enable IINA+ Danmaku"
+            alert.informativeText = "Once you have enabled IINA+ in System Preferences, click OK."
+            
+            guard let window = view.window else {
+                block(false)
+                return
+            }
+            alert.beginSheetModal(for: window) { _ in
+                let t = AXIsProcessTrustedWithOptions(privOptions)
+                Logger.log("accessEnabled: \(t)")
+                block(t)
+            }
+        } else {
+            block(true)
         }
     }
     
