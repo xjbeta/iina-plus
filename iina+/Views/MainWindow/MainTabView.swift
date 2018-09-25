@@ -12,7 +12,9 @@ class MainTabView: NSTabView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-
+        
+        NSColor.controlBackgroundColor.setFill()
+        dirtyRect.fill()
         // Drawing code here.
     }
     

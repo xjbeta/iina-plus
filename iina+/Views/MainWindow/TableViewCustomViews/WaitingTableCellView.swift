@@ -16,10 +16,6 @@ class WaitingTableCellView: NSTableCellView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
-        let selectionRect = NSInsetRect(bounds, 0, 0)
-        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
-        NSColor.white.setFill()
-        selectionPath.fill()
     }
     enum Status {
         case waiting, error

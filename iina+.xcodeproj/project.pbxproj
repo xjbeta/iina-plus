@@ -27,7 +27,6 @@
 		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
 		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
 		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
-		01398983210F273200B7042F /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398982210F273200B7042F /* PreferencesView.swift */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
 		01424EB02138EBD500F38C30 /* DanmakuWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01424EAF2138EBD500F38C30 /* DanmakuWindowController.swift */; };
@@ -149,7 +148,6 @@
 		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
 		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
 		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
-		01398982210F273200B7042F /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
 		01424EAF2138EBD500F38C30 /* DanmakuWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuWindowController.swift; sourceTree = "<group>"; };
@@ -424,7 +422,6 @@
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				01683DDD211924160016A886 /* BilibiliViewController.swift */,
 				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
-				01398982210F273200B7042F /* PreferencesView.swift */,
 				01260170211948BF00C9C639 /* PreferencesTabViewController.swift */,
 				01398984210F27A600B7042F /* PreferencesWindowController.swift */,
 			);
@@ -566,7 +563,6 @@
 				01010135211EC63D002F0F7F /* MainTabView.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
-				01398983210F273200B7042F /* PreferencesView.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,

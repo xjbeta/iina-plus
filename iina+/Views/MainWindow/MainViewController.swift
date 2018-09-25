@@ -222,7 +222,6 @@ class MainViewController: NSViewController {
         super.viewDidLoad()
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
-        bookmarkTableView.backgroundColor = .clear
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
