@@ -9,11 +9,5 @@
 import Cocoa
 
 class PreferencesView: NSView {
-
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-        NSColor.white.setFill()
-        dirtyRect.fill()
-    }
     
 }

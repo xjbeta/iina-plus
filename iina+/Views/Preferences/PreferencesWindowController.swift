@@ -13,7 +13,6 @@ class PreferencesWindowController: NSWindowController {
     override func windowDidLoad() {
         super.windowDidLoad()
         window?.isMovableByWindowBackground = true
-        window?.backgroundColor = .customHighlightColor
         window?.titlebarAppearsTransparent = true
         window?.titleVisibility = .hidden
         
