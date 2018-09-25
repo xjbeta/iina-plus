@@ -15,12 +15,6 @@ class LiveStatusTableCellView: NSTableCellView {
     @IBOutlet weak var titleTextField: NSTextField!
     @IBOutlet weak var nameTextField: NSTextField!
     
-    var isSelected: Bool = false {
-        didSet {
-            needsDisplay = true
-        }
-    }
-    
     var url: URL? {
         didSet {
             getInfo()
@@ -29,23 +23,6 @@ class LiveStatusTableCellView: NSTableCellView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-
-        let selectionRect = NSInsetRect(bounds, 0, 0)
-        let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
-        if isSelected {
-            if #available(OSX 10.14, *) {
-                NSColor.selectedContentBackgroundColor.setFill()
-            } else {
-                NSColor.customHighlightColor.setFill()
-            }
-        } else {
-            if #available(OSX 10.14, *) {
-                NSColor.unemphasizedSelectedTextBackgroundColor.setFill()
-            } else {
-                NSColor.white.setFill()
-            }
-        }
-        selectionPath.fill()
         
     }
     
