@@ -22,9 +22,9 @@ class SelectVideoCollectionViewItemView: NSView {
         let selectionRect = NSInsetRect(bounds, 0, 0)
         let selectionPath = NSBezierPath(roundedRect: selectionRect, xRadius: 3, yRadius: 3)
         if isSelected {
-            NSColor.customHighlightColor.setFill()
+            NSColor.systemBlue.setFill()
         } else {
-            NSColor.white.setFill()
+            NSColor.windowBackgroundColor.setFill()
         }
         selectionPath.fill()
     }

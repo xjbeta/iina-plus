@@ -13,7 +13,6 @@
 		0101012E211DE83B002F0F7F /* SidebarTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101012D211DE83B002F0F7F /* SidebarTableView.swift */; };
 		01010131211E987D002F0F7F /* SuggestionsTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101012F211E987D002F0F7F /* SuggestionsTableCellView.swift */; };
 		01010132211E987D002F0F7F /* WaitingTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010130211E987D002F0F7F /* WaitingTableCellView.swift */; };
-		01010135211EC63D002F0F7F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010134211EC63D002F0F7F /* MainTabView.swift */; };
 		01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010136211EFA75002F0F7F /* SuggestionsTableView.swift */; };
 		0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
@@ -132,7 +131,6 @@
 		0101012D211DE83B002F0F7F /* SidebarTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarTableView.swift; sourceTree = "<group>"; };
 		0101012F211E987D002F0F7F /* SuggestionsTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuggestionsTableCellView.swift; sourceTree = "<group>"; };
 		01010130211E987D002F0F7F /* WaitingTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitingTableCellView.swift; sourceTree = "<group>"; };
-		01010134211EC63D002F0F7F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		01010136211EFA75002F0F7F /* SuggestionsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsTableView.swift; sourceTree = "<group>"; };
 		0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveUrlTableCellView.swift; sourceTree = "<group>"; };
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
@@ -306,7 +304,6 @@
 				016792E8212BF89A003517A7 /* SelectVideoCollectionView */,
 				010F0EF120F890DB00F33553 /* MainWindowController.swift */,
 				01AEC8AC20EDFD01001406E8 /* MainViewController.swift */,
-				01010134211EC63D002F0F7F /* MainTabView.swift */,
 				01F5151F210AE330007C7153 /* LiveInfoExtension.swift */,
 				01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */,
 				01010136211EFA75002F0F7F /* SuggestionsTableView.swift */,
@@ -560,7 +557,6 @@
 				01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
-				01010135211EC63D002F0F7F /* MainTabView.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
