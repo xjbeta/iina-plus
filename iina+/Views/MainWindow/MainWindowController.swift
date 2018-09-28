@@ -15,6 +15,8 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
         window?.isMovableByWindowBackground = true
         window?.titlebarAppearsTransparent = true
         window?.titleVisibility = .hidden
+        
+        window?.backgroundColor = .controlBackgroundColor
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
