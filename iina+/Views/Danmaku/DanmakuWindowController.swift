@@ -24,7 +24,7 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(foremostAppActivated), name: NSWorkspace.didActivateApplicationNotification, object: nil)
         
-        NotificationCenter.default.addObserver(forName: .updateDanmakuWindow, object: nil, queue: .main) {_ in
+        NotificationCenter.default.addObserver(forName: .updateDanmakuWindow, object: nil, queue: .main) { _ in
             self.resizeWindow()
         }
     }
