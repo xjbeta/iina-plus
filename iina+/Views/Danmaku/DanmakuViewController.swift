@@ -23,6 +23,7 @@ class DanmakuViewController: NSViewController {
     
     var socket: SRWebSocket? = nil
     var liveSite: LiveSupportList = .unsupported
+    var url = ""
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
@@ -41,125 +42,49 @@ class DanmakuViewController: NSViewController {
         #endif
         webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         webView.setValue(false, forKey: "drawsBackground")
+        webView.navigationDelegate = self
+        
         
         if let resourcePath = Bundle.main.resourcePath {
             let indexURL = URL(fileURLWithPath: resourcePath + "/index.htm")
             webView.loadFileURL(indexURL, allowingReadAccessTo: URL(fileURLWithPath: resourcePath))
             
-            try? loadCustomFont(resourcePath: resourcePath)
+//            try? loadCustomFont(resourcePath: resourcePath)
             NotificationCenter.default.addObserver(forName: .updateDanmukuFont, object: nil, queue: .main) { _ in
-                try? self.loadCustomFont(resourcePath: resourcePath)
+                self.loadCustomFont()
             }
         }
     }
     
-    func loadCustomFont(resourcePath: String) throws {
-        // 不要黑这里的骚操作
-        let fontFamily = Preferences.shared.danmukuFontFamilyName
-        let originCSSURL = URL(fileURLWithPath: resourcePath + "/style.origin.css")
-        let originCSS = try String(contentsOf: originCSSURL)
-        let modifiedCSS = originCSS.replacingOccurrences(of: "#PreferredFont#", with: fontFamily ?? "")
-        let dataToWrite = modifiedCSS.data(using: .utf8)
-        let modifiedCSSURL = URL(fileURLWithPath: resourcePath + "/style.css")
-        try dataToWrite?.write(to: modifiedCSSURL)
+    func loadCustomFont() {
+        guard let font = Preferences.shared.danmukuFontFamilyName else { return }
+        evaluateJavaScript("""
+var element = document.getElementsByTagName("style"), index;
+for (index = element.length - 1; index >= 0; index--) {
+element[index].parentNode.removeChild(element[index]);
+}
+            
+var style = document.createElement('style');
+style.type = 'text/css';
+style.innerHTML = '.customFont {color: #fff;font-family: \(font), SimHei, SimSun, Heiti, "MS Mincho", "Meiryo", "Microsoft YaHei", monospace;font-size: 25px;letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}';
+document.getElementsByTagName('head')[0].appendChild(style);
+""")
+        evaluateJavaScript("window.cm.options.global.className = 'customFont'")
     }
     
     func initDanmaku(_ site: LiveSupportList, _ url: String) {
-        webView.reload()
+        liveSite = site
+        self.url = url
+        
         if let danmakuFilePath = danmakuFilePath {
             try? FileManager.default.removeItem(atPath: danmakuFilePath)
         }
-        
         socket?.close()
+        
         socket = nil
         
-        
-        
-        liveSite = site
-        switch site {
-        case .bilibili:
-            if let url = URL(string: url),
-                let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
-                var cid = 0
+        webView.reload()
 
-                let group = DispatchGroup()
-                group.enter()
-                Bilibili().getVideoList(aid, { vInfo in
-                    if vInfo.count == 1 {
-                        cid = vInfo[0].cid
-                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        var pInt = Int(p) {
-                        pInt -= 1
-                        if pInt < vInfo.count,
-                            pInt >= 0 {
-                            cid = vInfo[pInt].cid
-                        }
-                    }
-                    group.leave()
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
-                        Logger.log("Get cid for danmamu error: \(error)")
-                        group.leave()
-                    }
-                }
-
-                group.notify(queue: .main) {
-                    guard cid != 0 else { return }
-
-                    HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                        self.loadDM($0.data)
-                    }
-                }
-            }
-        case .biliLive:
-            socket = SRWebSocket(url: biliLiveServer!)
-            socket?.delegate = self
-
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
-
-            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data)
-                    self.biliLiveRoomID = try json.value(for: "data.room_id")
-                    self.socket?.open()
-                } catch let error {
-                    Logger.log("can't find bilibili live room id \(error)")
-                }
-            }
-        case .panda:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
-            HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data)
-                    let pandaInfo = try PandaChatRoomInfo(object: json)
-
-                    self.pandaInitStr = pandaInfo.initStr()
-                    self.socket = SRWebSocket(url: pandaInfo.chatAddr!)
-                    self.socket?.delegate = self
-                    self.socket?.open()
-                } catch let error {
-                    Logger.log("can't find panda live room id \(error)")
-                }
-            }
-        case .douyu:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
-            initDouYuSocket(roomID)
-        case .huya:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
-            let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
-            
-            HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
-                let id = $0.text?.subString(from: "var SUBSID = '", to: "';") ?? ""
-                self.huyaSubSid = id
-                self.socket = SRWebSocket(url: self.huyaServer!)
-                self.socket?.delegate = self
-                self.socket?.open()
-            }
-        default:
-            break
-        }
     }
     
     func testedBilibiliAPI() {
@@ -739,5 +664,98 @@ struct PandaChatRoomInfo: Unmarshaling {
         network:unknown
         compress:none
         """
+    }
+}
+
+
+extension DanmakuViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        
+        loadCustomFont()
+        
+        switch liveSite {
+        case .bilibili:
+            if let url = URL(string: url),
+                let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
+                var cid = 0
+                
+                let group = DispatchGroup()
+                group.enter()
+                Bilibili().getVideoList(aid, { vInfo in
+                    if vInfo.count == 1 {
+                        cid = vInfo[0].cid
+                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
+                        var pInt = Int(p) {
+                        pInt -= 1
+                        if pInt < vInfo.count,
+                            pInt >= 0 {
+                            cid = vInfo[pInt].cid
+                        }
+                    }
+                    group.leave()
+                }) { re in
+                    do {
+                        let _ = try re()
+                    } catch let error {
+                        Logger.log("Get cid for danmamu error: \(error)")
+                        group.leave()
+                    }
+                }
+                
+                group.notify(queue: .main) {
+                    guard cid != 0 else { return }
+                    
+                    HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
+                        self.loadDM($0.data)
+                    }
+                }
+            }
+        case .biliLive:
+            socket = SRWebSocket(url: biliLiveServer!)
+            socket?.delegate = self
+            
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            
+            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
+                do {
+                    let json = try JSONParser.JSONObjectWithData($0.data)
+                    self.biliLiveRoomID = try json.value(for: "data.room_id")
+                    self.socket?.open()
+                } catch let error {
+                    Logger.log("can't find bilibili live room id \(error)")
+                }
+            }
+        case .panda:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
+                do {
+                    let json = try JSONParser.JSONObjectWithData($0.data)
+                    let pandaInfo = try PandaChatRoomInfo(object: json)
+                    
+                    self.pandaInitStr = pandaInfo.initStr()
+                    self.socket = SRWebSocket(url: pandaInfo.chatAddr!)
+                    self.socket?.delegate = self
+                    self.socket?.open()
+                } catch let error {
+                    Logger.log("can't find panda live room id \(error)")
+                }
+            }
+        case .douyu:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            initDouYuSocket(roomID)
+        case .huya:
+            let roomID = URL(string: url)?.lastPathComponent ?? ""
+            let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
+            
+            HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
+                let id = $0.text?.subString(from: "var SUBSID = '", to: "';") ?? ""
+                self.huyaSubSid = id
+                self.socket = SRWebSocket(url: self.huyaServer!)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }
+        default:
+            break
+        }
     }
 }
