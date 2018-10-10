@@ -62,6 +62,16 @@ class Preferences: NSObject {
         }
     }
     
+    var danmukuFontFamilyName: String? {
+        get {
+            return defaults(.danmukuFontFamilyName) as? String
+        }
+        set {
+            defaultsSet(newValue ?? "", forKey: .danmukuFontFamilyName)
+            NotificationCenter.default.post(name: .updateDanmukuFont, object: nil)
+        }
+    }
+    
 }
 
 private extension Preferences {
@@ -81,4 +91,5 @@ enum PreferenceKeys: String {
     case enableLogging
     case logLevel
     case enableDanmaku
+    case danmukuFontFamilyName
 }

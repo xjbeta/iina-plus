@@ -9,9 +9,12 @@
 import Cocoa
 
 class GereralViewController: NSViewController, NSMenuDelegate {
+    
+    @IBOutlet weak var fontPicker: NSPopUpButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
     @IBOutlet weak var enableDanmaku: NSButton!
+    
     @IBAction func enableDanmaku(_ sender: Any) {
         if enableDanmaku.state == .on {
             acquirePrivileges { success in
@@ -25,11 +28,24 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         }
     }
     
+    @IBAction func newFontSet(_ sender: NSPopUpButton) {
+        let newFamilyName = sender.selectedItem?.title
+        Preferences.shared.danmukuFontFamilyName = newFamilyName
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         enableDanmaku.state = Preferences.shared.enableDanmaku ? .on : .off
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
+        
+        // Configure the font picker
+        let names = NSFontManager.shared.availableFontFamilies
+        fontPicker.addItems(withTitles: names)
+        if let lastFamilyName = Preferences.shared.danmukuFontFamilyName {
+            let item = fontPicker.itemArray.filter() { $0.title == lastFamilyName }.first
+            fontPicker.select(item)
+        }
     }
     
     func menuDidClose(_ menu: NSMenu) {
