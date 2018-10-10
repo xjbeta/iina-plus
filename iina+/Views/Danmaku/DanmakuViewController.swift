@@ -43,9 +43,25 @@ class DanmakuViewController: NSViewController {
         webView.setValue(false, forKey: "drawsBackground")
         
         if let resourcePath = Bundle.main.resourcePath {
-            let u1 = URL(fileURLWithPath: resourcePath + "/index.htm")
-            webView.loadFileURL(u1, allowingReadAccessTo: URL(fileURLWithPath: resourcePath))
+            let indexURL = URL(fileURLWithPath: resourcePath + "/index.htm")
+            webView.loadFileURL(indexURL, allowingReadAccessTo: URL(fileURLWithPath: resourcePath))
+            
+            try? loadCustomFont(resourcePath: resourcePath)
+            NotificationCenter.default.addObserver(forName: .updateDanmukuFont, object: nil, queue: .main) { _ in
+                try? self.loadCustomFont(resourcePath: resourcePath)
+            }
         }
+    }
+    
+    func loadCustomFont(resourcePath: String) throws {
+        // 不要黑这里的骚操作
+        let fontFamily = Preferences.shared.danmukuFontFamilyName
+        let originCSSURL = URL(fileURLWithPath: resourcePath + "/style.origin.css")
+        let originCSS = try String(contentsOf: originCSSURL)
+        let modifiedCSS = originCSS.replacingOccurrences(of: "#PreferredFont#", with: fontFamily ?? "")
+        let dataToWrite = modifiedCSS.data(using: .utf8)
+        let modifiedCSSURL = URL(fileURLWithPath: resourcePath + "/style.css")
+        try dataToWrite?.write(to: modifiedCSSURL)
     }
     
     func initDanmaku(_ site: LiveSupportList, _ url: String) {
