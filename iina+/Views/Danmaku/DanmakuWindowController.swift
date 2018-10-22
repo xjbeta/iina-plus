@@ -77,7 +77,18 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         }
         
         Logger.log("AXIsProcessTrusted  \(AXIsProcessTrusted())")
-        assert(AXIsProcessTrusted(), "No accessibility API permission.")
+        guard AXIsProcessTrusted() else {
+            let alert = NSAlert()
+            alert.alertStyle = .critical
+            alert.messageText = "No accessibility API permission."
+            alert.informativeText = "Check enableDanmaku check in preferences."
+            alert.addButton(withTitle: "OK")
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                Preferences.shared.enableDanmaku = false
+            }
+            return
+        }
         
         resizeWindow()
         
