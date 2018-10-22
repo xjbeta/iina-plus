@@ -43,9 +43,9 @@ class DanmakuWindowController: NSWindowController, NSWindowDelegate {
         AXObserverCreate(pid, observerCallback as AXObserverCallback, observer)
         
         if let observer = observer.pointee {
-            let window = window as! AXUIElement
-            AXObserverAddNotification(observer, window, kAXMovedNotification as CFString, nil)
-            AXObserverAddNotification(observer, window, kAXResizedNotification as CFString, nil)
+            guard let windowRef = window else { return }
+            AXObserverAddNotification(observer, windowRef as! AXUIElement, kAXMovedNotification as CFString, nil)
+            AXObserverAddNotification(observer, windowRef as! AXUIElement, kAXResizedNotification as CFString, nil)
             CFRunLoopAddSource(CFRunLoopGetCurrent(), AXObserverGetRunLoopSource(observer), CFRunLoopMode.defaultMode)
         }
     }
