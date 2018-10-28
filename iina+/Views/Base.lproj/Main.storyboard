@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -248,56 +247,6 @@
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1722" y="-287"/>
-        </scene>
-        <!--Window Controller-->
-        <scene sceneID="Cfq-ZM-8vM">
-            <objects>
-                <windowController storyboardIdentifier="DanmakuWindowController" id="yt9-25-AZk" customClass="DanmakuWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqI-m4-v8O">
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
-                        <connections>
-                            <outlet property="delegate" destination="yt9-25-AZk" id="nu5-TD-Lin"/>
-                        </connections>
-                    </window>
-                    <connections>
-                        <segue destination="a9Y-dL-4fO" kind="relationship" relationship="window.shadowedContentViewController" id="vTD-WC-RMG"/>
-                    </connections>
-                </windowController>
-                <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1133" y="37"/>
-        </scene>
-        <!--Danmaku View Controller-->
-        <scene sceneID="YXK-mY-iqp">
-            <objects>
-                <viewController id="a9Y-dL-4fO" customClass="DanmakuViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="RRw-fA-KUP">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xKq-2v-gZV">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="xKq-2v-gZV" secondAttribute="trailing" id="OuQ-Lb-gKU"/>
-                            <constraint firstItem="xKq-2v-gZV" firstAttribute="top" secondItem="RRw-fA-KUP" secondAttribute="top" id="Ycf-Mm-2EN"/>
-                            <constraint firstAttribute="bottom" secondItem="xKq-2v-gZV" secondAttribute="bottom" id="iCR-Z0-dIf"/>
-                            <constraint firstItem="xKq-2v-gZV" firstAttribute="leading" secondItem="RRw-fA-KUP" secondAttribute="leading" id="kox-p2-yak"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="webView" destination="xKq-2v-gZV" id="64q-83-uzK"/>
-                    </connections>
-                </viewController>
-                <customObject id="mfy-MR-beA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1133" y="463"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">

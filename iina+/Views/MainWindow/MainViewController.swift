@@ -202,7 +202,9 @@ class MainViewController: NSViewController {
                 if Preferences.shared.enableDanmaku {
                     switch site {
                     case .bilibili, .biliLive, .panda, .douyu, .huya:
-                        self.danmakuWindowController?.initDanmaku(site, title, searchField.stringValue)
+                        danmaku?.stop()
+                        danmaku = Danmaku(site, url: searchField.stringValue)
+                        danmaku?.start()
                     default:
                         break
                     }
@@ -214,7 +216,7 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    let danmakuWindowController = NSStoryboard(name: "Main", bundle: nil).instantiateController(withIdentifier: "DanmakuWindowController") as? DanmakuWindowController
+    var danmaku: Danmaku? = nil
     
     
     // MARK: - Functions

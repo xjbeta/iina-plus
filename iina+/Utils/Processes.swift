@@ -174,65 +174,14 @@ class Processes: NSObject {
             }
 
         }
+        if Preferences.shared.enableDanmaku {
+            mpvArgs.append("--danmaku")
+        }
+        
         Logger.log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
     }
-    
-    func mpvSocket(_ notice: @escaping (_ str: MpvSocketEvent) -> Void,
-                   _ closed: @escaping () -> Void) {
-        
-        let queue = DispatchQueue(label: "socket.test.iina+")
-        queue.async {
-            let server = "/tmp/IINA-Plus-Danmaku-socket"
-            
-            do {
-                let socket = try Socket.create(family: .unix, proto: .unix)
-                try socket.connect(to: server)
-                Logger.log("mpv socket connect: \(socket.isConnected)")
-                
-                if let obs = "{ \"command\": [\"observe_property_string\", 1, \"time-pos\"] }\n".data(using: .utf8) {
-                    try socket.write(from: obs)
-                }
-                if let obs = "{ \"command\": [\"observe_property_string\", 2, \"window-scale\"] }\n".data(using: .utf8) {
-                    try socket.write(from: obs)
-                }
-                
-                var shouldKeepRunning = true
-//                var savedData = Data()
-                repeat {
-                    var d = Data()
-                    let _ = try socket.read(into: &d)
-                    if d.count > 0 {
-                        do {
-                            try String(data: d, encoding: .utf8)?.components(separatedBy: "\n").filter {
-                                $0 != ""
-                                }.compactMap {
-                                    $0.data(using: .utf8)
-                                }.forEach {
-                                    let json = try JSONParser.JSONObjectWithData($0)
-                                    let socketEvent = try MpvSocketEvent(object: json)
-                                    if socketEvent.event == nil, socketEvent.success == nil {
-                                        Logger.log("not find the mpv event: \(String(data: $0, encoding: .utf8) ?? "")")
-                                    }
-                                    notice(socketEvent)
-                            }
-                        } catch let error {
-                            Logger.log(String(data: d, encoding: .utf8) ?? "")
-                            Logger.log("mpv socket json decode error: \(error)")
-                        }
-                    } else {
-                        shouldKeepRunning = false
-                    }
-                } while shouldKeepRunning
-                socket.close()
-                closed()
-            } catch let error {
-                Logger.log("mpvSocket error \(error)")
-            }
-        }
-    }
-    
     
 }
 
