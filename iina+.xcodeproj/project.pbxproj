@@ -29,6 +29,9 @@
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
+		013CE8E421854832000271FB /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E221854832000271FB /* PromiseKit.framework */; };
+		013CE8E62185483D000271FB /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E221854832000271FB /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		013CE8E72185485A000271FB /* PromiseKit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 013CE8E121854832000271FB /* PromiseKit.framework.dSYM */; };
 		01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD2210AF5F40046AAAD /* DataManager.swift */; };
 		01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */; };
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
@@ -86,6 +89,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				013CE8E72185485A000271FB /* PromiseKit.framework.dSYM in CopyFiles */,
 				01B107D82144095700A66BC1 /* Gzip.framework.dSYM in CopyFiles */,
 				01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */,
 				01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */,
@@ -111,6 +115,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				013CE8E62185483D000271FB /* PromiseKit.framework in Embed Frameworks */,
 				01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */,
 				01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */,
 				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
@@ -148,6 +153,8 @@
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
+		013CE8E121854832000271FB /* PromiseKit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = PromiseKit.framework.dSYM; path = Carthage/Build/Mac/PromiseKit.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		013CE8E221854832000271FB /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/Mac/PromiseKit.framework; sourceTree = SOURCE_ROOT; };
 		01479CD2210AF5F40046AAAD /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBookmarkViewController.swift; sourceTree = "<group>"; };
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
@@ -200,6 +207,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				013CE8E421854832000271FB /* PromiseKit.framework in Frameworks */,
 				01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */,
 				01B107D92144FEA300A66BC1 /* SocketRocket.framework in Frameworks */,
 				01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */,
@@ -253,6 +261,8 @@
 		010F0EFD20FCC15200F33553 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				013CE8E221854832000271FB /* PromiseKit.framework */,
+				013CE8E121854832000271FB /* PromiseKit.framework.dSYM */,
 				01B107D22144094200A66BC1 /* Gzip.framework */,
 				01B107D32144094200A66BC1 /* Gzip.framework.dSYM */,
 				01F6C4E5213396270009672A /* DevMateKit.framework */,
