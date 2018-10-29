@@ -35,6 +35,7 @@ class HttpServer: NSObject {
                 self?.disConnected?()
             })
             
+            server.listenAddressIPv4 = "127.0.0.1"
             try server.start(19080, forceIPv4: true)
             print("Server has started ( port = \(try server.port()) ). Try to connect now...")
         } catch let error {
