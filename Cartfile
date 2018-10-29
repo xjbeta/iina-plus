@@ -5,3 +5,4 @@ github "IBM-Swift/BlueSocket"
 github "facebook/SocketRocket" "master"
 github "1024jp/GzipSwift"
 github "mxcl/PromiseKit"
+github "httpswift/swifter" ~> 1.4.5

@@ -15,9 +15,6 @@ import Socket
 import JavaScriptCore
 
 class Danmaku: NSObject {
-    
-    var mpvSocket: Socket? = nil
-    
     var socket: SRWebSocket? = nil
     var liveSite: LiveSupportList = .unsupported
     var url = ""
@@ -32,8 +29,9 @@ class Danmaku: NSObject {
     let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
     var huyaSubSid = ""
     
-    var iinaObserver: NSObjectProtocol?
     var danmukuFontObserver: NSObjectProtocol?
+    
+    let httpServer = HttpServer()
     
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
@@ -41,151 +39,33 @@ class Danmaku: NSObject {
     }
     
     func start() {
-        iinaObserver = DistributedNotificationCenter.default().addObserver(forName: NSNotification.Name("IINADanmakuFinishLoading"), object: nil, queue: .main) { _ in
-            Logger.log("IINADanmakuFinishLoading")
-            self.startMpvSocket()
+        httpServer.connected = { [weak self] in
+            self?.loadCustomFont()
+            self?.loadDM()
         }
+        httpServer.disConnected = { [weak self] in
+            self?.stop()
+        }
+        httpServer.start()
         danmukuFontObserver = NotificationCenter.default.addObserver(forName: .updateDanmukuFont, object: nil, queue: .main) { _ in
             self.loadCustomFont()
         }
     }
     
-    func startMpvSocket() {
-        Logger.log("Start MpvSocket")
-        var isPasued = false
-        mpvSocket({ socketEvent in
-            if let event = socketEvent.event {
-                switch event {
-                case .pause:
-                    guard self.liveSite == .bilibili else { return }
-                    self.evaluateJavaScript("window.cm.stop();")
-                    isPasued = true
-                    Logger.log("iina pasued")
-                case .unpause:
-                    guard self.liveSite == .bilibili else { return }
-                    self.evaluateJavaScript("window.cm.start();")
-                    isPasued = false
-                    Logger.log("iina unpause")
-                case .propertyChange:
-                    if socketEvent.name == "window-scale" {
-                        self.evaluateJavaScript("window.resize();")
-                        Logger.log("iina window-scale")
-                    }
-                case .idle:
-                    Logger.log("iina idle")
-                    self.stop()
-                default:
-                    break
-                }
-            } else if let re = socketEvent.success {
-                Logger.log("iina event success? \(re)")
-            }
-        }, {
-            self.initDM()
-//            self.loadCustomFont()
-            self.loadDM()
-        }) {
-            Logger.log("mpv socket disconnected")
-            self.stop()
-        }
-    }
     
     func stop() {
-        self.socket?.close()
-        self.socket = nil
-        self.douyuSocket?.close()
-        self.douyuSocket = nil
-        DistributedNotificationCenter.default().removeObserver(iinaObserver!)
+        socket?.close()
+        socket = nil
+        douyuSocket?.close()
+        douyuSocket = nil
+        httpServer.stop()
         NotificationCenter.default.removeObserver(danmukuFontObserver!)
-    }
-    
-    
-    func mpvSocket(_ notice: @escaping (_ str: MpvSocketEvent) -> Void,
-                   _ connected: @escaping () -> Void,
-                   _ closed: @escaping () -> Void) {
-        
-        let queue = DispatchQueue(label: "socket.test.iina+")
-        queue.async { [weak self] in
-            let server = "/tmp/IINA-Plus-Danmaku-socket"
-            
-            do {
-                self?.mpvSocket = try Socket.create(family: .unix, proto: .unix)
-                guard let mpvSocket = self?.mpvSocket else { return }
-                try mpvSocket.connect(to: server)
-                Logger.log("mpv socket connect: \(mpvSocket.isConnected)")
-                guard mpvSocket.isConnected else {
-                    closed()
-                    return
-                }
-                connected()
-//                if let obs = "{ \"command\": [\"observe_property_string\", 1, \"time-pos\"] }\n".data(using: .utf8) {
-//                    try mpvSocket.write(from: obs)
-//                }
-                if let obs = "{ \"command\": [\"observe_property_string\", 2, \"window-scale\"] }\n".data(using: .utf8) {
-                    try mpvSocket.write(from: obs)
-                }
-                
-                var shouldKeepRunning = true
-                //                var savedData = Data()
-                repeat {
-                    var d = Data()
-                    let _ = try mpvSocket.read(into: &d)
-                    if d.count > 0 {
-                        do {
-                            try String(data: d, encoding: .utf8)?.components(separatedBy: "\n").filter {
-                                $0 != ""
-                                }.compactMap {
-                                    $0.data(using: .utf8)
-                                }.forEach {
-                                    let json = try JSONParser.JSONObjectWithData($0)
-                                    let socketEvent = try MpvSocketEvent(object: json)
-                                    if socketEvent.event == nil, socketEvent.success == nil {
-                                        Logger.log("not find the mpv event: \(String(data: $0, encoding: .utf8) ?? "")")
-                                    }
-                                    notice(socketEvent)
-                            }
-                        } catch let error {
-                            Logger.log(String(data: d, encoding: .utf8) ?? "")
-                            Logger.log("mpv socket json decode error: \(error)")
-                        }
-                    } else {
-                        shouldKeepRunning = false
-                    }
-                } while shouldKeepRunning
-                mpvSocket.close()
-                closed()
-            } catch let error {
-                Logger.log("mpvSocket error \(error)")
-            }
-        }
     }
     
     private func loadCustomFont() {
         guard let font = Preferences.shared.danmukuFontFamilyName else { return }
-        evaluateJavaScript("""
-            var element = document.getElementsByTagName("style"), index;
-            for (index = element.length - 1; index >= 0; index--) {
-            element[index].parentNode.removeChild(element[index]);
-            }
-            
-            var style = document.createElement('style');
-            style.type = 'text/css';
-            style.innerHTML = '.customFont {font-family: \(font), SimHei, SimSun, Heiti, "MS Mincho", "Meiryo", "Microsoft YaHei", monospace;font-size: 25px;}';
-            document.getElementsByTagName('head')[0].appendChild(style);
-            """)
-        evaluateJavaScript("window.cm.options.global.className = 'customFont'")
+        httpServer.send(.customFont, text: font)
     }
-    
-    
-//    func initDanmaku(_ site: LiveSupportList, _ title: String, _ url: String) {
-//        waittingSocket = true
-//        targeTitle = site == .huya ? "yes" : title
-//        if let danmakuViewController = self.contentViewController as? DanmakuViewController {
-//            danmakuViewController.initDanmaku(site, url)
-//        }
-//    }
-//
-    
     
     func loadDM() {
         switch liveSite {
@@ -277,30 +157,23 @@ class Danmaku: NSObject {
     
     private func loadDM(_ data: Data) {
         if let resourcePath = Bundle.main.resourcePath {
-            let danmakuFilePath = resourcePath + "/iina-plus-danmaku.xml"
+            let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
             FileManager.default.createFile(atPath: danmakuFilePath, contents: data, attributes: nil)
-            evaluateJavaScript("loadDM(\"\(danmakuFilePath)\");")
+            httpServer.send(.loadDM)
             Logger.log("loadDM in \(danmakuFilePath)")
         }
     }
     
-    private func initDM() {
-        evaluateJavaScript("window.initDM();")
-    }
-    
     private func sendDM(_ str: String) {
-        print("sendDM \(str)")
-        evaluateJavaScript("""
-            window.cm.send({'text': "\(str)",'stime': 0,'mode': 1,'color': 0xffffff,'border': false});
-            """)
+        httpServer.send(.sendDM, text: str)
     }
     
-    private func sendDebugDM(_ str: String) {
-        print("sendDebugDM \(str)")
-        evaluateJavaScript("""
-            window.cm.send({'text': "\(str)",'stime': 0,'mode': 4, 'align': 2,'color': 0xffffff,'border': false});
-            """)
-    }
+//    private func sendDebugDM(_ str: String) {
+//        print("sendDebugDM \(str)")
+//        evaluateJavaScript("""
+//            window.cm.send({'text': "\(str)",'stime': 0,'mode': 4, 'align': 2,'color': 0xffffff,'border': false});
+//            """)
+//    }
     
     
     private func initDouYuSocket(_ roomID: String) {
@@ -443,20 +316,6 @@ class Danmaku: NSObject {
     }
  
      */
-    
-    private func evaluateJavaScript(_ str: String) {
-        Logger.log("evaluateJavaScript: \(str)")
-        DispatchQueue.main.async {
-            do {
-                if let base64Str = str.data(using: .utf8)?.base64EncodedString(),
-                    let obs = "{ \"command\": [\"set_property_string\", \"osd-msg3\", \"\(base64Str)\"] }}\n".data(using: .utf8) {
-                    try self.mpvSocket?.write(from: obs)
-                }
-            } catch let error {
-                print(error)
-            }
-        }
-    }
     
 }
 

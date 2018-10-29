@@ -32,6 +32,15 @@
 		013CE8E421854832000271FB /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E221854832000271FB /* PromiseKit.framework */; };
 		013CE8E62185483D000271FB /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E221854832000271FB /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		013CE8E72185485A000271FB /* PromiseKit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 013CE8E121854832000271FB /* PromiseKit.framework.dSYM */; };
+		013CE8EA2185CB1A000271FB /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E82185CB1A000271FB /* Swifter.framework */; };
+		013CE8ED2185CB27000271FB /* Swifter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 013CE8E82185CB1A000271FB /* Swifter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		013CE8EE2185CB40000271FB /* Swifter.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 013CE8E92185CB1A000271FB /* Swifter.framework.dSYM */; };
+		013CE8F02185D0EA000271FB /* default.css in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC4213D236E00C4939B /* default.css */; };
+		013CE8F12185D0EA000271FB /* index.htm in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC5213D236E00C4939B /* index.htm */; };
+		013CE8F22185D0EA000271FB /* main.js in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
+		013CE8F32185D0EA000271FB /* CommentCoreLibrary.js in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
+		013CE8F42185D0EA000271FB /* style.css in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
+		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
 		01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD2210AF5F40046AAAD /* DataManager.swift */; };
 		01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */; };
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
@@ -65,11 +74,6 @@
 		01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; };
 		01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01E8CAC2213C175000C4939B /* Socket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CABC213C173F00C4939B /* Socket.framework.dSYM */; };
-		01E8CAC7213D236E00C4939B /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC4213D236E00C4939B /* default.css */; };
-		01E8CAC8213D236E00C4939B /* index.htm in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC5213D236E00C4939B /* index.htm */; };
-		01E8CAC9213D236E00C4939B /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
-		01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
-		01E8CACD213D263800C4939B /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
 		01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
@@ -89,6 +93,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				013CE8EE2185CB40000271FB /* Swifter.framework.dSYM in CopyFiles */,
 				013CE8E72185485A000271FB /* PromiseKit.framework.dSYM in CopyFiles */,
 				01B107D82144095700A66BC1 /* Gzip.framework.dSYM in CopyFiles */,
 				01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */,
@@ -96,6 +101,21 @@
 				010F0F1020FCC1EA00F33553 /* Marshal.framework.dSYM in CopyFiles */,
 				010F0F1120FCC1EA00F33553 /* SwiftHTTP.framework.dSYM in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		013CE8EF2185D09F000271FB /* Copy Danamaku Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = danmaku;
+			dstSubfolderSpec = 7;
+			files = (
+				013CE8F02185D0EA000271FB /* default.css in Copy Danamaku Files */,
+				013CE8F12185D0EA000271FB /* index.htm in Copy Danamaku Files */,
+				013CE8F22185D0EA000271FB /* main.js in Copy Danamaku Files */,
+				013CE8F32185D0EA000271FB /* CommentCoreLibrary.js in Copy Danamaku Files */,
+				013CE8F42185D0EA000271FB /* style.css in Copy Danamaku Files */,
+			);
+			name = "Copy Danamaku Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		01C232E52134EBDD0021C28F /* Copy Executables */ = {
@@ -116,6 +136,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				013CE8E62185483D000271FB /* PromiseKit.framework in Embed Frameworks */,
+				013CE8ED2185CB27000271FB /* Swifter.framework in Embed Frameworks */,
 				01F6C4F12133965E0009672A /* SwiftHTTP.framework in Embed Frameworks */,
 				01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */,
 				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
@@ -155,6 +176,9 @@
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
 		013CE8E121854832000271FB /* PromiseKit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = PromiseKit.framework.dSYM; path = Carthage/Build/Mac/PromiseKit.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		013CE8E221854832000271FB /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/Mac/PromiseKit.framework; sourceTree = SOURCE_ROOT; };
+		013CE8E82185CB1A000271FB /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/Mac/Swifter.framework; sourceTree = SOURCE_ROOT; };
+		013CE8E92185CB1A000271FB /* Swifter.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Swifter.framework.dSYM; path = Carthage/Build/Mac/Swifter.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		013CE8F52185D992000271FB /* HttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
 		01479CD2210AF5F40046AAAD /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBookmarkViewController.swift; sourceTree = "<group>"; };
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
@@ -208,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				013CE8E421854832000271FB /* PromiseKit.framework in Frameworks */,
+				013CE8EA2185CB1A000271FB /* Swifter.framework in Frameworks */,
 				01F6C4F02133965E0009672A /* SwiftHTTP.framework in Frameworks */,
 				01B107D92144FEA300A66BC1 /* SocketRocket.framework in Frameworks */,
 				01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */,
@@ -261,6 +286,8 @@
 		010F0EFD20FCC15200F33553 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				013CE8E82185CB1A000271FB /* Swifter.framework */,
+				013CE8E92185CB1A000271FB /* Swifter.framework.dSYM */,
 				013CE8E221854832000271FB /* PromiseKit.framework */,
 				013CE8E121854832000271FB /* PromiseKit.framework.dSYM */,
 				01B107D22144094200A66BC1 /* Gzip.framework */,
@@ -293,6 +320,7 @@
 			isa = PBXGroup;
 			children = (
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
+				013CE8F52185D992000271FB /* HttpServer.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
@@ -438,6 +466,7 @@
 				019BFF5D212485B900E715CC /* ShellScript */,
 				01F6C4EA213396560009672A /* Embed Frameworks */,
 				01C232E52134EBDD0021C28F /* Copy Executables */,
+				013CE8EF2185D09F000271FB /* Copy Danamaku Files */,
 			);
 			buildRules = (
 			);
@@ -499,15 +528,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
-				01E8CACD213D263800C4939B /* style.css in Resources */,
-				01E8CACB213D263000C4939B /* CommentCoreLibrary.js in Resources */,
-				01E8CAC8213D236E00C4939B /* index.htm in Resources */,
 				019EB39C21453A0F000FD123 /* devmate.pem in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
-				01E8CAC9213D236E00C4939B /* main.js in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
-				01E8CAC7213D236E00C4939B /* default.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +563,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
+				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
