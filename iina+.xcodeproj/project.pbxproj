@@ -70,7 +70,6 @@
 		01B107D82144095700A66BC1 /* Gzip.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01B107D32144094200A66BC1 /* Gzip.framework.dSYM */; };
 		01B107D92144FEA300A66BC1 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; };
 		01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CACF213D541600C4939B /* SocketRocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		01C232E92134FABC0021C28F /* ykdl in Copy Executables */ = {isa = PBXBuildFile; fileRef = 01C232E72134FAB20021C28F /* ykdl */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
 		01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; };
 		01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -125,7 +124,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				01C232E92134FABC0021C28F /* ykdl in Copy Executables */,
 			);
 			name = "Copy Executables";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -209,7 +207,6 @@
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		01B107D22144094200A66BC1 /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = Carthage/Build/Mac/Gzip.framework; sourceTree = SOURCE_ROOT; };
 		01B107D32144094200A66BC1 /* Gzip.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Gzip.framework.dSYM; path = Carthage/Build/Mac/Gzip.framework.dSYM; sourceTree = SOURCE_ROOT; };
-		01C232E72134FAB20021C28F /* ykdl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ykdl; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01E8CABC213C173F00C4939B /* Socket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Socket.framework.dSYM; path = Carthage/Build/Mac/Socket.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01E8CABD213C173F00C4939B /* Socket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Socket.framework; path = Carthage/Build/Mac/Socket.framework; sourceTree = SOURCE_ROOT; };
@@ -361,14 +358,6 @@
 			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
 		};
-		016792F1212E57F6003517A7 /* Executables */ = {
-			isa = PBXGroup;
-			children = (
-				01C232E72134FAB20021C28F /* ykdl */,
-			);
-			path = Executables;
-			sourceTree = "<group>";
-		};
 		019EB39D21453A97000FD123 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -401,7 +390,6 @@
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
 				019EB39D21453A97000FD123 /* Resources */,
 				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
-				016792F1212E57F6003517A7 /* Executables */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
 				010F0F2E20FF414E00F33553 /* Core Data */,
 				012601722119BA6D00C9C639 /* Utils */,
