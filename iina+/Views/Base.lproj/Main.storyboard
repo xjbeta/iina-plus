@@ -370,15 +370,12 @@
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Pn9-wq-fB2"/>
                                                     </constraints>
-                                                    <popUpButtonCell key="cell" type="push" title="internal ykdl" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="8Bd-pk-taY" id="Odr-14-Fna">
+                                                    <popUpButtonCell key="cell" type="push" title="internal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="DiM-ml-jgm" id="Odr-14-Fna">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="menu"/>
                                                         <menu key="menu" id="KEB-ni-SPc">
                                                             <items>
-                                                                <menuItem title="internal" enabled="NO" id="DiM-ml-jgm">
-                                                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                                                </menuItem>
-                                                                <menuItem title="internal ykdl" state="on" id="8Bd-pk-taY">
+                                                                <menuItem title="internal" state="on" id="DiM-ml-jgm">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem title="ykdl" id="VL0-EI-LMe"/>

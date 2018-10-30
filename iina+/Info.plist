@@ -42,6 +42,13 @@
 				<key>NSIncludeSubdomains</key>
 				<true/>
 			</dict>
+            <key>www.douyutv.com</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludeSubdomains</key>
+                <true/>
+            </dict>
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>

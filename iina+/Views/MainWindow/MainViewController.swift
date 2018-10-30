@@ -59,6 +59,7 @@ class MainViewController: NSViewController {
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Bilibili()
+    let videoGet = VideoGet()
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -136,17 +137,35 @@ class MainViewController: NSViewController {
         }
         
         
-        Processes.shared.decodeURL(str, { obj in
-            DispatchQueue.main.async {
-                self.yougetResult = obj
-                group?.leave()
-            }
-        }) { error in
-            DispatchQueue.main.async {
-                if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                    view.setStatus(.error)
+        if Preferences.shared.liveDecoder == .internal😀 {
+            videoGet.decodeUrl(str, { obj in
+                DispatchQueue.main.async {
+                    self.yougetResult = obj
+                    group?.leave()
                 }
-                group?.leave()
+            }) { error in
+                DispatchQueue.main.async {
+                    print(self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false))
+                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                        view.setStatus(.error)
+                        Logger.log("\(error)")
+                    }
+                    group?.leave()
+                }
+            }
+        } else {
+            Processes.shared.decodeURL(str, { obj in
+                DispatchQueue.main.async {
+                    self.yougetResult = obj
+                    group?.leave()
+                }
+            }) { error in
+                DispatchQueue.main.async {
+                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                        view.setStatus(.error)
+                    }
+                    group?.leave()
+                }
             }
         }
     }
@@ -185,12 +204,20 @@ class MainViewController: NSViewController {
             }
             
             if let host = URL(string: searchField.stringValue)?.host {
-                let title = yougetResult?.title ?? ""
+                var title = yougetResult?.title ?? ""
                 let site = LiveSupportList(raw: host)
                 switch site {
                 case .douyu:
+                    if Preferences.shared.liveDecoder == .internal😀 {
+                        title = key
+                    }
                     Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-                case .biliLive, .huya, .longzhu, .panda, .pandaXingYan, .quanmin:
+                case .panda:
+                    if Preferences.shared.liveDecoder == .internal😀 {
+                        title = key
+                    }
+                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+                case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin:
                     Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
                 case .bilibili:
                     Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)

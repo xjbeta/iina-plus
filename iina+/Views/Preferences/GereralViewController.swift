@@ -56,7 +56,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             popUpButton.selectItem(at: Preferences.shared.livePlayer.index())
         case decoderPopUpButton:
             popUpButton.autoenablesItems = false
-            popUpButton.item(at: 0)?.isEnabled = false
             popUpButton.selectItem(at: Preferences.shared.liveDecoder.index())
         default:
             break
@@ -99,7 +98,6 @@ enum LivePlayer: String {
 
 enum LiveDecoder: String {
     case internal😀
-    case internalYKDL
     case ykdl
     case youget = "you-get"
     
@@ -107,20 +105,18 @@ enum LiveDecoder: String {
         if let decoder = LiveDecoder(rawValue: raw) {
             self = decoder
         } else {
-            self = .internalYKDL
+            self = .internal😀
         }
     }
     
     init(index: Int) {
         switch index {
-        case 0:
-            self = .internal😀
-        case 2:
+        case 1:
             self = .ykdl
-        case 3:
+        case 2:
             self = .youget
         default:
-            self = .internalYKDL
+            self = .internal😀
         }
     }
     
@@ -128,12 +124,10 @@ enum LiveDecoder: String {
         switch self {
         case .internal😀:
             return 0
-        case .internalYKDL:
-            return 1
         case .ykdl:
-            return 2
+            return 1
         case .youget:
-            return 3
+            return 2
         }
     }
 }
