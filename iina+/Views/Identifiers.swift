@@ -36,4 +36,5 @@ extension Notification.Name {
     static let progressStatusChanged = Notification.Name("com.xjbeta.iina+.ProgressStatusChanged")
     static let biliStatusChanged = Notification.Name("com.xjbeta.iina+.BiliStatusChanged")
     static let updateDanmakuWindow = Notification.Name("com.xjbeta.iina+.DanmakuWindow.Update")
+    static let updateDanmukuFont = Notification.Name("com.xjbeta.iina+.DanmakuWindow.FontChanged")
 }

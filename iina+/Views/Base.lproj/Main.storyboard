@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -250,56 +249,6 @@
             <point key="canvasLocation" x="1722" y="-287"/>
         </scene>
         <!--Window Controller-->
-        <scene sceneID="Cfq-ZM-8vM">
-            <objects>
-                <windowController storyboardIdentifier="DanmakuWindowController" id="yt9-25-AZk" customClass="DanmakuWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="FqI-m4-v8O">
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
-                        <connections>
-                            <outlet property="delegate" destination="yt9-25-AZk" id="nu5-TD-Lin"/>
-                        </connections>
-                    </window>
-                    <connections>
-                        <segue destination="a9Y-dL-4fO" kind="relationship" relationship="window.shadowedContentViewController" id="vTD-WC-RMG"/>
-                    </connections>
-                </windowController>
-                <customObject id="ngm-oQ-1Vz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1133" y="37"/>
-        </scene>
-        <!--Danmaku View Controller-->
-        <scene sceneID="YXK-mY-iqp">
-            <objects>
-                <viewController id="a9Y-dL-4fO" customClass="DanmakuViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="RRw-fA-KUP">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xKq-2v-gZV">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="xKq-2v-gZV" secondAttribute="trailing" id="OuQ-Lb-gKU"/>
-                            <constraint firstItem="xKq-2v-gZV" firstAttribute="top" secondItem="RRw-fA-KUP" secondAttribute="top" id="Ycf-Mm-2EN"/>
-                            <constraint firstAttribute="bottom" secondItem="xKq-2v-gZV" secondAttribute="bottom" id="iCR-Z0-dIf"/>
-                            <constraint firstItem="xKq-2v-gZV" firstAttribute="leading" secondItem="RRw-fA-KUP" secondAttribute="leading" id="kox-p2-yak"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="webView" destination="xKq-2v-gZV" id="64q-83-uzK"/>
-                    </connections>
-                </viewController>
-                <customObject id="mfy-MR-beA" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1133" y="463"/>
-        </scene>
-        <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
             <objects>
                 <windowController id="o5z-uq-6S0" customClass="PreferencesWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
@@ -357,123 +306,148 @@
                         <rect key="frame" x="0.0" y="0.0" width="300" height="131"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <gridView fixedFrame="YES" xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="xbe-XG-bo4">
-                                <rect key="frame" x="59" y="63" width="183" height="48"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <rows>
-                                    <gridRow id="iFP-QQ-zUF"/>
-                                    <gridRow id="W10-gq-hnz"/>
-                                </rows>
-                                <columns>
-                                    <gridColumn width="57" id="kXZ-Cg-Mew"/>
-                                    <gridColumn width="120" id="vpq-Hh-Xri"/>
-                                </columns>
-                                <gridCells>
-                                    <gridCell row="iFP-QQ-zUF" column="kXZ-Cg-Mew" xPlacement="trailing" yPlacement="center" id="EeS-TQ-nlM">
-                                        <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SHM-lD-1vy">
-                                            <rect key="frame" x="14" y="29" width="45" height="17"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Player:" id="j1B-lf-GMA">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </gridCell>
-                                    <gridCell row="iFP-QQ-zUF" column="vpq-Hh-Xri" id="kbl-ub-vxB">
-                                        <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bjh-ng-iw0">
-                                            <rect key="frame" x="61" y="24" width="75" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="df3-Sh-GKU"/>
-                                            </constraints>
-                                            <popUpButtonCell key="cell" type="push" title="iina" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
-                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
-                                                <menu key="menu" id="J79-gx-iFp">
-                                                    <items>
-                                                        <menuItem title="iina" state="on" id="gUQ-m3-Nbi"/>
-                                                        <menuItem title="mpv" id="Mej-4E-emp">
-                                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                                        </menuItem>
-                                                    </items>
+                            <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="if7-op-iRF">
+                                <rect key="frame" x="59" y="13" width="183" height="105"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="xbe-XG-bo4">
+                                        <rect key="frame" x="0.0" y="57" width="183" height="48"/>
+                                        <rows>
+                                            <gridRow id="iFP-QQ-zUF"/>
+                                            <gridRow id="W10-gq-hnz"/>
+                                        </rows>
+                                        <columns>
+                                            <gridColumn width="57" id="kXZ-Cg-Mew"/>
+                                            <gridColumn width="120" id="vpq-Hh-Xri"/>
+                                        </columns>
+                                        <gridCells>
+                                            <gridCell row="iFP-QQ-zUF" column="kXZ-Cg-Mew" xPlacement="trailing" yPlacement="center" id="EeS-TQ-nlM">
+                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SHM-lD-1vy">
+                                                    <rect key="frame" x="14" y="29" width="45" height="17"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Player:" id="j1B-lf-GMA">
+                                                        <font key="font" usesAppearanceFont="YES"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                            </gridCell>
+                                            <gridCell row="iFP-QQ-zUF" column="vpq-Hh-Xri" id="kbl-ub-vxB">
+                                                <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bjh-ng-iw0">
+                                                    <rect key="frame" x="61" y="24" width="75" height="25"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="df3-Sh-GKU"/>
+                                                    </constraints>
+                                                    <popUpButtonCell key="cell" type="push" title="iina" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
+                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="menu"/>
+                                                        <menu key="menu" id="J79-gx-iFp">
+                                                            <items>
+                                                                <menuItem title="iina" state="on" id="gUQ-m3-Nbi"/>
+                                                                <menuItem title="mpv" id="Mej-4E-emp">
+                                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                                </menuItem>
+                                                            </items>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="LMy-Ki-0Sg" id="cMm-M9-MHp"/>
+                                                            </connections>
+                                                        </menu>
+                                                    </popUpButtonCell>
+                                                </popUpButton>
+                                            </gridCell>
+                                            <gridCell row="W10-gq-hnz" column="kXZ-Cg-Mew" xPlacement="trailing" yPlacement="center" id="W91-7S-IET">
+                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Fa-Ri-iEL">
+                                                    <rect key="frame" x="-1" y="2" width="60" height="17"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Decoder:" id="nvc-oD-yhy">
+                                                        <font key="font" usesAppearanceFont="YES"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                            </gridCell>
+                                            <gridCell row="W10-gq-hnz" column="vpq-Hh-Xri" id="1fZ-3u-Bpj">
+                                                <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Y9-RS-vhV">
+                                                    <rect key="frame" x="61" y="-3" width="115" height="25"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Pn9-wq-fB2"/>
+                                                    </constraints>
+                                                    <popUpButtonCell key="cell" type="push" title="internal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="DiM-ml-jgm" id="Odr-14-Fna">
+                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="menu"/>
+                                                        <menu key="menu" id="KEB-ni-SPc">
+                                                            <items>
+                                                                <menuItem title="internal" state="on" id="DiM-ml-jgm">
+                                                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                                                </menuItem>
+                                                                <menuItem title="ykdl" id="VL0-EI-LMe"/>
+                                                                <menuItem title="you-get" id="kaw-nE-b3T"/>
+                                                            </items>
+                                                            <connections>
+                                                                <outlet property="delegate" destination="LMy-Ki-0Sg" id="p7G-05-B2a"/>
+                                                            </connections>
+                                                        </menu>
+                                                    </popUpButtonCell>
+                                                </popUpButton>
+                                            </gridCell>
+                                        </gridCells>
+                                    </gridView>
+                                    <gridView xPlacement="leading" yPlacement="top" rowAlignment="none" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="tTo-ss-sDc">
+                                        <rect key="frame" x="0.0" y="0.0" width="183" height="41"/>
+                                        <rows>
+                                            <gridRow id="ubg-O6-E5M"/>
+                                            <gridRow id="b6M-0i-XhL"/>
+                                        </rows>
+                                        <columns>
+                                            <gridColumn id="Mzz-I5-sjk"/>
+                                        </columns>
+                                        <gridCells>
+                                            <gridCell row="ubg-O6-E5M" column="Mzz-I5-sjk" xPlacement="center" yPlacement="center" id="8wd-Ft-ZGK">
+                                                <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dEe-RI-KK4">
+                                                    <rect key="frame" x="6" y="25" width="171" height="18"/>
+                                                    <buttonCell key="cell" type="check" title="Enable Danmaku (demo)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Voj-BJ-znT">
+                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
                                                     <connections>
-                                                        <outlet property="delegate" destination="LMy-Ki-0Sg" id="cMm-M9-MHp"/>
+                                                        <action selector="enableDanmaku:" target="LMy-Ki-0Sg" id="F2E-R4-BDF"/>
                                                     </connections>
-                                                </menu>
-                                            </popUpButtonCell>
-                                        </popUpButton>
-                                    </gridCell>
-                                    <gridCell row="W10-gq-hnz" column="kXZ-Cg-Mew" xPlacement="trailing" yPlacement="center" id="W91-7S-IET">
-                                        <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Fa-Ri-iEL">
-                                            <rect key="frame" x="-1" y="2" width="60" height="17"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Decoder:" id="nvc-oD-yhy">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </gridCell>
-                                    <gridCell row="W10-gq-hnz" column="vpq-Hh-Xri" id="1fZ-3u-Bpj">
-                                        <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Y9-RS-vhV">
-                                            <rect key="frame" x="61" y="-3" width="115" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Pn9-wq-fB2"/>
-                                            </constraints>
-                                            <popUpButtonCell key="cell" type="push" title="internal ykdl" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="8Bd-pk-taY" id="Odr-14-Fna">
-                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="menu"/>
-                                                <menu key="menu" id="KEB-ni-SPc">
-                                                    <items>
-                                                        <menuItem title="internal" enabled="NO" id="DiM-ml-jgm">
-                                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                                        </menuItem>
-                                                        <menuItem title="internal ykdl" state="on" id="8Bd-pk-taY">
-                                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                                        </menuItem>
-                                                        <menuItem title="ykdl" id="VL0-EI-LMe"/>
-                                                        <menuItem title="you-get" id="kaw-nE-b3T"/>
-                                                    </items>
+                                                </button>
+                                            </gridCell>
+                                            <gridCell row="b6M-0i-XhL" column="Mzz-I5-sjk" xPlacement="center" id="SYb-pN-Y4J">
+                                                <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yKo-LK-mRF">
+                                                    <rect key="frame" x="73" y="-3" width="38" height="25"/>
+                                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="avR-6B-Ou7">
+                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="menu"/>
+                                                        <menu key="menu" id="7pp-zt-2tl"/>
+                                                    </popUpButtonCell>
                                                     <connections>
-                                                        <outlet property="delegate" destination="LMy-Ki-0Sg" id="p7G-05-B2a"/>
+                                                        <action selector="newFontSet:" target="LMy-Ki-0Sg" id="ROK-nz-IvQ"/>
                                                     </connections>
-                                                </menu>
-                                            </popUpButtonCell>
-                                        </popUpButton>
-                                    </gridCell>
-                                </gridCells>
-                            </gridView>
-                            <gridView fixedFrame="YES" xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="0.0" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="tTo-ss-sDc">
-                                <rect key="frame" x="59" y="20" width="167" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <rows>
-                                    <gridRow id="ubg-O6-E5M"/>
-                                </rows>
-                                <columns>
-                                    <gridColumn id="Mzz-I5-sjk"/>
-                                </columns>
-                                <gridCells>
-                                    <gridCell row="ubg-O6-E5M" column="Mzz-I5-sjk" id="8wd-Ft-ZGK">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dEe-RI-KK4">
-                                            <rect key="frame" x="-2" y="-2" width="171" height="18"/>
-                                            <buttonCell key="cell" type="check" title="Enable Danmaku (demo)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Voj-BJ-znT">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="enableDanmaku:" target="LMy-Ki-0Sg" id="F2E-R4-BDF"/>
-                                            </connections>
-                                        </button>
-                                    </gridCell>
-                                </gridCells>
-                            </gridView>
+                                                </popUpButton>
+                                            </gridCell>
+                                        </gridCells>
+                                    </gridView>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </subviews>
                     </view>
                     <connections>
                         <outlet property="decoderPopUpButton" destination="0Y9-RS-vhV" id="4TR-OL-CVY"/>
                         <outlet property="enableDanmaku" destination="dEe-RI-KK4" id="TIy-iV-lgb"/>
+                        <outlet property="fontPicker" destination="yKo-LK-mRF" id="rfZ-bN-FtR"/>
                         <outlet property="playerPopUpButton" destination="bjh-ng-iw0" id="GBM-ep-Aq2"/>
                     </connections>
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="6cO-vV-gCp" customClass="NSFontManager"/>
             </objects>
             <point key="canvasLocation" x="1569" y="903.5"/>
         </scene>
@@ -958,7 +932,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="55" horizontalPageScroll="10" verticalLineScroll="55" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="txu-4A-pVl">
+                                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="57" horizontalPageScroll="10" verticalLineScroll="57" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="txu-4A-pVl">
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="4Jt-mc-KNh">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
@@ -967,7 +941,7 @@
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="55" viewBased="YES" id="9PD-kf-1gB">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="633"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
-                                                                <size key="intercellSpacing" width="3" height="0.0"/>
+                                                                <size key="intercellSpacing" width="3" height="2"/>
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                 <tableColumns>
@@ -985,7 +959,7 @@
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
                                                                             <tableCellView identifier="LiveUrlTableCellView" id="oVI-B4-xgv" customClass="LiveUrlTableCellView" customModule="iina_" customModuleProvider="target">
-                                                                                <rect key="frame" x="1" y="0.0" width="397" height="20"/>
+                                                                                <rect key="frame" x="1" y="1" width="397" height="20"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lsr-oh-YEW">
@@ -1007,7 +981,7 @@
                                                                                 </connections>
                                                                             </tableCellView>
                                                                             <tableCellView identifier="LiveStatusTableCellView" id="OMv-zq-neh" customClass="LiveStatusTableCellView" customModule="iina_" customModuleProvider="target">
-                                                                                <rect key="frame" x="1" y="20" width="397" height="60"/>
+                                                                                <rect key="frame" x="1" y="23" width="397" height="60"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="zBU-wQ-RCc">
@@ -1080,7 +1054,7 @@
                                                                                 </connections>
                                                                             </tableCellView>
                                                                             <customView identifier="MainWindowTableRowView" id="Pw9-d9-Yo4" customClass="MainWindowTableRowView" customModule="iina_" customModuleProvider="target">
-                                                                                <rect key="frame" x="1" y="80" width="397" height="55"/>
+                                                                                <rect key="frame" x="1" y="85" width="397" height="55"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             </customView>
                                                                         </prototypeCellViews>
@@ -1128,7 +1102,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="633"/>
@@ -1161,8 +1135,8 @@
                                                                                         <rect key="frame" x="183" y="67" width="4" height="16"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="w1L-DN-eMK">
                                                                                             <font key="font" metaFont="cellTitle"/>
-                                                                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                         <connections>
                                                                                             <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.name" id="a2X-IP-XKf"/>
@@ -1187,8 +1161,8 @@
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="H6X-QJ-IXX">
                                                                                             <customFormatter key="formatter" id="wis-kV-jaR" customClass="VideoViewsFormatter" customModule="iina_" customModuleProvider="target"/>
                                                                                             <font key="font" metaFont="smallSystem"/>
-                                                                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                         <connections>
                                                                                             <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.views" id="eva-JF-cIo"/>
@@ -1217,8 +1191,8 @@
                                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" drawsBackground="YES" id="Pn8-Yp-6gK">
                                                                                                     <customFormatter key="formatter" id="pnk-Zb-ENt" customClass="VideoDurationFormatter" customModule="iina_" customModuleProvider="target"/>
                                                                                                     <font key="font" metaFont="systemSemibold" size="12"/>
-                                                                                                    <color key="textColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                                    <color key="backgroundColor" white="0.0" alpha="0.7537457191780822" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                                    <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                                 </textFieldCell>
                                                                                                 <connections>
                                                                                                     <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.duration" id="XPe-ct-kRo"/>
@@ -1281,6 +1255,7 @@
                                                                 </connections>
                                                             </tableView>
                                                         </subviews>
+                                                        <nil key="backgroundColor"/>
                                                         <edgeInsets key="contentInsets" left="8" right="12" top="8" bottom="8"/>
                                                     </clipView>
                                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.40000000000000002" horizontal="YES" id="baG-5p-gSI">
@@ -1321,7 +1296,7 @@
                                                     <rect key="frame" x="20" y="20" width="360" height="570"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="UI5-GE-yfn">
                                                         <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="iina_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>

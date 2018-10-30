@@ -9,20 +9,19 @@
 import Cocoa
 
 class GereralViewController: NSViewController, NSMenuDelegate {
+    
+    @IBOutlet weak var fontPicker: NSPopUpButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
     @IBOutlet weak var enableDanmaku: NSButton!
+    
     @IBAction func enableDanmaku(_ sender: Any) {
-        if enableDanmaku.state == .on {
-            acquirePrivileges { success in
-                DispatchQueue.main.async {
-                    Preferences.shared.enableDanmaku = success
-                    self.enableDanmaku.state = success ? .on : .off
-                }
-            }
-        } else {
-            Preferences.shared.enableDanmaku = false
-        }
+        Preferences.shared.enableDanmaku = enableDanmaku.state == .on
+    }
+    
+    @IBAction func newFontSet(_ sender: NSPopUpButton) {
+        let newFamilyName = sender.selectedItem?.title
+        Preferences.shared.danmukuFontFamilyName = newFamilyName
     }
     
     override func viewDidLoad() {
@@ -30,6 +29,14 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         enableDanmaku.state = Preferences.shared.enableDanmaku ? .on : .off
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
+        
+        // Configure the font picker
+        let names = NSFontManager.shared.availableFontFamilies
+        fontPicker.addItems(withTitles: names)
+        if let lastFamilyName = Preferences.shared.danmukuFontFamilyName {
+            let item = fontPicker.itemArray.filter() { $0.title == lastFamilyName }.first
+            fontPicker.select(item)
+        }
     }
     
     func menuDidClose(_ menu: NSMenu) {
@@ -49,34 +56,9 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             popUpButton.selectItem(at: Preferences.shared.livePlayer.index())
         case decoderPopUpButton:
             popUpButton.autoenablesItems = false
-            popUpButton.item(at: 0)?.isEnabled = false
             popUpButton.selectItem(at: Preferences.shared.liveDecoder.index())
         default:
             break
-        }
-    }
-    
-    func acquirePrivileges(_ block: @escaping (Bool) -> Void) {
-        let trusted = kAXTrustedCheckOptionPrompt.takeUnretainedValue()
-        let privOptions = [trusted: true] as CFDictionary
-        let accessEnabled = AXIsProcessTrustedWithOptions(privOptions)
-        Logger.log("accessEnabled: \(accessEnabled)")
-        if !accessEnabled {
-            let alert = NSAlert()
-            alert.messageText = "Enable IINA+ Danmaku"
-            alert.informativeText = "Once you have enabled IINA+ in System Preferences, click OK."
-            
-            guard let window = view.window else {
-                block(false)
-                return
-            }
-            alert.beginSheetModal(for: window) { _ in
-                let t = AXIsProcessTrustedWithOptions(privOptions)
-                Logger.log("accessEnabled: \(t)")
-                block(t)
-            }
-        } else {
-            block(true)
         }
     }
     
@@ -116,7 +98,6 @@ enum LivePlayer: String {
 
 enum LiveDecoder: String {
     case internal😀
-    case internalYKDL
     case ykdl
     case youget = "you-get"
     
@@ -124,20 +105,18 @@ enum LiveDecoder: String {
         if let decoder = LiveDecoder(rawValue: raw) {
             self = decoder
         } else {
-            self = .internalYKDL
+            self = .internal😀
         }
     }
     
     init(index: Int) {
         switch index {
-        case 0:
-            self = .internal😀
-        case 2:
+        case 1:
             self = .ykdl
-        case 3:
+        case 2:
             self = .youget
         default:
-            self = .internalYKDL
+            self = .internal😀
         }
     }
     
@@ -145,12 +124,10 @@ enum LiveDecoder: String {
         switch self {
         case .internal😀:
             return 0
-        case .internalYKDL:
-            return 1
         case .ykdl:
-            return 2
+            return 1
         case .youget:
-            return 3
+            return 2
         }
     }
 }
