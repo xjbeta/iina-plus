@@ -6,7 +6,7 @@
 
 # Install a player
 - [IINA](https://lhc70000.github.io/iina/)
-- [IINA-Danmaku-SourceCode](https://github.com/xjbeta/iina-danmaku/tree/danmaku-support)
+- [IINA-Danmaku-SourceCode](https://github.com/xjbeta/iina-danmaku/releases)
 - [mpv](https://mpv.io/)
 
 # Check your preferences
@@ -31,7 +31,8 @@
 ##### Danmaku not support multiple iina window.
 
 # Download
-##### Releases page [DMG or ZIP](https://github.com/xjbeta/iina-plus/releases)
+##### IINA-plus [DMG or ZIP](https://github.com/xjbeta/iina-plus/releases)
+#### IINA-Danmaku [DMG or ZIP](https://github.com/xjbeta/iina-danmaku/releases)
 
 # Build
 ##### Xcode Version 10.0 (10A255)
