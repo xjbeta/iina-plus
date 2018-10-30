@@ -375,7 +375,7 @@
                                                         <font key="font" metaFont="menu"/>
                                                         <menu key="menu" id="KEB-ni-SPc">
                                                             <items>
-                                                                <menuItem title="internal" enabled="NO" id="DiM-ml-jgm">
+                                                                <menuItem title="internal" id="DiM-ml-jgm">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem title="internal ykdl" state="on" id="8Bd-pk-taY">

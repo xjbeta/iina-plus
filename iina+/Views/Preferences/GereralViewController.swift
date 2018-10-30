@@ -56,7 +56,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             popUpButton.selectItem(at: Preferences.shared.livePlayer.index())
         case decoderPopUpButton:
             popUpButton.autoenablesItems = false
-            popUpButton.item(at: 0)?.isEnabled = false
             popUpButton.selectItem(at: Preferences.shared.liveDecoder.index())
         default:
             break
