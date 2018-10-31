@@ -13,98 +13,93 @@ import Marshal
 import CommonCrypto
 
 class VideoGet: NSObject {
-    let supportList = ["live.bilibili.com",
-                       "www.douyu.com",
-                       "www.panda.tv",
-                       "www.huya.com",
-                       "egame.qq.com",
-                       "www.bilibili.com"]
     
-    
-    func decodeUrl(_ url: String,
-                   _ block: @escaping (_ youget: YouGetJSON) -> Void,
-                   _ error: @escaping (_ error: Error) -> Void) {
-        
-        var yougetJson = YouGetJSON(url:"")
-        guard let url = URL(string: url) else { return }
-        yougetJson.streams.removeAll()
-        switch url.host {
-        case "live.bilibili.com":
-            getBiliLiveRoomId(url).get {
-                yougetJson.title = $0.1
-                }.then {
-                    self.getBiliLiveJSON("\($0.0)")
-                }.done {
-                    $0.2.enumerated().forEach {
-                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
-                    }
-                    block(yougetJson)
-                }.catch {
-                    error($0)
-            }
-        case "www.douyu.com":
-            getDouyuRoomIds(url).then {
-                when(resolved: $0.map { self.getDouyuUrl($0) })
-                }.done {
-                    try $0.forEach {
-                        switch $0 {
-                        case .fulfilled(let strings):
-                            yougetJson.streams[strings.0] = Stream(url: strings.1)
-                        case .rejected(let error):
-                            throw error
-                        }
-                    }
-                    block(yougetJson)
-                }.catch {
-                    error($0)
-            }
-        case "www.panda.tv":
-            getPandaRoomID(url).then {
-                when(resolved: $0.map { self.getPandaInfo($0) })
-                }.done {
-                    try $0.forEach {
-                        switch $0 {
-                        case .fulfilled(let strings):
-                            yougetJson.streams[strings.0] = Stream(url: strings.1)
-                        case .rejected(let error):
-                            throw error
-                        }
-                    }
-                    block(yougetJson)
-                }.catch {
-                    error($0)
-            }
-        case "www.huya.com":
-            getHuyaInfo(url).done {
-                yougetJson.title = $0.0
-                $0.1.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
-                }
-                block(yougetJson)
-                }.catch {
-                    error($0)
+    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
+        return Promise { resolver in
+            var yougetJson = YouGetJSON(url:"")
+            yougetJson.streams.removeAll()
+            guard let url = URL(string: url) else {
+                resolver.reject(VideoGetError.notSupported)
+                return
             }
             
-        case "egame.qq.com":
-            getEgameInfo(url).done {
-                yougetJson.title = $0.0
-                $0.1.forEach {
-                    yougetJson.streams[$0.desc] = Stream(url: $0.playUrl)
+            switch url.host {
+            case "live.bilibili.com":
+                getBiliLiveRoomId(url).get {
+                    yougetJson.title = $0.1
+                    }.then {
+                        self.getBiliLiveJSON("\($0.0)")
+                    }.done {
+                        $0.2.enumerated().forEach {
+                            yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                        }
+                        resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
                 }
-                block(yougetJson)
-                }.catch {
-                    error($0)
+            case "www.douyu.com":
+                getDouyuRoomIds(url).then {
+                    when(resolved: $0.map { self.getDouyuUrl($0) })
+                    }.done {
+                        try $0.forEach {
+                            switch $0 {
+                            case .fulfilled(let strings):
+                                yougetJson.streams[strings.0] = Stream(url: strings.1)
+                            case .rejected(let error):
+                                throw error
+                            }
+                        }
+                        resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case "www.panda.tv":
+                getPandaRoomID(url).then {
+                    when(resolved: $0.map { self.getPandaInfo($0) })
+                    }.done {
+                        try $0.forEach {
+                            switch $0 {
+                            case .fulfilled(let strings):
+                                yougetJson.streams[strings.0] = Stream(url: strings.1)
+                            case .rejected(let error):
+                                throw error
+                            }
+                        }
+                        resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case "www.huya.com":
+                getHuyaInfo(url).done {
+                    yougetJson.title = $0.0
+                    $0.1.enumerated().forEach {
+                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    }
+                    resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case "egame.qq.com":
+                getEgameInfo(url).done {
+                    yougetJson.title = $0.0
+                    $0.1.forEach {
+                        yougetJson.streams[$0.desc] = Stream(url: $0.playUrl)
+                    }
+                    resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case "www.bilibili.com":
+                getBilibili(url).done {
+                    yougetJson.title = $0.0
+                    yougetJson.streams[$0.1] = Stream(url: $0.2)
+                    resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            default:
+                resolver.reject(VideoGetError.notSupported)
             }
-        case "www.bilibili.com":
-            getBilibili(url).done {
-                yougetJson.title = $0.0
-                yougetJson.streams[$0.1] = Stream(url: $0.2)
-                block(yougetJson)
-                }.catch {
-                    error($0)
-            }
-        default:
-            error(VideoGetError.notSupported)
         }
     }
     

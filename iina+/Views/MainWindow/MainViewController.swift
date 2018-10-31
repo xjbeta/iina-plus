@@ -59,7 +59,6 @@ class MainViewController: NSViewController {
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Bilibili()
-    let videoGet = VideoGet()
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -84,85 +83,51 @@ class MainViewController: NSViewController {
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
         Processes.shared.stopDecodeURL()
-        let group: DispatchGroup? = DispatchGroup()
-        let semaphore = DispatchSemaphore(value: 0)
-        group?.notify(queue: .main) {
-            self.progressStatusChanged(false)
-        }
         
-        group?.enter()
         let str = searchField.stringValue
         yougetResult = nil
         guard str != "", str.isUrl else {
-            Processes.shared.stopDecodeURL()
             isSearching = false
             return
         }
         isSearching = true
-        
+
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        
+        func decodeUrl(_ str: String) {
+            Processes.shared.decodeURL(str).done(on: .main) {
+                self.yougetResult = $0
+                }.ensure(on: .main) {
+                    self.isSearching = false
+                    self.progressStatusChanged(false)
+                }.catch(on: .main) { error in
+                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                        view.setStatus(.error)
+                        Logger.log("\(error)")
+                    }
+            }
+        }
+        
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             url.lastPathComponent.starts(with: "av"),
             !str.contains("p=") {
             let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) ?? 0
-            bilibili.getVideoList(aid, { infos in
+            
+            bilibili.getVideoList(aid).done { infos in
                 if infos.count > 1 {
                     self.showSelectVideo(aid, infos: infos)
-                    group?.leave()
                     self.isSearching = false
-                    semaphore.signal()
+                    self.progressStatusChanged(false)
                 } else {
-                    semaphore.signal()
+                    decodeUrl(str)
                 }
-                
-            }) { re in
-                do {
-                    let _ = try re()
-                } catch let error {
-                    semaphore.signal()
+                }.catch { error in
                     Logger.log("Get video list error: \(error)")
-                }
-            }
-            semaphore.wait()
-        }
-        
-        guard isSearching else {
-            return
-        }
-        
-        
-        if Preferences.shared.liveDecoder == .internal😀 {
-            videoGet.decodeUrl(str, { obj in
-                DispatchQueue.main.async {
-                    self.yougetResult = obj
-                    group?.leave()
-                }
-            }) { error in
-                DispatchQueue.main.async {
-                    print(self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false))
-                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        view.setStatus(.error)
-                        Logger.log("\(error)")
-                    }
-                    group?.leave()
-                }
             }
         } else {
-            Processes.shared.decodeURL(str, { obj in
-                DispatchQueue.main.async {
-                    self.yougetResult = obj
-                    group?.leave()
-                }
-            }) { error in
-                DispatchQueue.main.async {
-                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        view.setStatus(.error)
-                    }
-                    group?.leave()
-                }
-            }
+            decodeUrl(str)
         }
     }
     

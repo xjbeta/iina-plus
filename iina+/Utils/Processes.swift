@@ -9,11 +9,14 @@
 import Foundation
 import Marshal
 import SwiftHTTP
-import Socket
+import PromiseKit
 
 class Processes: NSObject {
     
     static let shared = Processes()
+    let videoGet = VideoGet()
+    var decodeTask: Process?
+    var videoGetTasks: [(Promise<YouGetJSON>, cancel: () -> Void)] = []
     
     fileprivate override init() {
     }
@@ -38,58 +41,74 @@ class Processes: NSObject {
         return []
     }
 
-    var decodeTask: Process?
-    func decodeURL(_ url: String,
-                   _ block: @escaping (_ youget: YouGetJSON) -> Void,
-                   _ error: @escaping (_ error: Error) -> Void) {
-        
-        decodeTask = Process()
-        let pipe = Pipe()
-        let errorPipe = Pipe()
-        decodeTask?.standardError = errorPipe
-        decodeTask?.standardOutput = pipe
-        
-        switch Preferences.shared.liveDecoder {
-        case .ykdl, .youget:
-            decodeTask?.launchPath = which(Preferences.shared.liveDecoder.rawValue).first ?? ""
-        case .internal😀:
-            return
-        }
-        decodeTask?.arguments  = ["--json", url]
-        decodeTask?.launch()
-        
-        Logger.log(url)
-        
-        decodeTask?.terminationHandler = { _ in
-            guard self.decodeTask?.terminationReason != .uncaughtSignal else {
-                return
-            }
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            
-            do {
-                let json = try JSONParser.JSONObjectWithData(data)
-                let re = try YouGetJSON(object: json)
-                block(re)
-            } catch let er {
-                Logger.log("JSON decode error: \(er)")
-                if let str = String(data: data, encoding: .utf8) {
-                    Logger.log("JSON string: \(str)")
-                    if str.contains("Real URL") {
-                        let url = str.subString(from: "['", to: "']")
-                        let re = YouGetJSON.init(url: url)
-                        block(re)
+
+    
+    func decodeURL(_ url: String) -> Promise<YouGetJSON> {
+        return Promise { resolver in
+            switch Preferences.shared.liveDecoder {
+            case .ykdl, .youget:
+                guard let decoder = which(Preferences.shared.liveDecoder.rawValue).first else {
+                    resolver.reject(DecodeUrlError.notFoundDecoder)
+                    return
+                }
+                decodeTask?.launchPath = decoder
+                
+                decodeTask = Process()
+                let pipe = Pipe()
+                let errorPipe = Pipe()
+                decodeTask?.standardError = errorPipe
+                decodeTask?.standardOutput = pipe
+                
+                decodeTask?.arguments  = ["--json", url]
+                decodeTask?.launch()
+                
+                Logger.log(url)
+                
+                decodeTask?.terminationHandler = { _ in
+                    guard self.decodeTask?.terminationReason != .uncaughtSignal else {
+                        resolver.reject(DecodeUrlError.normalExit)
                         return
                     }
+                    
+                    let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                    
+                    do {
+                        let json = try JSONParser.JSONObjectWithData(data)
+                        let re = try YouGetJSON(object: json)
+                        resolver.fulfill(re)
+                    } catch let er {
+                        Logger.log("JSON decode error: \(er)")
+                        if let str = String(data: data, encoding: .utf8) {
+                            Logger.log("JSON string: \(str)")
+                            if str.contains("Real URL") {
+                                let url = str.subString(from: "['", to: "']")
+                                let re = YouGetJSON(url: url)
+                                resolver.fulfill(re)
+                            }
+                        }
+                        resolver.reject(er)
+                    }
+                    
+                    let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+                    if let str = String(data: errorData, encoding: .utf8), str != "" {
+                        Logger.log("Decode url error info: \(str)")
+                    }
                 }
-                error(er)
-            }
-            
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            if let str = String(data: errorData, encoding: .utf8), str != "" {
-                Logger.log("Decode url error info: \(str)")
+            case .internal😀:
+                videoGetTasks.append(decodeUrlWithVideoGet(url))
+                videoGetTasks.last?.0.done {
+                    resolver.fulfill($0)
+                    }.catch(policy: .allErrors) {
+                        resolver.reject($0)
+                }
             }
         }
+    }
+    
+    enum DecodeUrlError: Error {
+        case normalExit
+        
+        case notFoundDecoder
     }
     
     func stopDecodeURL() {
@@ -98,6 +117,30 @@ class Processes: NSObject {
             decodeTask?.terminate()
             decodeTask = nil
         }
+        
+        videoGetTasks.removeAll {
+            $0.0.isFulfilled || $0.0.isRejected
+        }
+        videoGetTasks.last?.cancel()
+    }
+    
+    func decodeUrlWithVideoGet(_ url: String) -> (Promise<YouGetJSON>, cancel: () -> Void) {
+        var cancelme = false
+        
+        let promise = Promise<YouGetJSON> { resolver in
+            self.videoGet.decodeUrl(url).done {
+                guard !cancelme else { return resolver.reject(PMKError.cancelled) }
+                resolver.fulfill($0)
+                }.catch {
+                    guard !cancelme else { return resolver.reject(PMKError.cancelled) }
+                    resolver.reject($0)
+            }
+        }
+        
+        let cancel = {
+            cancelme = true
+        }
+        return (promise, cancel)
     }
     
     enum PlayerOptions {
@@ -109,18 +152,21 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
-        
-        switch options {
-        case .douyu:
-            mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
-                                        "\(MPVOption.Network.cookiesFile)=\(getCookies(for: .douyu))",
-                                        "\(MPVOption.ProgramBehavior.ytdl)=no"])
-        case .bilibili:
-            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                                        "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
-        case .withoutYtdl:
-            mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
-        case .none: break
+        getCookies(for: .douyu).done { cookies in
+            switch options {
+            case .douyu:
+                mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
+                                            "\(MPVOption.Network.cookiesFile)=\(cookies)",
+                    "\(MPVOption.ProgramBehavior.ytdl)=no"])
+            case .bilibili:
+                mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
+                    "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+            case .withoutYtdl:
+                mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
+            case .none: break
+            }
+            }.catch {
+                Logger.log("Get video cookies error: \($0)")
         }
         
         let mergeWithEdl = true
@@ -172,41 +218,41 @@ class Processes: NSObject {
 }
 
 private extension Processes {
-    
-    func getCookies(for website: LiveSupportList) -> String {
-        switch website {
-        case .douyu:
-            let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
-            let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
-            srand48(Int(time))
-            let random = "\(drand48())"
-            let parameters = ["client_id": "1",
-                              "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
-            let headers = ["Referer": "http://www.douyu.com"]
-            
-            let httpSemaphore = DispatchSemaphore(value: 0)
-            var cookiesString = ""
-            
-            HTTP.GET(douyuCookie, parameters: parameters, headers: headers) { response in
-                do {
-                    var str = response.text
-                    str = str?.subString(from: "(", to: ")")
-                    let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
-                    let didStr: String = try json.value(for: "data.did")
-                    let date = Int(Date().timeIntervalSince1970)
-                    cookiesString = """
-                    ..douyu.com    TRUE    /    FALSE    \(date)    dy_did    \(didStr)
-                    .www.douyu.com    TRUE    /    FALSE    \(date)    acf_did    \(didStr)
-                    """
-                } catch let error {
-                    Logger.log("DouYu cookies error: \(error)")
+    func getCookies(for website: LiveSupportList) -> Promise<String> {
+        return Promise { resolver in
+            switch website {
+            case .douyu:
+                let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
+                let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
+                srand48(Int(time))
+                let random = "\(drand48())"
+                let parameters = ["client_id": "1",
+                                  "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
+                let headers = ["Referer": "http://www.douyu.com"]
+                
+                HTTP.GET(douyuCookie, parameters: parameters, headers: headers) { response in
+                    if let error = response.error {
+                        resolver.reject(error)
+                    }
+                    do {
+                        var str = response.text
+                        str = str?.subString(from: "(", to: ")")
+                        let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
+                        let didStr: String = try json.value(for: "data.did")
+                        let date = Int(Date().timeIntervalSince1970)
+                        let cookiesString = """
+                        ..douyu.com    TRUE    /    FALSE    \(date)    dy_did    \(didStr)
+                        .www.douyu.com    TRUE    /    FALSE    \(date)    acf_did    \(didStr)
+                        """
+                        
+                        resolver.fulfill(cookiesString)
+                    } catch let error {
+                        resolver.reject(error)
+                    }
                 }
-                httpSemaphore.signal()
+            default:
+                resolver.fulfill("")
             }
-            httpSemaphore.wait()
-            return cookiesString
-        default:
-            return ""
         }
     }
 }
