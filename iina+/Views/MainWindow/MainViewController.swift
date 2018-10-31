@@ -71,14 +71,10 @@ class MainViewController: NSViewController {
                 searchField.becomeFirstResponder()
                 startSearch(self)
             } else if card.videos > 1 {
-                bilibili.getVideoList(aid, { infos in
+                bilibili.getVideoList(aid).done { infos in
                     self.showSelectVideo(aid, infos: infos)
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
+                    }.catch { error in
                         Logger.log("Get video list error: \(error)")
-                    }
                 }
             }
         }
@@ -355,7 +351,6 @@ class MainViewController: NSViewController {
     
     func loadBilibiliCards(_ action: BilibiliDynamicAction = .init) {
         var dynamicID = -1
-        let group = DispatchGroup()
         
         switch action {
         case .history:
@@ -367,9 +362,9 @@ class MainViewController: NSViewController {
         
         canLoadMoreBilibiliCards = false
         progressStatusChanged(!canLoadMoreBilibiliCards)
-        group.enter()
-        bilibili.dynamicList(action, dynamicID, { cards in
-            DispatchQueue.main.async {
+        bilibili.getUid().then {
+            self.bilibili.dynamicList($0, action, dynamicID)
+            }.done(on: .main) { cards in
                 switch action {
                 case .init:
                     self.bilibiliCards = cards
@@ -377,21 +372,14 @@ class MainViewController: NSViewController {
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
                     self.bilibiliCards.insert(contentsOf: cards, at: 0)
-                default: break
+                default:
+                    break
                 }
-                group.leave()
-            }
-        }) { re in
-            do {
-                let _ = try re()
-            } catch let error {
+            }.ensure(on: .main) {
+                self.canLoadMoreBilibiliCards = true
+                self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
+            }.catch { error in
                 Logger.log("Get bilibili dynamicList error: \(error)")
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) {
-            self.canLoadMoreBilibiliCards = true
-            self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
         }
     }
     

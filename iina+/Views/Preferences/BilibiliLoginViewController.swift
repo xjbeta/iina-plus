@@ -92,21 +92,15 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         if let str = webView.url?.absoluteString, str.contains("bili_jct") {
             displayWait()
-            bilibili.isLogin({
-                if $0 {
-                    DispatchQueue.main.async {
-                        self.dismiss?()
-                    }
+            
+            Bilibili().isLogin().done(on: .main) {
+                if $0.0 {
+                    self.dismiss?()
+                } else {
+                    self.tabView.selectTabViewItem(at: 1)
                 }
-            }, { _ in
-            }) { re in
-                do {
-                    let _ = try re()
-                } catch _ {
-                    DispatchQueue.main.async {
-                        self.tabView.selectTabViewItem(at: 1)
-                    }
-                }
+                }.catch(on: .main) { _ in
+                    self.tabView.selectTabViewItem(at: 1)
             }
         }
     }

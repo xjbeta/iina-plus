@@ -74,9 +74,7 @@ class Danmaku: NSObject {
                 let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
                 var cid = 0
                 
-                let group = DispatchGroup()
-                group.enter()
-                Bilibili().getVideoList(aid, { vInfo in
+                Bilibili().getVideoList(aid).done { vInfo in
                     if vInfo.count == 1 {
                         cid = vInfo[0].cid
                     } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
@@ -87,22 +85,13 @@ class Danmaku: NSObject {
                             cid = vInfo[pInt].cid
                         }
                     }
-                    group.leave()
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
+                    }.ensure {
+                        guard cid != 0 else { return }
+                        HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
+                            self.loadDM($0.data)
+                        }
+                    }.catch { error in
                         Logger.log("Get cid for danmamu error: \(error)")
-                        group.leave()
-                    }
-                }
-                
-                group.notify(queue: .main) {
-                    guard cid != 0 else { return }
-                    
-                    HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                        self.loadDM($0.data)
-                    }
                 }
             }
         case .biliLive:
