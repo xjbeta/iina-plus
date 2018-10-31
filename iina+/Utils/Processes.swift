@@ -133,7 +133,6 @@ class Processes: NSObject {
         switch Preferences.shared.livePlayer {
         case .iina:
             task.launchPath = Preferences.shared.livePlayer.rawValue
-            mpvArgs.append("\(MPVOption.Input.inputIpcServer)=/tmp/IINA-Plus-Danmaku-socket")
             mpvArgs = mpvArgs.map {
                 "--mpv-" + $0
             }
