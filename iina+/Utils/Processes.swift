@@ -165,54 +165,54 @@ class Processes: NSObject {
                 mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
             case .none: break
             }
+            }.ensure {
+                let mergeWithEdl = true
+                if !mergeWithEdl {
+                    if urls.count > 1 {
+                        mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+                    }
+                }
+                
+                switch Preferences.shared.livePlayer {
+                case .iina:
+                    task.launchPath = Preferences.shared.livePlayer.rawValue
+                    mpvArgs = mpvArgs.map {
+                        "--mpv-" + $0
+                    }
+                case .mpv:
+                    task.launchPath = self.which(Preferences.shared.livePlayer.rawValue).first ?? ""
+                    mpvArgs.append(MPVOption.Terminal.reallyQuiet)
+                    mpvArgs = mpvArgs.map {
+                        "--" + $0
+                    }
+                }
+                if urls.count == 1 {
+                    mpvArgs.append(urls.first ?? "")
+                } else if urls.count > 1 {
+                    if mergeWithEdl {
+                        var edlString = urls.reduce(String()) { result, url in
+                            var re = result
+                            re += "%\(url.count)%\(url);"
+                            return re
+                        }
+                        edlString = "edl://" + edlString
+                        
+                        mpvArgs.append(edlString)
+                    } else {
+                        mpvArgs.append(contentsOf: urls)
+                    }
+                    
+                }
+                if Preferences.shared.enableDanmaku {
+                    mpvArgs.append("--danmaku")
+                }
+                
+                Logger.log("Player arguments: \(mpvArgs)")
+                task.arguments = mpvArgs
+                task.launch()
             }.catch {
                 Logger.log("Get video cookies error: \($0)")
         }
-        
-        let mergeWithEdl = true
-        if !mergeWithEdl {
-            if urls.count > 1 {
-                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
-            }
-        }
-
-        switch Preferences.shared.livePlayer {
-        case .iina:
-            task.launchPath = Preferences.shared.livePlayer.rawValue
-            mpvArgs = mpvArgs.map {
-                "--mpv-" + $0
-            }
-        case .mpv:
-            task.launchPath = which(Preferences.shared.livePlayer.rawValue).first ?? ""
-            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
-            mpvArgs = mpvArgs.map {
-                "--" + $0
-            }
-        }
-        if urls.count == 1 {
-            mpvArgs.append(urls.first ?? "")
-        } else if urls.count > 1 {
-            if mergeWithEdl {
-                var edlString = urls.reduce(String()) { result, url in
-                    var re = result
-                    re += "%\(url.count)%\(url);"
-                    return re
-                }
-                edlString = "edl://" + edlString
-                
-                mpvArgs.append(edlString)
-            } else {
-                mpvArgs.append(contentsOf: urls)
-            }
-
-        }
-        if Preferences.shared.enableDanmaku {
-            mpvArgs.append("--danmaku")
-        }
-        
-        Logger.log("Player arguments: \(mpvArgs)")
-        task.arguments = mpvArgs
-        task.launch()
     }
     
 }
