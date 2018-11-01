@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -1064,7 +1064,6 @@
                                                                     </tableColumn>
                                                                 </tableColumns>
                                                                 <connections>
-                                                                    <action selector="hideSuggestions:" target="XfG-lQ-9wD" id="SSX-iv-LU7"/>
                                                                     <action trigger="doubleAction" selector="sendURL:" target="XfG-lQ-9wD" id="pLv-ew-OMS"/>
                                                                     <outlet property="dataSource" destination="XfG-lQ-9wD" id="lIr-xs-M8B"/>
                                                                     <outlet property="delegate" destination="XfG-lQ-9wD" id="h3O-wx-cvL"/>
@@ -1102,7 +1101,7 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="633"/>
@@ -1246,7 +1245,6 @@
                                                                     </tableColumn>
                                                                 </tableColumns>
                                                                 <connections>
-                                                                    <action selector="hideSuggestions:" target="XfG-lQ-9wD" id="Ebw-TY-yf1"/>
                                                                     <action trigger="doubleAction" selector="sendBilibiliURL:" target="XfG-lQ-9wD" id="p3T-z1-RgW"/>
                                                                     <binding destination="l5L-7R-ZIy" name="content" keyPath="arrangedObjects" id="CBc-WE-LLX"/>
                                                                     <binding destination="l5L-7R-ZIy" name="selectionIndexes" keyPath="selectionIndexes" previousBinding="CBc-WE-LLX" id="4Sw-Xj-amq"/>
