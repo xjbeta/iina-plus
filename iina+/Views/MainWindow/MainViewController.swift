@@ -95,6 +95,19 @@ class MainViewController: NSViewController {
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         
+        func decodeUrl() {
+            Processes.shared.decodeURL(str).done(on: .main) {
+                self.yougetResult = $0
+                }.ensure {
+                    self.progressStatusChanged(false)
+                }.catch(on: .main) { error in
+                    Logger.log("\(error)")
+                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                        view.setStatus(.error)
+                    }
+            }
+        }
+        
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             url.lastPathComponent.starts(with: "av"),
@@ -106,22 +119,15 @@ class MainViewController: NSViewController {
                     self.showSelectVideo(aid, infos: infos)
                     self.isSearching = false
                     self.progressStatusChanged(false)
+                } else {
+                    decodeUrl()
                 }
                 }.catch { error in
                     Logger.log("Get video list error: \(error)")
             }
+        } else {
+            decodeUrl()
         }
-        
-        Processes.shared.decodeURL(str).done(on: .main) {
-            self.yougetResult = $0
-            }.catch(on: .main) { error in
-                Logger.log("\(error)")
-                if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                    view.setStatus(.error)
-                }
-        }
-        
-        self.progressStatusChanged(false)
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
