@@ -437,6 +437,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
                     let streams = obj.streams.sorted {
                         $0.value.size ?? 0 > $1.value.size ?? 0
+                        }.sorted {
+                            $0.key < $1.key
                     }
                     let stream = streams[row]
                     view.setStream(stream)
