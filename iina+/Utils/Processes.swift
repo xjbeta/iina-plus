@@ -51,7 +51,6 @@ class Processes: NSObject {
                     resolver.reject(DecodeUrlError.notFoundDecoder)
                     return
                 }
-                decodeTask?.launchPath = decoder
                 
                 decodeTask = Process()
                 let pipe = Pipe()
@@ -59,9 +58,8 @@ class Processes: NSObject {
                 decodeTask?.standardError = errorPipe
                 decodeTask?.standardOutput = pipe
                 
+                decodeTask?.launchPath = decoder
                 decodeTask?.arguments  = ["--json", url]
-                decodeTask?.launch()
-                
                 Logger.log(url)
                 
                 decodeTask?.terminationHandler = { _ in
@@ -94,6 +92,7 @@ class Processes: NSObject {
                         Logger.log("Decode url error info: \(str)")
                     }
                 }
+                decodeTask?.launch()
             case .internal😀:
                 videoGetTasks.append(decodeUrlWithVideoGet(url))
                 videoGetTasks.last?.0.done {
