@@ -47,6 +47,7 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
+		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E0212BBB43003517A7 /* SelectVideoViewController.swift */; };
 		016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */; };
 		016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */; };
@@ -77,7 +78,6 @@
 		01E8CAD5213D543900C4939B /* SocketRocket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E8CAD0213D541700C4939B /* SocketRocket.framework.dSYM */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
-		01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5151F210AE330007C7153 /* LiveInfoExtension.swift */; };
 		01F6C4E9213396560009672A /* DevMateKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F6C4E5213396270009672A /* DevMateKit.framework */; };
 		01F6C4EB213396560009672A /* DevMateKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01F6C4E5213396270009672A /* DevMateKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01F6C4EC213396560009672A /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 010F0EFE20FCC16600F33553 /* Marshal.framework */; };
@@ -185,6 +185,7 @@
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
+		015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGetStructs.swift; sourceTree = "<group>"; };
 		016792E0212BBB43003517A7 /* SelectVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoViewController.swift; sourceTree = "<group>"; };
 		016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewItem.swift; sourceTree = "<group>"; };
 		016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewItem.xib; sourceTree = "<group>"; };
@@ -220,7 +221,6 @@
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
-		01F5151F210AE330007C7153 /* LiveInfoExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveInfoExtension.swift; sourceTree = "<group>"; };
 		01F6C4E5213396270009672A /* DevMateKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DevMateKit.framework; path = Carthage/Build/Mac/DevMateKit.framework; sourceTree = SOURCE_ROOT; };
 		01F6C4F2213396B20009672A /* iina+-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iina+-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -321,6 +321,7 @@
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
 				013CE8DF21854813000271FB /* VideoGet.swift */,
+				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
@@ -340,7 +341,6 @@
 				016792E8212BF89A003517A7 /* SelectVideoCollectionView */,
 				010F0EF120F890DB00F33553 /* MainWindowController.swift */,
 				01AEC8AC20EDFD01001406E8 /* MainViewController.swift */,
-				01F5151F210AE330007C7153 /* LiveInfoExtension.swift */,
 				01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */,
 				01010136211EFA75002F0F7F /* SuggestionsTableView.swift */,
 			);
@@ -569,12 +569,12 @@
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
-				01F51520210AE330007C7153 /* LiveInfoExtension.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
+				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,

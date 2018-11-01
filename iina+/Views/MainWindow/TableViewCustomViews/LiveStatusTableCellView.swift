@@ -28,15 +28,11 @@ class LiveStatusTableCellView: NSTableCellView {
     
     func getInfo() {
         guard let url = url else { return }
-        getInfo(url, { liveInfo in
-            self.setInfo(liveInfo)
-        }) { re in
-            do {
-                let _ = try re()
-            } catch let error {
-                Logger.log("Get live status error: \(error)")
+        Processes.shared.videoGet.liveInfo(url.absoluteString).done(on: .main) {
+            self.setInfo($0)
+            }.catch(on: .main) {
+                Logger.log("Get live status error: \($0)")
                 self.setErrorInfo(url.absoluteString)
-            }
         }
     }
     
@@ -48,23 +44,19 @@ class LiveStatusTableCellView: NSTableCellView {
     }
     
     func setInfo(_ info: LiveInfo) {
-        DispatchQueue.main.async {
-            self.titleTextField.stringValue = info.title
-            self.nameTextField.stringValue = info.name
-            self.userCoverImageView.image = info.userCover
-            self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
-        }
+        self.titleTextField.stringValue = info.title
+        self.nameTextField.stringValue = info.name
+        self.userCoverImageView.image = info.userCover
+        self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
     }
     
     func setErrorInfo(_ str: String) {
-        DispatchQueue.main.async {
-            if self.userCoverImageView.image == nil {
-                self.titleTextField.stringValue = str
-                self.userCoverImageView.image = nil
-                self.nameTextField.stringValue = ""
-            }
-            self.liveStatusImageView.image = NSImage(named: "NSStatusNone")
+        if self.userCoverImageView.image == nil {
+            self.titleTextField.stringValue = str
+            self.userCoverImageView.image = nil
+            self.nameTextField.stringValue = ""
         }
+        self.liveStatusImageView.image = NSImage(named: "NSStatusNone")
     }
     
     
