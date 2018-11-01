@@ -68,37 +68,14 @@ class Danmaku: NSObject {
     }
     
     func loadDM() {
+        guard let url = URL(string: self.url) else { return }
+        let roomID = url.lastPathComponent
         switch liveSite {
         case .bilibili:
-            if let url = URL(string: url),
-                let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
-                var cid = 0
-                
-                Bilibili().getVideoList(aid).done { vInfo in
-                    if vInfo.count == 1 {
-                        cid = vInfo[0].cid
-                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        var pInt = Int(p) {
-                        pInt -= 1
-                        if pInt < vInfo.count,
-                            pInt >= 0 {
-                            cid = vInfo[pInt].cid
-                        }
-                    }
-                    }.ensure {
-                        guard cid != 0 else { return }
-                        HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                            self.loadDM($0.data)
-                        }
-                    }.catch { error in
-                        Logger.log("Get cid for danmamu error: \(error)")
-                }
-            }
+            httpServer.send(.loadDM)
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self
-            
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             
             HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
                 do {
@@ -110,7 +87,6 @@ class Danmaku: NSObject {
                 }
             }
         case .panda:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
                 do {
                     let json = try JSONParser.JSONObjectWithData($0.data)
@@ -125,10 +101,8 @@ class Danmaku: NSObject {
                 }
             }
         case .douyu:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             initDouYuSocket(roomID)
         case .huya:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
             
             HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
@@ -140,16 +114,6 @@ class Danmaku: NSObject {
             }
         default:
             break
-        }
-    }
-    
-    
-    private func loadDM(_ data: Data) {
-        if let resourcePath = Bundle.main.resourcePath {
-            let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-            FileManager.default.createFile(atPath: danmakuFilePath, contents: data, attributes: nil)
-            httpServer.send(.loadDM)
-            Logger.log("loadDM in \(danmakuFilePath)")
         }
     }
     

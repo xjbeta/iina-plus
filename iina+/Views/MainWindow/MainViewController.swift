@@ -142,58 +142,62 @@ class MainViewController: NSViewController {
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let row = suggestionsTableView.selectedRow
-        guard row != -1 else {
+        guard row != -1,
+            let key = yougetResult?.streams.keys.sorted()[row],
+            let stream = yougetResult?.streams[key],
+            let url = URL(string: searchField.stringValue) else {
             yougetResult = nil
             isSearching = false
             Processes.shared.stopDecodeURL()
             return
         }
-        if let key = yougetResult?.streams.keys.sorted()[row],
-            let stream = yougetResult?.streams[key] {
-            var urlStr: [String] = []
-            if let videoUrl = stream.url {
-                urlStr = [videoUrl]
-            } else {
-                urlStr = stream.src
+        
+        var urlStr: [String] = []
+        if let videoUrl = stream.url {
+            urlStr = [videoUrl]
+        } else {
+            urlStr = stream.src
+        }
+        var title = yougetResult?.title ?? ""
+        let site = LiveSupportList(raw: url.host)
+        
+        Processes.shared.videoGet.prepareBiliDanmaku(url).done {
+            switch site {
+            case .douyu:
+                if Preferences.shared.liveDecoder == .internal😀 {
+                    title = key
+                }
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
+            case .panda:
+                if Preferences.shared.liveDecoder == .internal😀 {
+                    title = key
+                }
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+            case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+            case .bilibili:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+            case .unsupported:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
             }
             
-            if let host = URL(string: searchField.stringValue)?.host {
-                var title = yougetResult?.title ?? ""
-                let site = LiveSupportList(raw: host)
+            // init Danmaku
+            if Preferences.shared.enableDanmaku {
                 switch site {
-                case .douyu:
-                    if Preferences.shared.liveDecoder == .internal😀 {
-                        title = key
-                    }
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-                case .panda:
-                    if Preferences.shared.liveDecoder == .internal😀 {
-                        title = key
-                    }
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-                case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-                case .bilibili:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
-                case .unsupported:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
-                }
-                
-                // init Danmaku
-                if Preferences.shared.enableDanmaku {
-                    switch site {
-                    case .bilibili, .biliLive, .panda, .douyu, .huya:
-                        danmaku?.stop()
-                        danmaku = Danmaku(site, url: searchField.stringValue)
-                        danmaku?.start()
-                    default:
-                        break
-                    }
+                case .bilibili, .biliLive, .panda, .douyu, .huya:
+                    self.danmaku?.stop()
+                    self.danmaku = Danmaku(site, url: self.searchField.stringValue)
+                    self.danmaku?.start()
+                default:
+                    break
                 }
             }
+            }.ensure {
+                self.isSearching = false
+                self.yougetResult = nil
+            }.catch {
+                Logger.log("Prepare DM file error : \($0)")
         }
-        isSearching = false
-        yougetResult = nil
     }
     
     // MARK: - Danmaku

@@ -91,9 +91,9 @@ class VideoGet: NSObject {
                 }
             case "www.bilibili.com":
                 getBilibili(url).done {
-                    yougetJson.title = $0.0
-                    yougetJson.streams[$0.1] = Stream(url: $0.2)
-                    resolver.fulfill(yougetJson)
+                        yougetJson.title = $0.0
+                        yougetJson.streams[$0.1] = Stream(url: $0.2)
+                        resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -103,8 +103,37 @@ class VideoGet: NSObject {
         }
     }
     
-    
-    
+    func prepareBiliDanmaku(_ url: URL) -> Promise<()> {
+        return Promise { resolver in
+            guard Preferences.shared.enableDanmaku else {
+                resolver.fulfill(())
+                return
+            }
+            guard let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) else {
+                resolver.reject(VideoGetError.cantFindIdForDM)
+                return
+            }
+            var cid = 0
+            Bilibili().getVideoList(aid).get { vInfo in
+                if vInfo.count == 1 {
+                    cid = vInfo[0].cid
+                } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
+                    var pInt = Int(p) {
+                    pInt -= 1
+                    if pInt < vInfo.count,
+                        pInt >= 0 {
+                        cid = vInfo[pInt].cid
+                    }
+                }
+                }.then { _ in
+                    self.downloadDMFile(cid)
+                }.done {
+                    resolver.fulfill(())
+                }.catch {
+                    resolver.reject($0)
+            }
+        }
+    }
 }
 
 // MARK: - Bilibili
@@ -152,7 +181,7 @@ struct BilibiliVideo: Unmarshaling {
 }
 
 
-extension VideoGet {
+private extension VideoGet {
     
     // MARK: - Bilibili
     func getBiliLiveRoomId(_ url: URL) -> Promise<(Int, String)> {
@@ -503,9 +532,21 @@ extension VideoGet {
         }
     }
     
-    
-    
-
+    func downloadDMFile(_ cid: Int) -> Promise<()> {
+        return Promise { resolver in
+            HTTP.GET("https://comment.bilibili.com/\(cid).xml") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                if let resourcePath = Bundle.main.resourcePath {
+                    let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
+                    FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
+                    Logger.log("Saved DM in \(danmakuFilePath)")
+                }
+                resolver.fulfill(())
+            }
+        }
+    }
     
     
     // https://stackoverflow.com/a/53044349
@@ -531,4 +572,6 @@ enum VideoGetError: Error {
     case isNotLiving
     case notFindUrls
     case notSupported
+    
+    case cantFindIdForDM
 }
