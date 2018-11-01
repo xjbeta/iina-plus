@@ -105,7 +105,7 @@ class VideoGet: NSObject {
                 }
             case .eGameQQ:
                 getEgameInfo(url).done {
-                    yougetJson.title = $0.0
+                    yougetJson.title = $0.0.title
                     $0.1.forEach {
                         yougetJson.streams[$0.desc] = Stream(url: $0.playUrl)
                     }
@@ -214,6 +214,12 @@ class VideoGet: NSObject {
             case .longzhu:
                 getLongZhuInfo(url).done {
                     resolver.fulfill($0)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case .eGameQQ:
+                getEgameInfo(url).done {
+                    resolver.fulfill($0.0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -562,7 +568,7 @@ private extension VideoGet {
         }
     }
     
-    func getEgameInfo(_ url: URL) -> Promise<(String, [EgameUrl])> {
+    func getEgameInfo(_ url: URL) -> Promise<(EgameInfo, [EgameUrl])> {
         return Promise { resolver in
             HTTP.GET(url.absoluteString) { response in
                 if let error = response.error {
@@ -573,16 +579,10 @@ private extension VideoGet {
                 
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    
-                    let isLive: Int = try json.value(for: "state.live-info.liveInfo.profileInfo.isLive")
-                    guard isLive == 1 else {
-                        resolver.reject(VideoGetError.isNotLiving)
-                        return
-                    }
-                    let title: String = try json.value(for: "state.live-info.liveInfo.videoInfo.title")
+                    let info: EgameInfo = try EgameInfo(object: json)
                     let urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
                     
-                    resolver.fulfill((title, urls))
+                    resolver.fulfill((info, urls))
                 } catch let error {
                     resolver.reject(error)
                 }

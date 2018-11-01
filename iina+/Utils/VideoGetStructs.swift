@@ -149,6 +149,24 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct EgameInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var userCover: NSImage?
+    var isLiving = false
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
+        name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
+        let imageUrl: String = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
+        if let url = URL(string: imageUrl.replacingOccurrences(of: "http://", with: "https://")) {
+            userCover = NSImage(contentsOf: url)
+        }
+        let liveStatus: Int = try object.value(for: "state.live-info.liveInfo.profileInfo.isLive")
+        isLiving = liveStatus == 1
+    }
+}
+
 
 
 // MARK: - Bilibili
