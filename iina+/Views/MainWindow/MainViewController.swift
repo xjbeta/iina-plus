@@ -96,7 +96,13 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         
         func decodeUrl() {
-            Processes.shared.decodeURL(str).done(on: .main) {
+            Processes.shared.videoGet.liveInfo(str, false).get {
+                if !$0.isLiving {
+                    throw VideoGetError.isNotLiving
+                }
+                }.then { _ in
+                    Processes.shared.decodeURL(str)
+            }.done(on: .main) {
                 self.yougetResult = $0
                 }.ensure {
                     self.progressStatusChanged(false)

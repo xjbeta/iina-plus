@@ -159,7 +159,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
+    func liveInfo(_ url: String, _ checkSupport: Bool = true) -> Promise<LiveInfo> {
         return Promise { resolver in
             guard let url = URL(string: url) else {
                 resolver.reject(VideoGetError.notSupported)
@@ -218,7 +218,13 @@ class VideoGet: NSObject {
                         resolver.reject($0)
                 }
             default:
-                resolver.reject(VideoGetError.notSupported)
+                if checkSupport {
+                    resolver.reject(VideoGetError.notSupported)
+                } else {
+                    var info = BilibiliInfo()
+                    info.isLiving = true
+                    resolver.fulfill(info)
+                }
             }
         }
     }
