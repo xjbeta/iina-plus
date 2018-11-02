@@ -86,49 +86,67 @@ function bind() {
     };
 };
 
+function updateStatus(status){
+    switch(status) {
+    case 'warning':
+        document.getElementById("status").style.backgroundColor="#FFB742"
+        break
+    case 'error':
+        document.getElementById("status").style.backgroundColor="#FF2640"
+        break
+    default:
+        document.getElementById("status").style.backgroundColor=""
+        break
+    }
+}
+
 function start(websocketServerLocation){
     ws = new WebSocket(websocketServerLocation);
     ws.open = function(evt) { 
         console.log('WebSocket open');
         ws.send('WebSocket open');
+        updateStatus();
     };
     ws.onmessage = function(evt) { 
         var event = JSON.parse(evt.data);
         switch(event.method) {
-            case 'start':
-                window.cm.start();
-                break;
-            case 'stop':
-                window.cm.stop();
-                break;
-            case 'initDM':
-                window.initDM();
-                break;
-            case 'resize':
-                window.resize();
-                break;
-            case 'customFont':
-                window.customFont(event.text);
-                break;
-            case 'loadDM':
-                loadDM('/danmaku/iina-plus-danmaku.xml');
-                break;
-            case 'sendDM':
-                var comment = {
-                    'text': event.text,
-                    'stime': 0,
-                    'mode': 1,
-                    'color': 0xffffff,
-                    'border': false
-                };
-                window.cm.send(comment);
-                break
-            default:
-                break;
+        case 'start':
+            window.cm.start();
+            break;
+        case 'stop':
+            window.cm.stop();
+            break;
+        case 'initDM':
+            window.initDM();
+            break;
+        case 'resize':
+            window.resize();
+            break;
+        case 'customFont':
+            window.customFont(event.text);
+            break;
+        case 'loadDM':
+            loadDM('/danmaku/iina-plus-danmaku.xml');
+            break;
+        case 'sendDM':
+            var comment = {
+                'text': event.text,
+                'stime': 0,
+                'mode': 1,
+                'color': 0xffffff,
+                'border': false
+            };
+            window.cm.send(comment);
+            break
+        case 'liveDMServer':
+            updateStatus(event.text);
+        default:
+            break;
         }
 
     };
     ws.onclose = function(){
+        updateStatus('warning');
         // Try to reconnect in 1 seconds
         setTimeout(function(){start(websocketServerLocation)}, 1000);
     };

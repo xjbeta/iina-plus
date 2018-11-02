@@ -183,6 +183,7 @@ class Danmaku: NSObject {
                                 }
                             } else if $0.starts(with: "type@=error") {
                                 Logger.log("douyu socket disconnected: \($0)")
+                                self.httpServer.send(.liveDMServer, text: "error")
                                 self.douyuSocket?.close()
                             }
                     }
@@ -323,8 +324,7 @@ new Uint8Array(sendRegister(wsUserInfo));
         default:
             break
         }
-        
-        
+        httpServer.send(.liveDMServer, text: "error")
     }
     
     
