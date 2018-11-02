@@ -102,9 +102,8 @@ function updateStatus(status){
 
 function start(websocketServerLocation){
     ws = new WebSocket(websocketServerLocation);
-    ws.open = function(evt) { 
-        console.log('WebSocket open');
-        ws.send('WebSocket open');
+    updateStatus('warning');
+    ws.onopen = function(evt) { 
         updateStatus();
     };
     ws.onmessage = function(evt) { 
