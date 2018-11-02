@@ -1,7 +1,7 @@
 $ = function(a) {
     return document.getElementById(a);
 };
-
+var isLiving = true;
 
 function bind() {
     window.cm = new CommentManager($('commentCanvas'));
@@ -127,6 +127,7 @@ function start(websocketServerLocation){
             break;
         case 'loadDM':
             loadDM('/danmaku/iina-plus-danmaku.xml');
+            isLiving = false;
             break;
         case 'sendDM':
             var comment = {
@@ -146,9 +147,11 @@ function start(websocketServerLocation){
 
     };
     ws.onclose = function(){
-        updateStatus('warning');
-        // Try to reconnect in 1 seconds
-        setTimeout(function(){start(websocketServerLocation)}, 1000);
+        if (isLiving) {
+            updateStatus('warning');
+            // Try to reconnect in 1 seconds
+            setTimeout(function(){start(websocketServerLocation)}, 1000);
+        }
     };
 }
 
