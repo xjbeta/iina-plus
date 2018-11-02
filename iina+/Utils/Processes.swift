@@ -98,7 +98,12 @@ class Processes: NSObject {
                 videoGetTasks.last?.0.done {
                     resolver.fulfill($0)
                     }.catch(policy: .allErrors) {
-                        resolver.reject($0)
+                        switch $0 {
+                        case PMKError.cancelled:
+                            resolver.reject(PMKError.cancelled)
+                        default:
+                            resolver.reject($0)
+                        }
                 }
             }
         }

@@ -8,6 +8,7 @@
 
 import Cocoa
 import CoreData
+import PromiseKit
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -102,14 +103,23 @@ class MainViewController: NSViewController {
                 }
                 }.then { _ in
                     Processes.shared.decodeURL(str)
-            }.done(on: .main) {
-                self.yougetResult = $0
+                }.done(on: .main) {
+                    self.yougetResult = $0
                 }.ensure {
                     self.progressStatusChanged(false)
-                }.catch(on: .main) { error in
+                }.catch(on: .main, policy: .allErrors) { error in
                     Logger.log("\(error)")
                     if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        view.setStatus(.error)
+                        switch error {
+                        case PMKError.cancelled:
+                            return
+                        case VideoGetError.isNotLiving:
+                            view.setStatus(.isNotLiving)
+                        case VideoGetError.notSupported:
+                            view.setStatus(.notSupported)
+                        default:
+                            view.setStatus(.error)
+                        }
                     }
             }
         }
