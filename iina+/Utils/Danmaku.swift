@@ -29,7 +29,7 @@ class Danmaku: NSObject {
     let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
     var huyaSubSid = ""
     
-    var danmukuFontObserver: NSObjectProtocol?
+    var danmukuObservers: [NSObjectProtocol] = []
     
     let httpServer = HttpServer()
     
@@ -41,15 +41,24 @@ class Danmaku: NSObject {
     func start() {
         httpServer.connected = { [weak self] in
             self?.loadCustomFont()
+            self?.customDMSpeed()
+            self?.customDMOpdacity()
             self?.loadDM()
         }
         httpServer.disConnected = { [weak self] in
             self?.stop()
         }
         httpServer.start()
-        danmukuFontObserver = NotificationCenter.default.addObserver(forName: .updateDanmukuFont, object: nil, queue: .main) { _ in
+        
+        danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
             self.loadCustomFont()
-        }
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
+            self.customDMSpeed()
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
+            self.customDMOpdacity()
+        }))
     }
     
     
@@ -59,12 +68,23 @@ class Danmaku: NSObject {
         douyuSocket?.close()
         douyuSocket = nil
         httpServer.stop()
-        NotificationCenter.default.removeObserver(danmukuFontObserver!)
+        danmukuObservers.forEach {
+            NotificationCenter.default.removeObserver($0)
+        }
     }
     
     private func loadCustomFont() {
         guard let font = Preferences.shared.danmukuFontFamilyName else { return }
         httpServer.send(.customFont, text: font)
+    }
+    
+    private func customDMSpeed() {
+        let dmSpeed = Int(Preferences.shared.dmSpeed)
+        httpServer.send(.dmSpeed, text: "\(dmSpeed)")
+    }
+    
+    private func customDMOpdacity() {
+        httpServer.send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)")
     }
     
     func loadDM() {

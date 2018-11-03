@@ -48,7 +48,7 @@ class HttpServer: NSObject {
     }
     
     enum DanamkuMethod: String {
-        case start, stop, initDM, resize, customFont, loadDM, sendDM, liveDMServer
+        case start, stop, initDM, resize, customFont, loadDM, sendDM, liveDMServer, dmSpeed, dmOpacity, dmFontSize
     }
     
     struct DanmakuEvent: Encodable {

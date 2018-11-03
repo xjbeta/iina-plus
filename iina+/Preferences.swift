@@ -62,16 +62,36 @@ class Preferences: NSObject {
         }
     }
     
-    var danmukuFontFamilyName: String? {
+    @objc var danmukuFontFamilyName: String? {
         get {
             return defaults(.danmukuFontFamilyName) as? String
         }
         set {
             defaultsSet(newValue ?? "", forKey: .danmukuFontFamilyName)
-            NotificationCenter.default.post(name: .updateDanmukuFont, object: nil)
+            didChangeValue(for: \.danmukuFontFamilyName)
         }
     }
     
+    @objc dynamic var dmSpeed: Double {
+        get {
+            return defaults(.dmSpeed) as? Double ?? 680
+        }
+        set {
+            defaultsSet(newValue, forKey: .dmSpeed)
+            didChangeValue(for: \.dmSpeed)
+        }
+    }
+    
+    @objc dynamic var dmOpacity: Double {
+        get {
+            return defaults(.dmOpacity) as? Double ?? 1
+        }
+        set {
+            defaultsSet(newValue, forKey: .dmOpacity)
+            didChangeValue(for: \.dmOpacity)
+        }
+    }
+
 }
 
 private extension Preferences {
@@ -92,4 +112,6 @@ enum PreferenceKeys: String {
     case logLevel
     case enableDanmaku
     case danmukuFontFamilyName
+    case dmSpeed
+    case dmOpacity
 }

@@ -2,12 +2,12 @@ $ = function(a) {
     return document.getElementById(a);
 };
 var isLiving = true;
+var defWidth = 680;
 
 function bind() {
     window.cm = new CommentManager($('commentCanvas'));
     cm.init();
     window.resize = function () {
-        var defWidth = 680;
         var scale = $("player").offsetWidth / defWidth;
         window.cm.options.scroll.scale = scale;
         cm.setBounds();
@@ -140,6 +140,17 @@ function start(websocketServerLocation){
             break
         case 'liveDMServer':
             updateStatus(event.text);
+            break
+        case 'dmSpeed':
+            defWidth = event.text;
+            window.resize();
+            break
+        case 'dmOpacity':
+            window.cm.options.global.opacity = event.text;
+            break
+        case 'dmFontSize':
+            // updateStatus(event.text);
+            break
         default:
             break;
         }
