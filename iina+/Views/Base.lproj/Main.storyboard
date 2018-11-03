@@ -342,7 +342,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="enableDanmaku:" target="LMy-Ki-0Sg" id="F2E-R4-BDF"/>
+                                                <binding destination="eYJ-hi-toS" name="value" keyPath="self.enableDanmaku" id="bPk-pk-Qhq"/>
                                             </connections>
                                         </button>
                                     </gridCell>
@@ -366,6 +366,7 @@
                                             </popUpButtonCell>
                                             <connections>
                                                 <action selector="newFontSet:" target="LMy-Ki-0Sg" id="ROK-nz-IvQ"/>
+                                                <binding destination="eYJ-hi-toS" name="enabled" keyPath="self.enableDanmaku" id="VsT-e0-2Hq"/>
                                             </connections>
                                         </popUpButton>
                                     </gridCell>
@@ -384,6 +385,7 @@
                                             <rect key="frame" x="68" y="64" width="186" height="18"/>
                                             <sliderCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="128" maxValue="1080" doubleValue="640" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="85A-15-E1h"/>
                                             <connections>
+                                                <binding destination="eYJ-hi-toS" name="enabled" keyPath="self.enableDanmaku" id="DnS-Ka-hgT"/>
                                                 <binding destination="eYJ-hi-toS" name="value" keyPath="self.dmSpeed" id="tik-3o-76j"/>
                                             </connections>
                                         </slider>
@@ -435,6 +437,7 @@
                                             <rect key="frame" x="68" y="20" width="186" height="18"/>
                                             <sliderCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="Ynn-8Q-Hes"/>
                                             <connections>
+                                                <binding destination="eYJ-hi-toS" name="enabled" keyPath="self.enableDanmaku" id="XSu-hv-FFw"/>
                                                 <binding destination="eYJ-hi-toS" name="value" keyPath="self.dmOpacity" id="p7W-K6-VKA"/>
                                             </connections>
                                         </slider>
@@ -567,7 +570,6 @@
                     </view>
                     <connections>
                         <outlet property="decoderPopUpButton" destination="0Y9-RS-vhV" id="4TR-OL-CVY"/>
-                        <outlet property="enableDanmaku" destination="dEe-RI-KK4" id="TIy-iV-lgb"/>
                         <outlet property="fontPicker" destination="yKo-LK-mRF" id="rfZ-bN-FtR"/>
                         <outlet property="playerPopUpButton" destination="bjh-ng-iw0" id="GBM-ep-Aq2"/>
                     </connections>
