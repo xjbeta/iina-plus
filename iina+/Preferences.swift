@@ -62,6 +62,29 @@ class Preferences: NSObject {
         }
     }
     
+    var dmBlockType: [String] {
+        get {
+            return defaults(.dmBlockType) as? [String] ?? []
+        }
+        set {
+            defaultsSet(newValue, forKey: .dmBlockType)
+        }
+    }
+    
+    var dmBlockList: BlockList {
+        get {
+            if let data = defaults(.dmBlockList) as? Data,
+                let dmBlockList = BlockList(data: data) {
+                return dmBlockList
+            } else {
+                return BlockList()
+            }
+        }
+        set {
+            defaultsSet(newValue.encode(), forKey: .dmBlockList)
+        }
+    }
+    
     @objc var danmukuFontFamilyName: String? {
         get {
             return defaults(.danmukuFontFamilyName) as? String
@@ -114,4 +137,6 @@ enum PreferenceKeys: String {
     case danmukuFontFamilyName
     case dmSpeed
     case dmOpacity
+    case dmBlockType
+    case dmBlockList
 }

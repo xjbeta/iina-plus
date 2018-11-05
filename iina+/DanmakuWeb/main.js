@@ -84,6 +84,23 @@ function bind() {
             alert(e);
         });
     };
+
+    window.loadFilter = function(ff) {
+        cm.filter.rules = [];
+        CommentProvider.XMLProvider("GET", ff)
+        .then(result => result.getElementsByTagName("item"))
+        .then(items => [...items].map(r => r.textContent).filter(r => r.startsWith('r=')).map(r => r.replace('r=', '')))
+        .then(function(values) {
+            values.forEach(v =>
+                cm.filter.addRule({
+                    "subject": "text",
+                    "op": "~",
+                    "value": v,
+                    "mode": "reject"
+                })
+            )
+        });
+    };
 };
 
 function updateStatus(status){
@@ -151,6 +168,34 @@ function start(websocketServerLocation){
         case 'dmFontSize':
             // updateStatus(event.text);
             break
+        case 'dmBlockList':
+            let t = event.text;
+            if (t.includes('List')) {
+                window.loadFilter('/danmaku/iina-plus-blockList.xml');
+            }
+            if (t.includes('Top')) {
+                cm.filter.allowTypes[5] = false;
+            }
+            if (t.includes('Bottom')) {
+                cm.filter.allowTypes[4] = false;
+            }
+            if (t.includes('Scroll')) {
+                cm.filter.allowTypes[1] = false;
+                cm.filter.allowTypes[2] = false;
+            }
+            if (t.includes('Color')) {
+                cm.filter.addRule({
+                    subject: 'color',
+                    op: '=',
+                    value: 16777215,
+                    mode: 'accept'
+                });
+            }
+            if (t.includes('Advanced')) {
+                cm.filter.allowTypes[7] = false;
+                cm.filter.allowTypes[8] = false;
+            }
+            break
         default:
             break;
         }
@@ -169,4 +214,7 @@ window.addEventListener("load", function() {
     bind();
     initDM();
     start('ws://127.0.0.1:19080/danmaku-websocket');
+    // Block mode9 
+    // https://github.com/jabbany/CommentCoreLibrary/issues/97
+    cm.filter.allowTypes[9] = false;
 });

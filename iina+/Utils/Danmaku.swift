@@ -39,12 +39,20 @@ class Danmaku: NSObject {
     }
     
     func start() {
+        do {
+            try prepareBlockList()
+        } catch let error {
+            Logger.log("Prepare DM block list error: \(error)")
+        }
+        
         httpServer.connected = { [weak self] in
             self?.loadCustomFont()
             self?.customDMSpeed()
             self?.customDMOpdacity()
             self?.loadDM()
+            self?.loadFilters()
         }
+        
         httpServer.disConnected = { [weak self] in
             self?.stop()
         }
@@ -71,6 +79,31 @@ class Danmaku: NSObject {
         danmukuObservers.forEach {
             NotificationCenter.default.removeObserver($0)
         }
+    }
+    
+    func prepareBlockList() throws {
+        guard let resourcePath = Bundle.main.resourcePath else { return }
+        let targetPath = resourcePath + "/Danmaku/iina-plus-blockList.xml"
+        switch Preferences.shared.dmBlockList.type {
+        case .none:
+            return
+        case .basic:
+            let basicList = resourcePath + "/Block-List-Basic.xml"
+            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
+        case .plus:
+            let basicList = resourcePath + "/Block-List-Plus.xml"
+            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
+        case .custom:
+            FileManager.default.createFile(atPath: targetPath, contents: Preferences.shared.dmBlockList.customBlockListData, attributes: nil)
+        }
+    }
+    
+    func loadFilters() {
+        var types = Preferences.shared.dmBlockType
+        if Preferences.shared.dmBlockList.type != .none {
+            types.append("List")
+        }
+        httpServer.send(.dmBlockList, text: types.joined(separator: ", "))
     }
     
     private func loadCustomFont() {
