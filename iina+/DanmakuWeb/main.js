@@ -214,7 +214,7 @@ window.addEventListener("load", function() {
     bind();
     initDM();
     start('ws://127.0.0.1:19080/danmaku-websocket');
-    // Block mode9 
+    // Block unknown types. 
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
-    cm.filter.allowTypes[9] = false;
+    cm.filter.allowUnknownTypes = false;
 });
