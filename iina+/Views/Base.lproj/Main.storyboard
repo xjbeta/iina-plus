@@ -739,7 +739,7 @@
                 </viewController>
                 <customObject id="LOv-sC-SiB" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2108" y="887"/>
+            <point key="canvasLocation" x="2071" y="887"/>
         </scene>
         <!--Advanced View Controller-->
         <scene sceneID="Vj7-6k-RdA">
@@ -933,24 +933,24 @@
             <objects>
                 <viewController id="hlz-mk-NWP" customClass="BilibiliLoginViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="LWF-An-anX">
-                        <rect key="frame" x="0.0" y="0.0" width="420" height="380"/>
+                        <rect key="frame" x="0.0" y="0.0" width="490" height="450"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="waI-kH-EDQ">
-                                <rect key="frame" x="0.0" y="0.0" width="420" height="380"/>
+                                <rect key="frame" x="20" y="49" width="450" height="381"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="webView" identifier="" id="Gtk-iF-AxQ">
                                         <view key="view" id="cvT-Ep-ikQ">
-                                            <rect key="frame" x="0.0" y="0.0" width="420" height="380"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="ONx-Ib-X9d">
-                                                    <rect key="frame" x="194" y="174" width="32" height="32"/>
+                                                    <rect key="frame" x="209" y="175" width="32" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                 </progressIndicator>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="OrK-1A-pXe">
-                                                    <rect key="frame" x="0.0" y="0.0" width="420" height="380"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                                                 </customView>
                                             </subviews>
                                             <constraints>
@@ -963,7 +963,7 @@
                                     </tabViewItem>
                                     <tabViewItem label="connectError" identifier="" id="o99-3x-2mw">
                                         <view key="view" id="aXM-pS-hlY">
-                                            <rect key="frame" x="0.0" y="0.0" width="431" height="498"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="380" height="315"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="15" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ppX-xs-TaQ">
@@ -1003,12 +1003,27 @@
                                     </tabViewItem>
                                 </tabViewItems>
                             </tabView>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Cc-bZ-jei">
+                                <rect key="frame" x="394" y="13" width="82" height="32"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="f0S-RM-8NK">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="dismissController:" target="hlz-mk-NWP" id="uAP-6q-SoY"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="waI-kH-EDQ" secondAttribute="trailing" id="2AU-eq-jIV"/>
-                            <constraint firstItem="waI-kH-EDQ" firstAttribute="top" secondItem="LWF-An-anX" secondAttribute="top" id="H9f-9r-FbZ"/>
-                            <constraint firstItem="waI-kH-EDQ" firstAttribute="leading" secondItem="LWF-An-anX" secondAttribute="leading" id="ZYn-7B-L7i"/>
-                            <constraint firstAttribute="bottom" secondItem="waI-kH-EDQ" secondAttribute="bottom" id="dke-qW-0PN"/>
+                            <constraint firstAttribute="trailing" secondItem="waI-kH-EDQ" secondAttribute="trailing" constant="20" id="2AU-eq-jIV"/>
+                            <constraint firstAttribute="bottom" secondItem="4Cc-bZ-jei" secondAttribute="bottom" constant="20" id="8l9-8z-bZr"/>
+                            <constraint firstItem="waI-kH-EDQ" firstAttribute="top" secondItem="LWF-An-anX" secondAttribute="top" constant="20" id="H9f-9r-FbZ"/>
+                            <constraint firstAttribute="trailing" secondItem="4Cc-bZ-jei" secondAttribute="trailing" constant="20" id="RWb-rm-csc"/>
+                            <constraint firstItem="waI-kH-EDQ" firstAttribute="leading" secondItem="LWF-An-anX" secondAttribute="leading" constant="20" id="ZYn-7B-L7i"/>
+                            <constraint firstItem="4Cc-bZ-jei" firstAttribute="top" secondItem="waI-kH-EDQ" secondAttribute="bottom" constant="8" id="k6i-pf-57z"/>
                         </constraints>
                     </view>
                     <connections>
@@ -1019,7 +1034,7 @@
                 </viewController>
                 <customObject id="XEz-d4-Uu3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2108" y="1299"/>
+            <point key="canvasLocation" x="2071" y="1328"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
