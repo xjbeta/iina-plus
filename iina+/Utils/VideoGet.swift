@@ -107,7 +107,21 @@ class VideoGet: NSObject {
                 getEgameInfo(url).done {
                     yougetJson.title = $0.0.title
                     $0.1.forEach {
-                        yougetJson.streams[$0.desc] = Stream(url: $0.playUrl)
+                        var stream = Stream(url: $0.playUrl)
+                        stream.videoProfile = $0.desc
+                        
+                        switch $0.desc {
+                        case "蓝光":
+                            yougetJson.streams["1"] = stream
+                        case "超清":
+                            yougetJson.streams["2"] = stream
+                        case "高清":
+                            yougetJson.streams["3"] = stream
+                        case "流畅":
+                            yougetJson.streams["4"] = stream
+                        default:
+                            yougetJson.streams["5"] = stream
+                        }
                     }
                     resolver.fulfill(yougetJson)
                     }.catch {
