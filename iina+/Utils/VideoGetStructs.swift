@@ -154,6 +154,9 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     var name: String = ""
     var userCover: NSImage?
     var isLiving = false
+    var pid = ""
+    var anchorId: Int
+    var lastTm = 0
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
@@ -164,6 +167,8 @@ struct EgameInfo: Unmarshaling, LiveInfo {
         }
         let liveStatus: Int = try object.value(for: "state.live-info.liveInfo.profileInfo.isLive")
         isLiving = liveStatus == 1
+        pid = try object.value(for: "state.live-info.liveInfo.videoInfo.pid")
+        anchorId = try object.value(for: "state.live-info.liveInfo.videoInfo.anchorId")
     }
 }
 

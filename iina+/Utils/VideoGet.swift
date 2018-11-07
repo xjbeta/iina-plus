@@ -21,7 +21,7 @@ enum LiveSupportList: String {
     case pandaXingYan = "xingyan.panda.tv"
     case quanmin = "www.quanmin.tv"
     case longzhu = "star.longzhu.com"
-    case eGameQQ = "egame.qq.com"
+    case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
     case unsupported
     
@@ -103,7 +103,7 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .eGameQQ:
+            case .eGame:
                 getEgameInfo(url).done {
                     yougetJson.title = $0.0.title
                     $0.1.forEach {
@@ -217,7 +217,7 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .eGameQQ:
+            case .eGame:
                 getEgameInfo(url).done {
                     resolver.fulfill($0.0)
                     }.catch {
@@ -238,7 +238,7 @@ class VideoGet: NSObject {
 
 
 
-private extension VideoGet {
+extension VideoGet {
     
     // MARK: - BiliLive
     func getBiliLiveRoomId(_ url: URL) -> Promise<(BilibiliInfo)> {
@@ -556,7 +556,7 @@ private extension VideoGet {
     }
     
     
-    // MARK: - egame.qq
+    // MARK: - eGame
     
     struct EgameUrl: Unmarshaling {
         var playUrl: String

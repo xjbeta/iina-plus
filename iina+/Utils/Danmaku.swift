@@ -29,6 +29,9 @@ class Danmaku: NSObject {
     let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
     var huyaSubSid = ""
     
+    var egameInfo: EgameInfo?
+    private var egameTimer: DispatchSourceTimer?
+    
     var danmukuObservers: [NSObjectProtocol] = []
     
     let httpServer = HttpServer()
@@ -76,6 +79,9 @@ class Danmaku: NSObject {
         douyuSocket?.close()
         douyuSocket = nil
         httpServer.stop()
+        timer?.cancel()
+        egameTimer?.cancel()
+        
         danmukuObservers.forEach {
             NotificationCenter.default.removeObserver($0)
         }
@@ -164,6 +170,13 @@ class Danmaku: NSObject {
                 self.socket = SRWebSocket(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
+            }
+        case .eGame:
+            VideoGet().getEgameInfo(url).done {
+                self.egameInfo = $0.0
+                self.startEgameTimer()
+                }.catch {
+                    Logger.log("Get Egame Info for DM error: \($0)")
             }
         default:
             break
@@ -288,6 +301,91 @@ class Danmaku: NSObject {
             timer.resume()
         }
     }
+    
+    
+    private let egameTimerQueue = DispatchQueue(label: "com.xjbeta.iina+.EgameDmTimer")
+    
+    private func startEgameTimer() {
+        egameTimer?.cancel()
+        egameTimer = nil
+        egameTimer = DispatchSource.makeTimerSource(flags: [], queue: egameTimerQueue)
+        if let timer = egameTimer {
+            timer.schedule(deadline: .now(), repeating: .seconds(1))
+            timer.setEventHandler {
+                self.requestEgameDM()
+            }
+            timer.resume()
+        }
+    }
+    
+    func requestEgameDM() {
+        guard let info = egameInfo else { return }
+        
+        let p = ["_t" : "\(Int(NSDate().timeIntervalSince1970 * 1000))",
+            "g_tk" : "",
+            "p_tk" : "",
+            "param" : """
+            {"key":{"module":"pgg_live_barrage_svr","method":"get_barrage","param":{"anchor_id":\(info.anchorId),"vid":"\(info.pid)","scenes":4096,"last_tm":\(info.lastTm)}}}
+            """,
+            "app_info" : """
+            {"platform":4,"terminal_type":2,"egame_id":"egame_official","version_code":"9.9.9.9","version_name":"9.9.9.9"}
+            """,
+            "tt" : "1"]
+        
+        HTTP.GET("https://wdanmaku.egame.qq.com/cgi-bin/pgg_barrage_async_fcgi", parameters: p) { response in
+            do {
+                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                let dm: EgameDM = try json.value(for: "data.key.retBody.data")
+                
+                if info.lastTm < dm.lastTm {
+                    self.egameInfo?.lastTm = dm.lastTm
+                    
+                }
+                if dm.isSwitchPid, dm.newPid != "" {
+                    self.egameInfo?.pid = dm.newPid
+                }
+                
+                // 29 坐骑
+                // 30 守护
+                // 33, 31 横幅
+                // 3 房管
+                // 24 夺宝战机?
+                // 7 礼物
+                // 28 下注
+                // 22 分享直播间
+                
+                
+                // 3, 0, 9   弹幕
+                
+                let blockType = [29, 33, 24, 7, 28, 22, 31, 30]
+                
+                let dmMsgs = dm.msgList.filter {
+                    !blockType.contains($0.type)
+                }
+                
+                dmMsgs.forEach {
+                    self.sendDM($0.content)
+                }
+                
+                let dmType = [3, 0, 9]
+                let unKonwn = dmMsgs.filter {
+                    !dmType.contains($0.type)
+                }
+                
+                
+                if unKonwn.count > 0 {
+                    print(unKonwn)
+                }
+                
+            } catch let error {
+                Logger.log("Decode egame json error: \(error)")
+            }
+        }
+        
+        
+        
+    }
+    
     
     /*
     func testedBilibiliAPI() {
@@ -660,5 +758,29 @@ struct PandaChatRoomInfo: Unmarshaling {
         network:unknown
         compress:none
         """
+    }
+}
+
+struct EgameDM: Unmarshaling {
+    var isSwitchPid: Bool
+    var newPid: String
+    var lastTm: Int
+    var msgList: [Msg]
+    
+    struct Msg: Unmarshaling {
+        var type: Int
+        var content: String
+        
+        init(object: MarshaledObject) throws {
+            type = try object.value(for: "type")
+            content = try object.value(for: "content")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        isSwitchPid = try object.value(for: "is_switch_pid")
+        newPid = try object.value(for: "new_pid")
+        lastTm = try object.value(for: "last_tm")
+        msgList = try object.value(for: "msg_list")
     }
 }
