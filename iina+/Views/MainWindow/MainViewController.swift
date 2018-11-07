@@ -8,6 +8,7 @@
 
 import Cocoa
 import CoreData
+import PromiseKit
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -59,7 +60,6 @@ class MainViewController: NSViewController {
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Bilibili()
-    let videoGet = VideoGet()
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -71,14 +71,10 @@ class MainViewController: NSViewController {
                 searchField.becomeFirstResponder()
                 startSearch(self)
             } else if card.videos > 1 {
-                bilibili.getVideoList(aid, { infos in
+                bilibili.getVideoList(aid).done { infos in
                     self.showSelectVideo(aid, infos: infos)
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
+                    }.catch { error in
                         Logger.log("Get video list error: \(error)")
-                    }
                 }
             }
         }
@@ -88,85 +84,65 @@ class MainViewController: NSViewController {
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
         Processes.shared.stopDecodeURL()
-        let group: DispatchGroup? = DispatchGroup()
-        let semaphore = DispatchSemaphore(value: 0)
-        group?.notify(queue: .main) {
-            self.progressStatusChanged(false)
-        }
         
-        group?.enter()
         let str = searchField.stringValue
         yougetResult = nil
         guard str != "", str.isUrl else {
-            Processes.shared.stopDecodeURL()
             isSearching = false
             return
         }
         isSearching = true
-        
+
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        
+        func decodeUrl() {
+            Processes.shared.videoGet.liveInfo(str, false).get {
+                if !$0.isLiving {
+                    throw VideoGetError.isNotLiving
+                }
+                }.then { _ in
+                    Processes.shared.decodeURL(str)
+                }.done(on: .main) {
+                    self.yougetResult = $0
+                }.ensure {
+                    self.progressStatusChanged(false)
+                }.catch(on: .main, policy: .allErrors) { error in
+                    Logger.log("\(error)")
+                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
+                        switch error {
+                        case PMKError.cancelled:
+                            return
+                        case VideoGetError.isNotLiving:
+                            view.setStatus(.isNotLiving)
+                        case VideoGetError.notSupported:
+                            view.setStatus(.notSupported)
+                        default:
+                            view.setStatus(.error)
+                        }
+                    }
+            }
+        }
+        
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             url.lastPathComponent.starts(with: "av"),
             !str.contains("p=") {
             let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) ?? 0
-            bilibili.getVideoList(aid, { infos in
+            
+            bilibili.getVideoList(aid).done { infos in
                 if infos.count > 1 {
                     self.showSelectVideo(aid, infos: infos)
-                    group?.leave()
                     self.isSearching = false
-                    semaphore.signal()
+                    self.progressStatusChanged(false)
                 } else {
-                    semaphore.signal()
+                    decodeUrl()
                 }
-                
-            }) { re in
-                do {
-                    let _ = try re()
-                } catch let error {
-                    semaphore.signal()
+                }.catch { error in
                     Logger.log("Get video list error: \(error)")
-                }
-            }
-            semaphore.wait()
-        }
-        
-        guard isSearching else {
-            return
-        }
-        
-        
-        if Preferences.shared.liveDecoder == .internal😀 {
-            videoGet.decodeUrl(str, { obj in
-                DispatchQueue.main.async {
-                    self.yougetResult = obj
-                    group?.leave()
-                }
-            }) { error in
-                DispatchQueue.main.async {
-                    print(self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false))
-                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        view.setStatus(.error)
-                        Logger.log("\(error)")
-                    }
-                    group?.leave()
-                }
             }
         } else {
-            Processes.shared.decodeURL(str, { obj in
-                DispatchQueue.main.async {
-                    self.yougetResult = obj
-                    group?.leave()
-                }
-            }) { error in
-                DispatchQueue.main.async {
-                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        view.setStatus(.error)
-                    }
-                    group?.leave()
-                }
-            }
+            decodeUrl()
         }
     }
     
@@ -188,58 +164,62 @@ class MainViewController: NSViewController {
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let row = suggestionsTableView.selectedRow
-        guard row != -1 else {
+        guard row != -1,
+            let key = yougetResult?.streams.keys.sorted()[row],
+            let stream = yougetResult?.streams[key],
+            let url = URL(string: searchField.stringValue) else {
             yougetResult = nil
             isSearching = false
             Processes.shared.stopDecodeURL()
             return
         }
-        if let key = yougetResult?.streams.keys.sorted()[row],
-            let stream = yougetResult?.streams[key] {
-            var urlStr: [String] = []
-            if let videoUrl = stream.url {
-                urlStr = [videoUrl]
-            } else {
-                urlStr = stream.src
+        
+        var urlStr: [String] = []
+        if let videoUrl = stream.url {
+            urlStr = [videoUrl]
+        } else {
+            urlStr = stream.src
+        }
+        var title = yougetResult?.title ?? ""
+        let site = LiveSupportList(raw: url.host)
+        
+        Processes.shared.videoGet.prepareBiliDanmaku(url).done {
+            switch site {
+            case .douyu:
+                if Preferences.shared.liveDecoder == .internal😀 {
+                    title = key
+                }
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
+            case .panda:
+                if Preferences.shared.liveDecoder == .internal😀 {
+                    title = key
+                }
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+            case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin, .eGame:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+            case .bilibili:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+            case .unsupported:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
             }
             
-            if let host = URL(string: searchField.stringValue)?.host {
-                var title = yougetResult?.title ?? ""
-                let site = LiveSupportList(raw: host)
+            // init Danmaku
+            if Preferences.shared.enableDanmaku {
                 switch site {
-                case .douyu:
-                    if Preferences.shared.liveDecoder == .internal😀 {
-                        title = key
-                    }
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-                case .panda:
-                    if Preferences.shared.liveDecoder == .internal😀 {
-                        title = key
-                    }
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-                case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-                case .bilibili:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
-                case .unsupported:
-                    Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
-                }
-                
-                // init Danmaku
-                if Preferences.shared.enableDanmaku {
-                    switch site {
-                    case .bilibili, .biliLive, .panda, .douyu, .huya:
-                        danmaku?.stop()
-                        danmaku = Danmaku(site, url: searchField.stringValue)
-                        danmaku?.start()
-                    default:
-                        break
-                    }
+                case .bilibili, .biliLive, .panda, .douyu, .huya, .eGame:
+                    self.danmaku?.stop()
+                    self.danmaku = Danmaku(site, url: self.searchField.stringValue)
+                    self.danmaku?.start()
+                default:
+                    break
                 }
             }
+            }.ensure {
+                self.isSearching = false
+                self.yougetResult = nil
+            }.catch {
+                Logger.log("Prepare DM file error : \($0)")
         }
-        isSearching = false
-        yougetResult = nil
     }
     
     // MARK: - Danmaku
@@ -355,7 +335,6 @@ class MainViewController: NSViewController {
     
     func loadBilibiliCards(_ action: BilibiliDynamicAction = .init) {
         var dynamicID = -1
-        let group = DispatchGroup()
         
         switch action {
         case .history:
@@ -367,9 +346,9 @@ class MainViewController: NSViewController {
         
         canLoadMoreBilibiliCards = false
         progressStatusChanged(!canLoadMoreBilibiliCards)
-        group.enter()
-        bilibili.dynamicList(action, dynamicID, { cards in
-            DispatchQueue.main.async {
+        bilibili.getUid().then {
+            self.bilibili.dynamicList($0, action, dynamicID)
+            }.done(on: .main) { cards in
                 switch action {
                 case .init:
                     self.bilibiliCards = cards
@@ -377,21 +356,14 @@ class MainViewController: NSViewController {
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
                     self.bilibiliCards.insert(contentsOf: cards, at: 0)
-                default: break
+                default:
+                    break
                 }
-                group.leave()
-            }
-        }) { re in
-            do {
-                let _ = try re()
-            } catch let error {
+            }.ensure(on: .main) {
+                self.canLoadMoreBilibiliCards = true
+                self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
+            }.catch { error in
                 Logger.log("Get bilibili dynamicList error: \(error)")
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) {
-            self.canLoadMoreBilibiliCards = true
-            self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
         }
     }
     
@@ -480,7 +452,9 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
                     let streams = obj.streams.sorted {
-                        $0.value.size ?? 0 > $1.value.size ?? 0
+                            $0.key < $1.key
+                        }.sorted {
+                            $0.value.size ?? 0 > $1.value.size ?? 0
                     }
                     let stream = streams[row]
                     view.setStream(stream)

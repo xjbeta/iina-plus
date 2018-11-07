@@ -18,7 +18,7 @@ class WaitingTableCellView: NSTableCellView {
         
     }
     enum Status {
-        case waiting, error
+        case waiting, error, isNotLiving, notSupported
     }
     
     func setStatus(_ status: Status) {
@@ -27,9 +27,18 @@ class WaitingTableCellView: NSTableCellView {
             waitProgressIndicator.startAnimation(nil)
             waitProgressIndicator.isHidden = false
             errorInfoTextField.isHidden = true
+        case .isNotLiving:
+            waitProgressIndicator.isHidden = true
+            errorInfoTextField.isHidden = false
+            errorInfoTextField.stringValue = "ಠ_ಠ  oops, the host is not online."
+        case .notSupported:
+            waitProgressIndicator.isHidden = true
+            errorInfoTextField.isHidden = false
+            errorInfoTextField.stringValue = "ಠ_ಠ  oops, the website is not supported."
         case .error:
             waitProgressIndicator.isHidden = true
             errorInfoTextField.isHidden = false
+            errorInfoTextField.stringValue = "ಠ_ಠ  oops, something went wrong."
         }
     }
     

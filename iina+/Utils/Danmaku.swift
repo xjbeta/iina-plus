@@ -29,7 +29,10 @@ class Danmaku: NSObject {
     let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
     var huyaSubSid = ""
     
-    var danmukuFontObserver: NSObjectProtocol?
+    var egameInfo: EgameInfo?
+    private var egameTimer: DispatchSourceTimer?
+    
+    var danmukuObservers: [NSObjectProtocol] = []
     
     let httpServer = HttpServer()
     
@@ -39,17 +42,34 @@ class Danmaku: NSObject {
     }
     
     func start() {
+        do {
+            try prepareBlockList()
+        } catch let error {
+            Logger.log("Prepare DM block list error: \(error)")
+        }
+        
         httpServer.connected = { [weak self] in
             self?.loadCustomFont()
+            self?.customDMSpeed()
+            self?.customDMOpdacity()
             self?.loadDM()
+            self?.loadFilters()
         }
+        
         httpServer.disConnected = { [weak self] in
             self?.stop()
         }
         httpServer.start()
-        danmukuFontObserver = NotificationCenter.default.addObserver(forName: .updateDanmukuFont, object: nil, queue: .main) { _ in
+        
+        danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
             self.loadCustomFont()
-        }
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
+            self.customDMSpeed()
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
+            self.customDMOpdacity()
+        }))
     }
     
     
@@ -59,7 +79,37 @@ class Danmaku: NSObject {
         douyuSocket?.close()
         douyuSocket = nil
         httpServer.stop()
-        NotificationCenter.default.removeObserver(danmukuFontObserver!)
+        timer?.cancel()
+        egameTimer?.cancel()
+        
+        danmukuObservers.forEach {
+            NotificationCenter.default.removeObserver($0)
+        }
+    }
+    
+    func prepareBlockList() throws {
+        guard let resourcePath = Bundle.main.resourcePath else { return }
+        let targetPath = resourcePath + "/Danmaku/iina-plus-blockList.xml"
+        switch Preferences.shared.dmBlockList.type {
+        case .none:
+            return
+        case .basic:
+            let basicList = resourcePath + "/Block-List-Basic.xml"
+            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
+        case .plus:
+            let basicList = resourcePath + "/Block-List-Plus.xml"
+            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
+        case .custom:
+            FileManager.default.createFile(atPath: targetPath, contents: Preferences.shared.dmBlockList.customBlockListData, attributes: nil)
+        }
+    }
+    
+    func loadFilters() {
+        var types = Preferences.shared.dmBlockType
+        if Preferences.shared.dmBlockList.type != .none {
+            types.append("List")
+        }
+        httpServer.send(.dmBlockList, text: types.joined(separator: ", "))
     }
     
     private func loadCustomFont() {
@@ -67,49 +117,24 @@ class Danmaku: NSObject {
         httpServer.send(.customFont, text: font)
     }
     
+    private func customDMSpeed() {
+        let dmSpeed = Int(Preferences.shared.dmSpeed)
+        httpServer.send(.dmSpeed, text: "\(dmSpeed)")
+    }
+    
+    private func customDMOpdacity() {
+        httpServer.send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)")
+    }
+    
     func loadDM() {
+        guard let url = URL(string: self.url) else { return }
+        let roomID = url.lastPathComponent
         switch liveSite {
         case .bilibili:
-            if let url = URL(string: url),
-                let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
-                var cid = 0
-                
-                let group = DispatchGroup()
-                group.enter()
-                Bilibili().getVideoList(aid, { vInfo in
-                    if vInfo.count == 1 {
-                        cid = vInfo[0].cid
-                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        var pInt = Int(p) {
-                        pInt -= 1
-                        if pInt < vInfo.count,
-                            pInt >= 0 {
-                            cid = vInfo[pInt].cid
-                        }
-                    }
-                    group.leave()
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
-                        Logger.log("Get cid for danmamu error: \(error)")
-                        group.leave()
-                    }
-                }
-                
-                group.notify(queue: .main) {
-                    guard cid != 0 else { return }
-                    
-                    HTTP.GET("https://comment.bilibili.com/\(cid).xml") {
-                        self.loadDM($0.data)
-                    }
-                }
-            }
+            httpServer.send(.loadDM)
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self
-            
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             
             HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
                 do {
@@ -121,7 +146,6 @@ class Danmaku: NSObject {
                 }
             }
         case .panda:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
                 do {
                     let json = try JSONParser.JSONObjectWithData($0.data)
@@ -136,10 +160,8 @@ class Danmaku: NSObject {
                 }
             }
         case .douyu:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             initDouYuSocket(roomID)
         case .huya:
-            let roomID = URL(string: url)?.lastPathComponent ?? ""
             let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
             
             HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
@@ -149,18 +171,15 @@ class Danmaku: NSObject {
                 self.socket?.delegate = self
                 self.socket?.open()
             }
+        case .eGame:
+            VideoGet().getEgameInfo(url).done {
+                self.egameInfo = $0.0
+                self.startEgameTimer()
+                }.catch {
+                    Logger.log("Get Egame Info for DM error: \($0)")
+            }
         default:
             break
-        }
-    }
-    
-    
-    private func loadDM(_ data: Data) {
-        if let resourcePath = Bundle.main.resourcePath {
-            let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-            FileManager.default.createFile(atPath: danmakuFilePath, contents: data, attributes: nil)
-            httpServer.send(.loadDM)
-            Logger.log("loadDM in \(danmakuFilePath)")
         }
     }
     
@@ -230,6 +249,7 @@ class Danmaku: NSObject {
                                 }
                             } else if $0.starts(with: "type@=error") {
                                 Logger.log("douyu socket disconnected: \($0)")
+                                self.httpServer.send(.liveDMServer, text: "error")
                                 self.douyuSocket?.close()
                             }
                     }
@@ -281,6 +301,94 @@ class Danmaku: NSObject {
             timer.resume()
         }
     }
+    
+    
+    private let egameTimerQueue = DispatchQueue(label: "com.xjbeta.iina+.EgameDmTimer")
+    
+    private func startEgameTimer() {
+        egameTimer?.cancel()
+        egameTimer = nil
+        egameTimer = DispatchSource.makeTimerSource(flags: [], queue: egameTimerQueue)
+        if let timer = egameTimer {
+            timer.schedule(deadline: .now(), repeating: .seconds(1))
+            timer.setEventHandler {
+                self.requestEgameDM()
+            }
+            timer.resume()
+        }
+    }
+    
+    func requestEgameDM() {
+        guard let info = egameInfo else { return }
+        
+        let p = ["_t" : "\(Int(NSDate().timeIntervalSince1970 * 1000))",
+            "g_tk" : "",
+            "p_tk" : "",
+            "param" : """
+            {"key":{"module":"pgg_live_barrage_svr","method":"get_barrage","param":{"anchor_id":\(info.anchorId),"vid":"\(info.pid)","scenes":4096,"last_tm":\(info.lastTm)}}}
+            """,
+            "app_info" : """
+            {"platform":4,"terminal_type":2,"egame_id":"egame_official","version_code":"9.9.9.9","version_name":"9.9.9.9"}
+            """,
+            "tt" : "1"]
+        
+        HTTP.GET("https://wdanmaku.egame.qq.com/cgi-bin/pgg_barrage_async_fcgi", parameters: p) { response in
+            do {
+                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                let dm: EgameDM = try json.value(for: "data.key.retBody.data")
+                
+                if info.lastTm < dm.lastTm {
+                    self.egameInfo?.lastTm = dm.lastTm
+                    
+                }
+                if dm.isSwitchPid, dm.newPid != "" {
+                    self.egameInfo?.pid = dm.newPid
+                }
+                
+                // 29 坐骑
+                // 30 守护
+                // 33, 31 横幅
+                // 3 房管
+                // 24 夺宝战机?
+                // 7 礼物
+                // 28 下注
+                // 22 分享直播间
+                
+                // 1 禁言
+                // 10002   ?????
+                
+                
+                // 3, 0, 9   弹幕
+                
+                let blockType = [29, 33, 24, 7, 28, 22, 31, 30, 10002, 1]
+                
+                let dmMsgs = dm.msgList.filter {
+                    !blockType.contains($0.type)
+                }
+                
+                dmMsgs.forEach {
+                    self.sendDM($0.content)
+                }
+                
+                let dmType = [3, 0, 9]
+                let unKonwn = dmMsgs.filter {
+                    !dmType.contains($0.type)
+                }
+                
+                
+                if unKonwn.count > 0 {
+                    print(unKonwn)
+                }
+                
+            } catch let error {
+                Logger.log("Decode egame json error: \(error)")
+            }
+        }
+        
+        
+        
+    }
+    
     
     /*
     func testedBilibiliAPI() {
@@ -370,8 +478,7 @@ new Uint8Array(sendRegister(wsUserInfo));
         default:
             break
         }
-        
-        
+        httpServer.send(.liveDMServer, text: "error")
     }
     
     
@@ -654,5 +761,29 @@ struct PandaChatRoomInfo: Unmarshaling {
         network:unknown
         compress:none
         """
+    }
+}
+
+struct EgameDM: Unmarshaling {
+    var isSwitchPid: Bool
+    var newPid: String
+    var lastTm: Int
+    var msgList: [Msg]
+    
+    struct Msg: Unmarshaling {
+        var type: Int
+        var content: String
+        
+        init(object: MarshaledObject) throws {
+            type = try object.value(for: "type")
+            content = try object.value(for: "content")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        isSwitchPid = try object.value(for: "is_switch_pid")
+        newPid = try object.value(for: "new_pid")
+        lastTm = try object.value(for: "last_tm")
+        msgList = try object.value(for: "msg_list")
     }
 }

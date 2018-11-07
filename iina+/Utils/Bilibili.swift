@@ -9,6 +9,7 @@
 import Cocoa
 import SwiftHTTP
 import Marshal
+import PromiseKit
 
 @objc(BilibiliCard)
 class BilibiliCard: NSObject, Unmarshaling {
@@ -150,57 +151,66 @@ struct BilibiliSimpleVideoInfo: Unmarshaling {
 }
 
 class Bilibili: NSObject {
-
-    func isLogin(_ isLoginBlock: ((Bool) -> Void)?,
-                 _ nameBlock: ((String) -> Void)?,
-                 _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
-            error {
-                if let error = response.error { throw error }
-                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                let isLogin: Bool = try json.value(for: "data.isLogin")
-                NotificationCenter.default.post(name: .biliStatusChanged, object: nil, userInfo: ["isLogin": isLogin])
-                isLoginBlock?(isLogin)
-                if isLogin {
-                    let name: String = try json.value(for: "data.uname")
-                    nameBlock?(name)
+    
+    func isLogin() -> Promise<(Bool, String)> {
+        return Promise { resolver in
+            HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
+                if let error = response.error {
+                    resolver.reject(error)
                 }
-                return false
+                
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let isLogin: Bool = try json.value(for: "data.isLogin")
+                    NotificationCenter.default.post(name: .biliStatusChanged, object: nil, userInfo: ["isLogin": isLogin])
+                    var name = ""
+                    if isLogin {
+                        name = try json.value(for: "data.uname")
+                    }
+                    
+                    resolver.fulfill((isLogin, name))
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }
     
-    func logout(_ block: (() -> Void)?,
-                _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        HTTP.GET("https://account.bilibili.com/login?act=exit") { response in
-            error {
-                if let error = response.error { throw error }
-                block?()
-                return false
+    func logout() -> Promise<()> {
+        return Promise { resolver in
+            HTTP.GET("https://account.bilibili.com/login?act=exit") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                resolver.fulfill(())
             }
         }
     }
     
-    func getUid(_ block: ((Int) -> Void)?,
-                _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
-            error {
-                if let error = response.error { throw error }
-                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                let uid: Int = try json.value(for: "data.mid")
-                block?(uid)
-                return false
+    func getUid() -> Promise<Int> {
+        return Promise { resolver in
+            HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let uid: Int = try json.value(for: "data.mid")
+                    resolver.fulfill(uid)
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }
     
-    func dynamicList(_ action: BilibiliDynamicAction = .init,
-                     _ dynamicID: Int = -1,
-                     _ block: (([BilibiliCard]) -> Void)?,
-                     _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        getUid({ uid in
+    func dynamicList(_ uid: Int,
+                     _ action: BilibiliDynamicAction = .init,
+                     _ dynamicID: Int = -1) -> Promise<[BilibiliCard]> {
+        
+        return Promise { resolver in
             var http: HTTP? = nil
-            let headers = ["referer": "https://www.bilibili.com"]
+            let headers = ["referer": "https://www.bilibili.com/"]
             
             switch action {
             case .init:
@@ -213,47 +223,52 @@ class Bilibili: NSObject {
             }
             
             http?.onFinish = { response in
-                error {
-                    if let error = response.error { throw error }
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
                     let cards: [BilibiliCard] = try json.value(for: "data.cards")
-                    block?(cards)
-                    return false
+                    resolver.fulfill(cards)
+                } catch let error {
+                    resolver.reject(error)
                 }
             }
             http?.run()
-        }) { re in
-            error {
-                let _ = try re()
-                return false
+        }
+    }
+    
+    func getPvideo(_ aid: Int) -> Promise<BilibiliPvideo> {
+        return Promise { resolver in
+            HTTP.GET("https://api.bilibili.com/pvideo?aid=\(aid)") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    var pvideo = try BilibiliPvideo.init(object: json)
+                    pvideo.cropImages()
+                    resolver.fulfill(pvideo)
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }
     
-    func getPvideo(_ aid: Int,
-                   _ block: @escaping ((BilibiliPvideo) -> Void),
-                   _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        guard aid != 0 else { return }
-        HTTP.GET("https://api.bilibili.com/pvideo?aid=\(aid)") { response in
-            error {
-                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                var pvideo = try BilibiliPvideo.init(object: json)
-                pvideo.cropImages()
-                block(pvideo)
-                return false
-            }
-        }
-    }
-    
-    func getVideoList(_ aid: Int,
-                      _ block: @escaping (([BilibiliSimpleVideoInfo]) -> Void),
-                      _ error: @escaping ((HTTPErrorCallback) -> Void)) {
-        HTTP.GET("https://api.bilibili.com/x/player/pagelist?aid=\(aid)") { response in
-            error {
-                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
-                block(infos)
-                return false
+    func getVideoList(_ aid: Int) -> Promise<[BilibiliSimpleVideoInfo]> {
+        return Promise { resolver in
+            HTTP.GET("https://api.bilibili.com/x/player/pagelist?aid=\(aid)") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
+                    resolver.fulfill(infos)
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }

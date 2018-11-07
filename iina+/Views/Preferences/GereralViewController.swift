@@ -13,12 +13,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     @IBOutlet weak var fontPicker: NSPopUpButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
-    @IBOutlet weak var enableDanmaku: NSButton!
-    
-    @IBAction func enableDanmaku(_ sender: Any) {
-        Preferences.shared.enableDanmaku = enableDanmaku.state == .on
-    }
-    
+
     @IBAction func newFontSet(_ sender: NSPopUpButton) {
         let newFamilyName = sender.selectedItem?.title
         Preferences.shared.danmukuFontFamilyName = newFamilyName
@@ -26,7 +21,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        enableDanmaku.state = Preferences.shared.enableDanmaku ? .on : .off
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
         

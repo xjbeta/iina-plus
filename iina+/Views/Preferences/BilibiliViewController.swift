@@ -13,15 +13,11 @@ class BilibiliViewController: NSViewController {
     @IBOutlet weak var tabView: NSTabView!
     @IBOutlet weak var userNameTextField: NSTextField!
     @IBAction func logout(_ sender: Any) {
-        bilibili.logout({
+        bilibili.logout().done { _ in
             self.initStatus()
-        }) { re in
-            do {
-                let _ = try re()
-            } catch let error {
+            }.catch { error in
                 Logger.log("Logout bilibili error: \(error)")
                 self.selectTabViewItem(.error)
-            }
         }
     }
     
@@ -52,23 +48,16 @@ class BilibiliViewController: NSViewController {
     
     func initStatus() {
         selectTabViewItem(.progress)
-        bilibili.isLogin({
-            if $0 {
+        bilibili.isLogin().done(on: .main) {
+            if $0.0 {
                 self.selectTabViewItem(.info)
             } else {
                 self.selectTabViewItem(.login)
             }
-        }, { name in
-            DispatchQueue.main.async {
-                self.userNameTextField.stringValue = name
-            }
-        }) { re in
-            do {
-                let _ = try re()
-            } catch let error {
+            self.userNameTextField.stringValue = $0.1
+            }.catch { error in
                 Logger.log("Init bilibili status error: \(error)")
                 self.selectTabViewItem(.error)
-            }
         }
     }
     

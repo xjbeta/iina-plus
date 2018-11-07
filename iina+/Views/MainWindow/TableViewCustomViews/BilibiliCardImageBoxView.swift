@@ -77,17 +77,11 @@ class BilibiliCardImageBoxView: NSView {
         switch status {
         case .init🐴:
             if pImages.count == 0 {
-                Bilibili().getPvideo(aid, { pvideo in
-                    DispatchQueue.main.async {
-                        self.pImages = pvideo.pImages
-                        self.updatePreview(.start, per: self.previewPercent)
-                    }
-                }) { re in
-                    do {
-                        let _ = try re()
-                    } catch let error {
+                Bilibili().getPvideo(aid).done(on: .main) { pvideo in
+                    self.pImages = pvideo.pImages
+                    self.updatePreview(.start, per: self.previewPercent)
+                    }.catch { error in
                         Logger.log("Error when get pImages: \(error)")
-                    }
                 }
             } else {
                 self.updatePreview(.start, per: self.previewPercent)

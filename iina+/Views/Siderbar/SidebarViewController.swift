@@ -55,14 +55,11 @@ class SidebarViewController: NSViewController {
                 self.biliStatusChanged(isLogin)
             }
         }
-        Bilibili().isLogin(nil, nil) { re in
-            do {
-                let _ = try re()
-            } catch _ {
-                self.biliStatusChanged(false)
-            }
-        }
         
+        Bilibili().isLogin().done { _ in
+            }.catch { _ in
+                self.biliStatusChanged(false)
+        }
     }
     
     func biliStatusChanged(_ isLogin: Bool) {
