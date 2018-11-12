@@ -522,7 +522,7 @@ extension VideoGet {
                 }
                 let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
                 let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8) ?? Data()
-                let playerInfoData = response.text?.subString(from: "var hyPlayerConfig = ", to: ";\r\n").data(using: .utf8) ?? Data()
+                let playerInfoData = response.text?.subString(from: "var hyPlayerConfig = ", to: ";").data(using: .utf8) ?? Data()
                 
                 do {
                     var roomInfoJson: JSONObject = try JSONParser.JSONObjectWithData(roomInfoData)
