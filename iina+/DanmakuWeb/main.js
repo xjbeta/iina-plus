@@ -11,7 +11,18 @@ function bind() {
         var scale = $("player").offsetWidth / defWidth;
         window.cm.options.scroll.scale = scale;
         cm.setBounds();
-    }
+    };
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState == 'visible') {
+            console.log('visible');
+            cm.start();
+        } else {
+            console.log('hidden');
+            cm.stop();
+            cm.clear();
+        };
+    });
 
     window.initDM = function() {
         if (window._provider && window._provider instanceof CommentProvider) {
@@ -146,14 +157,16 @@ function start(websocketServerLocation){
             isLiving = false;
             break;
         case 'sendDM':
-            var comment = {
-                'text': event.text,
-                'stime': 0,
-                'mode': 1,
-                'color': 0xffffff,
-                'border': false
-            };
-            window.cm.send(comment);
+            if (document.visibilityState == 'visible') {
+                var comment = {
+                    'text': event.text,
+                    'stime': 0,
+                    'mode': 1,
+                    'color': 0xffffff,
+                    'border': false
+                };
+                window.cm.send(comment);
+            }
             break
         case 'liveDMServer':
             updateStatus(event.text);
@@ -217,4 +230,6 @@ window.addEventListener("load", function() {
     // Block unknown types. 
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;
+
 });
+
