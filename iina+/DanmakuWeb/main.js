@@ -17,6 +17,7 @@ function bind() {
         if (document.visibilityState == 'visible') {
             console.log('visible');
             cm.start();
+            cm.clear();
         } else {
             console.log('hidden');
             cm.stop();
