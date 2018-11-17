@@ -107,7 +107,6 @@ class MainViewController: NSViewController {
                     self.yougetResult = $0
                 }.ensure {
                     self.progressStatusChanged(false)
-                    self.isSearching = false
                 }.catch(on: .main, policy: .allErrors) { error in
                     Logger.log("\(error)")
                     if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
