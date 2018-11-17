@@ -107,6 +107,7 @@ class MainViewController: NSViewController {
                     self.yougetResult = $0
                 }.ensure {
                     self.progressStatusChanged(false)
+                    self.isSearching = false
                 }.catch(on: .main, policy: .allErrors) { error in
                     Logger.log("\(error)")
                     if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
@@ -168,9 +169,10 @@ class MainViewController: NSViewController {
             let key = yougetResult?.streams.keys.sorted()[row],
             let stream = yougetResult?.streams[key],
             let url = URL(string: searchField.stringValue) else {
-            yougetResult = nil
-            isSearching = false
-            Processes.shared.stopDecodeURL()
+                if !isSearching {
+                    yougetResult = nil
+                    Processes.shared.stopDecodeURL()
+                }
             return
         }
         
