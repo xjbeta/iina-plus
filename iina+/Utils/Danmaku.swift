@@ -25,9 +25,9 @@ class Danmaku: NSObject {
     
     var douyuSocket: Socket? = nil
     
-    let huyaServer = URL(string: "ws://ws.api.huya.com")
+    let huyaServer = URL(string: "wss://cdnws.api.huya.com")
     let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
-    var huyaSubSid = ""
+    var huyaUserInfo = ("", "", "")
     
     var egameInfo: EgameInfo?
     private var egameTimer: DispatchSourceTimer?
@@ -165,8 +165,21 @@ class Danmaku: NSObject {
             let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
             
             HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
-                let id = $0.text?.subString(from: "var SUBSID = '", to: "';") ?? ""
-                self.huyaSubSid = id
+                //            var SUBSID = '2460685313';
+                //            lSid: "2460685313"
+                
+                //            var TOPSID = '94525224';
+                //            lTid: "94525224"
+                
+                //            ayyuid: '1394575534',
+                //            lUid: "1394575534"
+                let text = $0.text ?? ""
+                
+                let lSid = text.subString(from: "var SUBSID = '", to: "';")
+                let lTid = text.subString(from: "var TOPSID = '", to: "';")
+                let lUid = text.subString(from: "ayyuid: '", to: "',")
+                self.huyaUserInfo = (lSid, lTid, lUid)
+                
                 self.socket = SRWebSocket(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
@@ -450,13 +463,45 @@ extension Danmaku: SRWebSocketDelegate {
             try? webSocket.send(data: data as Data)
             startTimer()
         case .huya:
+            /*
+             sendWup    onlineui    OnUserHeartBeat    HUYA.UserHeartBeatReq
+             sendWup    liveui    doLaunch    HUYA.LiveLaunchReq
+             sendWup    PropsUIServer    getPropsList    HUYA.GetPropsListReq
+             sendWup    liveui    getLivingInfo    HUYA.GetLivingInfoReq
+             sendWup    onlineui    OnUserHeartBeat    HUYA.UserHeartBeatReq
+             sendWup    liveui    doLaunch    HUYA.LiveLaunchReq
+             sendWup    PropsUIServer    getPropsList    HUYA.GetPropsListReq
+             sendWup    liveui    getLivingInfo    HUYA.GetLivingInfoReq
+             
+             sendRegister    HUYA.WSUserInfo
+             
+             sendWup    liveui    userIn    HUYA.UserChannelReq
+ */
+            
             let jsContext = JSContext()
             jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
+//            jsContext?.evaluateScript("""
+//                var wsUserInfo = new HUYA.WSUserInfo;
+//                wsUserInfo.lSid = "\(huyaSubSid)";
+//                """)
+//            var SUBSID = '2460685313';
+//            lSid: "2460685313"
+            
+//            var TOPSID = '94525224';
+//            lTid: "94525224"
+            
+//            ayyuid: '1394575534',
+//            lUid: "1394575534"
+            
+//            111111111
+//            sGuid: "7160c3b1b915fd5b5546e2eae3ea5077"
             jsContext?.evaluateScript("""
                 var wsUserInfo = new HUYA.WSUserInfo;
-                wsUserInfo.lSid = "\(huyaSubSid)";
+                wsUserInfo.lSid = "\(huyaUserInfo.0)";
+                wsUserInfo.lTid = "\(huyaUserInfo.1)";
+                wsUserInfo.lUid = "\(huyaUserInfo.2)";
+                wsUserInfo.sGuid = "111111111";
                 """)
-            
             let result = jsContext?.evaluateScript("""
 new Uint8Array(sendRegister(wsUserInfo));
 """)
