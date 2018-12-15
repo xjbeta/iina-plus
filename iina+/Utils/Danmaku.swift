@@ -661,7 +661,7 @@ new Uint8Array(sendRegister(wsUserInfo));
                     Logger.log("huya websocket WebSocketCommandType.Default \(data)")
                     return
                 }
-                guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频") else { return }
+                guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间") else { return }
                 sendDM(str)
             }
             
