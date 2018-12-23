@@ -57,6 +57,7 @@
 		01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */; };
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
+		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		0196CB62212143D600BCD29E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB61212143D600BCD29E /* Logger.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		019EB39C21453A0F000FD123 /* devmate.pem in Resources */ = {isa = PBXBuildFile; fileRef = 019EB39B21453A0F000FD123 /* devmate.pem */; };
@@ -197,6 +198,7 @@
 		01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliLoginViewController.swift; sourceTree = "<group>"; };
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
+		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		0196CB61212143D600BCD29E /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		019EB39B21453A0F000FD123 /* devmate.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = devmate.pem; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				01010126211DCAE8002F0F7F /* SidebarViewController.swift */,
 				0101012A211DCE1C002F0F7F /* SidebarTableCellView.swift */,
 				0101012D211DE83B002F0F7F /* SidebarTableView.swift */,
+				0169097F21CF472F008CDF0E /* SideBarImageView.swift */,
 			);
 			path = Siderbar;
 			sourceTree = "<group>";
@@ -602,6 +605,7 @@
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
+				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
 				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
 				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
 				0101012E211DE83B002F0F7F /* SidebarTableView.swift in Sources */,
