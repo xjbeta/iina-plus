@@ -162,6 +162,8 @@ struct EgameInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
         name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
         let imageUrl: String = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
+        
+        // extractOptions:147: *** unknown hint identifier 'kCGImageSourceTypeIdentifierHint:dyn.age8u' -- ignoring...
         if let url = URL(string: imageUrl.replacingOccurrences(of: "http://", with: "https://")) {
             userCover = NSImage(contentsOf: url)
         }
