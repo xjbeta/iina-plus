@@ -369,11 +369,12 @@ class Danmaku: NSObject {
                 
                 // 1 禁言
                 // 10002   ?????
+                // 35 进入直播间
                 
                 
                 // 3, 0, 9   弹幕
                 
-                let blockType = [29, 33, 24, 7, 28, 22, 31, 30, 10002, 1]
+                let blockType = [29, 33, 24, 7, 28, 22, 31, 30, 10002, 1, 35]
                 
                 let dmMsgs = dm.msgList.filter {
                     !blockType.contains($0.type)
