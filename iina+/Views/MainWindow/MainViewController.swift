@@ -141,6 +141,23 @@ class MainViewController: NSViewController {
                 }.catch { error in
                     Logger.log("Get video list error: \(error)")
             }
+        } else if let url = URL(string: str),
+            url.host == "www.acfun.cn",
+            url.lastPathComponent.starts(with: "ac"),
+            !url.lastPathComponent.contains("_") {
+            let acId = Int(url.lastPathComponent.replacingOccurrences(of: "ac", with: "")) ?? 0
+            
+            Processes.shared.videoGet.getAcfun(url: url).done {
+                if $0.videoList.count > 1 {
+                    self.showSelectVideo(acId, infos: $0.videoList)
+                    self.isSearching = false
+                    self.progressStatusChanged(false)
+                } else {
+                    decodeUrl()
+                }
+                }.catch { error in
+                    Logger.log("Get video list error: \(error)")
+            }
         } else {
             decodeUrl()
         }
@@ -372,12 +389,12 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ aid: Int, infos: [BilibiliSimpleVideoInfo]) {
+    func showSelectVideo(_ videoId: Int, infos: [VideoSelector]) {
         if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
             DispatchQueue.main.async {
                 self.searchField.stringValue = ""
                 selectVideoViewController.videoInfos = infos
-                selectVideoViewController.aid = aid
+                selectVideoViewController.videoId = videoId
                 self.selectTabItem(.selectVideos)
             }
         }

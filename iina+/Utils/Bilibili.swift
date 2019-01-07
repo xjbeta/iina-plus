@@ -136,11 +136,27 @@ struct BilibiliPvideo: Unmarshaling {
     }
 }
 
-struct BilibiliSimpleVideoInfo: Unmarshaling {
+struct BilibiliSimpleVideoInfo: Unmarshaling, VideoSelector {
     var cid: Int = 0
     var page: Int = 0
     var part: String = ""
     var duration: TimeInterval = 0
+    
+    var site: LiveSupportList {
+        get {
+            return .bilibili
+        }
+    }
+    var index: Int {
+        get {
+            return page
+        }
+    }
+    var title: String {
+        get {
+            return part
+        }
+    }
     
     init(object: MarshaledObject) throws {
         cid = try object.value(for: "cid")

@@ -12,9 +12,9 @@ class SelectVideoViewController: NSViewController {
 
     @IBOutlet weak var collectionView: NSCollectionView!
     
-    var videoInfos: [BilibiliSimpleVideoInfo] = [] {
+    var videoInfos: [VideoSelector] = [] {
         didSet {
-            if let max = videoInfos.map({ $0.part.count }).max() {
+            if let max = videoInfos.map({ $0.title.count }).max() {
                 var size: NSSize? = nil
                 switch max {
                 case _ where max > 40:
@@ -36,7 +36,7 @@ class SelectVideoViewController: NSViewController {
         }
     }
     
-    var aid: Int = 0
+    var videoId: Int = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,9 +55,16 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             return item
         }
         let info = videoInfos[indexPath.item]
-        let infoStr = "[\(info.page)] \(info.part)"
-        selectVideoItem.titleTextField.stringValue = infoStr
-        selectVideoItem.titleTextField.toolTip = infoStr
+        switch info.site {
+        case .acfun:
+            selectVideoItem.titleTextField.stringValue = "[\(info.index + 1)]、\(info.title)"
+            selectVideoItem.titleTextField.toolTip = "[\(info.index + 1)]、\(info.title)"
+        case .bilibili:
+            selectVideoItem.titleTextField.stringValue = "[\(info.index)]、\(info.title)"
+            selectVideoItem.titleTextField.toolTip = "[\(info.index)]、\(info.title)"
+        default:
+            break
+        }
         return selectVideoItem
     }
     
@@ -75,7 +82,15 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             view.isSelected = true
             if let main = self.parent as? MainViewController {
                 main.selectTabItem(.search)
-                main.searchField.stringValue = "https://www.bilibili.com/video/av\(aid)/?p=\(videoInfos[item].page)"
+                let info = videoInfos[item]
+                switch info.site {
+                case .acfun:
+                    main.searchField.stringValue = "http://www.acfun.cn/v/ac\(videoId)_\(info.index)"
+                case .bilibili:
+                    main.searchField.stringValue = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
+                default:
+                    break
+                }
                 main.searchField.becomeFirstResponder()
                 main.startSearch(self)
                 view.isSelected = false

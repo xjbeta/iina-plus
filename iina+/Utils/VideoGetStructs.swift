@@ -16,6 +16,12 @@ protocol LiveInfo {
     var isLiving: Bool { get }
 }
 
+protocol VideoSelector {
+    var site: LiveSupportList { get }
+    var index: Int { get }
+    var title: String { get }
+}
+
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -228,12 +234,18 @@ struct AcFunVideo: Unmarshaling {
     let videoList: [AcVideo]
 
     
-    struct AcVideo: Unmarshaling {
+    struct AcVideo: Unmarshaling, VideoSelector {
         let index: Int
         let sourceType: String
         let sourceId: Int
         let id: Int
         let title: String
+        
+        var site: LiveSupportList {
+            get {
+                return .acfun
+            }
+        }
         
         init(object: MarshaledObject) throws {
             index = try object.value(for: "index")
