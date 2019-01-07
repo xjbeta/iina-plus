@@ -23,6 +23,7 @@ enum LiveSupportList: String {
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
+    case acfun = "www.acfun.cn"
     case unsupported
     
     init(raw: String?) {
@@ -131,6 +132,27 @@ class VideoGet: NSObject {
                 getBilibili(url).done {
                         yougetJson.title = $0.0
                         yougetJson.streams[$0.1] = Stream(url: $0.2)
+                        resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case .acfun:
+                getAcfun(url: url).get {
+                    yougetJson.title = $0.title
+                    }.then {
+                        self.getAcFunVideList($0.videoList.first?.id ?? 0, url.absoluteString)
+                    }.done {
+                        var videoKey: String?
+                        $0.forEach {
+                            if $0.starts(with: "#EXT-X-STREAM-INF") {
+                                videoKey = $0.subString(from: "BANDWIDTH=", to: ",") + "P"
+                            } else if $0.starts(with: "http"), let key = videoKey {
+                                var stream = Stream(url: $0)
+                                stream.size = Int64($0.subString(from: "size=")) ?? 0
+                                yougetJson.streams[key] = stream
+                                videoKey = nil
+                            }
+                        }
                         resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
@@ -737,6 +759,57 @@ extension VideoGet {
                     pageInfo.merge(profileInfo) { (current, _) in current }
                     let info = try LongZhuInfo(object: pageInfo)
                     resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    // MARK: - AcFun
+    //        https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/acfun.py
+    func getAcfun(url: URL) -> Promise<AcFunVideo>  {
+        return Promise { resolver in
+            HTTP.GET(url.absoluteString) { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let pageData = response.text?.subString(from: "var pageInfo = ", to: "</script>").data(using: .utf8) ?? Data()
+                    
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(pageData)
+                    let acfunVideo = try AcFunVideo(object: json)
+                    resolver.fulfill(acfunVideo)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getAcFunVideList(_ videoId: Int, _ url: String) -> Promise<([String])>  {
+        return Promise { resolver in
+            HTTP.GET("http://www.acfun.cn/video/getVideo.aspx?id=\(videoId)") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info = try AcFunVideo.AcInfo(object: json)
+                    
+                    let u = "http://www.acfun.cn/rest/pc-direct/video/hlsMasterPlayList?vid=\(info.sourceId)&ct=85&ev=3&sign=\(info.encode)&time=\(Int(Date().timeIntervalSince1970))"
+                    
+                    HTTP.GET(u, headers: ["referer": url]) { response in
+                        if let error = response.error {
+                            resolver.reject(error)
+                        }
+                        let list = response.text?.split(separator: "\n").map {
+                            String($0)
+                        }.filter {
+                            $0.starts(with: "#EXT-X-STREAM-INF") || $0.starts(with: "http")
+                        }
+                        resolver.fulfill(list ?? [])
+                    }
                 } catch let error {
                     resolver.reject(error)
                 }

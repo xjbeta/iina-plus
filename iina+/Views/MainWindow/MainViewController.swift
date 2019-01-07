@@ -196,7 +196,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-            case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin, .eGame:
+            case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin, .eGame, .acfun:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
