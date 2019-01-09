@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.4.3</string>
+	<string>0.4.4</string>
 	<key>CFBundleVersion</key>
 	<string>0</string>
 	<key>LSApplicationCategoryType</key>
@@ -35,7 +35,28 @@
 				<key>NSIncludeSubdomains</key>
 				<true/>
 			</dict>
+			<key>danmu.aixifan.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludeSubdomains</key>
+				<true/>
+			</dict>
 			<key>open.douyucdn.cn</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludeSubdomains</key>
+				<true/>
+			</dict>
+			<key>player.acfun.cn</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludeSubdomains</key>
+				<true/>
+			</dict>
+			<key>www.acfun.cn</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

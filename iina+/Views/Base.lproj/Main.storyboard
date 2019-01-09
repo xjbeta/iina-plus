@@ -1124,7 +1124,7 @@ Gw
                                                                     <rect key="frame" x="1" y="12" width="49" height="49"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
-                                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="30P-h9-fzN">
+                                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="30P-h9-fzN" customClass="SideBarImageView" customModule="iina_" customModuleProvider="target">
                                                                             <rect key="frame" x="2" y="2" width="46" height="46"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" secondItem="30P-h9-fzN" secondAttribute="height" multiplier="1:1" id="LOy-Ls-e3B"/>
@@ -1890,9 +1890,9 @@ Gw
         </scene>
     </scenes>
     <resources>
-        <image name="NSAdvanced" width="128" height="128"/>
-        <image name="NSPreferencesGeneral" width="128" height="128"/>
+        <image name="NSAdvanced" width="32" height="32"/>
+        <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSStatusUnavailable" width="16" height="16"/>
-        <image name="NSUserAccounts" width="128" height="128"/>
+        <image name="NSUserAccounts" width="32" height="32"/>
     </resources>
 </document>

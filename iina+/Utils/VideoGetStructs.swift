@@ -16,6 +16,12 @@ protocol LiveInfo {
     var isLiving: Bool { get }
 }
 
+protocol VideoSelector {
+    var site: LiveSupportList { get }
+    var index: Int { get }
+    var title: String { get }
+}
+
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -162,6 +168,8 @@ struct EgameInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
         name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
         let imageUrl: String = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
+        
+        // extractOptions:147: *** unknown hint identifier 'kCGImageSourceTypeIdentifierHint:dyn.age8u' -- ignoring...
         if let url = URL(string: imageUrl.replacingOccurrences(of: "http://", with: "https://")) {
             userCover = NSImage(contentsOf: url)
         }
@@ -215,5 +223,59 @@ struct BilibiliVideo: Unmarshaling {
         audios = audio.map {
             $0.url
         }
+    }
+}
+
+//MARK: - AcFun
+
+struct AcFunVideo: Unmarshaling {
+
+    let title: String
+    let videoList: [AcVideo]
+    let videoId: Int
+    let danmuSize: Int
+    
+    struct AcVideo: Unmarshaling, VideoSelector {
+        let index: Int
+        let sourceType: String
+        let sourceId: Int
+        let id: Int
+        let title: String
+        
+        var site: LiveSupportList {
+            get {
+                return .acfun
+            }
+        }
+        
+        init(object: MarshaledObject) throws {
+            index = try object.value(for: "index")
+            sourceType = try object.value(for: "source_type")
+            let sourceIdStr: String = try object.value(for: "source_id")
+            sourceId = Int(sourceIdStr) ?? -1
+            id = try object.value(for: "id")
+            title = try object.value(for: "title")
+        }
+    }
+    
+    struct AcInfo: Unmarshaling {
+        let sourceType: String
+        let sourceId: String
+        let danmakuId: Int
+        let encode: String
+        
+        init(object: MarshaledObject) throws {
+            sourceType = try object.value(for: "sourceType")
+            sourceId = try object.value(for: "sourceId")
+            danmakuId = try object.value(for: "danmakuId")
+            encode = try object.value(for: "encode")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "title")
+        videoList = try object.value(for: "videoList")
+        videoId = try object.value(for: "videoId")
+        danmuSize = try object.value(for: "danmuSize")
     }
 }

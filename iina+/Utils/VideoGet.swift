@@ -23,6 +23,7 @@ enum LiveSupportList: String {
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
+    case acfun = "www.acfun.cn"
     case unsupported
     
     init(raw: String?) {
@@ -135,6 +136,27 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
+            case .acfun:
+                getAcfun(url: url).get {
+                    yougetJson.title = $0.title
+                    }.then {
+                        self.getAcFunVideList($0.videoList.first?.id ?? 0, url.absoluteString)
+                    }.done {
+                        var videoKey: String?
+                        $0.forEach {
+                            if $0.starts(with: "#EXT-X-STREAM-INF") {
+                                videoKey = $0.subString(from: "BANDWIDTH=", to: ",") + "P"
+                            } else if $0.starts(with: "http"), let key = videoKey {
+                                var stream = Stream(url: $0)
+                                stream.size = Int64($0.subString(from: "size=")) ?? 0
+                                yougetJson.streams[key] = stream
+                                videoKey = nil
+                            }
+                        }
+                        resolver.fulfill(yougetJson)
+                    }.catch {
+                        resolver.reject($0)
+                }
             default:
                 resolver.reject(VideoGetError.notSupported)
             }
@@ -143,32 +165,100 @@ class VideoGet: NSObject {
     
     func prepareBiliDanmaku(_ url: URL) -> Promise<()> {
         return Promise { resolver in
-            guard Preferences.shared.enableDanmaku, url.host == "www.bilibili.com" else {
+            guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
                 return
             }
-            guard let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) else {
-                resolver.reject(VideoGetError.cantFindIdForDM)
-                return
-            }
-            var cid = 0
-            Bilibili().getVideoList(aid).get { vInfo in
-                if vInfo.count == 1 {
-                    cid = vInfo[0].cid
-                } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                    var pInt = Int(p) {
-                    pInt -= 1
-                    if pInt < vInfo.count,
-                        pInt >= 0 {
-                        cid = vInfo[pInt].cid
-                    }
+            if url.host == "www.bilibili.com" {
+                guard let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) else {
+                    resolver.reject(VideoGetError.cantFindIdForDM)
+                    return
                 }
-                }.then { _ in
-                    self.downloadDMFile(cid)
-                }.done {
-                    resolver.fulfill(())
-                }.catch {
-                    resolver.reject($0)
+                var cid = 0
+                Bilibili().getVideoList(aid).get { vInfo in
+                    if vInfo.count == 1 {
+                        cid = vInfo[0].cid
+                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
+                        var pInt = Int(p) {
+                        pInt -= 1
+                        if pInt < vInfo.count,
+                            pInt >= 0 {
+                            cid = vInfo[pInt].cid
+                        }
+                    }
+                    }.then { _ in
+                        self.downloadDMFile(cid)
+                    }.done {
+                        resolver.fulfill(())
+                    }.catch {
+                        resolver.reject($0)
+                }
+            } else if url.host == "www.acfun.cn" {
+                getAcfun(url: url).done { video in
+                    var time = "4073558400000"
+                    var danmakuCount = video.danmuSize
+                    let numberPerRequest = 2000
+                    var saveDMString = ""
+                    
+                    func loadDanmaku() {
+                        HTTP.GET("http://danmu.aixifan.com/V4/\(video.videoId)_2/\(time)/\(numberPerRequest)?order=-1") { response in
+                            if let error = response.error {
+                                resolver.reject(error)
+                            }
+                            var jsonStr = response.text?.dropFirst(7)
+                            jsonStr = jsonStr?.dropLast()
+                            struct AcfunDM: Decodable {
+                                let c: String
+                            }
+                            guard var jsonString = jsonStr,
+                                let jsonData = String(jsonString).data(using: .utf8),
+                                let dmList = try? JSONDecoder().decode([AcfunDM].self, from: jsonData),
+                                let lastDM = dmList.last else {
+                                resolver.reject(VideoGetError.prepareDMFailed)
+                                return
+                            }
+                            
+                            let dmP = lastDM.c.split(separator: ",").map(String.init)
+                            
+                            guard dmP.count == 7 else {
+                                resolver.reject(VideoGetError.prepareDMFailed)
+                                return
+                            }
+                            
+                            // Save DM String
+                            if time != "4073558400000" {
+                                jsonString = jsonString.dropFirst()
+                            }
+                            
+                            // Set time to lastDM time
+                            time = dmP[5]
+                            danmakuCount -= numberPerRequest
+                            
+                            if danmakuCount > 0 {
+                                jsonString = jsonString.dropLast() + ","
+                            }
+                            saveDMString += String(jsonString)
+                            
+                            if danmakuCount > 0 {
+                                loadDanmaku()
+                            } else {
+                                guard let resourcePath = Bundle.main.resourcePath,
+                                    let dmData = saveDMString.data(using: .utf8) else {
+                                        resolver.reject(VideoGetError.prepareDMFailed)
+                                        return
+                                }
+                                let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.json"
+                                FileManager.default.createFile(atPath: danmakuFilePath, contents: dmData, attributes: nil)
+                                Logger.log("Saved DM in \(danmakuFilePath)")
+                                resolver.fulfill(())
+                            }
+                        }
+                    }
+                    
+                    loadDanmaku()
+                    }.catch {
+                        resolver.reject($0)
+                }
             }
         }
     }
@@ -691,11 +781,13 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                if let resourcePath = Bundle.main.resourcePath {
-                    let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-                    FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
-                    Logger.log("Saved DM in \(danmakuFilePath)")
+                guard let resourcePath = Bundle.main.resourcePath else {
+                    resolver.reject(VideoGetError.prepareDMFailed)
+                    return
                 }
+                let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
+                FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
+                Logger.log("Saved DM in \(danmakuFilePath)")
                 resolver.fulfill(())
             }
         }
@@ -744,6 +836,57 @@ extension VideoGet {
         }
     }
     
+    // MARK: - AcFun
+    //        https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/acfun.py
+    func getAcfun(url: URL) -> Promise<AcFunVideo>  {
+        return Promise { resolver in
+            HTTP.GET(url.absoluteString) { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let pageData = response.text?.subString(from: "var pageInfo = ", to: "</script>").data(using: .utf8) ?? Data()
+                    
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(pageData)
+                    let acfunVideo = try AcFunVideo(object: json)
+                    resolver.fulfill(acfunVideo)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getAcFunVideList(_ videoId: Int, _ url: String) -> Promise<([String])>  {
+        return Promise { resolver in
+            HTTP.GET("http://www.acfun.cn/video/getVideo.aspx?id=\(videoId)") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let info = try AcFunVideo.AcInfo(object: json)
+                    
+                    let u = "http://www.acfun.cn/rest/pc-direct/video/hlsMasterPlayList?vid=\(info.sourceId)&ct=85&ev=3&sign=\(info.encode)&time=\(Int(Date().timeIntervalSince1970))"
+                    
+                    HTTP.GET(u, headers: ["referer": url]) { response in
+                        if let error = response.error {
+                            resolver.reject(error)
+                        }
+                        let list = response.text?.split(separator: "\n").map {
+                            String($0)
+                        }.filter {
+                            $0.starts(with: "#EXT-X-STREAM-INF") || $0.starts(with: "http")
+                        }
+                        resolver.fulfill(list ?? [])
+                    }
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
     // https://stackoverflow.com/a/53044349
     func MD5(_ string: String) -> String? {
         let length = Int(CC_MD5_DIGEST_LENGTH)
@@ -769,4 +912,6 @@ enum VideoGetError: Error {
     case notSupported
     
     case cantFindIdForDM
+    
+    case prepareDMFailed
 }
