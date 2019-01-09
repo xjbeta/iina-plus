@@ -232,7 +232,8 @@ struct AcFunVideo: Unmarshaling {
 
     let title: String
     let videoList: [AcVideo]
-
+    let videoId: Int
+    let danmuSize: Int
     
     struct AcVideo: Unmarshaling, VideoSelector {
         let index: Int
@@ -274,5 +275,7 @@ struct AcFunVideo: Unmarshaling {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         videoList = try object.value(for: "videoList")
+        videoId = try object.value(for: "videoId")
+        danmuSize = try object.value(for: "danmuSize")
     }
 }

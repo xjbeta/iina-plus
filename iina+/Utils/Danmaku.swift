@@ -191,6 +191,8 @@ class Danmaku: NSObject {
                 }.catch {
                     Logger.log("Get Egame Info for DM error: \($0)")
             }
+        case .acfun:
+            httpServer.send(.loadDM, text: "acfun")
         default:
             break
         }

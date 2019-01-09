@@ -154,7 +154,11 @@ function start(websocketServerLocation){
             window.customFont(event.text);
             break;
         case 'loadDM':
-            loadDM('/danmaku/iina-plus-danmaku.xml');
+            if (event.text == 'acfun') {
+                loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
+            } else {
+                loadDM('/danmaku/iina-plus-danmaku.xml');
+            }
             isLiving = false;
             break;
         case 'sendDM':

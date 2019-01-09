@@ -49,6 +49,13 @@
                 <key>NSIncludeSubdomains</key>
                 <true/>
             </dict>
+            <key>danmu.aixifan.com</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludeSubdomains</key>
+                <true/>
+            </dict>
 			<key>open.douyucdn.cn</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
