@@ -23,8 +23,7 @@
 | douyu       |      ✓      |       ✓      |    ✓    |
 | huya        |      ✓      |       ✓      |    ✓    |
 | qiedianjing |      ✓      |       ✓      |    ✓    |
-| quanmin     |      ✓      |       ✕      |    ✕    |
-| longzhu     |      ✓      |       ✕      |    ✕    |
+| acfun       |      ∙      |       ✓      |    ✓    |
 
 ## Danmaku
 ##### You should install the [IINA with Danmaku support](https://github.com/xjbeta/iina-danmaku/releases).
