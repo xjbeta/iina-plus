@@ -163,7 +163,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareBiliDanmaku(_ url: URL) -> Promise<()> {
+    func prepareDanmakuFile(_ url: URL) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
@@ -259,6 +259,8 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
+            } else {
+                resolver.fulfill(())
             }
         }
     }
