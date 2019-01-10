@@ -201,7 +201,7 @@ class MainViewController: NSViewController {
         var title = yougetResult?.title ?? ""
         let site = LiveSupportList(raw: url.host)
         
-        Processes.shared.videoGet.prepareBiliDanmaku(url).done {
+        Processes.shared.videoGet.prepareDanmakuFile(url).done {
             switch site {
             case .douyu:
                 if Preferences.shared.liveDecoder == .internal😀 {
