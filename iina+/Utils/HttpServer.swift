@@ -24,13 +24,13 @@ class HttpServer: NSObject {
             }
             
             server["/danmaku-websocket"] = websocket(connected: { [weak self] session in
-                Logger.log("Websocket client connected.")
+                Log("Websocket client connected.")
                 self?.writeText = {
                     session.writeText($0)
                 }
                 self?.connected?()
             }, disconnected: { [weak self] session in
-                Logger.log("Websocket client disconnected.")
+                Log("Websocket client disconnected.")
                 self?.writeText = nil
                 self?.disConnected?()
             })
@@ -71,7 +71,7 @@ class HttpServer: NSObject {
         do {
             let data = try JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text))
             if let str = String(data: data, encoding: .utf8) {
-                Logger.log("WriteText to websocket: \(str)")
+                Log("WriteText to websocket: \(str)")
                 writeText?(str)
             }
         } catch let error {

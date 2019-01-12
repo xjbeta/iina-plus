@@ -16,7 +16,7 @@ class BilibiliViewController: NSViewController {
         bilibili.logout().done { _ in
             self.initStatus()
             }.catch { error in
-                Logger.log("Logout bilibili error: \(error)")
+                Log("Logout bilibili error: \(error)")
                 self.selectTabViewItem(.error)
         }
     }
@@ -56,7 +56,7 @@ class BilibiliViewController: NSViewController {
             }
             self.userNameTextField.stringValue = $0.1
             }.catch { error in
-                Logger.log("Init bilibili status error: \(error)")
+                Log("Init bilibili status error: \(error)")
                 self.selectTabViewItem(.error)
         }
     }

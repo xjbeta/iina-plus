@@ -81,7 +81,7 @@ class BilibiliCardImageBoxView: NSView {
                     self.pImages = pvideo.pImages
                     self.updatePreview(.start, per: self.previewPercent)
                     }.catch { error in
-                        Logger.log("Error when get pImages: \(error)")
+                        Log("Error when get pImages: \(error)")
                 }
             } else {
                 self.updatePreview(.start, per: self.previewPercent)

@@ -746,15 +746,13 @@
             <objects>
                 <viewController id="nwS-9o-qDB" customClass="AdvancedViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Bv0-yb-uMX">
-                        <rect key="frame" x="0.0" y="0.0" width="362" height="214"/>
+                        <rect key="frame" x="0.0" y="0.0" width="362" height="164"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <gridView fixedFrame="YES" xPlacement="trailing" yPlacement="bottom" rowAlignment="none" columnSpacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="6w3-0h-f60">
-                                <rect key="frame" x="20" y="20" width="322" height="174"/>
+                                <rect key="frame" x="20" y="20" width="322" height="124"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <rows>
-                                    <gridRow id="Tze-9s-tyZ"/>
-                                    <gridRow id="4aI-aK-hTC"/>
                                     <gridRow id="Vax-7F-x7y"/>
                                     <gridRow id="SPC-o9-FRb"/>
                                     <gridRow id="FpU-zH-rwf"/>
@@ -767,42 +765,6 @@
                                     <gridColumn xPlacement="leading" width="190" id="vEV-7q-O41"/>
                                 </columns>
                                 <gridCells>
-                                    <gridCell row="Tze-9s-tyZ" column="5rX-3A-rDO" id="r9S-6h-zl0">
-                                        <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vqt-nv-hgl">
-                                            <rect key="frame" x="69" y="157" width="57" height="17"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Logging:" id="NHp-2F-Wri">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </gridCell>
-                                    <gridCell row="Tze-9s-tyZ" column="vEV-7q-O41" id="eL0-hT-iEI">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cL1-qs-GVm" userLabel="Add">
-                                            <rect key="frame" x="130" y="155" width="22" height="18"/>
-                                            <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="WwB-8o-2Qw">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                                <connections>
-                                                    <binding destination="nwS-9o-qDB" name="value" keyPath="self.enableLogging" id="nf3-AY-ZtY"/>
-                                                </connections>
-                                            </buttonCell>
-                                        </button>
-                                    </gridCell>
-                                    <gridCell row="4aI-aK-hTC" column="5rX-3A-rDO" id="hUm-eb-RFz"/>
-                                    <gridCell row="4aI-aK-hTC" column="vEV-7q-O41" id="WLC-DZ-7Or">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hPX-MT-FhT">
-                                            <rect key="frame" x="126" y="123" width="153" height="32"/>
-                                            <buttonCell key="cell" type="push" title="Open log directory" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Qfc-AP-x8O">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openLogDirectory:" target="nwS-9o-qDB" id="hqL-sg-Z6H"/>
-                                                <binding destination="nwS-9o-qDB" name="enabled" keyPath="self.enableLogging" id="MaE-nE-0dq"/>
-                                            </connections>
-                                        </button>
-                                    </gridCell>
                                     <gridCell row="Vax-7F-x7y" column="5rX-3A-rDO" id="meW-D6-R39">
                                         <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gUR-68-naQ">
                                             <rect key="frame" x="-2" y="107" width="128" height="17"/>
@@ -919,14 +881,13 @@
                         <outlet property="blockListPopUpButton" destination="sEw-Gr-oCs" id="iPd-9W-NHa"/>
                         <outlet property="bottomButton" destination="8KO-MI-Dlx" id="Qrl-jm-dn8"/>
                         <outlet property="colorButton" destination="GDe-PY-6kM" id="qux-q0-2Xj"/>
-                        <outlet property="openLogDirectory" destination="hPX-MT-FhT" id="0hI-Af-fKe"/>
                         <outlet property="scrollButton" destination="dET-My-I33" id="fBY-ds-0cK"/>
                         <outlet property="topButton" destination="rOC-ZE-uFl" id="a1y-p2-9Ww"/>
                     </connections>
                 </viewController>
                 <customObject id="hg7-dG-Nf6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2554" y="945"/>
+            <point key="canvasLocation" x="2554" y="920"/>
         </scene>
         <!--Bilibili Login View Controller-->
         <scene sceneID="HYh-0z-JES">

@@ -12,19 +12,42 @@ import SwiftHTTP
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+    lazy var logUrl: URL? = {
+        do {
+            var logPath = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            logPath.appendPathComponent(Bundle.main.bundleIdentifier!)
+            var isDir = ObjCBool(false)
+            if !FileManager.default.fileExists(atPath: logPath.path, isDirectory: &isDir) {
+                try FileManager.default.createDirectory(at: logPath, withIntermediateDirectories: true, attributes: nil)
+            }
+            guard let appName = Bundle.main.infoDictionary?["CFBundleExecutable"] as? String else {
+                return nil
+            }
+            logPath.appendPathComponent("\(appName).log")
+            return logPath
+        } catch let error {
+            Log(error)
+            return nil
+        }
+    }()
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        Logger.log("App did finish launch")
+        deleteUselessFiles()
+        Log("App did finish launch")
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
-        Logger.log("App Version \(version) (Build \(build))")
-        Logger.log("macOS " + ProcessInfo().operatingSystemVersionString)
+        Log("App Version \(version) (Build \(build))")
+        Log("macOS " + ProcessInfo().operatingSystemVersionString)
         
         HTTP.globalRequest { req in
             req.timeoutInterval = 3
         }
 
         DevMateKit.sendTrackingReport(nil, delegate: nil)
-        
+        DevMateKit.setupIssuesController(nil, reportingUnhandledIssues: true)
+        if let url = logUrl {
+            DevMateKit.setupCustomLogFileURLs([url as NSURL])
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -40,6 +63,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         return true
+    }
+    
+    func deleteUselessFiles() {
+        if let url = logUrl {
+            try? FileManager.default.removeItem(at: url)
+        }
+        
+        UserDefaults.standard.removeObject(forKey: "enableLogging")
+        UserDefaults.standard.removeObject(forKey: "logLevel")
+        // delete log files for old api.
+        let libraryPath = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)
+        let logsUrl = libraryPath.first!.appendingPathComponent("Logs", isDirectory: true)
+        let bundleID = Bundle.main.bundleIdentifier!
+        let logDirURL = logsUrl.appendingPathComponent(bundleID, isDirectory: true)
+        try? FileManager.default.removeItem(at: logDirURL)
     }
     
     // MARK: - Core Data stack
@@ -148,4 +186,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 }
-

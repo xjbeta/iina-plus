@@ -249,7 +249,7 @@ class VideoGet: NSObject {
                                 }
                                 let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.json"
                                 FileManager.default.createFile(atPath: danmakuFilePath, contents: dmData, attributes: nil)
-                                Logger.log("Saved DM in \(danmakuFilePath)")
+                                Log("Saved DM in \(danmakuFilePath)")
                                 resolver.fulfill(())
                             }
                         }
@@ -789,7 +789,7 @@ extension VideoGet {
                 }
                 let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
                 FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
-                Logger.log("Saved DM in \(danmakuFilePath)")
+                Log("Saved DM in \(danmakuFilePath)")
                 resolver.fulfill(())
             }
         }

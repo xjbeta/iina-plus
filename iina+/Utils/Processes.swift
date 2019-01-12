@@ -60,7 +60,7 @@ class Processes: NSObject {
                 
                 decodeTask?.launchPath = decoder
                 decodeTask?.arguments  = ["--json", url]
-                Logger.log(url)
+                Log(url)
                 
                 decodeTask?.terminationHandler = { _ in
                     guard self.decodeTask?.terminationReason != .uncaughtSignal else {
@@ -75,9 +75,9 @@ class Processes: NSObject {
                         let re = try YouGetJSON(object: json)
                         resolver.fulfill(re)
                     } catch let er {
-                        Logger.log("JSON decode error: \(er)")
+                        Log("JSON decode error: \(er)")
                         if let str = String(data: data, encoding: .utf8) {
-                            Logger.log("JSON string: \(str)")
+                            Log("JSON string: \(str)")
                             if str.contains("Real URL") {
                                 let url = str.subString(from: "['", to: "']")
                                 let re = YouGetJSON(url: url)
@@ -89,7 +89,7 @@ class Processes: NSObject {
                     
                     let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
                     if let str = String(data: errorData, encoding: .utf8), str != "" {
-                        Logger.log("Decode url error info: \(str)")
+                        Log("Decode url error info: \(str)")
                     }
                 }
                 decodeTask?.launch()
@@ -211,11 +211,11 @@ class Processes: NSObject {
                     mpvArgs.append("--danmaku")
                 }
                 
-                Logger.log("Player arguments: \(mpvArgs)")
+                Log("Player arguments: \(mpvArgs)")
                 task.arguments = mpvArgs
                 task.launch()
             }.catch {
-                Logger.log("Get video cookies error: \($0)")
+                Log("Get video cookies error: \($0)")
         }
     }
     

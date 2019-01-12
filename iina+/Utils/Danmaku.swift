@@ -45,7 +45,7 @@ class Danmaku: NSObject {
         do {
             try prepareBlockList()
         } catch let error {
-            Logger.log("Prepare DM block list error: \(error)")
+            Log("Prepare DM block list error: \(error)")
         }
         
         httpServer.connected = { [weak self] in
@@ -142,7 +142,7 @@ class Danmaku: NSObject {
                     self.biliLiveRoomID = try json.value(for: "data.room_id")
                     self.socket?.open()
                 } catch let error {
-                    Logger.log("can't find bilibili live room id \(error)")
+                    Log("can't find bilibili live room id \(error)")
                 }
             }
         case .panda:
@@ -156,7 +156,7 @@ class Danmaku: NSObject {
                     self.socket?.delegate = self
                     self.socket?.open()
                 } catch let error {
-                    Logger.log("can't find panda live room id \(error)")
+                    Log("can't find panda live room id \(error)")
                 }
             }
         case .douyu:
@@ -189,7 +189,7 @@ class Danmaku: NSObject {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {
-                    Logger.log("Get Egame Info for DM error: \($0)")
+                    Log("Get Egame Info for DM error: \($0)")
             }
         case .acfun:
             httpServer.send(.loadDM, text: "acfun")
@@ -216,7 +216,7 @@ class Danmaku: NSObject {
                 self.douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
                 
                 try self.douyuSocket?.connect(to: "openbarrage.douyutv.com", port: 8601)
-                Logger.log("douyu socket started: \(self.douyuSocket?.isConnected ?? false)")
+                Log("douyu socket started: \(self.douyuSocket?.isConnected ?? false)")
                 let loginreq = "type@=loginreq/roomid@=\(roomID)/"
                 let joingroup = "type@=joingroup/rid@=\(roomID)/gid@=-9999/"
                 
@@ -263,14 +263,14 @@ class Danmaku: NSObject {
                                     self.sendDM(dm)
                                 }
                             } else if $0.starts(with: "type@=error") {
-                                Logger.log("douyu socket disconnected: \($0)")
+                                Log("douyu socket disconnected: \($0)")
                                 self.httpServer.send(.liveDMServer, text: "error")
                                 self.douyuSocket?.close()
                             }
                     }
                 } while true
             } catch let error {
-                Logger.log("Douyu socket error: \(error)")
+                Log("Douyu socket error: \(error)")
             }
         }
     }
@@ -310,7 +310,7 @@ class Danmaku: NSObject {
                         break
                     }
                 } catch let error {
-                    Logger.log("send keep live pack error: \(error)")
+                    Log("send keep live pack error: \(error)")
                 }
             }
             timer.resume()
@@ -397,7 +397,7 @@ class Danmaku: NSObject {
                 }
                 
             } catch let error {
-                Logger.log("Decode egame json error: \(error)")
+                Log("Decode egame json error: \(error)")
             }
         }
         
@@ -447,7 +447,7 @@ class Danmaku: NSObject {
 extension Danmaku: SRWebSocketDelegate {
     
     func webSocketDidOpen(_ webSocket: SRWebSocket) {
-        Logger.log("webSocketDidOpen")
+        Log("webSocketDidOpen")
         
         switch liveSite {
         case .biliLive:
@@ -518,7 +518,7 @@ new Uint8Array(sendRegister(wsUserInfo));
     }
     
     func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
-        Logger.log("webSocketdidClose \(reason ?? "")")
+        Log("webSocketdidClose \(reason ?? "")")
         switch liveSite {
         case .biliLive, .panda:
             timer?.cancel()
@@ -538,9 +538,9 @@ new Uint8Array(sendRegister(wsUserInfo));
             //            0-4 json length + head
             
             if data.count == 20 {
-                Logger.log("received heartbeat")
+                Log("received heartbeat")
             } else if data.count == 16 {
-                Logger.log("connect success")
+                Log("connect success")
             }
             
             var datas: [Data] = []
@@ -583,9 +583,9 @@ new Uint8Array(sendRegister(wsUserInfo));
             //            00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 41
             //            01 41 json length
             if data.count == 4 {
-                Logger.log("received heartbeat")
+                Log("received heartbeat")
             } else if data.count == 22 {
-                Logger.log("connect success")
+                Log("connect success")
             }
             
             var datas: [Data] = []
@@ -657,11 +657,11 @@ new Uint8Array(sendRegister(wsUserInfo));
                 re.isString {
                 let str = re.toString() ?? ""
                 guard str != "HUYA.EWebSocketCommandType.EWSCmd_RegisterRsp" else {
-                    Logger.log("huya websocket inited EWSCmd_RegisterRsp")
+                    Log("huya websocket inited EWSCmd_RegisterRsp")
                     return
                 }
                 guard str != "HUYA.EWebSocketCommandType.Default" else {
-                    Logger.log("huya websocket WebSocketCommandType.Default \(data)")
+                    Log("huya websocket WebSocketCommandType.Default \(data)")
                     return
                 }
                 guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间") else { return }
