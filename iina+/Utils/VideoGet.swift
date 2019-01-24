@@ -109,7 +109,7 @@ class VideoGet: NSObject {
                 getEgameInfo(url).done {
                     yougetJson.title = $0.0.title
                     $0.1.sorted {
-                        $0.playUrl < $1.playUrl
+                        $0.levelType > $1.levelType
                         }.enumerated().forEach {
                             var stream = Stream(url: $0.element.playUrl)
                             stream.videoProfile = $0.element.desc
