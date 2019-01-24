@@ -10,17 +10,6 @@ import Cocoa
 
 class AdvancedViewController: NSViewController, NSMenuDelegate {
     
-    @IBOutlet weak var openLogDirectory: NSButton!
-    @IBAction func openLogDirectory(_ sender: Any) {
-        NSWorkspace.shared.open(Logger.logDirURL)
-    }
-    
-    @objc dynamic var enableLogging = false {
-        didSet {
-            Preferences.shared.enableLogging = enableLogging
-        }
-    }
-    
     @IBOutlet weak var scrollButton: NSButton!
     @IBOutlet weak var topButton: NSButton!
     @IBOutlet weak var bottomButton: NSButton!
@@ -60,7 +49,6 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         }
         
         initBlockListMenu()
-        enableLogging = Preferences.shared.enableLogging
     }
     
     func initBlockListMenu() {

@@ -74,7 +74,7 @@ class MainViewController: NSViewController {
                 bilibili.getVideoList(aid).done { infos in
                     self.showSelectVideo(aid, infos: infos)
                     }.catch { error in
-                        Logger.log("Get video list error: \(error)")
+                        Log("Get video list error: \(error)")
                 }
             }
         }
@@ -108,7 +108,7 @@ class MainViewController: NSViewController {
                 }.ensure {
                     self.progressStatusChanged(false)
                 }.catch(on: .main, policy: .allErrors) { error in
-                    Logger.log("\(error)")
+                    Log("\(error)")
                     if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
                         switch error {
                         case PMKError.cancelled:
@@ -139,7 +139,7 @@ class MainViewController: NSViewController {
                     decodeUrl()
                 }
                 }.catch { error in
-                    Logger.log("Get video list error: \(error)")
+                    Log("Get video list error: \(error)")
             }
         } else if let url = URL(string: str),
             url.host == "www.acfun.cn",
@@ -156,7 +156,7 @@ class MainViewController: NSViewController {
                     decodeUrl()
                 }
                 }.catch { error in
-                    Logger.log("Get video list error: \(error)")
+                    Log("Get video list error: \(error)")
             }
         } else {
             decodeUrl()
@@ -236,7 +236,7 @@ class MainViewController: NSViewController {
                 self.isSearching = false
                 self.yougetResult = nil
             }.catch {
-                Logger.log("Prepare DM file error : \($0)")
+                Log("Prepare DM file error : \($0)")
         }
     }
     
@@ -381,7 +381,7 @@ class MainViewController: NSViewController {
                 self.canLoadMoreBilibiliCards = true
                 self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
             }.catch { error in
-                Logger.log("Get bilibili dynamicList error: \(error)")
+                Log("Get bilibili dynamicList error: \(error)")
         }
     }
     

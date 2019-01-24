@@ -31,7 +31,7 @@ class LiveStatusTableCellView: NSTableCellView {
         Processes.shared.videoGet.liveInfo(url.absoluteString).done(on: .main) {
             self.setInfo($0)
             }.catch(on: .main) {
-                Logger.log("Get live status error: \($0)")
+                Log("Get live status error: \($0)")
                 self.setErrorInfo(url.absoluteString)
         }
     }
