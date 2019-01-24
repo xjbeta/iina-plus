@@ -11,6 +11,7 @@ import SwiftHTTP
 import PromiseKit
 import Marshal
 import CommonCrypto
+import JavaScriptCore
 
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
@@ -107,22 +108,12 @@ class VideoGet: NSObject {
             case .eGame:
                 getEgameInfo(url).done {
                     yougetJson.title = $0.0.title
-                    $0.1.forEach {
-                        var stream = Stream(url: $0.playUrl)
-                        stream.videoProfile = $0.desc
-                        
-                        switch $0.desc {
-                        case "蓝光":
-                            yougetJson.streams["1"] = stream
-                        case "超清":
-                            yougetJson.streams["2"] = stream
-                        case "高清":
-                            yougetJson.streams["3"] = stream
-                        case "流畅":
-                            yougetJson.streams["4"] = stream
-                        default:
-                            yougetJson.streams["5"] = stream
-                        }
+                    $0.1.sorted {
+                        $0.playUrl < $1.playUrl
+                        }.enumerated().forEach {
+                            var stream = Stream(url: $0.element.playUrl)
+                            stream.videoProfile = $0.element.desc
+                            yougetJson.streams["\($0.offset + 1)"] = stream
                     }
                     resolver.fulfill(yougetJson)
                     }.catch {
@@ -667,10 +658,12 @@ extension VideoGet {
     struct EgameUrl: Unmarshaling {
         var playUrl: String
         var desc: String
+        var levelType: Int
         
         init(object: MarshaledObject) throws {
             playUrl = try object.value(for: "playUrl")
             desc = try object.value(for: "desc")
+            levelType = try object.value(for: "levelType")
         }
     }
     
@@ -681,13 +674,23 @@ extension VideoGet {
                     resolver.reject(error)
                 }
                 
-                let jsonData = response.text?.subString(from: "window.__NUXT__=", to: ";</script>").data(using: .utf8) ?? Data()
+                guard var jsString = response.text?.subString(from: "window.__NUXT__=", to: "</script>") else {
+                    resolver.reject(VideoGetError.egameFunctionNotFound)
+                    return
+                }
+                jsString = "jsonObj=" + jsString
+                
+                let jsContext = JSContext()
+                jsContext?.evaluateScript(jsString)
+                let result = jsContext?.evaluateScript("JSON.stringify(jsonObj)")
+                
+                let jsonData = result?.toString()?.data(using: .utf8) ?? Data()
                 
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
                     let info: EgameInfo = try EgameInfo(object: json)
                     let urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
-                    
+
                     resolver.fulfill((info, urls))
                 } catch let error {
                     resolver.reject(error)
@@ -912,6 +915,7 @@ enum VideoGetError: Error {
     case isNotLiving
     case notFindUrls
     case notSupported
+    case egameFunctionNotFound
     
     case cantFindIdForDM
     
