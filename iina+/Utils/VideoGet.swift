@@ -707,20 +707,8 @@ extension VideoGet {
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(String, [(Int, String, String)], String)> {
         
-        
         let headers = ["Referer": "https://www.bilibili.com/",
                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"]
-        
-        
-        // https://github.com/xioxin/biliATV/issues/24
-        var cookieProperties = [HTTPCookiePropertyKey: String]()
-        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
-        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
-        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
-        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
-        let cookie = HTTPCookie(properties: cookieProperties)
-        HTTPCookieStorage.shared.setCookie(cookie!)
-        
         
         return Promise { resolver in
             HTTP.GET(url.absoluteString, headers: headers) { response in
