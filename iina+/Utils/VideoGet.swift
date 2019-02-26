@@ -766,6 +766,14 @@ extension VideoGet {
                         videos[$0.offset].description = descriptionDic[$0.element.id] ?? "unkonwn"
                     }
                     
+                    var visVideos = [VideoInfo]()
+                    videos.forEach {
+                        if !visVideos.map({ $0.id }).contains($0.id) {
+                            visVideos.append($0)
+                        }
+                    }
+                    videos = visVideos
+                    
                     if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                         let pInt = Int(p),
                         pInt - 1 > 0, pInt - 1 < pages.count {
