@@ -211,7 +211,9 @@ class Processes: NSObject {
                 if Preferences.shared.enableDanmaku {
                     mpvArgs.append("--danmaku")
                 }
-                
+                if options == .bilibili {
+                    mpvArgs.append("--directly")
+                }
                 Log("Player arguments: \(mpvArgs)")
                 task.arguments = mpvArgs
                 task.launch()
