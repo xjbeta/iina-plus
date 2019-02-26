@@ -165,9 +165,7 @@ class Processes: NSObject {
             case .bilibili:
                 mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
                     "\(MPVOption.Network.referrer)=https://www.bilibili.com/",
-                    "\(MPVOption.Audio.audioFileAuto)=\(audioUrl)",
-                    "\(MPVOption.TrackSelection.aid)=1"
-                    ])
+                    "\(MPVOption.Audio.audioFile)=\(audioUrl)"])
             case .withoutYtdl:
                 mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
             case .none: break
