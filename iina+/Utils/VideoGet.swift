@@ -121,9 +121,14 @@ class VideoGet: NSObject {
                 }
             case .bilibili:
                 getBilibili(url).done {
-                        yougetJson.title = $0.0
-                        yougetJson.streams[$0.1] = Stream(url: $0.2)
-                        resolver.fulfill(yougetJson)
+                    yougetJson.title = $0.0
+                    yougetJson.audio = $0.2
+                    $0.1.sorted(by: { $0.0 > $1.0 }).enumerated().forEach {
+                        var stream = Stream(url: $0.element.2)
+                        stream.videoProfile = $0.element.1
+                        yougetJson.streams["\($0.offset + 1)"] = stream
+                    }
+                    resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -700,22 +705,10 @@ extension VideoGet {
     }
     
     // MARK: - Bilibili
-    func getBilibili(_ url: URL) -> Promise<((String, String, String))> {
-        
+    func getBilibili(_ url: URL) -> Promise<(String, [(Int, String, String)], String)> {
         
         let headers = ["Referer": "https://www.bilibili.com/",
                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"]
-        
-        
-        // https://github.com/xioxin/biliATV/issues/24
-        var cookieProperties = [HTTPCookiePropertyKey: String]()
-        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
-        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
-        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
-        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
-        let cookie = HTTPCookie(properties: cookieProperties)
-        HTTPCookieStorage.shared.setCookie(cookie!)
-        
         
         return Promise { resolver in
             HTTP.GET(url.absoluteString, headers: headers) { response in
@@ -739,18 +732,47 @@ extension VideoGet {
                         }
                     }
                     let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                    
-                    let quality: Int = try playInfoJson.value(for: "data.quality")
-                    
                     let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
                     let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
-                    var qualityDescription = "url"
-                    if acceptQuality.count == acceptDescription.count,
-                        let index = acceptQuality.firstIndex(of: quality),
-                        index >= 0,
-                        index < acceptDescription.count {
-                        qualityDescription = acceptDescription[index]
+                    
+                    var descriptionDic = [Int: String]()
+                    acceptQuality.enumerated().forEach {
+                        descriptionDic[$0.element] = acceptDescription[$0.offset]
                     }
+                    
+                    struct VideoInfo: Unmarshaling {
+                        var url: String
+                        var id: Int
+                        var description: String = ""
+                        init(object: MarshaledObject) throws {
+                            url = try object.value(for: "baseUrl")
+                            id = try object.value(for: "id")
+                        }
+                    }
+                    
+                    struct AudioInfo: Unmarshaling {
+                        var url: String
+                        var bandwidth: Int
+                        init(object: MarshaledObject) throws {
+                            url = try object.value(for: "baseUrl")
+                            bandwidth = try object.value(for: "bandwidth")
+                        }
+                    }
+                    
+                    var videos: [VideoInfo] = try playInfoJson.value(for: "data.dash.video")
+                    let audios: [AudioInfo] = try playInfoJson.value(for: "data.dash.audio")
+                    
+                    videos.enumerated().forEach {
+                        videos[$0.offset].description = descriptionDic[$0.element.id] ?? "unkonwn"
+                    }
+                    
+                    var visVideos = [VideoInfo]()
+                    videos.forEach {
+                        if !visVideos.map({ $0.id }).contains($0.id) {
+                            visVideos.append($0)
+                        }
+                    }
+                    videos = visVideos
                     
                     if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                         let pInt = Int(p),
@@ -758,21 +780,13 @@ extension VideoGet {
                         title += " - P\(pInt) - \(pages[pInt - 1].part)"
                     }
                     
-                    struct Durl: Unmarshaling {
-                        var url: String
-                        init(object: MarshaledObject) throws {
-                            url = try object.value(for: "url")
-                        }
-                    }
-                    
-                    let durls: [Durl] = try playInfoJson.value(for: "data.durl")
-                    
-                    guard let url = durls.first?.url else {
+                    guard let audioUrl = audios.max(by: { $0.bandwidth > $1.bandwidth }),
+                        videos.count > 0 else {
                         resolver.reject(VideoGetError.notFindUrls)
                         return
                     }
                     
-                    resolver.fulfill(((title, qualityDescription, url)))
+                    resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), audioUrl.url))
                 } catch let error {
                     resolver.reject(error)
                 }
