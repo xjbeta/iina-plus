@@ -12,6 +12,7 @@ import Marshal
 struct YouGetJSON: Unmarshaling {
     var title: String = ""
     var streams: [String: Stream] = [:]
+    var audio = ""
 
     init(object: MarshaledObject) throws {
         let titleStr: String? = try? object.value(for: "title")

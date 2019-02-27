@@ -182,6 +182,7 @@ class MainViewController: NSViewController {
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let row = suggestionsTableView.selectedRow
         guard row != -1,
+            let yougetJSON = yougetResult,
             let key = yougetResult?.streams.keys.sorted()[row],
             let stream = yougetResult?.streams[key],
             let url = URL(string: searchField.stringValue) else {
@@ -198,7 +199,7 @@ class MainViewController: NSViewController {
         } else {
             urlStr = stream.src
         }
-        var title = yougetResult?.title ?? ""
+        var title = yougetJSON.title
         let site = LiveSupportList(raw: url.host)
         
         Processes.shared.videoGet.prepareDanmakuFile(url).done {
@@ -216,7 +217,7 @@ class MainViewController: NSViewController {
             case .biliLive, .huya, .longzhu, .pandaXingYan, .quanmin, .eGame, .acfun:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .bilibili)
+                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
             case .unsupported:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
             }

@@ -151,7 +151,7 @@ class Processes: NSObject {
         case douyu, bilibili, withoutYtdl, none
     }
     
-    func openWithPlayer(_ urls: [String], title: String, options: PlayerOptions) {
+    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions) {
         let task = Process()
         let pipe = Pipe()
         task.standardInput = pipe
@@ -164,7 +164,8 @@ class Processes: NSObject {
                     "\(MPVOption.ProgramBehavior.ytdl)=no"])
             case .bilibili:
                 mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                    "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+                    "\(MPVOption.Network.referrer)=https://www.bilibili.com/",
+                    "\(MPVOption.Audio.audioFile)=\(audioUrl)"])
             case .withoutYtdl:
                 mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
             case .none: break
@@ -191,7 +192,7 @@ class Processes: NSObject {
                     }
                 }
                 if urls.count == 1 {
-                    mpvArgs.append(urls.first ?? "")
+                    mpvArgs.insert(urls.first ?? "", at: 0)
                 } else if urls.count > 1 {
                     if mergeWithEdl {
                         var edlString = urls.reduce(String()) { result, url in
@@ -201,16 +202,20 @@ class Processes: NSObject {
                         }
                         edlString = "edl://" + edlString
                         
-                        mpvArgs.append(edlString)
+                        mpvArgs.insert(edlString, at: 0)
                     } else {
-                        mpvArgs.append(contentsOf: urls)
+                        mpvArgs.insert(contentsOf: urls, at: 0)
                     }
                     
                 }
-                if Preferences.shared.enableDanmaku {
-                    mpvArgs.append("--danmaku")
+                if Preferences.shared.livePlayer == .iina {
+                    if Preferences.shared.enableDanmaku {
+                        mpvArgs.append("--danmaku")
+                    }
+                    if options == .bilibili {
+                        mpvArgs.append("--directly")
+                    }
                 }
-                
                 Log("Player arguments: \(mpvArgs)")
                 task.arguments = mpvArgs
                 task.launch()
