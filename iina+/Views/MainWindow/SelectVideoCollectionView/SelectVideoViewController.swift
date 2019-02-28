@@ -62,6 +62,9 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         case .bilibili:
             selectVideoItem.titleTextField.stringValue = "\(info.index)、\(info.title)"
             selectVideoItem.titleTextField.toolTip = "\(info.index)、\(info.title)"
+        case .douyu:
+            selectVideoItem.titleTextField.stringValue = "\(info.title)"
+            selectVideoItem.titleTextField.toolTip = "\(info.title)"
         default:
             break
         }
@@ -88,6 +91,8 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
                     main.searchField.stringValue = "http://www.acfun.cn/v/ac\(videoId)_\(info.index)"
                 case .bilibili:
                     main.searchField.stringValue = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
+                case .douyu:
+                    main.searchField.stringValue = "https://www.douyu.com/\((info as! DouyuVideoList).roomId)"
                 default:
                     break
                 }

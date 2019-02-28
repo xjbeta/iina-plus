@@ -158,6 +158,26 @@ class MainViewController: NSViewController {
                 }.catch { error in
                     Log("Get video list error: \(error)")
             }
+        } else if let url = URL(string: str),
+            url.host == "www.douyu.com",
+            url.pathComponents.count > 2,
+            url.pathComponents[1] == "t" {
+            Processes.shared.videoGet.getDouyuRoomIds(url).done {
+                if $0.count > 1 {
+                    let infos = $0.enumerated().map {
+                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: $0.element)
+                    }
+                    
+                    self.showSelectVideo(0, infos: infos)
+                    
+                    self.isSearching = false
+                    self.progressStatusChanged(false)
+                } else {
+                    decodeUrl()
+                }
+                }.catch { error in
+                    Log("Get douyu room list error: \(error)")
+            }
         } else {
             decodeUrl()
         }
