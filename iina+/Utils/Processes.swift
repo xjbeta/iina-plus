@@ -156,112 +156,67 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardInput = pipe
         var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
-        getCookies(for: .douyu).done { cookies in
-            switch options {
-            case .douyu:
-                mpvArgs.append(contentsOf: [MPVOption.Network.cookies,
-                                            "\(MPVOption.Network.cookiesFile)=\(cookies)",
-                    "\(MPVOption.ProgramBehavior.ytdl)=no"])
-            case .bilibili:
-                mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                    "\(MPVOption.Network.referrer)=https://www.bilibili.com/",
-                    "\(MPVOption.Audio.audioFile)=\(audioUrl)"])
-            case .withoutYtdl:
-                mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
-            case .none: break
-            }
-            }.ensure {
-                let mergeWithEdl = true
-                if !mergeWithEdl {
-                    if urls.count > 1 {
-                        mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
-                    }
-                }
-                
-                switch Preferences.shared.livePlayer {
-                case .iina:
-                    task.launchPath = Preferences.shared.livePlayer.rawValue
-                    mpvArgs = mpvArgs.map {
-                        "--mpv-" + $0
-                    }
-                case .mpv:
-                    task.launchPath = self.which(Preferences.shared.livePlayer.rawValue).first ?? ""
-                    mpvArgs.append(MPVOption.Terminal.reallyQuiet)
-                    mpvArgs = mpvArgs.map {
-                        "--" + $0
-                    }
-                }
-                if urls.count == 1 {
-                    mpvArgs.insert(urls.first ?? "", at: 0)
-                } else if urls.count > 1 {
-                    if mergeWithEdl {
-                        var edlString = urls.reduce(String()) { result, url in
-                            var re = result
-                            re += "%\(url.count)%\(url);"
-                            return re
-                        }
-                        edlString = "edl://" + edlString
-                        
-                        mpvArgs.insert(edlString, at: 0)
-                    } else {
-                        mpvArgs.insert(contentsOf: urls, at: 0)
-                    }
-                    
-                }
-                if Preferences.shared.livePlayer == .iina {
-                    if Preferences.shared.enableDanmaku {
-                        mpvArgs.append("--danmaku")
-                    }
-                    if options == .bilibili {
-                        mpvArgs.append("--directly")
-                    }
-                }
-                Log("Player arguments: \(mpvArgs)")
-                task.arguments = mpvArgs
-                task.launch()
-            }.catch {
-                Log("Get video cookies error: \($0)")
+        
+        switch options {
+        case .douyu:
+            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
+        case .bilibili:
+            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
+                "\(MPVOption.Network.referrer)=https://www.bilibili.com/",
+                "\(MPVOption.Audio.audioFile)=\(audioUrl)"])
+        case .withoutYtdl:
+            mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
+        case .none: break
         }
+        
+        let mergeWithEdl = true
+        if !mergeWithEdl {
+            if urls.count > 1 {
+                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+            }
+        }
+        
+        switch Preferences.shared.livePlayer {
+        case .iina:
+            task.launchPath = Preferences.shared.livePlayer.rawValue
+            mpvArgs = mpvArgs.map {
+                "--mpv-" + $0
+            }
+        case .mpv:
+            task.launchPath = self.which(Preferences.shared.livePlayer.rawValue).first ?? ""
+            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
+            mpvArgs = mpvArgs.map {
+                "--" + $0
+            }
+        }
+        if urls.count == 1 {
+            mpvArgs.insert(urls.first ?? "", at: 0)
+        } else if urls.count > 1 {
+            if mergeWithEdl {
+                var edlString = urls.reduce(String()) { result, url in
+                    var re = result
+                    re += "%\(url.count)%\(url);"
+                    return re
+                }
+                edlString = "edl://" + edlString
+                
+                mpvArgs.insert(edlString, at: 0)
+            } else {
+                mpvArgs.insert(contentsOf: urls, at: 0)
+            }
+            
+        }
+        if Preferences.shared.livePlayer == .iina {
+            if Preferences.shared.enableDanmaku {
+                mpvArgs.append("--danmaku")
+            }
+            if options == .bilibili {
+                mpvArgs.append("--directly")
+            }
+        }
+        Log("Player arguments: \(mpvArgs)")
+        task.arguments = mpvArgs
+        task.launch()
     }
     
-}
-
-private extension Processes {
-    func getCookies(for website: LiveSupportList) -> Promise<String> {
-        return Promise { resolver in
-            switch website {
-            case .douyu:
-                let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
-                let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
-                srand48(Int(time))
-                let random = "\(drand48())"
-                let parameters = ["client_id": "1",
-                                  "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
-                let headers = ["Referer": "http://www.douyu.com"]
-                
-                HTTP.GET(douyuCookie, parameters: parameters, headers: headers) { response in
-                    if let error = response.error {
-                        resolver.reject(error)
-                    }
-                    do {
-                        var str = response.text
-                        str = str?.subString(from: "(", to: ")")
-                        let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
-                        let didStr: String = try json.value(for: "data.did")
-                        let date = Int(Date().timeIntervalSince1970)
-                        let cookiesString = """
-                        ..douyu.com    TRUE    /    FALSE    \(date)    dy_did    \(didStr)
-                        .www.douyu.com    TRUE    /    FALSE    \(date)    acf_did    \(didStr)
-                        """
-                        
-                        resolver.fulfill(cookiesString)
-                    } catch let error {
-                        resolver.reject(error)
-                    }
-                }
-            default:
-                resolver.fulfill("")
-            }
-        }
-    }
 }
