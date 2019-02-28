@@ -548,13 +548,16 @@ extension VideoGet {
                 resolver.reject(VideoGetError.douyuSignError)
                 return
             }
-            
-            let pars = ["v": "220120190227",
-                      "did": didStr,
-                      "tt": time,
-                      "sign": signStr,
-                      "cdn": "",
-                      "rate": "0"]
+            let v = douyuJS.subString(from: "var vdwdae325w_64we = \"", to: "\"")
+            let pars = ["v": v,
+                        "did": didStr,
+                        "tt": time,
+                        "sign": signStr,
+                        "cdn": "",
+                        "rate": "0",
+                        "ver": "Douyu_219021902",
+                        "iar": "1",
+                        "ive": "0"]
             
             HTTP.POST("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", parameters: pars) { response in
                 if let error = response.error {
