@@ -79,6 +79,13 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct DouyuVideoList: VideoSelector {
+    let site = LiveSupportList.douyu
+    let index: Int
+    let title: String
+    let roomId: Int
+}
+
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
