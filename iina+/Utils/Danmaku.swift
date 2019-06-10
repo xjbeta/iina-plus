@@ -509,7 +509,7 @@ extension Danmaku: SRWebSocketDelegate {
 new Uint8Array(sendRegister(wsUserInfo));
 """)
             
-            let data = Data(bytes: result?.toArray() as? [UInt8] ?? [])
+            let data = Data(result?.toArray() as? [UInt8] ?? [])
             try? webSocket.send(data: data)
             startTimer()
         default:
