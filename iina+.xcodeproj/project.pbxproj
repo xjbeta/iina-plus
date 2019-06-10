@@ -59,7 +59,6 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
-		01842A4B2226824C00BA77CB /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01842A4A2226824C00BA77CB /* crypto-js.js */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		019EB39C21453A0F000FD123 /* devmate.pem in Resources */ = {isa = PBXBuildFile; fileRef = 019EB39B21453A0F000FD123 /* devmate.pem */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
@@ -201,7 +200,6 @@
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
-		01842A4A2226824C00BA77CB /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "crypto-js.js"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		019EB39B21453A0F000FD123 /* devmate.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = devmate.pem; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -374,7 +372,6 @@
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				019EB39B21453A0F000FD123 /* devmate.pem */,
 				013850F9214EA2AA003817CE /* huya.js */,
-				01842A4A2226824C00BA77CB /* crypto-js.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -531,7 +528,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
-				01842A4B2226824C00BA77CB /* crypto-js.js in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				019EB39C21453A0F000FD123 /* devmate.pem in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
