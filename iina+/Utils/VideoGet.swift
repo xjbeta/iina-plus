@@ -870,7 +870,7 @@ extension VideoGet {
                     }
                     
                     var videos: [VideoInfo] = try playInfoJson.value(for: "data.dash.video")
-                    let audios: [AudioInfo] = try playInfoJson.value(for: "data.dash.audio")
+                    let audios: [AudioInfo]? = try playInfoJson.value(for: "data.dash.audio")
                     
                     videos.enumerated().forEach {
                         videos[$0.offset].description = descriptionDic[$0.element.id] ?? "unkonwn"
@@ -890,7 +890,12 @@ extension VideoGet {
                         title += " - P\(pInt) - \(pages[pInt - 1].part)"
                     }
                     
-                    guard let audioUrl = audios.max(by: { $0.bandwidth > $1.bandwidth }),
+                    guard audios != nil, videos.count > 0 else {
+                        resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), ""))
+                        return
+                    }
+                    
+                    guard let audioUrl = audios?.max(by: { $0.bandwidth > $1.bandwidth }),
                         videos.count > 0 else {
                         resolver.reject(VideoGetError.notFindUrls)
                         return
