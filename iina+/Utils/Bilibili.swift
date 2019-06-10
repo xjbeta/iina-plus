@@ -50,7 +50,7 @@ class BilibiliCard: NSObject, Unmarshaling {
 }
 
 enum BilibiliDynamicAction {
-    case `init`, new, history
+    case init😅, new, history
 }
 
 struct BilibiliPvideo: Unmarshaling {
@@ -221,7 +221,7 @@ class Bilibili: NSObject {
     }
     
     func dynamicList(_ uid: Int,
-                     _ action: BilibiliDynamicAction = .init,
+                     _ action: BilibiliDynamicAction = .init😅,
                      _ dynamicID: Int = -1) -> Promise<[BilibiliCard]> {
         
         return Promise { resolver in
@@ -229,13 +229,12 @@ class Bilibili: NSObject {
             let headers = ["referer": "https://www.bilibili.com/"]
             
             switch action {
-            case .init:
+            case .init😅:
                 http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
             case .history:
                 http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", headers: headers)
             case .new:
                 http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&current_dynamic_id=\(dynamicID)&type=8", headers: headers)
-            default: break
             }
             
             http?.onFinish = { response in

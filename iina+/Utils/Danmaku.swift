@@ -243,7 +243,7 @@ class Danmaku: NSObject {
                     
                     while d.count > 12 {
                         let head = d.subdata(in: 0..<4)
-                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
                         if d.count < endIndex+2 {
                             savedData.append(savedData)
                             d = Data()
@@ -547,7 +547,7 @@ new Uint8Array(sendRegister(wsUserInfo));
             var d = data
             while d.count > 20 {
                 let head = d.subdata(in: 0..<4)
-                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
                 
                 if endIndex <= d.endIndex {
                     datas.append(d.subdata(in: 16..<endIndex))
@@ -595,7 +595,7 @@ new Uint8Array(sendRegister(wsUserInfo));
             
             while d.count > 22 {
                 let head = d.subdata(in: 12..<16)
-                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 16
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) })) + 16
                 
                 if endIndex <= d.endIndex {
                     datas.append(d.subdata(in: 16..<endIndex))

@@ -32,7 +32,7 @@ class SidebarViewController: NSViewController {
         NotificationCenter.default.addObserver(forName: .updateSideBarSelection, object: nil, queue: .main) {
             if let userInfo = $0.userInfo as? [String: SidebarItem],
                 let newItem = userInfo["newItem"] {
-                if let index = self.sideBarItems.index(of: newItem) {
+                if let index = self.sideBarItems.firstIndex(of: newItem) {
                     self.sidebarTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
                 }
             }
@@ -106,7 +106,7 @@ extension SidebarViewController: NSTableViewDelegate, NSTableViewDataSource {
         let selectedRow = sidebarTableView.selectedRow
         guard selectedRow >= 0, selectedRow < numberOfRows(in: sidebarTableView) else { return }
         
-        if let row = sideBarItems.index(of: sideBarSelectedItem),
+        if let row = sideBarItems.firstIndex(of: sideBarSelectedItem),
             let view = sidebarTableView.view(atColumn: sidebarTableView.selectedColumn, row: row, makeIfNecessary: false) as? SidebarTableCellView {
             view.isSelected = false
         }

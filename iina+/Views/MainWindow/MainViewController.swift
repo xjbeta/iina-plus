@@ -372,7 +372,7 @@ class MainViewController: NSViewController {
         }
     }
     
-    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init) {
+    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
         var dynamicID = -1
         
         switch action {
@@ -389,14 +389,12 @@ class MainViewController: NSViewController {
             self.bilibili.dynamicList($0, action, dynamicID)
             }.done(on: .main) { cards in
                 switch action {
-                case .init:
+                case .init😅:
                     self.bilibiliCards = cards
                 case .history:
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
                     self.bilibiliCards.insert(contentsOf: cards, at: 0)
-                default:
-                    break
                 }
             }.ensure(on: .main) {
                 self.canLoadMoreBilibiliCards = true
