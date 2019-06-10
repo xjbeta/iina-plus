@@ -12,6 +12,7 @@ import PromiseKit
 import Marshal
 import CommonCrypto
 import JavaScriptCore
+import WebKit
 
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
@@ -38,6 +39,9 @@ enum LiveSupportList: String {
 
 
 class VideoGet: NSObject {
+    
+    let douyuWebview = WKWebView()
+    var douyuWebviewObserver: NSKeyValueObservation?
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in
@@ -353,6 +357,11 @@ class VideoGet: NSObject {
             }
         }
     }
+    
+    deinit {
+        douyuWebview.stopLoading()
+        douyuWebviewObserver?.invalidate()
+    }
 }
 
 
@@ -510,86 +519,83 @@ extension VideoGet {
         }
     }
 
-    private func getDouyuJS(_ roomID: Int) -> Promise<(String)> {
+    
+    private func getDouyuSign(_ roomID: Int, didStr: String, time: String) -> Promise<(sign: String, v: String)> {
         return Promise { resolver in
-            HTTP.GET("https://www.douyu.com/swf_api/homeH5Enc?rids=\(roomID)") { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json = try JSONParser.JSONObjectWithData(response.data)
-                    let error: Int = try json.value(for: "error")
-                    guard error == 0 else {
-                        resolver.reject(VideoGetError.douyuSignError)
-                        return
+            douyuWebview.stopLoading()
+            douyuWebviewObserver?.invalidate()
+            douyuWebviewObserver = nil
+            douyuWebviewObserver = douyuWebview.observe(\.isLoading) { (webView, _) in
+                if !webView.isLoading {
+                    when(fulfilled: [self.douyuEvaluateJavaScript("window.ub98484234(\(roomID), '\(didStr)', \(time));"), self.douyuEvaluateJavaScript("window.vdwdae325w_64we;")]).done {
+                        self.douyuWebviewObserver?.invalidate()
+                        self.douyuWebview.load(.init(url: URL(string: "about:blank")!))
+                        resolver.fulfill((sign: $0[0], v: $0[1]))
+                        }.catch {
+                           resolver.reject($0)
                     }
-                    let didStr: String = try json.value(for: "data.room\(roomID)")
-                    resolver.fulfill(didStr)
-                } catch let error {
-                    resolver.reject(error)
                 }
+            }
+            
+            douyuWebview.load(.init(url: URL(string: "https://www.douyu.com/\(roomID)")!))
+        }
+    }
+    
+    private func douyuEvaluateJavaScript(_ javaScriptString: String) -> Promise<(String)> {
+        return Promise { resolver in
+            douyuWebview.evaluateJavaScript(javaScriptString) { (re, error) in
+                guard let str = re as? String, error == nil else {
+                    resolver.reject(error!)
+                    return
+                }
+                resolver.fulfill(str)
             }
         }
     }
     
-    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String, douyuJS: String) -> Promise<(String)> {
+    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String) -> Promise<(String)> {
 //        window[Object(ae.a)(256042, "9f4f419501570ad13334")]
         return Promise { resolver in
             let time = "\(Int(Date().timeIntervalSince1970))"
-            
-            let ccryptoJsFilePath = Bundle.main.path(forResource: "crypto-js", ofType: "js")
-            let jsContext = JSContext()
-            jsContext?.evaluateScript(try? String(contentsOfFile: ccryptoJsFilePath!))
-            jsContext?.evaluateScript("var CryptoJS = require('crypto-js');")
-            jsContext?.evaluateScript(douyuJS)
-            
-            let result = jsContext?.evaluateScript("ub98484234(\(roomID), '\(didStr)', \(time))")
-            guard let signStr = result?.toString().subString(from: "sign="), signStr.count > 0 else {
-                resolver.reject(VideoGetError.douyuSignError)
-                return
-            }
-            let v = douyuJS.subString(from: "var vdwdae325w_64we = \"", to: "\"")
-            let pars = ["v": v,
-                        "did": didStr,
-                        "tt": time,
-                        "sign": signStr,
-                        "cdn": "",
-                        "rate": "0",
-                        "ver": "Douyu_219021902",
-                        "iar": "1",
-                        "ive": "0"]
-            
-            HTTP.POST("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", parameters: pars) { response in
-                if let error = response.error {
-                    resolver.reject(error)
+            getDouyuSign(roomID, didStr: didStr, time: time).done {
+                let signStr = $0.sign.subString(from: "sign=")
+                guard signStr.count > 0 else {
+                    resolver.reject(VideoGetError.douyuSignError)
+                    return
                 }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    let rtmpUrl: String = try json.value(for: "data.rtmp_url")
-                    let rtmpLive: String = try json.value(for: "data.rtmp_live")
-                    resolver.fulfill(rtmpUrl + "/" + rtmpLive)
-                } catch let error {
-                    resolver.reject(error)
+                let pars = ["v": $0.v,
+                            "did": didStr,
+                            "tt": time,
+                            "sign": signStr,
+                            "cdn": "",
+                            "rate": "-1",
+                            "ver": "Douyu_219042402",
+                            "iar": "1",
+                            "ive": "0"]
+                
+                HTTP.POST("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", parameters: pars) { response in
+                    if let error = response.error {
+                        resolver.reject(error)
+                    }
+                    do {
+                        let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                        let rtmpUrl: String = try json.value(for: "data.rtmp_url")
+                        let rtmpLive: String = try json.value(for: "data.rtmp_live")
+                        resolver.fulfill(rtmpUrl + "/" + rtmpLive)
+                    } catch let error {
+                        resolver.reject(error)
+                    }
                 }
+                }.catch {
+                    resolver.reject($0)
             }
         }
     }
     
     
     func getDouyuUrl(_ roomID: Int) -> Promise<(String)> {
-        return firstly {
-            when(resolved: [getDouyuDid(), getDouyuJS(roomID)])
-            }.then { res -> Promise<(String)> in
-                var reStrs = [String]()
-                try res.forEach {
-                    switch $0 {
-                    case .fulfilled(let strings):
-                        reStrs.append(strings)
-                    case .rejected(let error):
-                        throw error
-                    }
-                }
-                return self.getDouyuRtmpUrl(roomID, didStr: reStrs[0], douyuJS: reStrs[1])
+        return getDouyuDid().then { res -> Promise<(String)> in
+                return self.getDouyuRtmpUrl(roomID, didStr: res)
         }
     }
     
