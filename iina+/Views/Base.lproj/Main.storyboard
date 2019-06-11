@@ -78,6 +78,7 @@
                                         <menuItem title="Open…" keyEquivalent="o" id="dGS-Io-0JC">
                                             <connections>
                                                 <action selector="openDocument:" target="Ady-hI-5gd" id="FIU-33-nwN"/>
+                                                <segue destination="o1P-az-5tB" kind="show" id="D1D-Bd-khg"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open Recent" id="Afb-Oy-yWe">
@@ -247,6 +248,14 @@
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1722" y="-287"/>
+        </scene>
+        <!--OpenFilesWindow-->
+        <scene sceneID="lig-b8-RvN">
+            <objects>
+                <controllerPlaceholder storyboardName="OpenFilesWindow" id="o1P-az-5tB" sceneMemberID="viewController"/>
+                <customObject id="wDy-dC-3Z6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2140" y="-100"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
