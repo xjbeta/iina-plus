@@ -53,7 +53,11 @@ class OpenFilesViewController: NSViewController {
                 return
             }
             
-            Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili)
+            if self.isBilibiliVideo() {
+                Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili)
+            } else {
+                Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl)
+            }
             
             NotificationCenter.default.post(name: .loadDanmaku, object: nil)
         }.catch {
@@ -75,6 +79,15 @@ class OpenFilesViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+    }
+    
+    func isBilibiliVideo() -> Bool {
+        if videoURL == nil {
+            let videoStr = videoTextField.stringValue
+            return videoStr.starts(with: "av") || videoStr.starts(with: "https://www.bilibili.com/video/av")
+        } else {
+            return false
+        }
     }
     
     func getVideo() -> Promise<(YouGetJSON)> {
