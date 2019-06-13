@@ -90,6 +90,7 @@ class Danmaku: NSObject {
     func prepareBlockList() throws {
         guard let resourcePath = Bundle.main.resourcePath else { return }
         let targetPath = resourcePath + "/Danmaku/iina-plus-blockList.xml"
+        try FileManager.default.removeItem(atPath: targetPath)
         switch Preferences.shared.dmBlockList.type {
         case .none:
             return
