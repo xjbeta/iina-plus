@@ -66,7 +66,7 @@
                                             <gridCell row="qgg-zV-drn" column="2qP-0h-LYg" xPlacement="fill" id="Pcc-o7-IUZ">
                                                 <textField key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fbu-er-y34">
                                                     <rect key="frame" x="0.0" y="67" width="391" height="22"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" id="3IV-o9-jO0">
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="av15576223 / video" id="3IV-o9-jO0">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -102,7 +102,7 @@
                                             <gridCell row="Vn6-Ou-se2" column="2qP-0h-LYg" xPlacement="fill" id="4pg-Dw-Y10">
                                                 <textField key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j64-Kn-Usz">
                                                     <rect key="frame" x="0.0" y="0.0" width="391" height="22"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="av15576223" id="fYG-PN-XX8">
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="av15576223 / select xml file" id="fYG-PN-XX8">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
