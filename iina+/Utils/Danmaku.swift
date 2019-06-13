@@ -90,6 +90,7 @@ class Danmaku: NSObject {
     func prepareBlockList() throws {
         guard let resourcePath = Bundle.main.resourcePath else { return }
         let targetPath = resourcePath + "/Danmaku/iina-plus-blockList.xml"
+        try FileManager.default.removeItem(atPath: targetPath)
         switch Preferences.shared.dmBlockList.type {
         case .none:
             return
@@ -160,7 +161,11 @@ class Danmaku: NSObject {
                 }
             }
         case .douyu:
-            initDouYuSocket(roomID)
+            Processes.shared.videoGet.getDouyuHtml(url.absoluteString).done {
+                self.initDouYuSocket($0.roomId)
+                }.catch {
+                    Log($0)
+            }
         case .huya:
             let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
             
@@ -243,7 +248,7 @@ class Danmaku: NSObject {
                     
                     while d.count > 12 {
                         let head = d.subdata(in: 0..<4)
-                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
                         if d.count < endIndex+2 {
                             savedData.append(savedData)
                             d = Data()
@@ -393,7 +398,7 @@ class Danmaku: NSObject {
                 
                 
                 if unKonwn.count > 0 {
-                    print(unKonwn)
+                    Log(unKonwn)
                 }
                 
             } catch let error {
@@ -509,7 +514,7 @@ extension Danmaku: SRWebSocketDelegate {
 new Uint8Array(sendRegister(wsUserInfo));
 """)
             
-            let data = Data(bytes: result?.toArray() as? [UInt8] ?? [])
+            let data = Data(result?.toArray() as? [UInt8] ?? [])
             try? webSocket.send(data: data)
             startTimer()
         default:
@@ -547,7 +552,7 @@ new Uint8Array(sendRegister(wsUserInfo));
             var d = data
             while d.count > 20 {
                 let head = d.subdata(in: 0..<4)
-                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee }))
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
                 
                 if endIndex <= d.endIndex {
                     datas.append(d.subdata(in: 16..<endIndex))
@@ -595,7 +600,7 @@ new Uint8Array(sendRegister(wsUserInfo));
             
             while d.count > 22 {
                 let head = d.subdata(in: 12..<16)
-                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 16
+                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) })) + 16
                 
                 if endIndex <= d.endIndex {
                     datas.append(d.subdata(in: 16..<endIndex))
@@ -617,8 +622,8 @@ new Uint8Array(sendRegister(wsUserInfo));
                         return nil
                     }
                 } catch let error {
-                    print(error)
-                    print(String(data: data, encoding: .utf8) ?? "")
+                    Log(error)
+                    Log(String(data: data, encoding: .utf8) ?? "")
                     return nil
                 }
                 }.forEach {
@@ -771,7 +776,7 @@ new Uint8Array(sendRegister(wsUserInfo));
                 var convertedNumber = CFSwapInt32LittleToHost(number)
                 data.append(&convertedNumber, length: 4)
             default:
-                print("Unrecognized character: \($0.element)")
+                Log("Unrecognized character: \($0.element)")
             }
         }
         return data

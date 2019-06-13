@@ -43,6 +43,9 @@ class MainMenu: NSObject, NSMenuItemValidation {
         if menuItem.action == #selector(help) {
             return true
         }
+        if menuItem.action == #selector(log) {
+            return true
+        }
         return false
     }
     
@@ -66,5 +69,12 @@ class MainMenu: NSObject, NSMenuItemValidation {
             NSWorkspace.shared.open(url)
         }
     }
-
+    
+    @IBAction func log(_ sender: NSMenuItem) {
+        if let appDelegate = NSApp.delegate as? AppDelegate,
+            let url = appDelegate.logUrl {
+            NSWorkspace.shared.open(url)
+        }
+    }
+    
 }

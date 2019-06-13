@@ -43,6 +43,9 @@
 		013CE8F32185D0EA000271FB /* CommentCoreLibrary.js in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
 		013CE8F42185D0EA000271FB /* style.css in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
 		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
+		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
+		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
+		014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */; };
 		01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD2210AF5F40046AAAD /* DataManager.swift */; };
 		01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */; };
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
@@ -59,7 +62,6 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
-		01842A4B2226824C00BA77CB /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01842A4A2226824C00BA77CB /* crypto-js.js */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		019EB39C21453A0F000FD123 /* devmate.pem in Resources */ = {isa = PBXBuildFile; fileRef = 019EB39B21453A0F000FD123 /* devmate.pem */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
@@ -184,6 +186,9 @@
 		013CE8E82185CB1A000271FB /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/Mac/Swifter.framework; sourceTree = SOURCE_ROOT; };
 		013CE8E92185CB1A000271FB /* Swifter.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Swifter.framework.dSYM; path = Carthage/Build/Mac/Swifter.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		013CE8F52185D992000271FB /* HttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
+		014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OpenFilesWindow.storyboard; sourceTree = "<group>"; };
+		014327B822AF5BED00651064 /* OpenFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesViewController.swift; sourceTree = "<group>"; };
+		014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesWindowController.swift; sourceTree = "<group>"; };
 		01479CD2210AF5F40046AAAD /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBookmarkViewController.swift; sourceTree = "<group>"; };
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
@@ -201,7 +206,6 @@
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
-		01842A4A2226824C00BA77CB /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "crypto-js.js"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		019EB39B21453A0F000FD123 /* devmate.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = devmate.pem; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -284,6 +288,7 @@
 				0101012C211DCE22002F0F7F /* Siderbar */,
 				01F46C9F2102EEFB00FE9DAD /* Preferences */,
 				01479CD8210B35D80046AAAD /* MainWindow */,
+				014327B522AF5BB700651064 /* Open Files */,
 				01AEC8B020EDFD02001406E8 /* Main.storyboard */,
 				01479CD6210B35480046AAAD /* MainMenu.swift */,
 				01AEC8C820F1081C001406E8 /* Identifiers.swift */,
@@ -343,6 +348,16 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		014327B522AF5BB700651064 /* Open Files */ = {
+			isa = PBXGroup;
+			children = (
+				014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */,
+				014327B822AF5BED00651064 /* OpenFilesViewController.swift */,
+				014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */,
+			);
+			path = "Open Files";
+			sourceTree = "<group>";
+		};
 		01479CD8210B35D80046AAAD /* MainWindow */ = {
 			isa = PBXGroup;
 			children = (
@@ -374,7 +389,6 @@
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				019EB39B21453A0F000FD123 /* devmate.pem */,
 				013850F9214EA2AA003817CE /* huya.js */,
-				01842A4A2226824C00BA77CB /* crypto-js.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -492,7 +506,7 @@
 				TargetAttributes = {
 					01AEC8A620EDFD01001406E8 = {
 						CreatedOnToolsVersion = 9.4.1;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1020;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.Mac = {
 								enabled = 0;
@@ -531,13 +545,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
-				01842A4B2226824C00BA77CB /* crypto-js.js in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				019EB39C21453A0F000FD123 /* devmate.pem in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
+				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,6 +592,7 @@
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
+				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
@@ -600,6 +615,7 @@
 				0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */,
 				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
+				014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */,
 				01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */,
 				01010131211E987D002F0F7F /* SuggestionsTableCellView.swift in Sources */,
 				010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */,
@@ -748,7 +764,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -767,7 +782,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -776,7 +791,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -794,7 +808,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

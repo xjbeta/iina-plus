@@ -161,15 +161,15 @@ class MainViewController: NSViewController {
         } else if let url = URL(string: str),
             url.host == "www.douyu.com",
             url.pathComponents.count > 2,
-            url.pathComponents[1] == "t" {
-            Processes.shared.videoGet.getDouyuRoomIds(url).done {
-                if $0.count > 1 {
-                    let infos = $0.enumerated().map {
-                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: $0.element)
+            url.pathComponents[1] == "topic" {
+            
+            Processes.shared.videoGet.getDouyuHtml(str).done {
+                if $0.roomIds.count > 0 {
+                    let infos = $0.roomIds.enumerated().map {
+                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: Int($0.element) ?? 0)
                     }
-                    
+
                     self.showSelectVideo(0, infos: infos)
-                    
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {
@@ -290,6 +290,12 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
+        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) { _ in
+            self.danmaku?.stop()
+            self.danmaku = Danmaku(.bilibili, url: "https://swift.org")
+            self.danmaku?.start()
+        }
+        
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
@@ -372,7 +378,7 @@ class MainViewController: NSViewController {
         }
     }
     
-    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init) {
+    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
         var dynamicID = -1
         
         switch action {
@@ -389,14 +395,12 @@ class MainViewController: NSViewController {
             self.bilibili.dynamicList($0, action, dynamicID)
             }.done(on: .main) { cards in
                 switch action {
-                case .init:
+                case .init😅:
                     self.bilibiliCards = cards
                 case .history:
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
                     self.bilibiliCards.insert(contentsOf: cards, at: 0)
-                default:
-                    break
                 }
             }.ensure(on: .main) {
                 self.canLoadMoreBilibiliCards = true

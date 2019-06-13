@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -78,6 +78,7 @@
                                         <menuItem title="Open…" keyEquivalent="o" id="dGS-Io-0JC">
                                             <connections>
                                                 <action selector="openDocument:" target="Ady-hI-5gd" id="FIU-33-nwN"/>
+                                                <segue destination="o1P-az-5tB" kind="show" id="D1D-Bd-khg"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open Recent" id="Afb-Oy-yWe">
@@ -231,6 +232,13 @@
                                                 <action selector="help:" target="XfU-aw-sKA" id="aAD-oX-DIu"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="aey-He-V1w"/>
+                                        <menuItem title="Log File" id="YiI-Ed-gFA">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="log:" target="XfU-aw-sKA" id="R6f-3y-s1U"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -247,6 +255,14 @@
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1722" y="-287"/>
+        </scene>
+        <!--OpenFilesWindow-->
+        <scene sceneID="lig-b8-RvN">
+            <objects>
+                <controllerPlaceholder storyboardName="OpenFilesWindow" id="o1P-az-5tB" sceneMemberID="viewController"/>
+                <customObject id="wDy-dC-3Z6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2140" y="-100"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">

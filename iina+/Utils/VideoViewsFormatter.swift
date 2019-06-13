@@ -44,10 +44,10 @@ class VideoViewsFormatter: Formatter {
     
     
     private enum Unit: Float {
+        case def
         case k = 1000
         case m = 1000000
         case b = 1000000000
-        case def
         
         var string: String {
             get {
