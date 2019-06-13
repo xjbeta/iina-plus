@@ -290,6 +290,12 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
+        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) { _ in
+            self.danmaku?.stop()
+            self.danmaku = Danmaku(.bilibili, url: "https://swift.org")
+            self.danmaku?.start()
+        }
+        
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {

@@ -55,6 +55,7 @@ class OpenFilesViewController: NSViewController {
             
             Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili)
             
+            NotificationCenter.default.post(name: .loadDanmaku, object: nil)
         }.catch {
             print($0)
         }
