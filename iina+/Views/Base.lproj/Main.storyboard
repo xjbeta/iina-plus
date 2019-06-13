@@ -232,6 +232,13 @@
                                                 <action selector="help:" target="XfU-aw-sKA" id="aAD-oX-DIu"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="aey-He-V1w"/>
+                                        <menuItem title="Log File" id="YiI-Ed-gFA">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="log:" target="XfU-aw-sKA" id="R6f-3y-s1U"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
