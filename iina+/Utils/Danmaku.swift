@@ -398,7 +398,7 @@ class Danmaku: NSObject {
                 
                 
                 if unKonwn.count > 0 {
-                    print(unKonwn)
+                    Log(unKonwn)
                 }
                 
             } catch let error {
@@ -622,8 +622,8 @@ new Uint8Array(sendRegister(wsUserInfo));
                         return nil
                     }
                 } catch let error {
-                    print(error)
-                    print(String(data: data, encoding: .utf8) ?? "")
+                    Log(error)
+                    Log(String(data: data, encoding: .utf8) ?? "")
                     return nil
                 }
                 }.forEach {
@@ -776,7 +776,7 @@ new Uint8Array(sendRegister(wsUserInfo));
                 var convertedNumber = CFSwapInt32LittleToHost(number)
                 data.append(&convertedNumber, length: 4)
             default:
-                print("Unrecognized character: \($0.element)")
+                Log("Unrecognized character: \($0.element)")
             }
         }
         return data

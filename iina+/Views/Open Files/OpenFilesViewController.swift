@@ -62,7 +62,7 @@ class OpenFilesViewController: NSViewController {
             NotificationCenter.default.post(name: .loadDanmaku, object: nil)
             self.view.window?.close()
         }.catch {
-            print($0)
+            Log($0)
         }
     }
     
