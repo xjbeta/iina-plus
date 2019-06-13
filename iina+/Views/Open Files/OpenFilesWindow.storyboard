@@ -11,7 +11,7 @@
             <objects>
                 <windowController showSeguePresentationStyle="single" id="pu0-ea-1qY" customClass="OpenFilesWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="O5L-g3-Z7W">
-                        <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
                         <rect key="contentRect" x="196" y="240" width="540" height="220"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
                         <value key="minSize" type="size" width="540" height="220"/>
@@ -40,7 +40,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="540" height="220"/>
                                 <subviews>
                                     <gridView xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="12" columnSpacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="s0V-mO-SKZ">
-                                        <rect key="frame" x="20" y="78" width="500" height="122"/>
+                                        <rect key="frame" x="20" y="68" width="500" height="122"/>
                                         <rows>
                                             <gridRow id="vxX-Qe-faS"/>
                                             <gridRow id="qgg-zV-drn"/>
@@ -152,7 +152,7 @@ Gw
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="bhG-Py-Vnw" firstAttribute="leading" secondItem="jIg-Tv-kz7" secondAttribute="leading" constant="20" id="3Pe-fZ-X4i"/>
-                                    <constraint firstItem="s0V-mO-SKZ" firstAttribute="top" secondItem="jIg-Tv-kz7" secondAttribute="top" constant="20" id="5gS-Yf-KEd"/>
+                                    <constraint firstItem="s0V-mO-SKZ" firstAttribute="top" secondItem="jIg-Tv-kz7" secondAttribute="top" constant="30" id="5gS-Yf-KEd"/>
                                     <constraint firstItem="s0V-mO-SKZ" firstAttribute="leading" secondItem="jIg-Tv-kz7" secondAttribute="leading" constant="20" id="BwG-rt-mw9"/>
                                     <constraint firstAttribute="trailing" secondItem="s0V-mO-SKZ" secondAttribute="trailing" constant="20" id="JR3-04-YDl"/>
                                     <constraint firstAttribute="trailing" secondItem="hHJ-Cb-We8" secondAttribute="trailing" constant="20" id="UqW-UD-48c"/>
