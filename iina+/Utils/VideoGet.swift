@@ -68,38 +68,26 @@ class VideoGet: NSObject {
                         resolver.reject($0)
                 }
             case .douyu:
-                var roomIds = [Int]()
-                var roomTitles = [String]()
-                
-                getDouyuRoomIds(url).get {
-                    roomIds = $0
+                var roomId = 0
+                var roomTitle = ""
+                getDouyuHtml(url.absoluteString).get {
+                    guard let rid = Int($0.roomId) else {
+                        resolver.reject(VideoGetError.douyuNotFoundRoomId)
+                        return
+                    }
+                    roomId = rid
                     }.then { _ in
-                    when(resolved: roomIds.map { self.getDouyuUserInfo($0) })
+                        self.douyuBetard(roomId)
                     }.get {
-                        try $0.forEach {
-                            switch $0 {
-                            case .fulfilled(let info):
-                                roomTitles.append(info.title)
-                            case .rejected(let error):
-                                throw error
-                            }
-                        }
+                        roomTitle = $0.title
                     }.then { _ in
-                      when(resolved: roomIds.map { self.getDouyuUrl($0) })
+                        self.getDouyuUrl(roomId)
                     }.done {
-                        try $0.enumerated().forEach {
-                            switch $0.element {
-                            case .fulfilled(let url):
-                                yougetJson.streams[roomTitles[$0.offset]] = Stream(url: url)
-                            case .rejected(let error):
-                                throw error
-                            }
-                        }
+                        yougetJson.streams[roomTitle] = Stream(url: $0)
                         resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
                 }
-                
             case .panda:
                 getPandaRoomID(url).then {
                     when(resolved: $0.map { self.getPandaInfo($0) })
@@ -311,8 +299,12 @@ class VideoGet: NSObject {
                         resolver.reject($0)
                 }
             case .douyu:
-                getDouyuUserInfo(roomId).done {
-                    resolver.fulfill($0)
+                getDouyuHtml(url.absoluteString).map {
+                    Int($0.roomId) ?? -1
+                    }.then {
+                        self.douyuBetard($0)
+                    }.done {
+                        resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -447,15 +439,46 @@ extension VideoGet {
     }
     
     // MARK: - Douyu
-    func getDouyuUserInfo(_ roomID: Int) -> Promise<DouyuInfo> {
+    func getDouyuHtml(_ url: String) -> Promise<(roomId: String, roomIds: [String], isLiving: Bool, pageId: String)> {
         return Promise { resolver in
-            HTTP.GET("http://open.douyucdn.cn/api/RoomApi/room/\(roomID)") { response in
+            HTTP.GET(url) { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
+                
+                let showStatus = response.text?.subString(from: "$ROOM.show_status =", to: ";") == "1"
+
+                if let roomId = response.text?.subString(from: "$ROOM.room_id =", to: ";"), roomId != "" {
+                    
+                    var roomIds = [String]()
+                    var pageId = ""
+                    
+                    if let roomIdsStr = response.text?.subString(from: "window.room_ids=[", to: "],"), roomIdsStr != "" {
+                        
+                        roomIds = roomIdsStr.replacingOccurrences(of: "\"", with: "").split(separator: ",").map(String.init)
+                        
+                        pageId = response.text?.subString(from: "\"pageId\":", to: ",") ?? ""
+                    }
+
+                    resolver.fulfill((roomId, roomIds, showStatus, pageId))
+                } else {
+                    resolver.reject(VideoGetError.douyuNotFoundRoomId)
+                }
+            }
+        }
+    }
+    
+    func douyuBetard(_ rid: Int) -> Promise<DouyuInfo> {
+        return Promise { resolver in
+            HTTP.GET("https://www.douyu.com/betard/\(rid)") { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    let info: DouyuInfo = try json.value(for: "data")
+                    
+                    let info: DouyuInfo = try DouyuInfo(object: json)
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
@@ -465,26 +488,21 @@ extension VideoGet {
     }
     
     
-    func getDouyuRoomIds(_ url: URL) -> Promise<([Int])> {
+//    https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=1149&view=0
+    func getDouyuEventRoomNames(_ pageId: String) -> Promise<()> {
         return Promise { resolver in
-            let paths = url.pathComponents
-            if paths.count > 2, paths[1] == "t" {
-                HTTP.GET(url.absoluteString) { response in
-                    if let error = response.error {
-                        resolver.reject(error)
-                    }
-
-                    var onlineIdStr = response.text?.subString(from: "\"online_id\":[", to: "],") ?? ""
-                    onlineIdStr = onlineIdStr.replacingOccurrences(of: "\"", with: "")
-                    let roomIds = onlineIdStr.components(separatedBy: ",").compactMap {
-                        Int($0)
-                    }
-                    resolver.fulfill(roomIds)
+            HTTP.GET("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0") { response in
+                if let error = response.error {
+                    resolver.reject(error)
                 }
-            } else if let id = Int(url.lastPathComponent) {
-                resolver.fulfill([id])
-            } else {
-                resolver.reject(VideoGetError.douyuUrlError)
+                
+                do {
+                    
+                    
+                    resolver.fulfill(())
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }
@@ -1042,6 +1060,8 @@ extension VideoGet {
 enum VideoGetError: Error {
     case douyuUrlError
     case douyuSignError
+    case douyuNotFoundRoomId
+    case douyuRoomIdsCountError
     
     case isNotLiving
     case notFindUrls

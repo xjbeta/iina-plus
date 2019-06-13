@@ -161,15 +161,15 @@ class MainViewController: NSViewController {
         } else if let url = URL(string: str),
             url.host == "www.douyu.com",
             url.pathComponents.count > 2,
-            url.pathComponents[1] == "t" {
-            Processes.shared.videoGet.getDouyuRoomIds(url).done {
-                if $0.count > 1 {
-                    let infos = $0.enumerated().map {
-                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: $0.element)
+            url.pathComponents[1] == "topic" {
+            
+            Processes.shared.videoGet.getDouyuHtml(str).done {
+                if $0.roomIds.count > 0 {
+                    let infos = $0.roomIds.enumerated().map {
+                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: Int($0.element) ?? 0)
                     }
-                    
+
                     self.showSelectVideo(0, infos: infos)
-                    
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {

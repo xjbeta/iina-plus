@@ -69,13 +69,13 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     
     init(object: MarshaledObject) throws {
-        title = try object.value(for: "room_name")
-        name = try object.value(for: "owner_name")
-        let userCoverURL: String = try object.value(for: "avatar")
+        title = try object.value(for: "room.room_name")
+        name = try object.value(for: "room.nickname")
+        let userCoverURL: String = try object.value(for: "room.avatar.big")
         if let url = URL(string: userCoverURL) {
             userCover = NSImage(contentsOf: url)
         }
-        isLiving = "\(try object.any(for: "room_status"))" == "1"
+        isLiving = "\(try object.any(for: "room.show_status"))" == "1"
     }
 }
 
