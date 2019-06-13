@@ -448,7 +448,8 @@ extension VideoGet {
                 
                 let showStatus = response.text?.subString(from: "$ROOM.show_status =", to: ";") == "1"
 
-                if let roomId = response.text?.subString(from: "$ROOM.room_id =", to: ";"), roomId != "" {
+                if var roomId = response.text?.subString(from: "$ROOM.room_id =", to: ";"), roomId != "" {
+                    roomId = roomId.replacingOccurrences(of: " ", with: "")
                     
                     var roomIds = [String]()
                     var pageId = ""
