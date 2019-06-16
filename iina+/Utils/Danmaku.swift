@@ -190,7 +190,7 @@ class Danmaku: NSObject {
                 self.socket?.open()
             }
         case .eGame:
-            VideoGet().getEgameInfo(url).done {
+            Processes.shared.videoGet.getEgameInfo(url).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {
