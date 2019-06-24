@@ -1,5 +1,5 @@
 github "utahiosmac/Marshal"
-github "daltoniam/SwiftHTTP"
+github "Alamofire/Alamofire" "5.0.0-beta.6"
 github "DevMate/DevMateKit"
 github "IBM-Swift/BlueSocket"
 github "facebook/SocketRocket" "master"

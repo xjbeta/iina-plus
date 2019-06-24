@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import SwiftHTTP
+import Alamofire
 import Marshal
 import SocketRocket
 import Gzip
@@ -136,10 +136,9 @@ class Danmaku: NSObject {
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self
-            
-            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") {
+            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response {
                 do {
-                    let json = try JSONParser.JSONObjectWithData($0.data)
+                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
                     self.biliLiveRoomID = try json.value(for: "data.room_id")
                     self.socket?.open()
                 } catch let error {
@@ -147,9 +146,9 @@ class Danmaku: NSObject {
                 }
             }
         case .panda:
-            HTTP.GET("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws") {
+            AF.request("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws").response {
                 do {
-                    let json = try JSONParser.JSONObjectWithData($0.data)
+                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
                     let pandaInfo = try PandaChatRoomInfo(object: json)
                     
                     self.pandaInitStr = pandaInfo.initStr()
@@ -167,9 +166,9 @@ class Danmaku: NSObject {
                     Log($0)
             }
         case .huya:
-            let header = ["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"]
+            let header = HTTPHeaders(["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"])
             
-            HTTP.GET("https://m.huya.com/\(roomID)", headers: header) {
+            AF.request("https://m.huya.com/\(roomID)", headers: header).response {
                 //            var SUBSID = '2460685313';
                 //            lSid: "2460685313"
                 
@@ -352,9 +351,9 @@ class Danmaku: NSObject {
             """,
             "tt" : "1"]
         
-        HTTP.GET("https://wdanmaku.egame.qq.com/cgi-bin/pgg_barrage_async_fcgi", parameters: p) { response in
+        AF.request("https://wdanmaku.egame.qq.com/cgi-bin/pgg_barrage_async_fcgi", parameters: p).response { response in
             do {
-                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                 let dm: EgameDM = try json.value(for: "data.key.retBody.data")
                 
                 if info.lastTm < dm.lastTm {
@@ -424,7 +423,7 @@ class Danmaku: NSObject {
                  "ts": 1536407932,
                  "type": 1,
                  "sign": 0] as [String : Any]
-        HTTP.GET("https://api.bilibili.com/x/v2/dm/list.so", parameters: p) { re in
+        AF.request("https://api.bilibili.com/x/v2/dm/list.so", parameters: p).response { re in
             let data = re.data
             let head = data.subdata(in: 0..<4)
             let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 4

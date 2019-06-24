@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftHTTP
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -39,10 +38,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Log("App Version \(version) (Build \(build))")
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
         
-        HTTP.globalRequest { req in
-            req.timeoutInterval = 3
-        }
-
         DevMateKit.sendTrackingReport(nil, delegate: nil)
         DevMateKit.setupIssuesController(nil, reportingUnhandledIssues: true)
         if let url = logUrl {

@@ -8,7 +8,6 @@
 
 import Foundation
 import Marshal
-import SwiftHTTP
 import PromiseKit
 
 class Processes: NSObject {
