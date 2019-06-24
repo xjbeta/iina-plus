@@ -44,23 +44,6 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
     }
 }
 
-struct PandaInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var userCover: NSImage?
-    var isLiving = false
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "roominfo.name")
-        name = try object.value(for: "hostinfo.name")
-        let userCoverURL: String = try object.value(for: "hostinfo.avatar")
-        if let str = URL(string: userCoverURL)?.lastPathComponent,
-            let url = URL(string: "https://i.h2.pdim.gs/" + str) {
-            userCover = NSImage(contentsOf: url)
-        }
-        isLiving = "\(try object.any(for: "roominfo.status"))" == "2"
-    }
-}
 
 struct DouyuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
@@ -101,24 +84,6 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
             userCover = NSImage(contentsOf: url)
         }
         isLiving = "\(try object.any(for: "isOn"))" == "1"
-    }
-}
-
-struct PandaXingYanInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var userCover: NSImage?
-    var isLiving = false
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "roominfo.name")
-        name = try object.value(for: "hostinfo.nickName")
-        let userCoverURL: String = try object.value(for: "hostinfo.avatar")
-        if let str = URL(string: userCoverURL)?.lastPathComponent,
-            let url = URL(string: "https://i.h2.pdim.gs/" + str) {
-            userCover = NSImage(contentsOf: url)
-        }
-        isLiving = "\(try object.any(for: "roominfo.playstatus"))" == "1"
     }
 }
 

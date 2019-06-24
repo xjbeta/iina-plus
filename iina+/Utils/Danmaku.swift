@@ -21,7 +21,6 @@ class Danmaku: NSObject {
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
-    var pandaInitStr = ""
     
     var douyuSocket: Socket? = nil
     
@@ -143,20 +142,6 @@ class Danmaku: NSObject {
                     self.socket?.open()
                 } catch let error {
                     Log("can't find bilibili live room id \(error)")
-                }
-            }
-        case .panda:
-            AF.request("https://riven.panda.tv/chatroom/getinfo?roomid=\(roomID)&protocol=ws").response {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-                    let pandaInfo = try PandaChatRoomInfo(object: json)
-                    
-                    self.pandaInitStr = pandaInfo.initStr()
-                    self.socket = SRWebSocket(url: pandaInfo.chatAddr!)
-                    self.socket?.delegate = self
-                    self.socket?.open()
-                } catch let error {
-                    Log("can't find panda live room id \(error)")
                 }
             }
         case .douyu:
@@ -302,8 +287,6 @@ class Danmaku: NSObject {
                     switch self.liveSite {
                     case .biliLive:
                         try self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
-                    case .panda:
-                        try self.socket?.send(data: self.pack(format: "nn", values: [6, 0]) as Data)
                     case .douyu:
                         //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                         let keeplive = "type@=mrkl/"
@@ -463,12 +446,6 @@ extension Danmaku: SRWebSocketDelegate {
             data.append(json.data(using: .utf8)!)
             try? webSocket.send(data: data as Data)
             startTimer()
-        case .panda:
-            //0006 0002 00DA
-            let data = pack(format: "nnn", values: [6, 2, pandaInitStr.count])
-            data.append(pandaInitStr.data(using: .utf8)!)
-            try? webSocket.send(data: data as Data)
-            startTimer()
         case .huya:
             /*
              sendWup    onlineui    OnUserHeartBeat    HUYA.UserHeartBeatReq
@@ -524,7 +501,7 @@ new Uint8Array(sendRegister(wsUserInfo));
     func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
         Log("webSocketdidClose \(reason ?? "")")
         switch liveSite {
-        case .biliLive, .panda:
+        case .biliLive:
             timer?.cancel()
             timer = nil
         default:
@@ -579,79 +556,6 @@ new Uint8Array(sendRegister(wsUserInfo));
                 }.forEach {
                     sendDM($0)
             }
-            
-        case .panda:
-            //            00 06 00 03 00 05 61 63 6B 3A 30 00 00 02 A9 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 48
-            //            0 - 15 mark
-            //
-            //            00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 41
-            //            01 41 json length
-            if data.count == 4 {
-                Log("received heartbeat")
-            } else if data.count == 22 {
-                Log("connect success")
-            }
-            
-            var datas: [Data] = []
-            var d = data
-            guard d.count > 15 else { return }
-            d = d.subdata(in: 15..<d.endIndex)
-            
-            while d.count > 22 {
-                let head = d.subdata(in: 12..<16)
-                let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) })) + 16
-                
-                if endIndex <= d.endIndex {
-                    datas.append(d.subdata(in: 16..<endIndex))
-                    d = d.subdata(in: endIndex..<d.endIndex)
-                } else {
-                    d.removeAll()
-                }
-            }
-            
-            
-            datas.compactMap { data -> String? in
-                do {
-                    let json = try JSONParser.JSONObjectWithData(data)
-                    let type: String = try json.value(for: "type")
-                    if type == "1" {
-                        let str: String = try json.value(for: "data.content")
-                        return str
-                    } else {
-                        return nil
-                    }
-                } catch let error {
-                    Log(error)
-                    Log(String(data: data, encoding: .utf8) ?? "")
-                    return nil
-                }
-                }.forEach {
-                    sendDM($0)
-            }
-            
-            //            😍[:喜欢]
-            //            😢[:哭]
-            //            😠[:闭嘴]
-            //            😪[:睡]
-            //            😺[:惊讶]
-            //            😎[:酷]
-            //            💦[:流汗]
-            //            💪[:努力]
-            //            💢[:愤怒]
-            //            🤔️[:疑问]
-            //            😵[:晕]
-            //            🤯[:疯]
-            //            😱[:哀]
-            //            💀[:骷髅]
-            //            😳[:害羞]
-            //            🤪[:抠鼻]
-            //            😑[:呵欠]
-            //            👎[:鄙视]
-            //            🎉[:撒花]
-            //            😚[:亲]
-            //            😞[:可怜]
-            //            233 [:233]
-        //            666[:666]
         case .huya:
             let jsContext = JSContext()
             jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
@@ -779,40 +683,6 @@ new Uint8Array(sendRegister(wsUserInfo));
             }
         }
         return data
-    }
-}
-
-struct PandaChatRoomInfo: Unmarshaling {
-    var appid: String
-    var rid: Int
-    var sign: String
-    var authType: String
-    var ts: Int
-    var chatAddr: URL?
-    
-    init(object: MarshaledObject) throws {
-        appid = try object.value(for: "data.appid")
-        rid = try object.value(for: "data.rid")
-        sign = try object.value(for: "data.sign")
-        authType = try object.value(for: "data.authType")
-        ts = try object.value(for: "data.ts")
-        let chatList: [String]  = try object.value(for: "data.chat_addr_list")
-        if let str = chatList.first, let url = URL(string: "wss://" + str) {
-            chatAddr = url
-        }
-    }
-    
-    func initStr() -> String {
-        return """
-        u:\(rid)@\(appid)
-        ts:\(ts)
-        sign:\(sign)
-        authtype:\(authType)
-        plat:jssdk_pc_web
-        version:0.5.10
-        network:unknown
-        compress:none
-        """
     }
 }
 

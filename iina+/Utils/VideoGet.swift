@@ -17,10 +17,8 @@ import WebKit
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
     case bilibili = "www.bilibili.com"
-    case panda = "www.panda.tv"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
-    case pandaXingYan = "xingyan.panda.tv"
     case quanmin = "www.quanmin.tv"
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
@@ -84,22 +82,6 @@ class VideoGet: NSObject {
                         self.getDouyuUrl(roomId)
                     }.done {
                         yougetJson.streams[roomTitle] = Stream(url: $0)
-                        resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .panda:
-                getPandaRoomID(url).then {
-                    when(resolved: $0.map { self.getPandaInfo($0) })
-                    }.done {
-                        try $0.forEach {
-                            switch $0 {
-                            case .fulfilled(let strings):
-                                yougetJson.streams[strings.0] = Stream(url: strings.1)
-                            case .rejected(let error):
-                                throw error
-                            }
-                        }
                         resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
@@ -292,12 +274,6 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .panda:
-                getPandaUserInfo(roomId).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
             case .douyu:
                 getDouyuHtml(url.absoluteString).map {
                     Int($0.roomId) ?? -1
@@ -311,12 +287,6 @@ class VideoGet: NSObject {
             case .huya:
                 getHuyaInfo(url).done {
                     resolver.fulfill($0.0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .pandaXingYan:
-                getPandaXingYanInfo(roomId).done {
-                    resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -618,93 +588,6 @@ extension VideoGet {
         }
     }
     
-    // MARK: - Panda
-    func getPandaUserInfo(_ roomId: Int) -> Promise<PandaInfo> {
-        return Promise { resolver in
-            AF.request("https://room.api.m.panda.tv/index.php?method=room.shareapi&roomid=\(roomId)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info: PandaInfo = try json.value(for: "data")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getPandaRoomID(_ url: URL) -> Promise<([Int])>  {
-//        https://www.panda.tv/s8
-        return Promise { resolver in
-            if let id = Int(url.lastPathComponent) {
-                resolver.fulfill([id])
-            } else {
-                AF.request(url.absoluteString).responseString { response in
-                    if let error = response.error {
-                        resolver.reject(error)
-                    }
-                    var text = response.text ?? ""
-                    var ids: [Int] = []
-                    
-                    let startStr = "data-room-id=\""
-                    while Int(text.subString(from: startStr, to: "\">")) != nil {
-                        ids.append(Int(text.subString(from: "data-room-id=\"", to: "\">"))!)
-                        if let endIndex = text.range(of: startStr)?.upperBound {
-                            text.removeSubrange(text.startIndex ..< endIndex)
-                        } else {
-                            text = ""
-                        }
-                    }
-                    resolver.fulfill(ids)
-                }
-            }
-        }
-    }
-    
-    
-    
-    
-    func getPandaInfo(_ roomID: Int) -> Promise<(String, String)>  {
-        return Promise { resolver in
-            AF.request("https://www.panda.tv/api_room_v2?roomid=\(roomID)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    
-                    let status: String = try json.value(for: "data.videoinfo.status")
-                    guard status == "2" else {
-                        resolver.reject(VideoGetError.isNotLiving)
-                        return
-                    }
-                    
-                    
-                    let plflagStr: String = try json.value(for: "data.videoinfo.plflag")
-                    let plflag = plflagStr.components(separatedBy: "_").last ?? ""
-                    let roomKey: String = try json.value(for: "data.videoinfo.room_key")
-                    let plflagList: String = try json.value(for: "data.videoinfo.plflag_list")
-                    
-                    let plflagListJson: JSONObject = try JSONParser.JSONObjectWithData(plflagList.data(using: .utf8) ?? Data())
-                    let sign: String = try plflagListJson.value(for: "auth.sign")
-                    let ts: String = try plflagListJson.value(for: "auth.time")
-                    let rid: String = try plflagListJson.value(for: "auth.rid")
-                    
-                    let title: String = try json.value(for: "data.roominfo.name")
-
-                    let url = "https://pl\(plflag).live.panda.tv/live_panda/\(roomKey).flv?sign=\(sign)&ts=\(ts)&rid=\(rid)"
-                    resolver.fulfill((title, url))
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
     // MARK: - Huya
     
     struct HuyaUrl: Unmarshaling {
@@ -766,26 +649,6 @@ extension VideoGet {
             }
         }
     }
-    
-    // MARK: - Panda XingYan
-    func getPandaXingYanInfo(_ roomId: Int) -> Promise<PandaXingYanInfo> {
-        return Promise { resolver in
-            AF.request("https://m.api.xingyan.panda.tv/room/baseinfo?xid=\(roomId)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info: PandaXingYanInfo = try json.value(for: "data")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
     
     // MARK: - eGame
     
