@@ -71,8 +71,10 @@ class HttpServer: NSObject {
         do {
             let data = try JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text))
             if let str = String(data: data, encoding: .utf8) {
-                Log("WriteText to websocket: \(str)")
                 writeText?(str)
+                if !str.contains("sendDM") {
+                    Log("WriteText to websocket: \(str)")
+                }
             }
         } catch let error {
             Log(error)
