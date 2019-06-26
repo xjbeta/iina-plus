@@ -17,6 +17,7 @@ class BilibiliCard: NSObject, Unmarshaling {
     var dynamicId: Int = 0
     @objc var title: String = ""
     @objc var pic: NSImage?
+    @objc var picUrl: String = ""
     @objc var name: String = ""
     @objc var duration: TimeInterval = 0
     @objc var views: Int = 0
@@ -37,10 +38,7 @@ class BilibiliCard: NSObject, Unmarshaling {
     
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
-            if let url = URL(string: picUrl) {
-                pic = NSImage(contentsOf: url)
-            }
-    
+            self.picUrl = picUrl
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")

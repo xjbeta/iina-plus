@@ -1354,7 +1354,7 @@ Gw
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="633"/>
@@ -1427,9 +1427,6 @@ Gw
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="169" height="94"/>
                                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="2gK-pa-5zY"/>
                                                                                                 <color key="contentTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                                                <connections>
-                                                                                                    <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.pic" id="bzQ-Rs-2kP"/>
-                                                                                                </connections>
                                                                                             </imageView>
                                                                                             <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVj-gu-ivu" customClass="BilibiliCardProgressView" customModule="iina_" customModuleProvider="target">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="169" height="4"/>

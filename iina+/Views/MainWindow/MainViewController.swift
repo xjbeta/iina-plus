@@ -483,7 +483,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
                 view.imageBoxView.aid = bilibiliCards[row].aid
-                view.imageBoxView.pic = bilibiliCards[row].pic
+                view.imageBoxView.imageView?.image = nil
+                ImageLoader.request(bilibiliCards[row].picUrl) {
+                    view.imageBoxView.pic = $0
+                }
                 return view
             }
         case suggestionsTableView:

@@ -12,7 +12,7 @@ import Marshal
 protocol LiveInfo {
     var title: String { get }
     var name: String { get }
-    var userCover: NSImage? { get }
+    var userCover: String { get }
     var isLiving: Bool { get }
 }
 
@@ -25,7 +25,7 @@ protocol VideoSelector {
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String = ""
     var isLiving = false
     var roomId: Int = -1
     
@@ -35,11 +35,7 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         name = try object.value(for: "info.uname")
-        
-        let userCoverURL: String = try object.value(for: "info.face")
-        if let url = URL(string: userCoverURL) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "info.face")
         isLiving = "\(try object.any(for: "live_status"))" == "1"
     }
 }
@@ -48,16 +44,13 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
 struct DouyuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String
     var isLiving = false
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "room.room_name")
         name = try object.value(for: "room.nickname")
-        let userCoverURL: String = try object.value(for: "room.avatar.big")
-        if let url = URL(string: userCoverURL) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "room.avatar.big")
         isLiving = "\(try object.any(for: "room.show_status"))" == "1"
     }
 }
@@ -72,17 +65,14 @@ struct DouyuVideoList: VideoSelector {
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String
     var isLiving = false
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "introduction")
         name = try object.value(for: "nick")
-        var userCoverURL: String = try object.value(for: "avatar")
-        userCoverURL = userCoverURL.replacingOccurrences(of: "http://", with: "https://")
-        if let url = URL(string: userCoverURL) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "avatar")
+        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
         isLiving = "\(try object.any(for: "isOn"))" == "1"
     }
 }
@@ -90,16 +80,13 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
 struct QuanMinInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String
     var isLiving = false
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         name = try object.value(for: "nick")
-        let userCoverURL: String = try object.value(for: "avatar")
-        if let url = URL(string: userCoverURL) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "avatar")
         isLiving = "\(try object.any(for: "status"))" == "2"
     }
 }
@@ -107,7 +94,7 @@ struct QuanMinInfo: Unmarshaling, LiveInfo {
 struct LongZhuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String
     var isLiving = false
     
     init(object: MarshaledObject) throws {
@@ -119,18 +106,15 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
             isLiving = false
         }
         name = try object.value(for: "username")
-        var userCoverURL: String = try object.value(for: "avatar")
-        userCoverURL = userCoverURL.replacingOccurrences(of: "http://", with: "https://")
-        if let url = URL(string: userCoverURL) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "avatar")
+        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
     }
 }
 
 struct EgameInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: NSImage?
+    var userCover: String
     var isLiving = false
     var pid = ""
     var anchorId: Int
@@ -139,12 +123,8 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
         name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
-        let imageUrl: String = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
-        
-        // extractOptions:147: *** unknown hint identifier 'kCGImageSourceTypeIdentifierHint:dyn.age8u' -- ignoring...
-        if let url = URL(string: imageUrl.replacingOccurrences(of: "http://", with: "https://")) {
-            userCover = NSImage(contentsOf: url)
-        }
+        userCover = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
+        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
         let liveStatus: Int = try object.value(for: "state.live-info.liveInfo.profileInfo.isLive")
         isLiving = liveStatus == 1
         pid = try object.value(for: "state.live-info.liveInfo.videoInfo.pid")

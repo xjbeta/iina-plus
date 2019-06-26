@@ -366,10 +366,7 @@ extension VideoGet {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     var info = BilibiliInfo()
                     info.name = try json.value(for: "data.info.uname")
-                    let userCoverURL: String = try json.value(for: "data.info.face")
-                    if let url = URL(string: userCoverURL) {
-                        info.userCover = NSImage(contentsOf: url)
-                    }
+                    info.userCover = try json.value(for: "data.info.face")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
