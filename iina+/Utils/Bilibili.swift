@@ -82,7 +82,7 @@ struct BilibiliPvideo: Unmarshaling {
             throw CropImagesError.zeroImagesCount
         }
         if let iamgeStr = imageStrs.first,
-            let url = URL(string: iamgeStr.replacingOccurrences(of: "http://", with: "https://")),
+            let url = URL(string: "https:" + iamgeStr),
             let image = NSImage(contentsOf: url) {
             images = [image]
         }
@@ -258,7 +258,7 @@ class Bilibili: NSObject {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    var pvideo = try BilibiliPvideo.init(object: json)
+                    var pvideo = try BilibiliPvideo(object: json)
                     pvideo.cropImages()
                     resolver.fulfill(pvideo)
                 } catch let error {
