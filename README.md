@@ -19,7 +19,6 @@
 |-------------|-------------|--------------|---------|
 | bilibili    |      ∙      |       ✓      |    ✓    |
 | bililive    |      ✓      |       ✓      |    ✓    |
-| panda       |      ✓      |       ✓      |    ✓    |
 | douyu       |      ✓      |       ✓      |    ✓    |
 | huya        |      ✓      |       ✓      |    ✓    |
 | qiedianjing |      ✓      |       ✓      |    ✓    |
@@ -34,7 +33,7 @@
 #### IINA-Danmaku [DMG or ZIP](https://github.com/xjbeta/iina-danmaku/releases)
 
 ## Build
-##### Xcode Version 10.1
+##### Xcode Version: Latest Release
 
 ```
 carthage bootstrap
@@ -44,7 +43,7 @@ Open `.xcodeproj` file.
 ## Acknowledgements
 ### Librarys
 - [Marshal](https://github.com/utahiosmac/Marshal)
-- [SwiftHTTP](https://github.com/daltoniam/SwiftHTTP)
+- [Alamofire](https://github.com/Alamofire/Alamofire)
 - [DevMateKit](https://github.com/DevMate/DevMateKit)
 - [BlueSocket](https://github.com/IBM-Swift/BlueSocket)
 - [SocketRocket](https://github.com/facebook/SocketRocket)
@@ -58,5 +57,5 @@ Open `.xcodeproj` file.
 ### Bilibili block list
 - [Bilibili-Block-List](https://github.com/jnxyp/Bilibili-Block-List)
 
-### Icons
+### Sidebar Icons
 - [@freepik](https://www.flaticon.com/authors/freepik)

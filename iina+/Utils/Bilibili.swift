@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import SwiftHTTP
+import Alamofire
 import Marshal
 import PromiseKit
 
@@ -17,6 +17,7 @@ class BilibiliCard: NSObject, Unmarshaling {
     var dynamicId: Int = 0
     @objc var title: String = ""
     @objc var pic: NSImage?
+    @objc var picUrl: String = ""
     @objc var name: String = ""
     @objc var duration: TimeInterval = 0
     @objc var views: Int = 0
@@ -37,10 +38,7 @@ class BilibiliCard: NSObject, Unmarshaling {
     
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
-            if let url = URL(string: picUrl) {
-                pic = NSImage(contentsOf: url)
-            }
-    
+            self.picUrl = picUrl
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")
@@ -84,7 +82,7 @@ struct BilibiliPvideo: Unmarshaling {
             throw CropImagesError.zeroImagesCount
         }
         if let iamgeStr = imageStrs.first,
-            let url = URL(string: iamgeStr.replacingOccurrences(of: "http://", with: "https://")),
+            let url = URL(string: "https:" + iamgeStr),
             let image = NSImage(contentsOf: url) {
             images = [image]
         }
@@ -170,13 +168,13 @@ class Bilibili: NSObject {
     
     func isLogin() -> Promise<(Bool, String)> {
         return Promise { resolver in
-            HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
+            AF.request("https://api.bilibili.com/x/web-interface/nav").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let isLogin: Bool = try json.value(for: "data.isLogin")
                     NotificationCenter.default.post(name: .biliStatusChanged, object: nil, userInfo: ["isLogin": isLogin])
                     var name = ""
@@ -194,7 +192,7 @@ class Bilibili: NSObject {
     
     func logout() -> Promise<()> {
         return Promise { resolver in
-            HTTP.GET("https://account.bilibili.com/login?act=exit") { response in
+            AF.request("https://account.bilibili.com/login?act=exit").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -205,12 +203,12 @@ class Bilibili: NSObject {
     
     func getUid() -> Promise<Int> {
         return Promise { resolver in
-            HTTP.GET("https://api.bilibili.com/x/web-interface/nav") { response in
+            AF.request("https://api.bilibili.com/x/web-interface/nav").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let uid: Int = try json.value(for: "data.mid")
                     resolver.fulfill(uid)
                 } catch let error {
@@ -225,43 +223,42 @@ class Bilibili: NSObject {
                      _ dynamicID: Int = -1) -> Promise<[BilibiliCard]> {
         
         return Promise { resolver in
-            var http: HTTP? = nil
-            let headers = ["referer": "https://www.bilibili.com/"]
+            var http: DataRequest? = nil
+            let headers = HTTPHeaders(["referer": "https://www.bilibili.com/"])
             
             switch action {
             case .init😅:
-                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
+                http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
             case .history:
-                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", headers: headers)
+                http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", headers: headers)
             case .new:
-                http = HTTP.GET("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&current_dynamic_id=\(dynamicID)&type=8", headers: headers)
+                http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&current_dynamic_id=\(dynamicID)&type=8", headers: headers)
             }
             
-            http?.onFinish = { response in
+            http?.response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let cards: [BilibiliCard] = try json.value(for: "data.cards")
                     resolver.fulfill(cards)
                 } catch let error {
                     resolver.reject(error)
                 }
             }
-            http?.run()
         }
     }
     
     func getPvideo(_ aid: Int) -> Promise<BilibiliPvideo> {
         return Promise { resolver in
-            HTTP.GET("https://api.bilibili.com/pvideo?aid=\(aid)") { response in
+            AF.request("https://api.bilibili.com/pvideo?aid=\(aid)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    var pvideo = try BilibiliPvideo.init(object: json)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+                    var pvideo = try BilibiliPvideo(object: json)
                     pvideo.cropImages()
                     resolver.fulfill(pvideo)
                 } catch let error {
@@ -273,12 +270,12 @@ class Bilibili: NSObject {
     
     func getVideoList(_ aid: Int) -> Promise<[BilibiliSimpleVideoInfo]> {
         return Promise { resolver in
-            HTTP.GET("https://api.bilibili.com/x/player/pagelist?aid=\(aid)") { response in
+            AF.request("https://api.bilibili.com/x/player/pagelist?aid=\(aid)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
                     resolver.fulfill(infos)
                 } catch let error {

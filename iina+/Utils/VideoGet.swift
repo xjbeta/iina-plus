@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import SwiftHTTP
+import Alamofire
 import PromiseKit
 import Marshal
 import CommonCrypto
@@ -17,10 +17,8 @@ import WebKit
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
     case bilibili = "www.bilibili.com"
-    case panda = "www.panda.tv"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
-    case pandaXingYan = "xingyan.panda.tv"
     case quanmin = "www.quanmin.tv"
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
@@ -84,22 +82,6 @@ class VideoGet: NSObject {
                         self.getDouyuUrl(roomId)
                     }.done {
                         yougetJson.streams[roomTitle] = Stream(url: $0)
-                        resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .panda:
-                getPandaRoomID(url).then {
-                    when(resolved: $0.map { self.getPandaInfo($0) })
-                    }.done {
-                        try $0.forEach {
-                            switch $0 {
-                            case .fulfilled(let strings):
-                                yougetJson.streams[strings.0] = Stream(url: strings.1)
-                            case .rejected(let error):
-                                throw error
-                            }
-                        }
                         resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
@@ -206,7 +188,7 @@ class VideoGet: NSObject {
                     var saveDMString = ""
                     
                     func loadDanmaku() {
-                        HTTP.GET("http://danmu.aixifan.com/V4/\(video.videoId)_2/\(time)/\(numberPerRequest)?order=-1") { response in
+                        AF.request("http://danmu.aixifan.com/V4/\(video.videoId)_2/\(time)/\(numberPerRequest)?order=-1").response { response in
                             if let error = response.error {
                                 resolver.reject(error)
                             }
@@ -292,12 +274,6 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .panda:
-                getPandaUserInfo(roomId).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
             case .douyu:
                 getDouyuHtml(url.absoluteString).map {
                     Int($0.roomId) ?? -1
@@ -311,12 +287,6 @@ class VideoGet: NSObject {
             case .huya:
                 getHuyaInfo(url).done {
                     resolver.fulfill($0.0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .pandaXingYan:
-                getPandaXingYanInfo(roomId).done {
-                    resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -364,12 +334,12 @@ extension VideoGet {
     func getBiliLiveRoomId(_ url: URL) -> Promise<(BilibiliInfo)> {
         let roomID = url.lastPathComponent
         return Promise { resolver in
-            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)") { response in
+            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let longID: Int = try json.value(for: "data.room_id")
                     let title: String = try json.value(for: "data.title")
                     let status: Int = try json.value(for: "data.live_status")
@@ -388,18 +358,15 @@ extension VideoGet {
     
     func getBiliUserInfo(_ roomId: Int) -> Promise<(BilibiliInfo)> {
         return Promise { resolver in
-            HTTP.GET("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)") { response in
+            AF.request("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     var info = BilibiliInfo()
                     info.name = try json.value(for: "data.info.uname")
-                    let userCoverURL: String = try json.value(for: "data.info.face")
-                    if let url = URL(string: userCoverURL) {
-                        info.userCover = NSImage(contentsOf: url)
-                    }
+                    info.userCover = try json.value(for: "data.info.face")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
@@ -413,7 +380,7 @@ extension VideoGet {
 //        4 原画
 //        3 高清
         return Promise { resolver in
-            HTTP.GET("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&quality=\(quality)") { response in
+            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&quality=\(quality)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -425,7 +392,7 @@ extension VideoGet {
                 }
                 
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let currentQuality: Int = try json.value(for: "data.current_quality")
                     let acceptQuality: [String] = try json.value(for: "data.accept_quality")
                     let dUrls: [Durl] = try json.value(for: "data.durl")
@@ -441,7 +408,7 @@ extension VideoGet {
     // MARK: - Douyu
     func getDouyuHtml(_ url: String) -> Promise<(roomId: String, roomIds: [String], isLiving: Bool, pageId: String)> {
         return Promise { resolver in
-            HTTP.GET(url) { response in
+            AF.request(url).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -471,13 +438,13 @@ extension VideoGet {
     
     func douyuBetard(_ rid: Int) -> Promise<DouyuInfo> {
         return Promise { resolver in
-            HTTP.GET("https://www.douyu.com/betard/\(rid)") { response in
+            AF.request("https://www.douyu.com/betard/\(rid)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     
                     let info: DouyuInfo = try DouyuInfo(object: json)
                     resolver.fulfill(info)
@@ -492,7 +459,7 @@ extension VideoGet {
 //    https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=1149&view=0
     func getDouyuEventRoomNames(_ pageId: String) -> Promise<()> {
         return Promise { resolver in
-            HTTP.GET("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0") { response in
+            AF.request("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -518,10 +485,10 @@ extension VideoGet {
         let random = "\(drand48())"
         let parameters = ["client_id": "1",
                           "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
-        let headers = ["Referer": "http://www.douyu.com"]
+        let headers = HTTPHeaders(["Referer": "http://www.douyu.com"])
         
         return Promise { resolver in
-            HTTP.GET(douyuCookie, parameters: parameters, headers: headers) { response in
+            AF.request(douyuCookie, parameters: parameters, headers: headers).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -592,12 +559,12 @@ extension VideoGet {
                             "iar": "1",
                             "ive": "0"]
                 
-                HTTP.POST("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", parameters: pars) { response in
+                AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).response { response in
                     if let error = response.error {
                         resolver.reject(error)
                     }
                     do {
-                        let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                        let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                         let rtmpUrl: String = try json.value(for: "data.rtmp_url")
                         let rtmpLive: String = try json.value(for: "data.rtmp_live")
                         resolver.fulfill(rtmpUrl + "/" + rtmpLive)
@@ -615,93 +582,6 @@ extension VideoGet {
     func getDouyuUrl(_ roomID: Int) -> Promise<(String)> {
         return getDouyuDid().then { res -> Promise<(String)> in
                 return self.getDouyuRtmpUrl(roomID, didStr: res)
-        }
-    }
-    
-    // MARK: - Panda
-    func getPandaUserInfo(_ roomId: Int) -> Promise<PandaInfo> {
-        return Promise { resolver in
-            HTTP.GET("https://room.api.m.panda.tv/index.php?method=room.shareapi&roomid=\(roomId)") { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    let info: PandaInfo = try json.value(for: "data")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getPandaRoomID(_ url: URL) -> Promise<([Int])>  {
-//        https://www.panda.tv/s8
-        return Promise { resolver in
-            if let id = Int(url.lastPathComponent) {
-                resolver.fulfill([id])
-            } else {
-                HTTP.GET(url.absoluteString) { response in
-                    if let error = response.error {
-                        resolver.reject(error)
-                    }
-                    var text = response.text ?? ""
-                    var ids: [Int] = []
-                    
-                    let startStr = "data-room-id=\""
-                    while Int(text.subString(from: startStr, to: "\">")) != nil {
-                        ids.append(Int(text.subString(from: "data-room-id=\"", to: "\">"))!)
-                        if let endIndex = text.range(of: startStr)?.upperBound {
-                            text.removeSubrange(text.startIndex ..< endIndex)
-                        } else {
-                            text = ""
-                        }
-                    }
-                    resolver.fulfill(ids)
-                }
-            }
-        }
-    }
-    
-    
-    
-    
-    func getPandaInfo(_ roomID: Int) -> Promise<(String, String)>  {
-        return Promise { resolver in
-            HTTP.GET("https://www.panda.tv/api_room_v2?roomid=\(roomID)") { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    
-                    let status: String = try json.value(for: "data.videoinfo.status")
-                    guard status == "2" else {
-                        resolver.reject(VideoGetError.isNotLiving)
-                        return
-                    }
-                    
-                    
-                    let plflagStr: String = try json.value(for: "data.videoinfo.plflag")
-                    let plflag = plflagStr.components(separatedBy: "_").last ?? ""
-                    let roomKey: String = try json.value(for: "data.videoinfo.room_key")
-                    let plflagList: String = try json.value(for: "data.videoinfo.plflag_list")
-                    
-                    let plflagListJson: JSONObject = try JSONParser.JSONObjectWithData(plflagList.data(using: .utf8) ?? Data())
-                    let sign: String = try plflagListJson.value(for: "auth.sign")
-                    let ts: String = try plflagListJson.value(for: "auth.time")
-                    let rid: String = try plflagListJson.value(for: "auth.rid")
-                    
-                    let title: String = try json.value(for: "data.roominfo.name")
-
-                    let url = "https://pl\(plflag).live.panda.tv/live_panda/\(roomKey).flv?sign=\(sign)&ts=\(ts)&rid=\(rid)"
-                    resolver.fulfill((title, url))
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
         }
     }
     
@@ -733,7 +613,7 @@ extension VideoGet {
     func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [String])> {
 //        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
         return Promise { resolver in
-            HTTP.GET(url.absoluteString) { response in
+            AF.request(url.absoluteString).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -767,26 +647,6 @@ extension VideoGet {
         }
     }
     
-    // MARK: - Panda XingYan
-    func getPandaXingYanInfo(_ roomId: Int) -> Promise<PandaXingYanInfo> {
-        return Promise { resolver in
-            HTTP.GET("https://m.api.xingyan.panda.tv/room/baseinfo?xid=\(roomId)") { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
-                    let info: PandaXingYanInfo = try json.value(for: "data")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    
     // MARK: - eGame
     
     struct EgameUrl: Unmarshaling {
@@ -803,7 +663,7 @@ extension VideoGet {
     
     func getEgameInfo(_ url: URL) -> Promise<(EgameInfo, [EgameUrl])> {
         return Promise { resolver in
-            HTTP.GET(url.absoluteString) { response in
+            AF.request(url.absoluteString).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -836,11 +696,11 @@ extension VideoGet {
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(String, [(Int, String, String)], String)> {
         
-        let headers = ["Referer": "https://www.bilibili.com/",
-                       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"]
+        let headers = HTTPHeaders(["Referer": "https://www.bilibili.com/",
+                                   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
         
         return Promise { resolver in
-            HTTP.GET(url.absoluteString, headers: headers) { response in
+            AF.request(url.absoluteString, headers: headers).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -930,7 +790,9 @@ extension VideoGet {
     
     func downloadDMFile(_ cid: Int) -> Promise<()> {
         return Promise { resolver in
-            HTTP.GET("https://comment.bilibili.com/\(cid).xml") { response in
+            
+            AF.request("https://comment.bilibili.com/\(cid).xml").response { response in
+                
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -950,12 +812,12 @@ extension VideoGet {
     // MARK: - QuanMin
     func getQuanMinInfo(_ roomID: Int) -> Promise<QuanMinInfo> {
         return Promise { resolver in
-            HTTP.GET("https://www.quanmin.tv/json/rooms/\(roomID)/noinfo6.json") { response in
+            AF.request("https://www.quanmin.tv/json/rooms/\(roomID)/noinfo6.json").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let info = try QuanMinInfo(object: json)
                     resolver.fulfill(info)
                 } catch let error {
@@ -970,7 +832,7 @@ extension VideoGet {
     
     func getLongZhuInfo(_ url: URL) -> Promise<LongZhuInfo> {
         return Promise { resolver in
-            HTTP.GET(url.absoluteString) { response in
+            AF.request(url.absoluteString).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -993,7 +855,7 @@ extension VideoGet {
     //        https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/acfun.py
     func getAcfun(url: URL) -> Promise<AcFunVideo>  {
         return Promise { resolver in
-            HTTP.GET(url.absoluteString) { response in
+            AF.request(url.absoluteString).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -1012,17 +874,17 @@ extension VideoGet {
     
     func getAcFunVideList(_ videoId: Int, _ url: String) -> Promise<([String])>  {
         return Promise { resolver in
-            HTTP.GET("http://www.acfun.cn/video/getVideo.aspx?id=\(videoId)") { response in
+            AF.request("http://www.acfun.cn/video/getVideo.aspx?id=\(videoId)").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
                 do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data)
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let info = try AcFunVideo.AcInfo(object: json)
                     
                     let u = "http://www.acfun.cn/rest/pc-direct/video/hlsMasterPlayList?vid=\(info.sourceId)&ct=85&ev=3&sign=\(info.encode)&time=\(Int(Date().timeIntervalSince1970))"
                     
-                    HTTP.GET(u, headers: ["referer": url]) { response in
+                    AF.request(u, headers: ["referer": url]).response { response in
                         if let error = response.error {
                             resolver.reject(error)
                         }

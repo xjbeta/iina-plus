@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  iina+
+
+  Created by xjbeta on 2019/6/26.
+  Copyright © 2019 xjbeta. All rights reserved.
+*/
+
+"mainMenu.view.reloadLiveStatus" = "重新加载直播状态";
+"mainMenu.view.reloadBilibiliList" = "重新加载 Bilibili 列表";
