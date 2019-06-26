@@ -3,7 +3,7 @@
 "1Xt-HY-uBw.title" = "iina+";
 
 /* Class = "NSButtonCell"; title = "Bottom"; ObjectID = "3gd-01-S3r"; */
-"3gd-01-S3r.title" = "按钮";
+"3gd-01-S3r.title" = "底部";
 
 /* Class = "NSMenuItem"; title = "Enter Full Screen"; ObjectID = "4J7-dP-txa"; */
 "4J7-dP-txa.title" = "进入全屏幕";
@@ -48,7 +48,7 @@
 "9m4-PD-wge.title" = "另存为…";
 
 /* Class = "NSButtonCell"; title = "Color"; ObjectID = "9yo-Px-dkc"; */
-"9yo-Px-dkc.title" = "颜色";
+"9yo-Px-dkc.title" = "彩色";
 
 /* Class = "NSTextFieldCell"; title = "Cache:"; ObjectID = "A5h-zc-R34"; */
 "A5h-zc-R34.title" = "缓存:";
