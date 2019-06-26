@@ -55,7 +55,10 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         }
         
         initBlockListMenu()
-        
+    }
+    
+    override func viewWillAppear() {
+        super.viewWillAppear()
         cacheSizeTextField.stringValue = ImageLoader.cacheSize()
     }
     
