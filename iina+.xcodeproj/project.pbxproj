@@ -79,6 +79,8 @@
 		01E40FDD22C0642800864118 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E40FD822C0641F00864118 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01E40FDE22C0644100864118 /* Alamofire.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E40FD922C0641F00864118 /* Alamofire.framework.dSYM */; };
 		01E40FE022C06BDC00864118 /* DataResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */; };
+		01E40FF022C331A700864118 /* Cache.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E40FEC22C3319A00864118 /* Cache.framework.dSYM */; };
+		01E40FF222C331AF00864118 /* Cache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E40FED22C3319A00864118 /* Cache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
 		01E8CAC0213C174800C4939B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; };
 		01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01E8CABD213C173F00C4939B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -99,6 +101,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				01E40FF022C331A700864118 /* Cache.framework.dSYM in CopyFiles */,
 				01E40FDE22C0644100864118 /* Alamofire.framework.dSYM in CopyFiles */,
 				013CE8EE2185CB40000271FB /* Swifter.framework.dSYM in CopyFiles */,
 				013CE8E72185485A000271FB /* PromiseKit.framework.dSYM in CopyFiles */,
@@ -142,6 +145,7 @@
 			files = (
 				013CE8E62185483D000271FB /* PromiseKit.framework in Embed Frameworks */,
 				013CE8ED2185CB27000271FB /* Swifter.framework in Embed Frameworks */,
+				01E40FF222C331AF00864118 /* Cache.framework in Embed Frameworks */,
 				01B107DA2144FEA300A66BC1 /* SocketRocket.framework in Embed Frameworks */,
 				01E8CAC1213C174800C4939B /* Socket.framework in Embed Frameworks */,
 				01B107D72144094B00A66BC1 /* Gzip.framework in Embed Frameworks */,
@@ -221,6 +225,8 @@
 		01E40FD822C0641F00864118 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/Mac/Alamofire.framework; sourceTree = SOURCE_ROOT; };
 		01E40FD922C0641F00864118 /* Alamofire.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Alamofire.framework.dSYM; path = Carthage/Build/Mac/Alamofire.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataResponseExtension.swift; sourceTree = "<group>"; };
+		01E40FEC22C3319A00864118 /* Cache.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cache.framework.dSYM; path = Carthage/Build/Mac/Cache.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		01E40FED22C3319A00864118 /* Cache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cache.framework; path = Carthage/Build/Mac/Cache.framework; sourceTree = SOURCE_ROOT; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01E8CABC213C173F00C4939B /* Socket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Socket.framework.dSYM; path = Carthage/Build/Mac/Socket.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01E8CABD213C173F00C4939B /* Socket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Socket.framework; path = Carthage/Build/Mac/Socket.framework; sourceTree = SOURCE_ROOT; };
@@ -301,6 +307,8 @@
 			children = (
 				01E40FD822C0641F00864118 /* Alamofire.framework */,
 				01E40FD922C0641F00864118 /* Alamofire.framework.dSYM */,
+				01E40FED22C3319A00864118 /* Cache.framework */,
+				01E40FEC22C3319A00864118 /* Cache.framework.dSYM */,
 				013CE8E82185CB1A000271FB /* Swifter.framework */,
 				013CE8E92185CB1A000271FB /* Swifter.framework.dSYM */,
 				013CE8E221854832000271FB /* PromiseKit.framework */,
