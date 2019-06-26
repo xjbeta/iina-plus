@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  iina+
+
+  Created by xjbeta on 2019/6/26.
+  Copyright © 2019 xjbeta. All rights reserved.
+*/
+
+"mainMenu.view.reloadLiveStatus" = "Reload Live Status";
+"mainMenu.view.reloadBilibiliList" = "Reload Bilibili List";

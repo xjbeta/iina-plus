@@ -30,10 +30,10 @@ class MainMenu: NSObject, NSMenuItemValidation {
                 let mainViewController = splitViewController.splitViewItems[1].viewController as? MainViewController {
                 switch mainViewController.mainTabViewSelectedIndex {
                 case 0:
-                    menuItem.title = "Reload Live Status"
+                    menuItem.title = NSLocalizedString("mainMenu.view.reloadLiveStatus", comment: "")
                     return true
                 case 1:
-                    menuItem.title = "Reload Bilibili List"
+                    menuItem.title = NSLocalizedString("mainMenu.view.reloadBilibiliList", comment: "")
                     return true
                 default: break
                 }   
