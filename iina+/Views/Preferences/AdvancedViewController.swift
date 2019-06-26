@@ -16,6 +16,12 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     @IBOutlet weak var colorButton: NSButton!
     @IBOutlet weak var advancedButton: NSButton!
     
+    @IBOutlet weak var cacheSizeTextField: NSTextField!
+    @IBAction func cleanUpCache(_ sender: NSButton) {
+        ImageLoader.removeAll()
+        cacheSizeTextField.stringValue = ImageLoader.cacheSize()
+    }
+    
     var blockTypeButtons: [NSButton] = []
     @IBAction func chooseBlockType(_ sender: NSButton) {
         Preferences.shared.dmBlockType = blockTypeButtons.filter {
@@ -49,6 +55,8 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         }
         
         initBlockListMenu()
+        
+        cacheSizeTextField.stringValue = ImageLoader.cacheSize()
     }
     
     func initBlockListMenu() {

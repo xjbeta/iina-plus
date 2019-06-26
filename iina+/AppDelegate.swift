@@ -43,6 +43,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let url = logUrl {
             DevMateKit.setupCustomLogFileURLs([url as NSURL])
         }
+        
+        Log(ImageLoader.cacheSize())
+        ImageLoader.removeExpired()
+        Log(ImageLoader.cacheSize())
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

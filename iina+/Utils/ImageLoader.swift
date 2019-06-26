@@ -12,10 +12,12 @@ import Cache
 
 class ImageLoader: NSObject {
     
+    static let imageCacheName = Bundle.main.bundleIdentifier! + ".imageCache"
+    
     static var storage: DiskStorage<Image> {
         get {
             
-            let diskConfig = DiskConfig(name: Bundle.main.bundleIdentifier! + ".imageCache",
+            let diskConfig = DiskConfig(name: imageCacheName,
                                         expiry: .seconds(3600 * 24 * 7),  // a week
                 maxSize: 100*1000000)
             
@@ -46,6 +48,44 @@ class ImageLoader: NSObject {
         }
     }
     
+    static func cacheSize() -> String {
+        do {
+            var url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            url.appendPathComponent(imageCacheName)
+            Log(url)
+            
+            var folderSize = 0
+            
+            try (FileManager.default.enumerator(at: url, includingPropertiesForKeys: nil)?.allObjects as? [URL])?.lazy.forEach {
+                folderSize += try $0.resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0
+            }
+            
+            let  byteCountFormatter =  ByteCountFormatter()
+            byteCountFormatter.allowedUnits = .useMB
+            byteCountFormatter.countStyle = .file
+            let sizeToDisplay = byteCountFormatter.string(for: folderSize) ?? ""
+            return sizeToDisplay
+        } catch let error {
+            Log(error)
+            return ""
+        }
+    }
+    
+    static func removeExpired() {
+        do {
+            try storage.removeExpiredObjects()
+        } catch let error {
+            Log(error)
+        }
+    }
+    
+    static func removeAll() {
+        do {
+            try storage.removeAll()
+        } catch let error {
+            Log(error)
+        }
+    }
 }
 
 extension NSImageView {
