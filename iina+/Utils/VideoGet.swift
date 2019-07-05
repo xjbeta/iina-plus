@@ -587,29 +587,6 @@ extension VideoGet {
     
     // MARK: - Huya
     
-    struct HuyaUrl: Unmarshaling {
-        var urls: [String]
-        struct StreamInfo: Unmarshaling {
-            var sFlvUrl: String
-            var sStreamName: String
-            var sFlvUrlSuffix: String
-            var sFlvAntiCode: String
-            
-            init(object: MarshaledObject) throws {
-                sFlvUrl = try object.value(for: "sFlvUrl")
-                sStreamName = try object.value(for: "sStreamName")
-                sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
-                sFlvAntiCode = try object.value(for: "sFlvAntiCode")
-            }
-        }
-        init(object: MarshaledObject) throws {
-            let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
-            urls = streamInfos.map {
-                $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
-            }
-        }
-    }
-    
     func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [String])> {
 //        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
         return Promise { resolver in
@@ -619,8 +596,8 @@ extension VideoGet {
                 }
                 let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
                 let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8) ?? Data()
-                let playerInfoData = response.text?.subString(from: "var hyPlayerConfig = ", to: ";").data(using: .utf8) ?? Data()
-                
+                let playerInfoData = response.text?.subString(from: "var hyPlayerConfig = ", to: ";\n").data(using: .utf8) ?? Data()
+
                 do {
                     var roomInfoJson: JSONObject = try JSONParser.JSONObjectWithData(roomInfoData)
                     let profileInfoData: JSONObject = try JSONParser.JSONObjectWithData(profileInfoData)
@@ -648,18 +625,6 @@ extension VideoGet {
     }
     
     // MARK: - eGame
-    
-    struct EgameUrl: Unmarshaling {
-        var playUrl: String
-        var desc: String
-        var levelType: Int
-        
-        init(object: MarshaledObject) throws {
-            playUrl = try object.value(for: "playUrl")
-            desc = try object.value(for: "desc")
-            levelType = try object.value(for: "levelType")
-        }
-    }
     
     func getEgameInfo(_ url: URL) -> Promise<(EgameInfo, [EgameUrl])> {
         return Promise { resolver in

@@ -109,6 +109,10 @@ class MainViewController: NSViewController {
                     self.progressStatusChanged(false)
                 }.catch(on: .main, policy: .allErrors) { error in
                     Log("\(error)")
+                    guard self.suggestionsTableView.numberOfRows > 0 else {
+                        return
+                    }
+                    
                     if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
                         switch error {
                         case PMKError.cancelled:
