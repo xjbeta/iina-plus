@@ -77,6 +77,65 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
     }
 }
 
+
+struct HuyaUrl: Unmarshaling {
+    var urls: [String]
+    struct StreamInfo: Unmarshaling {
+        var sStreamName: String
+        
+        var sFlvUrl: String
+        var sFlvUrlSuffix: String
+        var sFlvAntiCode: String
+        
+        var sHlsUrl: String
+        var sHlsUrlSuffix: String
+        var sHlsAntiCode: String
+        
+        var sP2pUrl: String
+        var sP2pUrlSuffix: String
+        var sP2pAntiCode: String
+        
+        
+        
+        init(object: MarshaledObject) throws {
+            sStreamName = try object.value(for: "sStreamName")
+            
+            sFlvUrl = try object.value(for: "sFlvUrl")
+            sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
+            var flvStr: String = try object.value(for: "sFlvAntiCode")
+            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: ";")
+            sFlvAntiCode = flvStr
+            
+            sHlsUrl = try object.value(for: "sHlsUrl")
+            sHlsUrlSuffix = try object.value(for: "sHlsUrlSuffix")
+            var hlsStr: String = try object.value(for: "sHlsAntiCode")
+            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: ";")
+            sHlsAntiCode = hlsStr
+            
+            sP2pUrl = try object.value(for: "sP2pUrl")
+            sP2pUrlSuffix = try object.value(for: "sP2pUrlSuffix")
+            var p2pStr: String = try object.value(for: "sP2pAntiCode")
+            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: ";")
+            sP2pAntiCode = p2pStr
+        }
+    }
+    init(object: MarshaledObject) throws {
+        let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
+        
+        
+        urls =
+//            streamInfos.map {
+//            $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
+//            } +
+            streamInfos.map {
+                $0.sHlsUrl + "/" + $0.sStreamName + "." + $0.sHlsUrlSuffix + "?" + $0.sHlsAntiCode
+            }
+//            + streamInfos.map {
+//                $0.sP2pUrl + "/" + $0.sStreamName + "." + $0.sP2pUrlSuffix + "?" + $0.sP2pAntiCode
+//        }
+    }
+}
+
 struct QuanMinInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -108,6 +167,19 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
         name = try object.value(for: "username")
         userCover = try object.value(for: "avatar")
         userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+    }
+}
+
+
+struct EgameUrl: Unmarshaling {
+    var playUrl: String
+    var desc: String
+    var levelType: Int
+    
+    init(object: MarshaledObject) throws {
+        playUrl = try object.value(for: "playUrl")
+        desc = try object.value(for: "desc")
+        levelType = try object.value(for: "levelType")
     }
 }
 
