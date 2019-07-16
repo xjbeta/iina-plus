@@ -1383,7 +1383,7 @@ Gw
                                                     <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" rowSizeStyle="automatic" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="633"/>
@@ -1573,7 +1573,7 @@ Gw
                                                     <rect key="frame" x="20" y="20" width="360" height="570"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="UI5-GE-yfn">
                                                         <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" rowSizeStyle="automatic" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="iina_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="360" height="570"/>
