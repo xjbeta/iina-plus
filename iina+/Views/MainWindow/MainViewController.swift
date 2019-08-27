@@ -38,9 +38,19 @@ class MainViewController: NSViewController {
     
     
     @IBAction func deleteBookmark(_ sender: Any) {
-        if let index = bookmarkTableView.selectedIndexs().first {
-            dataManager.deleteBookmark(index)
-            bookmarkTableView.reloadData()
+        guard let index = bookmarkTableView.selectedIndexs().first,
+            let w = view.window else { return }
+        let alert = NSAlert()
+        alert.messageText = "Delete Bookmark."
+        alert.informativeText = "This item will be deleted."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+        alert.beginSheetModal(for: w) { [weak self] in
+            if $0 == .alertFirstButtonReturn {
+                self?.dataManager.deleteBookmark(index)
+                self?.bookmarkTableView.reloadData()
+            }
         }
     }
     
@@ -188,6 +198,9 @@ class MainViewController: NSViewController {
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
+    @IBOutlet weak var addNoticeStackView: NSStackView!
+    
+    var bookmarkArrayCountObserver: NSKeyValueObservation?
     
     var isSearching = false {
         didSet {
@@ -323,6 +336,11 @@ class MainViewController: NSViewController {
             }
             return event
         }
+        
+        bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { arrayController, _ in
+            let c = (arrayController.arrangedObjects as? [Any])?.count
+            self.addNoticeStackView.isHidden = c != 0
+        }
     }
     
     var canLoadMoreBilibiliCards = true
@@ -422,6 +440,10 @@ class MainViewController: NSViewController {
                 self.selectTabItem(.selectVideos)
             }
         }
+    }
+    
+    deinit {
+        bookmarkArrayCountObserver?.invalidate()
     }
 }
 
