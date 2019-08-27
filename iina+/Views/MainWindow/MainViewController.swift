@@ -198,6 +198,9 @@ class MainViewController: NSViewController {
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
+    @IBOutlet weak var addNoticeStackView: NSStackView!
+    
+    var bookmarkArrayCountObserver: NSKeyValueObservation?
     
     var isSearching = false {
         didSet {
@@ -333,6 +336,11 @@ class MainViewController: NSViewController {
             }
             return event
         }
+        
+        bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { arrayController, _ in
+            let c = (arrayController.arrangedObjects as? [Any])?.count
+            self.addNoticeStackView.isHidden = c != 0
+        }
     }
     
     var canLoadMoreBilibiliCards = true
@@ -432,6 +440,10 @@ class MainViewController: NSViewController {
                 self.selectTabItem(.selectVideos)
             }
         }
+    }
+    
+    deinit {
+        bookmarkArrayCountObserver?.invalidate()
     }
 }
 
