@@ -599,22 +599,10 @@ extension VideoGet {
                 
                 let hyPlayerConfigStr: String? = {
                     guard let text = response.text else { return nil }
-                    
-                    let s1 = text.subString(from: "var hyPlayerConfig = ", to: ";\r\n")
-                    if s1.count > 0 {
-                        return s1
-                    }
-                    
-                    let s2 = text.subString(from: "var hyPlayerConfig = ", to: ";\n")
-                    if s2.count > 0 {
-                        return s2
-                    }
-                    
-                    let s3 = text.subString(from: "var hyPlayerConfig = ", to: ";")
-                    if s3.count > 0 {
-                        return s3
-                    }
-                    return nil
+                    var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
+                    guard let index = str.lastIndex(of: ";") else { return nil }
+                    str.removeSubrange(index ..< str.endIndex)
+                    return str
                 }()
                 
                 let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) ?? Data()
