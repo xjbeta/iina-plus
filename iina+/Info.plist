@@ -78,5 +78,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUPublicEDKey</key>
+	<string>1u1lOVNGnwTyXSIVYlfz+in5LmD7F2MPDCYWEYnwlJQ=</string>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/xjbeta/AppUpdaterAppcasts/master/IINA-Plus/Appcast.xml</string>
 </dict>
 </plist>
