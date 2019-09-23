@@ -78,7 +78,5 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>devmate.pem</string>
 </dict>
 </plist>
