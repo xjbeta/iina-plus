@@ -38,15 +38,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Log("App Version \(version) (Build \(build))")
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
         
-        DevMateKit.sendTrackingReport(nil, delegate: nil)
-        DevMateKit.setupIssuesController(nil, reportingUnhandledIssues: true)
-        if let url = logUrl {
-            DevMateKit.setupCustomLogFileURLs([url as NSURL])
-        }
-        
         Log(ImageLoader.cacheSize())
-        ImageLoader.removeExpired()
-        Log(ImageLoader.cacheSize())
+        ImageLoader.removeOldCache()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

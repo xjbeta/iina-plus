@@ -8,24 +8,12 @@
 
 import Cocoa
 import Alamofire
-import Cache
+import AlamofireImage
 
 class ImageLoader: NSObject {
     
+    static let imageCache = AutoPurgingImageCache()
     static let imageCacheName = Bundle.main.bundleIdentifier! + ".imageCache"
-    
-    static var storage: DiskStorage<Image> {
-        get {
-            
-            let diskConfig = DiskConfig(name: imageCacheName,
-                                        expiry: .seconds(3600 * 24 * 7),  // a week
-                maxSize: 100*1000000)
-            
-            let storage = try! DiskStorage<Image>(config: diskConfig,
-                                                  transformer: TransformerFactory.forImage())
-            return storage
-        }
-    }
     
     static func request(_ url: String, complete: @escaping ((NSImage?) -> ())) {
         guard url != "" else {
@@ -33,7 +21,7 @@ class ImageLoader: NSObject {
             return
         }
         
-        if let image = try? storage.object(forKey: url) {
+        if let image = imageCache.image(withIdentifier: url) {
             complete(image)
         } else {
             AF.request(url).responseData {
@@ -42,7 +30,7 @@ class ImageLoader: NSObject {
                         complete(nil)
                         return
                 }
-                try? storage.setObject(image, forKey: url)
+                imageCache.add(image, withIdentifier: url)
                 complete(image)
             }
         }
@@ -51,7 +39,7 @@ class ImageLoader: NSObject {
     static func cacheSize() -> String {
         do {
             var url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            url.appendPathComponent(imageCacheName)
+            url.appendPathComponent(Bundle.main.bundleIdentifier!)
             Log(url)
             
             var folderSize = 0
@@ -71,17 +59,21 @@ class ImageLoader: NSObject {
         }
     }
     
-    static func removeExpired() {
-        do {
-            try storage.removeExpiredObjects()
-        } catch let error {
-            Log(error)
+    static func removeAll() {
+        let re = imageCache.removeAllImages()
+        if !re {
+            Log("Remove all image cache error.")
         }
     }
     
-    static func removeAll() {
+    static func removeOldCache() {
         do {
-            try storage.removeAll()
+            var url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            url.appendPathComponent(imageCacheName)
+            
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(atPath: url.path)
+            }
         } catch let error {
             Log(error)
         }
