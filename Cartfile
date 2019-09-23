@@ -1,9 +1,2 @@
-github "utahiosmac/Marshal"
-github "Alamofire/Alamofire" "5.0.0-beta.7"
-github "DevMate/DevMateKit"
-github "IBM-Swift/BlueSocket"
 github "facebook/SocketRocket" "master"
-github "1024jp/GzipSwift"
-github "mxcl/PromiseKit"
-github "httpswift/swifter" ~> 1.4.5
-github "hyperoslo/Cache"
+github "sparkle-project/Sparkle"

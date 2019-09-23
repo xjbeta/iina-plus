@@ -25,7 +25,6 @@ class Danmaku: NSObject {
     var douyuSocket: Socket? = nil
     
     let huyaServer = URL(string: "wss://cdnws.api.huya.com")
-    let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js")
     var huyaUserInfo = ("", "", "")
     
     var egameInfo: EgameInfo?
@@ -35,9 +34,16 @@ class Danmaku: NSObject {
     
     let httpServer = HttpServer()
     
+    let huyaJSContext = JSContext()
+    
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
         self.url = url
+        if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
+            huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
+        } else {
+            Log("Not found huya.js.")
+        }
     }
     
     func start() {
@@ -464,8 +470,6 @@ extension Danmaku: SRWebSocketDelegate {
              sendWup    liveui    userIn    HUYA.UserChannelReq
  */
             
-            let jsContext = JSContext()
-            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
 //            jsContext?.evaluateScript("""
 //                var wsUserInfo = new HUYA.WSUserInfo;
 //                wsUserInfo.lSid = "\(huyaSubSid)";
@@ -481,14 +485,14 @@ extension Danmaku: SRWebSocketDelegate {
             
 //            111111111
 //            sGuid: "7160c3b1b915fd5b5546e2eae3ea5077"
-            jsContext?.evaluateScript("""
+            huyaJSContext?.evaluateScript("""
                 var wsUserInfo = new HUYA.WSUserInfo;
                 wsUserInfo.lSid = "\(huyaUserInfo.0)";
                 wsUserInfo.lTid = "\(huyaUserInfo.1)";
                 wsUserInfo.lUid = "\(huyaUserInfo.2)";
                 wsUserInfo.sGuid = "111111111";
                 """)
-            let result = jsContext?.evaluateScript("""
+            let result = huyaJSContext?.evaluateScript("""
 new Uint8Array(sendRegister(wsUserInfo));
 """)
             
@@ -559,11 +563,8 @@ new Uint8Array(sendRegister(wsUserInfo));
                     sendDM($0)
             }
         case .huya:
-            let jsContext = JSContext()
-            jsContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath!))
             let bytes = [UInt8](data)
-            
-            if let re = jsContext?.evaluateScript("test(\(bytes));"),
+            if let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
                 re.isString {
                 let str = re.toString() ?? ""
                 guard str != "HUYA.EWebSocketCommandType.EWSCmd_RegisterRsp" else {
@@ -574,7 +575,7 @@ new Uint8Array(sendRegister(wsUserInfo));
                     Log("huya websocket WebSocketCommandType.Default \(data)")
                     return
                 }
-                guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间") else { return }
+                guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间"), !str.contains("刚刚在打赏君活动中") else { return }
                 sendDM(str)
             }
             
