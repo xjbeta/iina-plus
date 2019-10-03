@@ -376,11 +376,12 @@ extension VideoGet {
     }
     
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 4) -> Promise<(Int, [String], [String])> {
+    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
 //        4 原画
 //        3 高清
         return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&quality=\(quality)").response { response in
+//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=10000&platform=web
+            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
