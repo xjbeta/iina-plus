@@ -223,10 +223,11 @@ class MainViewController: NSViewController {
             let key = yougetResult?.streams.keys.sorted()[row],
             let stream = yougetResult?.streams[key],
             let url = URL(string: searchField.stringValue) else {
-                if !isSearching {
-                    yougetResult = nil
+                if isSearching {
                     Processes.shared.stopDecodeURL()
                 }
+                isSearching = false
+                yougetResult = nil
             return
         }
         
