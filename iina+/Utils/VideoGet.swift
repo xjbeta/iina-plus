@@ -464,14 +464,7 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                
-                do {
-                    
-                    
-                    resolver.fulfill(())
-                } catch let error {
-                    resolver.reject(error)
-                }
+                resolver.fulfill(())
             }
         }
     }
