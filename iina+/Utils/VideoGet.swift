@@ -547,12 +547,11 @@ extension VideoGet {
                             "did": didStr,
                             "tt": time,
                             "sign": signStr,
-                            "cdn": "",
-                            "rate": "-1",
-                            "ver": "Douyu_219042402",
-                            "iar": "1",
+                            "cdn": "ali-h5",
+                            "rate": "0",
+                            "ver": "Douyu_219111405",
+                            "iar": "0",
                             "ive": "0"]
-                
                 AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).response { response in
                     if let error = response.error {
                         resolver.reject(error)
