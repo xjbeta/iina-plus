@@ -37,9 +37,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
         Log("App Version \(version) (Build \(build))")
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
-        
+        ImageLoader.removeOld()
+        ImageLoader.removeExpired()
         Log(ImageLoader.cacheSize())
-        ImageLoader.removeOldCache()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

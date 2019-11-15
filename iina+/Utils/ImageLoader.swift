@@ -8,12 +8,30 @@
 
 import Cocoa
 import Alamofire
-import AlamofireImage
+import Cache
 
 class ImageLoader: NSObject {
+    static var storage: DiskStorage<Image> {
+        get {
+            let diskConfig = DiskConfig(name: diskConfigName,
+                                        expiry: .seconds(3600 * 24 * 7),  // a week
+                maxSize: 100*1000000,
+                directory: appCacheUrl)
+            let storage = try! DiskStorage<Image>(config: diskConfig,
+                                                  transformer: TransformerFactory.forImage())
+            return storage
+        }
+    }
     
-    static let imageCache = AutoPurgingImageCache()
-    static let imageCacheName = Bundle.main.bundleIdentifier! + ".imageCache"
+    static let diskConfigName = "ImageCache"
+    
+    static let userCacheUrl: URL? = {
+        return try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+    }()
+    
+    static let appCacheUrl: URL? = {
+        return userCacheUrl?.appendingPathComponent(Bundle.main.bundleIdentifier!)
+    }()
     
     static func request(_ url: String, complete: @escaping ((NSImage?) -> ())) {
         guard url != "" else {
@@ -21,7 +39,7 @@ class ImageLoader: NSObject {
             return
         }
         
-        if let image = imageCache.image(withIdentifier: url) {
+        if let image = try? storage.object(forKey: url) {
             complete(image)
         } else {
             AF.request(url).responseData {
@@ -30,7 +48,7 @@ class ImageLoader: NSObject {
                         complete(nil)
                         return
                 }
-                imageCache.add(image, withIdentifier: url)
+                try? storage.setObject(image, forKey: url)
                 complete(image)
             }
         }
@@ -38,12 +56,8 @@ class ImageLoader: NSObject {
     
     static func cacheSize() -> String {
         do {
-            var url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            url.appendPathComponent(Bundle.main.bundleIdentifier!)
-            Log(url)
-            
+            guard let url = appCacheUrl?.appendingPathComponent(diskConfigName) else { return "" }
             var folderSize = 0
-            
             try (FileManager.default.enumerator(at: url, includingPropertiesForKeys: nil)?.allObjects as? [URL])?.lazy.forEach {
                 folderSize += try $0.resourceValues(forKeys: [.totalFileAllocatedSizeKey]).totalFileAllocatedSize ?? 0
             }
@@ -59,21 +73,32 @@ class ImageLoader: NSObject {
         }
     }
     
-    static func removeAll() {
-        let re = imageCache.removeAllImages()
-        if !re {
-            Log("Remove all image cache error.")
+    static func removeExpired() {
+        do {
+            try storage.removeExpiredObjects()
+        } catch let error {
+            Log(error)
         }
     }
     
-    static func removeOldCache() {
+    static func removeOld() {
         do {
-            var url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            url.appendPathComponent(imageCacheName)
+            // Old Image cache folder
+            guard let cacheUrl = userCacheUrl else { return }
             
-            if FileManager.default.fileExists(atPath: url.path) {
-                try FileManager.default.removeItem(atPath: url.path)
+            let oldFolderName = Bundle.main.bundleIdentifier! + ".imageCache"
+            let oldUrl = cacheUrl.appendingPathComponent(oldFolderName)
+            if FileManager.default.fileExists(atPath: oldUrl.path) {
+                try FileManager.default.removeItem(atPath: oldUrl.path)
             }
+        } catch let error {
+            Log(error)
+        }
+    }
+    
+    static func removeAll() {
+        do {
+            try storage.removeAll()
         } catch let error {
             Log(error)
         }

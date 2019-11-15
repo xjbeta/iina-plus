@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.4.8</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>0</string>
 	<key>LSApplicationCategoryType</key>
@@ -78,9 +78,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUPublicEDKey</key>
-	<string>1u1lOVNGnwTyXSIVYlfz+in5LmD7F2MPDCYWEYnwlJQ=</string>
 	<key>SUFeedURL</key>
 	<string>https://raw.githubusercontent.com/xjbeta/AppUpdaterAppcasts/master/IINA-Plus/Appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>1u1lOVNGnwTyXSIVYlfz+in5LmD7F2MPDCYWEYnwlJQ=</string>
 </dict>
 </plist>

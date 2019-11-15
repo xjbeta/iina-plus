@@ -376,11 +376,12 @@ extension VideoGet {
     }
     
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 4) -> Promise<(Int, [String], [String])> {
+    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
 //        4 原画
 //        3 高清
         return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&quality=\(quality)").response { response in
+//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=10000&platform=web
+            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -463,14 +464,7 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                
-                do {
-                    
-                    
-                    resolver.fulfill(())
-                } catch let error {
-                    resolver.reject(error)
-                }
+                resolver.fulfill(())
             }
         }
     }
@@ -553,12 +547,11 @@ extension VideoGet {
                             "did": didStr,
                             "tt": time,
                             "sign": signStr,
-                            "cdn": "",
-                            "rate": "-1",
-                            "ver": "Douyu_219042402",
-                            "iar": "1",
+                            "cdn": "ali-h5",
+                            "rate": "0",
+                            "ver": "Douyu_219111405",
+                            "iar": "0",
                             "ive": "0"]
-                
                 AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).response { response in
                     if let error = response.error {
                         resolver.reject(error)

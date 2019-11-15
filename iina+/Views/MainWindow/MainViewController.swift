@@ -223,10 +223,11 @@ class MainViewController: NSViewController {
             let key = yougetResult?.streams.keys.sorted()[row],
             let stream = yougetResult?.streams[key],
             let url = URL(string: searchField.stringValue) else {
-                if !isSearching {
-                    yougetResult = nil
+                if isSearching {
                     Processes.shared.stopDecodeURL()
                 }
+                isSearching = false
+                yougetResult = nil
             return
         }
         
@@ -246,9 +247,9 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .biliLive, .huya, .longzhu, .quanmin, .eGame, .acfun:
+            case .huya, .longzhu, .quanmin, .eGame, .acfun:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-            case .bilibili:
+            case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
             case .unsupported:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none)

@@ -245,6 +245,10 @@ class Danmaku: NSObject {
                             savedData.append(savedData)
                             d = Data()
                         } else {
+                            guard endIndex+2 > 12,
+                                endIndex+2 < d.endIndex else {
+                                    Log("endIndex out of range.")
+                                    return }
                             let msg = d.subdata(in: 12..<endIndex+2)
                             msgDatas.append(msg)
                             d = d.subdata(in: endIndex+2..<d.endIndex)
