@@ -1,7 +1,6 @@
 github "facebook/SocketRocket" "master"
 github "sparkle-project/Sparkle"
 github "1024jp/GzipSwift"
-github "IBM-Swift/BlueSocket"
 github "httpswift/swifter"
 github "Alamofire/Alamofire" ~> 5.0.0-rc.2
 github "mxcl/PromiseKit"

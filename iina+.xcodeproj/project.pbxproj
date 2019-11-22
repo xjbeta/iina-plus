@@ -18,6 +18,7 @@
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
+		0114DB7A23882F770034857F /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 0114DB7923882F770034857F /* Cartfile */; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
@@ -57,7 +58,6 @@
 		018DB073233CF16900D0391B /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB061233CF16900D0391B /* Marshal.framework */; };
 		018DB074233CF16900D0391B /* Cache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB062233CF16900D0391B /* Cache.framework */; };
 		018DB076233CF16900D0391B /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB064233CF16900D0391B /* Swifter.framework */; };
-		018DB07A233CF16900D0391B /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB068233CF16900D0391B /* Socket.framework */; };
 		018DB07B233CF16900D0391B /* Gzip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB069233CF16900D0391B /* Gzip.framework */; };
 		018DB07C233CF16900D0391B /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB06A233CF16900D0391B /* Alamofire.framework */; };
 		018DB07D233CF16900D0391B /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB06B233CF16900D0391B /* SocketRocket.framework */; };
@@ -69,7 +69,6 @@
 		018DB087233CF18400D0391B /* Gzip.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB069233CF16900D0391B /* Gzip.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		018DB088233CF18400D0391B /* Marshal.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB061233CF16900D0391B /* Marshal.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		018DB089233CF18400D0391B /* PromiseKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB06C233CF16900D0391B /* PromiseKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		018DB08A233CF18400D0391B /* Socket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB068233CF16900D0391B /* Socket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		018DB08B233CF18400D0391B /* SocketRocket.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB06B233CF16900D0391B /* SocketRocket.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		018DB08C233CF18400D0391B /* Swifter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB064233CF16900D0391B /* Swifter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		018DB08D233CF1A000D0391B /* Alamofire.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB063233CF16900D0391B /* Alamofire.framework.dSYM */; };
@@ -77,7 +76,6 @@
 		018DB08F233CF1A000D0391B /* Gzip.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB060233CF16900D0391B /* Gzip.framework.dSYM */; };
 		018DB090233CF1A000D0391B /* Marshal.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB070233CF16900D0391B /* Marshal.framework.dSYM */; };
 		018DB091233CF1A000D0391B /* PromiseKit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB05F233CF16900D0391B /* PromiseKit.framework.dSYM */; };
-		018DB092233CF1A000D0391B /* Socket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB065233CF16900D0391B /* Socket.framework.dSYM */; };
 		018DB093233CF1A000D0391B /* SocketRocket.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB06D233CF16900D0391B /* SocketRocket.framework.dSYM */; };
 		018DB094233CF1A000D0391B /* Sparkle.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB06E233CF16900D0391B /* Sparkle.framework.dSYM */; };
 		018DB095233CF1A000D0391B /* Swifter.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB06F233CF16900D0391B /* Swifter.framework.dSYM */; };
@@ -110,7 +108,6 @@
 				018DB08F233CF1A000D0391B /* Gzip.framework.dSYM in CopyFiles */,
 				018DB090233CF1A000D0391B /* Marshal.framework.dSYM in CopyFiles */,
 				018DB091233CF1A000D0391B /* PromiseKit.framework.dSYM in CopyFiles */,
-				018DB092233CF1A000D0391B /* Socket.framework.dSYM in CopyFiles */,
 				018DB093233CF1A000D0391B /* SocketRocket.framework.dSYM in CopyFiles */,
 				018DB094233CF1A000D0391B /* Sparkle.framework.dSYM in CopyFiles */,
 				018DB095233CF1A000D0391B /* Swifter.framework.dSYM in CopyFiles */,
@@ -153,7 +150,6 @@
 				018DB087233CF18400D0391B /* Gzip.framework in Embed Frameworks */,
 				018DB088233CF18400D0391B /* Marshal.framework in Embed Frameworks */,
 				018DB089233CF18400D0391B /* PromiseKit.framework in Embed Frameworks */,
-				018DB08A233CF18400D0391B /* Socket.framework in Embed Frameworks */,
 				018DB08B233CF18400D0391B /* SocketRocket.framework in Embed Frameworks */,
 				018DB08C233CF18400D0391B /* Swifter.framework in Embed Frameworks */,
 				018DB084233CF17000D0391B /* Sparkle.framework in Embed Frameworks */,
@@ -175,6 +171,7 @@
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
+		0114DB7923882F770034857F /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = SOURCE_ROOT; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
@@ -213,10 +210,8 @@
 		018DB062233CF16900D0391B /* Cache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cache.framework; path = Carthage/Build/Mac/Cache.framework; sourceTree = SOURCE_ROOT; };
 		018DB063233CF16900D0391B /* Alamofire.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Alamofire.framework.dSYM; path = Carthage/Build/Mac/Alamofire.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB064233CF16900D0391B /* Swifter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swifter.framework; path = Carthage/Build/Mac/Swifter.framework; sourceTree = SOURCE_ROOT; };
-		018DB065233CF16900D0391B /* Socket.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Socket.framework.dSYM; path = Carthage/Build/Mac/Socket.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB066233CF16900D0391B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Carthage/Build/Mac/Sparkle.framework; sourceTree = SOURCE_ROOT; };
 		018DB067233CF16900D0391B /* Cache.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cache.framework.dSYM; path = Carthage/Build/Mac/Cache.framework.dSYM; sourceTree = SOURCE_ROOT; };
-		018DB068233CF16900D0391B /* Socket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Socket.framework; path = Carthage/Build/Mac/Socket.framework; sourceTree = SOURCE_ROOT; };
 		018DB069233CF16900D0391B /* Gzip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Gzip.framework; path = Carthage/Build/Mac/Gzip.framework; sourceTree = SOURCE_ROOT; };
 		018DB06A233CF16900D0391B /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/Mac/Alamofire.framework; sourceTree = SOURCE_ROOT; };
 		018DB06B233CF16900D0391B /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = Carthage/Build/Mac/SocketRocket.framework; sourceTree = SOURCE_ROOT; };
@@ -260,7 +255,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				018DB076233CF16900D0391B /* Swifter.framework in Frameworks */,
-				018DB07A233CF16900D0391B /* Socket.framework in Frameworks */,
 				018DB07B233CF16900D0391B /* Gzip.framework in Frameworks */,
 				018DB07E233CF16900D0391B /* PromiseKit.framework in Frameworks */,
 				018DB083233CF17000D0391B /* Sparkle.framework in Frameworks */,
@@ -327,8 +321,6 @@
 				018DB070233CF16900D0391B /* Marshal.framework.dSYM */,
 				018DB06C233CF16900D0391B /* PromiseKit.framework */,
 				018DB05F233CF16900D0391B /* PromiseKit.framework.dSYM */,
-				018DB068233CF16900D0391B /* Socket.framework */,
-				018DB065233CF16900D0391B /* Socket.framework.dSYM */,
 				018DB06B233CF16900D0391B /* SocketRocket.framework */,
 				018DB06D233CF16900D0391B /* SocketRocket.framework.dSYM */,
 				018DB066233CF16900D0391B /* Sparkle.framework */,
@@ -437,6 +429,7 @@
 		01AEC8A920EDFD01001406E8 /* iina+ */ = {
 			isa = PBXGroup;
 			children = (
+				0114DB7923882F770034857F /* Cartfile */,
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
 				019EB39D21453A97000FD123 /* Resources */,
 				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
@@ -573,6 +566,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0114DB7A23882F770034857F /* Cartfile in Resources */,
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
