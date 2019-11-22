@@ -11,7 +11,6 @@ import Alamofire
 import Marshal
 import SocketRocket
 import Gzip
-import Socket
 import JavaScriptCore
 
 class Danmaku: NSObject {
@@ -22,7 +21,9 @@ class Danmaku: NSObject {
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
     
-    var douyuSocket: Socket? = nil
+    let douyuServer = URL(string: "wss://danmuproxy.douyu.com:8506")
+    var douyuRoomID = ""
+    var douyuSavedData = Data()
     
     let huyaServer = URL(string: "wss://cdnws.api.huya.com")
     var huyaUserInfo = ("", "", "")
@@ -81,12 +82,10 @@ class Danmaku: NSObject {
     func stop() {
         socket?.close()
         socket = nil
-        douyuSocket?.close()
-        douyuSocket = nil
         httpServer.stop()
         timer?.cancel()
         egameTimer?.cancel()
-        
+        douyuSavedData = Data()
         danmukuObservers.forEach {
             NotificationCenter.default.removeObserver($0)
         }
@@ -153,6 +152,9 @@ class Danmaku: NSObject {
                 }
             }
         case .douyu:
+            
+            Log("Processes.shared.videoGet.getDouyuHtml")
+            
             Processes.shared.videoGet.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
@@ -199,81 +201,12 @@ class Danmaku: NSObject {
         httpServer.send(.sendDM, text: str)
     }
     
-//    private func sendDebugDM(_ str: String) {
-//        print("sendDebugDM \(str)")
-//        evaluateJavaScript("""
-//            window.cm.send({'text': "\(str)",'stime': 0,'mode': 4, 'align': 2,'color': 0xffffff,'border': false});
-//            """)
-//    }
-    
-    
     private func initDouYuSocket(_ roomID: String) {
-        DispatchQueue(label: "com.xjbeta.douyuSocket").async {
-            do {
-                self.douyuSocket = try Socket.create(family: .inet, type: .stream, proto: .tcp)
-                
-                try self.douyuSocket?.connect(to: "openbarrage.douyutv.com", port: 8601)
-                Log("douyu socket started: \(self.douyuSocket?.isConnected ?? false)")
-                let loginreq = "type@=loginreq/roomid@=\(roomID)/"
-                let joingroup = "type@=joingroup/rid@=\(roomID)/gid@=-9999/"
-                
-                try self.douyuSocket?.write(from: self.douyuSocketFormatter(loginreq))
-                try self.douyuSocket?.write(from: self.douyuSocketFormatter(joingroup))
-                self.startTimer()
-                
-                var savedData = Data()
-                repeat {
-                    
-                    var d = Data()
-                    let _ = try self.douyuSocket?.read(into: &d)
-                    if d.count == 0 {
-                        self.douyuSocket?.close()
-                    }
-                    
-                    if savedData.count != 0 {
-                        savedData.append(d)
-                        d = savedData
-                        savedData = Data()
-                    }
-                    
-                    var msgDatas: [Data] = []
-                    
-                    while d.count > 12 {
-                        let head = d.subdata(in: 0..<4)
-                        let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
-                        if d.count < endIndex+2 {
-                            savedData.append(savedData)
-                            d = Data()
-                        } else {
-                            guard endIndex+2 > 12,
-                                endIndex+2 < d.endIndex else {
-                                    Log("endIndex out of range.")
-                                    return }
-                            let msg = d.subdata(in: 12..<endIndex+2)
-                            msgDatas.append(msg)
-                            d = d.subdata(in: endIndex+2..<d.endIndex)
-                        }
-                    }
-                    
-                    msgDatas.compactMap {
-                        String(data: $0, encoding: .utf8)
-                        }.forEach {
-                            if $0.starts(with: "type@=chatmsg") {
-                                let dm = $0.subString(from: "txt@=", to: "/cid@=")
-                                DispatchQueue.main.async {
-                                    self.sendDM(dm)
-                                }
-                            } else if $0.starts(with: "type@=error") {
-                                Log("douyu socket disconnected: \($0)")
-                                self.httpServer.send(.liveDMServer, text: "error")
-                                self.douyuSocket?.close()
-                            }
-                    }
-                } while true
-            } catch let error {
-                Log("Douyu socket error: \(error)")
-            }
-        }
+        Log("initDouYuSocket")
+        douyuRoomID = roomID
+        socket = SRWebSocket(url: self.douyuServer!)
+        socket?.delegate = self
+        socket?.open()
     }
     
     private func douyuSocketFormatter(_ str: String) -> Data {
@@ -302,7 +235,7 @@ class Danmaku: NSObject {
                     case .douyu:
                         //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                         let keeplive = "type@=mrkl/"
-                        try self.douyuSocket?.write(from: self.douyuSocketFormatter(keeplive))
+                        try self.socket?.send(data: self.douyuSocketFormatter(keeplive))
                     case .huya:
                         try self.socket?.sendPing(nil)
                     default:
@@ -503,6 +436,14 @@ new Uint8Array(sendRegister(wsUserInfo));
             let data = Data(result?.toArray() as? [UInt8] ?? [])
             try? webSocket.send(data: data)
             startTimer()
+        case .douyu:
+            let loginreq = "type@=loginreq/roomid@=\(douyuRoomID)/"
+            let joingroup = "type@=joingroup/rid@=\(douyuRoomID)/gid@=-9999/"
+            
+            
+            try? webSocket.send(data: douyuSocketFormatter(loginreq))
+            try? webSocket.send(data: douyuSocketFormatter(joingroup))
+            startTimer()
         default:
             break
         }
@@ -660,7 +601,48 @@ new Uint8Array(sendRegister(wsUserInfo));
             //            "/{zk" = "[抓狂]",
             //            "/{bq" = "[抱拳]",
             //            "/{ok" = "[OK]"
+        case .douyu:
+            var d = data
             
+            if douyuSavedData.count != 0 {
+                douyuSavedData.append(d)
+                d = douyuSavedData
+                douyuSavedData = Data()
+            }
+            
+            var msgDatas: [Data] = []
+            
+            while d.count > 12 {
+                let head = d.subdata(in: 0..<4)
+                let endIndex = Int(CFSwapInt32LittleToHost(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
+                if d.count < endIndex+2 {
+                    douyuSavedData.append(douyuSavedData)
+                    d = Data()
+                } else {
+                    guard endIndex+2 > 12,
+                        endIndex+2 < d.endIndex else {
+                            Log("endIndex out of range.")
+                            return }
+                    let msg = d.subdata(in: 12..<endIndex+2)
+                    msgDatas.append(msg)
+                    d = d.subdata(in: endIndex+2..<d.endIndex)
+                }
+            }
+            
+            msgDatas.compactMap {
+                String(data: $0, encoding: .utf8)
+                }.forEach {
+                    if $0.starts(with: "type@=chatmsg") {
+                        let dm = $0.subString(from: "txt@=", to: "/cid@=")
+                        DispatchQueue.main.async {
+                            self.sendDM(dm)
+                        }
+                    } else if $0.starts(with: "type@=error") {
+                        Log("douyu socket disconnected: \($0)")
+                        self.httpServer.send(.liveDMServer, text: "error")
+                        socket?.close()
+                    }
+            }
         default:
             break
         }
