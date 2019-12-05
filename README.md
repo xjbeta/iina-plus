@@ -22,7 +22,7 @@
 | douyu       |      ✓      |       ✓      |    ✓    |
 | huya        |      ✓      |       ✓      |    ✓    |
 | qiedianjing |      ✓      |       ✓      |    ✓    |
-| acfun       |      ∙      |       ✓      |    ✓    |
+
 
 ## Danmaku
 ##### You should install the [IINA with Danmaku support](https://github.com/xjbeta/iina-danmaku/releases).
@@ -44,12 +44,13 @@ Open `.xcodeproj` file.
 ### Librarys
 - [Marshal](https://github.com/utahiosmac/Marshal)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
-- [DevMateKit](https://github.com/DevMate/DevMateKit)
-- [BlueSocket](https://github.com/IBM-Swift/BlueSocket)
 - [SocketRocket](https://github.com/facebook/SocketRocket)
 - [GzipSwift](https://github.com/1024jp/GzipSwift)
 - [PromiseKit](https://github.com/mxcl/PromiseKit)
 - [swifter](https://github.com/httpswift/swifter)
+- [Sparkle](https://github.com/sparkle-project/Sparkle)
+- [Cache](https://github.com/hyperoslo/Cache)
+
 
 ### Danmaku library
 - [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary)
