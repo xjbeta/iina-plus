@@ -103,19 +103,19 @@ struct HuyaUrl: Unmarshaling {
             sFlvUrl = try object.value(for: "sFlvUrl")
             sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
             var flvStr: String = try object.value(for: "sFlvAntiCode")
-            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: ";")
+            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: "&")
             sFlvAntiCode = flvStr
             
             sHlsUrl = try object.value(for: "sHlsUrl")
             sHlsUrlSuffix = try object.value(for: "sHlsUrlSuffix")
             var hlsStr: String = try object.value(for: "sHlsAntiCode")
-            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: ";")
+            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: "&")
             sHlsAntiCode = hlsStr
             
             sP2pUrl = try object.value(for: "sP2pUrl")
             sP2pUrlSuffix = try object.value(for: "sP2pUrlSuffix")
             var p2pStr: String = try object.value(for: "sP2pAntiCode")
-            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: ";")
+            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: "&")
             sP2pAntiCode = p2pStr
         }
     }
@@ -124,12 +124,12 @@ struct HuyaUrl: Unmarshaling {
         
         
         urls =
-//            streamInfos.map {
-//            $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
-//            } +
             streamInfos.map {
-                $0.sHlsUrl + "/" + $0.sStreamName + "." + $0.sHlsUrlSuffix + "?" + $0.sHlsAntiCode
+            $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
             }
+//            + streamInfos.map {
+//                $0.sHlsUrl + "/" + $0.sStreamName + "." + $0.sHlsUrlSuffix + "?" + $0.sHlsAntiCode
+//            }
 //            + streamInfos.map {
 //                $0.sP2pUrl + "/" + $0.sStreamName + "." + $0.sP2pUrlSuffix + "?" + $0.sP2pAntiCode
 //        }
