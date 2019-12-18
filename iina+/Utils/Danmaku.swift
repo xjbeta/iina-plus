@@ -634,6 +634,9 @@ new Uint8Array(sendRegister(wsUserInfo));
                 }.forEach {
                     if $0.starts(with: "type@=chatmsg") {
                         let dm = $0.subString(from: "txt@=", to: "/cid@=")
+                        guard !dm.contains("#挑战666#") else {
+                            return
+                        }
                         DispatchQueue.main.async {
                             self.sendDM(dm)
                         }
