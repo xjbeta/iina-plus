@@ -312,6 +312,10 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
     var userCover: String
     var isLiving: Bool
     
+    var roomID: String
+    var liveID: String
+    var liveKey: String
+    
     struct KingKongVideo: Unmarshaling, VideoSelector {
         var site: LiveSupportList {
             return .kingkong
@@ -338,5 +342,9 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
         isLiving = liveStatus == 1
         streamItems = try object.value(for: "data.live_info.stream_items")
         hlsItems = try object.value(for: "data.live_info.hls_items")
+        
+        liveID = try object.value(for: "data.live_info.live_id")
+        roomID = try object.value(for: "data.live_info.room_id")
+        liveKey = try object.value(for: "data.live_info.live_key")
     }
 }

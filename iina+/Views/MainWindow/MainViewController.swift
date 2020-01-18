@@ -258,7 +258,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun:
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun, .kingkong:
                     self.danmaku?.stop()
                     self.danmaku = Danmaku(site, url: self.searchField.stringValue)
                     self.danmaku?.start()
