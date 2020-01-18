@@ -24,6 +24,7 @@ enum LiveSupportList: String {
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
     case acfun = "www.acfun.cn"
+    case kingkong = "www.kingkong.com.tw"
     case unsupported
     
     init(raw: String?) {
@@ -143,6 +144,17 @@ class VideoGet: NSObject {
                         resolver.fulfill(yougetJson)
                     }.catch {
                         resolver.reject($0)
+                }
+            case .kingkong:
+                let roomId = Int(url.lastPathComponent) ?? -1
+                getKingKongInfo(roomId).done {
+                    yougetJson.title = $0.title
+                    $0.streamItems.forEach {
+                        yougetJson.streams[$0.title] = Stream(url: $0.url)
+                    }
+                    resolver.fulfill(yougetJson)
+                }.catch {
+                    resolver.reject($0)
                 }
             default:
                 resolver.reject(VideoGetError.notSupported)
@@ -305,6 +317,12 @@ class VideoGet: NSObject {
             case .eGame:
                 getEgameInfo(url).done {
                     resolver.fulfill($0.0)
+                    }.catch {
+                        resolver.reject($0)
+                }
+            case .kingkong:
+                getKingKongInfo(roomId).done {
+                    resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -862,6 +880,24 @@ extension VideoGet {
                         }
                         resolver.fulfill(list ?? [])
                     }
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getKingKongInfo(_ roomID: Int) -> Promise<(KingKongLiveInfo)> {
+        let url = "https://api.kingkongapp.com/webapi/v1/room/info?room_id=\(roomID)"
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+                    let info = try KingKongLiveInfo(object: json)
+                    resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
                 }

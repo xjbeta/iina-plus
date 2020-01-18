@@ -12,6 +12,7 @@ import Marshal
 import SocketRocket
 import Gzip
 import JavaScriptCore
+import CryptoSwift
 
 class Danmaku: NSObject {
     var socket: SRWebSocket? = nil
@@ -36,6 +37,9 @@ class Danmaku: NSObject {
     let httpServer = HttpServer()
     
     let huyaJSContext = JSContext()
+    
+    let kingKongServer = URL(string: "wss://cht.ws.kingkong.com.tw/chat_nsp/?EIO=3&transport=websocket")
+    var kingKongUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
     
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
@@ -192,6 +196,34 @@ class Danmaku: NSObject {
             }
         case .acfun:
             httpServer.send(.loadDM, text: "acfun")
+        case .kingkong:
+            guard let id = Int(roomID) else { return }
+            Processes.shared.videoGet.getKingKongInfo(id).done {
+                
+//                https://sgkoi.dev/2019/01/24/kingkong-live-danmaku-2/
+                
+                let pfid = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+                let s1 = #"{"alg":"HS256","typ":"JWT"}"#.kkBase64()
+                
+                let s2 = """
+{"live_id":"\($0.liveID)","pfid":"\(pfid)","name":"訪客\(pfid.dropFirst(pfid.count-5))","access_token":null,"lv":1,"from":1,"from_seq":1,"client_type":"web"}
+""".kkBase64()
+                
+                let ss = s1 + "." + s2
+                var encStr = try HMAC(key: $0.liveKey, variant: .sha256).authenticate(ss.bytes).toBase64() ?? ""
+                
+                encStr = encStr.kkFormatterBase64()
+                
+                let s3 = encStr
+                let token = ss + "." + s3
+                self.kingKongUserInfo = ($0.liveID, $0.roomID, token)
+                
+                self.socket = SRWebSocket(url: self.kingKongServer!)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }.catch {
+                Log("Get KingKong Info for DM error: \($0)")
+            }
         default:
             break
         }
@@ -238,6 +270,8 @@ class Danmaku: NSObject {
                         try self.socket?.send(data: self.douyuSocketFormatter(keeplive))
                     case .huya:
                         try self.socket?.sendPing(nil)
+                    case .kingkong:
+                        try self.socket?.send(string: "2")
                     default:
                         break
                     }
@@ -444,6 +478,9 @@ new Uint8Array(sendRegister(wsUserInfo));
             try? webSocket.send(data: douyuSocketFormatter(loginreq))
             try? webSocket.send(data: douyuSocketFormatter(joingroup))
             startTimer()
+            
+        case .kingkong:
+            startTimer()
         default:
             break
         }
@@ -461,9 +498,29 @@ new Uint8Array(sendRegister(wsUserInfo));
         httpServer.send(.liveDMServer, text: "error")
     }
     
-    
+    func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith string: String) {
+        switch liveSite {
+        case .kingkong:
+//            0{"sid":"dyeL2p6yeiDpBiTaA0r2","upgrades":[],"pingInterval":50000,"pingTimeout":60000}
+            if string.starts(with: #"42/chat_nsp,["msg""#) {
+                let str = string.subString(from: #""msg":""#, to: #"","#)
+                sendDM(str)
+            } else if string.starts(with: #"0{"sid":""#) {
+                try? webSocket.send(string: "40/chat_nsp,")
+            } else if string == "40/chat_nsp" {
+                let info = kingKongUserInfo
+                let str = """
+42/chat_nsp,["authentication",{"live_id":"\(info.liveID)","anchor_pfid":"\(info.pfid)","access_token":"\(info.accessToken)","token":"\(info.accessToken)","from":"WEB","client_type":"web","r":0}]
+"""
+                try? webSocket.send(string: str)
+            }
+        default:
+            break
+        }
+    }
+
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
-        
+        Log(data)
         switch liveSite {
         case .biliLive:
             //            0000 0234
@@ -699,5 +756,20 @@ struct EgameDM: Unmarshaling {
         newPid = try object.value(for: "new_pid")
         lastTm = try object.value(for: "last_tm")
         msgList = try object.value(for: "msg_list")
+    }
+}
+
+fileprivate extension String {
+    func kkBase64() -> String {
+        var s = self.bytes.toBase64() ?? ""
+        return s.kkFormatterBase64()
+    }
+    
+    func kkFormatterBase64() -> String {
+        var s = self
+        s = s.replacingOccurrences(of: "=", with: "")
+        s = s.replacingOccurrences(of: "+", with: "-")
+        s = s.replacingOccurrences(of: "/", with: "_")
+        return s
     }
 }

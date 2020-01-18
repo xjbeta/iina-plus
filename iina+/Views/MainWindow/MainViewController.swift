@@ -247,7 +247,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .acfun:
+            case .huya, .longzhu, .quanmin, .eGame, .acfun, .kingkong:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
@@ -258,7 +258,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun:
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun, .kingkong:
                     self.danmaku?.stop()
                     self.danmaku = Danmaku(site, url: self.searchField.stringValue)
                     self.danmaku?.start()
