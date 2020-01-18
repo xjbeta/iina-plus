@@ -247,7 +247,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .acfun:
+            case .huya, .longzhu, .quanmin, .eGame, .acfun, .kingkong:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)

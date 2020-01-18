@@ -303,3 +303,40 @@ struct AcFunVideo: Unmarshaling {
         danmuSize = try object.value(for: "danmuSize")
     }
 }
+
+// MARK: - KingKong
+
+struct KingKongLiveInfo: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var userCover: String
+    var isLiving: Bool
+    
+    struct KingKongVideo: Unmarshaling, VideoSelector {
+        var site: LiveSupportList {
+            return .kingkong
+        }
+        var index: Int
+        var title: String
+        var url: String
+        init(object: MarshaledObject) throws {
+            title = try object.value(for: "title")
+            index = try object.value(for: "id")
+            url = try object.value(for: "video")
+        }
+    }
+    
+    var streamItems: [KingKongVideo]
+    var hlsItems: [KingKongVideo]
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "data.live_info.room_title")
+        name = try object.value(for: "data.live_info.nickname")
+        userCover = try object.value(for: "data.live_info.avatar")
+        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+        let liveStatus: Int = try object.value(for: "data.live_info.live_status")
+        isLiving = liveStatus == 1
+        streamItems = try object.value(for: "data.live_info.stream_items")
+        hlsItems = try object.value(for: "data.live_info.hls_items")
+    }
+}
