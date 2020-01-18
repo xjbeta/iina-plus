@@ -55,6 +55,9 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
+		0189C94B23D3036900FAAF83 /* CryptoSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0189C94723D3035B00FAAF83 /* CryptoSwift.framework */; };
+		0189C94C23D3036900FAAF83 /* CryptoSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0189C94723D3035B00FAAF83 /* CryptoSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0189C94D23D3037D00FAAF83 /* CryptoSwift.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0189C94823D3035C00FAAF83 /* CryptoSwift.framework.dSYM */; };
 		018DB073233CF16900D0391B /* Marshal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB061233CF16900D0391B /* Marshal.framework */; };
 		018DB074233CF16900D0391B /* Cache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB062233CF16900D0391B /* Cache.framework */; };
 		018DB076233CF16900D0391B /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 018DB064233CF16900D0391B /* Swifter.framework */; };
@@ -103,6 +106,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				0189C94D23D3037D00FAAF83 /* CryptoSwift.framework.dSYM in CopyFiles */,
 				018DB08D233CF1A000D0391B /* Alamofire.framework.dSYM in CopyFiles */,
 				018DB08E233CF1A000D0391B /* Cache.framework.dSYM in CopyFiles */,
 				018DB08F233CF1A000D0391B /* Gzip.framework.dSYM in CopyFiles */,
@@ -148,6 +152,7 @@
 				018DB085233CF18400D0391B /* Alamofire.framework in Embed Frameworks */,
 				018DB086233CF18400D0391B /* Cache.framework in Embed Frameworks */,
 				018DB087233CF18400D0391B /* Gzip.framework in Embed Frameworks */,
+				0189C94C23D3036900FAAF83 /* CryptoSwift.framework in Embed Frameworks */,
 				018DB088233CF18400D0391B /* Marshal.framework in Embed Frameworks */,
 				018DB089233CF18400D0391B /* PromiseKit.framework in Embed Frameworks */,
 				018DB08B233CF18400D0391B /* SocketRocket.framework in Embed Frameworks */,
@@ -204,6 +209,8 @@
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
+		0189C94723D3035B00FAAF83 /* CryptoSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoSwift.framework; path = Carthage/Build/Mac/CryptoSwift.framework; sourceTree = SOURCE_ROOT; };
+		0189C94823D3035C00FAAF83 /* CryptoSwift.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = CryptoSwift.framework.dSYM; path = Carthage/Build/Mac/CryptoSwift.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB05F233CF16900D0391B /* PromiseKit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = PromiseKit.framework.dSYM; path = Carthage/Build/Mac/PromiseKit.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB060233CF16900D0391B /* Gzip.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Gzip.framework.dSYM; path = Carthage/Build/Mac/Gzip.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB061233CF16900D0391B /* Marshal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Marshal.framework; path = Carthage/Build/Mac/Marshal.framework; sourceTree = SOURCE_ROOT; };
@@ -257,6 +264,7 @@
 				018DB076233CF16900D0391B /* Swifter.framework in Frameworks */,
 				018DB07B233CF16900D0391B /* Gzip.framework in Frameworks */,
 				018DB07E233CF16900D0391B /* PromiseKit.framework in Frameworks */,
+				0189C94B23D3036900FAAF83 /* CryptoSwift.framework in Frameworks */,
 				018DB083233CF17000D0391B /* Sparkle.framework in Frameworks */,
 				018DB07D233CF16900D0391B /* SocketRocket.framework in Frameworks */,
 				018DB073233CF16900D0391B /* Marshal.framework in Frameworks */,
@@ -315,6 +323,8 @@
 				018DB063233CF16900D0391B /* Alamofire.framework.dSYM */,
 				018DB062233CF16900D0391B /* Cache.framework */,
 				018DB067233CF16900D0391B /* Cache.framework.dSYM */,
+				0189C94723D3035B00FAAF83 /* CryptoSwift.framework */,
+				0189C94823D3035C00FAAF83 /* CryptoSwift.framework.dSYM */,
 				018DB069233CF16900D0391B /* Gzip.framework */,
 				018DB060233CF16900D0391B /* Gzip.framework.dSYM */,
 				018DB061233CF16900D0391B /* Marshal.framework */,
