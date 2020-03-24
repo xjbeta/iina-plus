@@ -520,7 +520,6 @@ new Uint8Array(sendRegister(wsUserInfo));
     }
 
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
-        Log(data)
         switch liveSite {
         case .biliLive:
             //            0000 0234
