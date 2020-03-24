@@ -277,10 +277,16 @@ class Bilibili: NSObject {
         return Promise { resolver in
             var aid = -1
             var bvid = ""
-            if url.lastPathComponent.starts(with: "av"), let id = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
+            let pathComponents = NSString(string: url).pathComponents
+            guard pathComponents.count > 3 else {
+                resolver.reject(VideoGetError.cantFindIdForDM)
+                return
+            }
+            let idP = pathComponents[3]
+            if idP.starts(with: "av"), let id = Int(idP.replacingOccurrences(of: "av", with: "")) {
                 aid = id
-            } else if url.lastPathComponent.starts(with: "BV") {
-                bvid = url.lastPathComponent
+            } else if idP.starts(with: "BV") {
+                bvid = idP
             } else {
                 resolver.reject(VideoGetError.cantFindIdForDM)
                 return

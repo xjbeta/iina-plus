@@ -90,7 +90,14 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
                 case .acfun:
                     main.searchField.stringValue = "http://www.acfun.cn/v/ac\(videoId)_\(info.index)"
                 case .bilibili:
-                    main.searchField.stringValue = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
+                    
+                    var s = ""
+                    if videoId.starts(with: "BV") {
+                        s = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
+                    } else {
+                        s = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
+                    }
+                    main.searchField.stringValue = s
                 case .douyu:
                     main.searchField.stringValue = "https://www.douyu.com/\((info as! DouyuVideoList).roomId)"
                 default:
