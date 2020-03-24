@@ -36,7 +36,7 @@ class SelectVideoViewController: NSViewController {
         }
     }
     
-    var videoId: Int = -1
+    var videoId = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()

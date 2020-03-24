@@ -169,12 +169,8 @@ class VideoGet: NSObject {
                 return
             }
             if url.host == "www.bilibili.com" {
-                guard let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) else {
-                    resolver.reject(VideoGetError.cantFindIdForDM)
-                    return
-                }
                 var cid = 0
-                Bilibili().getVideoList(aid).get { vInfo in
+                Bilibili().getVideoList(url.absoluteString).get { vInfo in
                     if vInfo.count == 1 {
                         cid = vInfo[0].cid
                     } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
