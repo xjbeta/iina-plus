@@ -76,13 +76,15 @@ class MainViewController: NSViewController {
         if bilibiliTableView.selectedRow != -1 {
             let card = bilibiliCards[bilibiliTableView.selectedRow]
             let aid = card.aid
+            let bvid = card.bvid
             if card.videos == 1 {
-                searchField.stringValue = "https://www.bilibili.com/video/av\(aid)"
+                searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
                 searchField.becomeFirstResponder()
                 startSearch(self)
             } else if card.videos > 1 {
-                bilibili.getVideoList(aid).done { infos in
-                    self.showSelectVideo(aid, infos: infos)
+                let u = "https://www.bilibili.com/video/\(bvid)"
+                bilibili.getVideoList(u).done { infos in
+                    self.showSelectVideo(bvid, infos: infos)
                     }.catch { error in
                         Log("Get video list error: \(error)")
                 }
@@ -140,13 +142,10 @@ class MainViewController: NSViewController {
         
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
-            url.lastPathComponent.starts(with: "av"),
-            !str.contains("p=") {
-            let aid = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) ?? 0
-            
-            bilibili.getVideoList(aid).done { infos in
+            !str.contains("?p=") {
+            bilibili.getVideoList(url.absoluteString).done { infos in
                 if infos.count > 1 {
-                    self.showSelectVideo(aid, infos: infos)
+                    self.showSelectVideo("", infos: infos)
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {
@@ -159,7 +158,7 @@ class MainViewController: NSViewController {
             url.host == "www.acfun.cn",
             url.lastPathComponent.starts(with: "ac"),
             !url.lastPathComponent.contains("_") {
-            let acId = Int(url.lastPathComponent.replacingOccurrences(of: "ac", with: "")) ?? 0
+            let acId = url.lastPathComponent.replacingOccurrences(of: "ac", with: "")
             
             Processes.shared.videoGet.getAcfun(url: url).done {
                 if $0.videoList.count > 1 {
@@ -183,7 +182,7 @@ class MainViewController: NSViewController {
                         DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: Int($0.element) ?? 0)
                     }
 
-                    self.showSelectVideo(0, infos: infos)
+                    self.showSelectVideo("", infos: infos)
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {
@@ -432,7 +431,7 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: Int, infos: [VideoSelector]) {
+    func showSelectVideo(_ videoId: String, infos: [VideoSelector]) {
         if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
             DispatchQueue.main.async {
                 self.searchField.stringValue = ""

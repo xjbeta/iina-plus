@@ -14,6 +14,7 @@ import PromiseKit
 @objc(BilibiliCard)
 class BilibiliCard: NSObject, Unmarshaling {
     var aid: Int = 0
+    var bvid: String = ""
     var dynamicId: Int = 0
     @objc var title: String = ""
     @objc var pic: NSImage?
@@ -31,11 +32,11 @@ class BilibiliCard: NSObject, Unmarshaling {
     
     required init(object: MarshaledObject) throws {
         dynamicId = try object.value(for: "desc.dynamic_id")
+        bvid = try object.value(for: "desc.bvid")
         let jsonStr: String = try object.value(for: "card")
         if let data = jsonStr.data(using: .utf8) {
             let json: JSONObject = try JSONParser.JSONObjectWithData(data)
             aid = try json.value(for: "aid")
-    
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
             self.picUrl = picUrl
@@ -226,6 +227,9 @@ class Bilibili: NSObject {
             var http: DataRequest? = nil
             let headers = HTTPHeaders(["referer": "https://www.bilibili.com/"])
             
+//             https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=9219649&type_list=8
+            
+            
             switch action {
             case .init😅:
                 http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
@@ -268,9 +272,33 @@ class Bilibili: NSObject {
         }
     }
     
-    func getVideoList(_ aid: Int) -> Promise<[BilibiliSimpleVideoInfo]> {
+    func getVideoList(_ url: String) -> Promise<[BilibiliSimpleVideoInfo]> {
+        
         return Promise { resolver in
-            AF.request("https://api.bilibili.com/x/player/pagelist?aid=\(aid)").response { response in
+            var aid = -1
+            var bvid = ""
+            if url.lastPathComponent.starts(with: "av"), let id = Int(url.lastPathComponent.replacingOccurrences(of: "av", with: "")) {
+                aid = id
+            } else if url.lastPathComponent.starts(with: "BV") {
+                bvid = url.lastPathComponent
+            } else {
+                resolver.reject(VideoGetError.cantFindIdForDM)
+                return
+            }
+            
+            
+            
+            var r: DataRequest
+            if aid != -1 {
+                r = AF.request("https://api.bilibili.com/x/player/pagelist?aid=\(aid)")
+            } else if bvid != "" {
+                r = AF.request("https://api.bilibili.com/x/player/pagelist?bvid=\(bvid)")
+            } else {
+                resolver.reject(VideoGetError.cantFindIdForDM)
+                return
+            }
+            
+            r.response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }

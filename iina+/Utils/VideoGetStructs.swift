@@ -331,7 +331,6 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
     }
     
     var streamItems: [KingKongVideo]
-    var hlsItems: [KingKongVideo]
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "data.live_info.room_title")
@@ -341,7 +340,6 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
         let liveStatus: Int = try object.value(for: "data.live_info.live_status")
         isLiving = liveStatus == 1
         streamItems = try object.value(for: "data.live_info.stream_items")
-        hlsItems = try object.value(for: "data.live_info.hls_items")
         
         liveID = try object.value(for: "data.live_info.live_id")
         roomID = try object.value(for: "data.live_info.room_id")
