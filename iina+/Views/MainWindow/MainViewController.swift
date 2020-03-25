@@ -155,23 +155,6 @@ class MainViewController: NSViewController {
                     Log("Get video list error: \(error)")
             }
         } else if let url = URL(string: str),
-            url.host == "www.acfun.cn",
-            url.lastPathComponent.starts(with: "ac"),
-            !url.lastPathComponent.contains("_") {
-            let acId = url.lastPathComponent.replacingOccurrences(of: "ac", with: "")
-            
-            Processes.shared.videoGet.getAcfun(url: url).done {
-                if $0.videoList.count > 1 {
-                    self.showSelectVideo(acId, infos: $0.videoList)
-                    self.isSearching = false
-                    self.progressStatusChanged(false)
-                } else {
-                    decodeUrl()
-                }
-                }.catch { error in
-                    Log("Get video list error: \(error)")
-            }
-        } else if let url = URL(string: str),
             url.host == "www.douyu.com",
             url.pathComponents.count > 2,
             url.pathComponents[1] == "topic" {
@@ -246,7 +229,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .acfun, .kingkong:
+            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
@@ -257,7 +240,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun, .kingkong:
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .kingkong:
                     self.danmaku?.stop()
                     self.danmaku = Danmaku(site, url: self.searchField.stringValue)
                     self.danmaku?.start()
