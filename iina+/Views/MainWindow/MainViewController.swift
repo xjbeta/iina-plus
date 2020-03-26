@@ -329,6 +329,16 @@ class MainViewController: NSViewController {
     var canLoadMoreBilibiliCards = true
     
     @objc func scrollViewDidScroll(_ notification: Notification) {
+        bilibiliTableView.enumerateAvailableRowViews { (view, i) in
+            guard let v = view as? MainWindowTableRowView,
+                let cellV = v.subviews.first as? BilibiliCardTableCellView,
+                let boxV = cellV.imageBoxView,
+                boxV.state != .stop else { return }
+            
+            boxV.updatePreview(.stop)
+            boxV.stopTimer()
+        }
+        
         guard canLoadMoreBilibiliCards else { return }
 
         if let scrollView = notification.object as? NSScrollView {
