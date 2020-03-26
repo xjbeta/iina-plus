@@ -2,7 +2,7 @@ github "facebook/SocketRocket" "master"
 github "sparkle-project/Sparkle"
 github "1024jp/GzipSwift"
 github "httpswift/swifter"
-github "Alamofire/Alamofire" ~> 5.0.0-rc.2
+github "Alamofire/Alamofire"
 github "mxcl/PromiseKit"
 github "utahiosmac/Marshal"
 github "xjbeta/Cache"
