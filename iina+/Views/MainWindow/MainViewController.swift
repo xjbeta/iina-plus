@@ -334,7 +334,7 @@ class MainViewController: NSViewController {
         if let scrollView = notification.object as? NSScrollView {
             let visibleRect = scrollView.contentView.documentVisibleRect
             let documentRect = scrollView.contentView.documentRect
-            if documentRect.height - visibleRect.height - visibleRect.origin.y < 10 {
+            if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
                 loadBilibiliCards(.history)
             }
         }
