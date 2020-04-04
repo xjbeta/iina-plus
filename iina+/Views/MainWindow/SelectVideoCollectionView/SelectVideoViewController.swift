@@ -85,14 +85,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
                 let info = videoInfos[item]
                 switch info.site {
                 case .bilibili:
-                    
-                    var s = ""
-                    if videoId.starts(with: "BV") {
-                        s = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
-                    } else {
-                        s = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
-                    }
-                    main.searchField.stringValue = s
+                    main.searchField.stringValue = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
                 case .douyu:
                     main.searchField.stringValue = "https://www.douyu.com/\((info as! DouyuVideoList).roomId)"
                 default:

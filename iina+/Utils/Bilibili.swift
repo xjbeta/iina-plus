@@ -227,8 +227,6 @@ class Bilibili: NSObject {
             var http: DataRequest? = nil
             let headers = HTTPHeaders(["referer": "https://www.bilibili.com/"])
             
-//             https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=9219649&type_list=8
-            
             
             switch action {
             case .init😅:
@@ -291,8 +289,6 @@ class Bilibili: NSObject {
                 resolver.reject(VideoGetError.cantFindIdForDM)
                 return
             }
-            
-            
             
             var r: DataRequest
             if aid != -1 {

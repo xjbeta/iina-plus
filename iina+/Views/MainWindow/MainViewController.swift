@@ -143,9 +143,18 @@ class MainViewController: NSViewController {
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             !str.contains("?p=") {
+            
+            
+            
+            var vid = ""
+            let pathComponents = NSString(string: str).pathComponents
+            guard pathComponents.count > 3 else {
+                return
+            }
+            vid = pathComponents[3]
             bilibili.getVideoList(url.absoluteString).done { infos in
                 if infos.count > 1 {
-                    self.showSelectVideo("", infos: infos)
+                    self.showSelectVideo(vid, infos: infos)
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {
