@@ -194,8 +194,6 @@ class Danmaku: NSObject {
                 }.catch {
                     Log("Get Egame Info for DM error: \($0)")
             }
-        case .acfun:
-            httpServer.send(.loadDM, text: "acfun")
         case .kingkong:
             guard let id = Int(roomID) else { return }
             Processes.shared.videoGet.getKingKongInfo(id).done {

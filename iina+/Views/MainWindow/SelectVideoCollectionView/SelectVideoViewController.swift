@@ -56,9 +56,6 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         }
         let info = videoInfos[indexPath.item]
         switch info.site {
-        case .acfun:
-            selectVideoItem.titleTextField.stringValue = "\(info.index + 1)、\(info.title)"
-            selectVideoItem.titleTextField.toolTip = "\(info.index + 1)、\(info.title)"
         case .bilibili:
             selectVideoItem.titleTextField.stringValue = "\(info.index)、\(info.title)"
             selectVideoItem.titleTextField.toolTip = "\(info.index)、\(info.title)"
@@ -87,10 +84,8 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
                 main.selectTabItem(.search)
                 let info = videoInfos[item]
                 switch info.site {
-                case .acfun:
-                    main.searchField.stringValue = "http://www.acfun.cn/v/ac\(videoId)_\(info.index)"
                 case .bilibili:
-                    main.searchField.stringValue = "https://www.bilibili.com/video/av\(videoId)/?p=\(info.index)"
+                    main.searchField.stringValue = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
                 case .douyu:
                     main.searchField.stringValue = "https://www.douyu.com/\((info as! DouyuVideoList).roomId)"
                 default:

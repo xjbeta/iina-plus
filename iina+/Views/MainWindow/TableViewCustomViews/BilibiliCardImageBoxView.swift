@@ -14,6 +14,8 @@ class BilibiliCardImageBoxView: NSView {
     var aid: Int = 0
     var displayedIndex = -1
     
+    var state: PreviewStatus = .init🐴
+    
     var imageView: NSImageView? {
         return self.subviews.compactMap { $0 as? NSImageView }.first
     }
@@ -76,6 +78,7 @@ class BilibiliCardImageBoxView: NSView {
     func updatePreview(_ status: PreviewStatus, per: Float = 0) {
         switch status {
         case .init🐴:
+            state = .init🐴
             if pImages.count == 0 {
                 Bilibili().getPvideo(aid).done(on: .main) { pvideo in
                     self.pImages = pvideo.pImages
@@ -87,10 +90,12 @@ class BilibiliCardImageBoxView: NSView {
                 self.updatePreview(.start, per: self.previewPercent)
             }
         case .stop:
+            state = .stop
             progressView?.isHidden = true
             imageView?.image = pic
             displayedIndex = -1
         case .start:
+            state = .start
             progressView?.isHidden = false
             progressView?.doubleValue = Double(per)
             if pImages.count > 0 {

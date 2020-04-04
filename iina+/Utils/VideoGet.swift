@@ -23,7 +23,6 @@ enum LiveSupportList: String {
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
-    case acfun = "www.acfun.cn"
     case kingkong = "www.kingkong.com.tw"
     case unsupported
     
@@ -113,35 +112,7 @@ class VideoGet: NSObject {
                 }
             case .bilibili:
                 getBilibili(url).done {
-                    yougetJson.title = $0.0
-                    yougetJson.audio = $0.2
-                    $0.1.sorted(by: { $0.0 > $1.0 }).enumerated().forEach {
-                        var stream = Stream(url: $0.element.2)
-                        stream.videoProfile = $0.element.1
-                        yougetJson.streams["\($0.offset + 1)"] = stream
-                    }
-                    resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .acfun:
-                getAcfun(url: url).get {
-                    yougetJson.title = $0.title
-                    }.then {
-                        self.getAcFunVideList($0.videoList.first?.id ?? 0, url.absoluteString)
-                    }.done {
-                        var videoKey: String?
-                        $0.forEach {
-                            if $0.starts(with: "#EXT-X-STREAM-INF") {
-                                videoKey = $0.subString(from: "BANDWIDTH=", to: ",") + "P"
-                            } else if $0.starts(with: "http"), let key = videoKey {
-                                var stream = Stream(url: $0)
-                                stream.size = Int64($0.subString(from: "size=")) ?? 0
-                                yougetJson.streams[key] = stream
-                                videoKey = nil
-                            }
-                        }
-                        resolver.fulfill(yougetJson)
+                    resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -185,72 +156,6 @@ class VideoGet: NSObject {
                         self.downloadDMFile(cid)
                     }.done {
                         resolver.fulfill(())
-                    }.catch {
-                        resolver.reject($0)
-                }
-            } else if url.host == "www.acfun.cn" {
-                getAcfun(url: url).done { video in
-                    var time = "4073558400000"
-                    var danmakuCount = video.danmuSize
-                    let numberPerRequest = 2000
-                    var saveDMString = ""
-                    
-                    func loadDanmaku() {
-                        AF.request("http://danmu.aixifan.com/V4/\(video.videoId)_2/\(time)/\(numberPerRequest)?order=-1").response { response in
-                            if let error = response.error {
-                                resolver.reject(error)
-                            }
-                            var jsonStr = response.text?.dropFirst(7)
-                            jsonStr = jsonStr?.dropLast()
-                            struct AcfunDM: Decodable {
-                                let c: String
-                            }
-                            guard var jsonString = jsonStr,
-                                let jsonData = String(jsonString).data(using: .utf8),
-                                let dmList = try? JSONDecoder().decode([AcfunDM].self, from: jsonData),
-                                let lastDM = dmList.last else {
-                                resolver.reject(VideoGetError.prepareDMFailed)
-                                return
-                            }
-                            
-                            let dmP = lastDM.c.split(separator: ",").map(String.init)
-                            
-                            guard dmP.count == 7 else {
-                                resolver.reject(VideoGetError.prepareDMFailed)
-                                return
-                            }
-                            
-                            // Save DM String
-                            if time != "4073558400000" {
-                                jsonString = jsonString.dropFirst()
-                            }
-                            
-                            // Set time to lastDM time
-                            time = dmP[5]
-                            danmakuCount -= numberPerRequest
-                            
-                            if danmakuCount > 0 {
-                                jsonString = jsonString.dropLast() + ","
-                            }
-                            saveDMString += String(jsonString)
-                            
-                            if danmakuCount > 0 {
-                                loadDanmaku()
-                            } else {
-                                guard let resourcePath = Bundle.main.resourcePath,
-                                    let dmData = saveDMString.data(using: .utf8) else {
-                                        resolver.reject(VideoGetError.prepareDMFailed)
-                                        return
-                                }
-                                let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.json"
-                                FileManager.default.createFile(atPath: danmakuFilePath, contents: dmData, attributes: nil)
-                                Log("Saved DM in \(danmakuFilePath)")
-                                resolver.fulfill(())
-                            }
-                        }
-                    }
-                    
-                    loadDanmaku()
                     }.catch {
                         resolver.reject($0)
                 }
@@ -675,10 +580,20 @@ extension VideoGet {
     }
     
     // MARK: - Bilibili
-    func getBilibili(_ url: URL) -> Promise<(String, [(Int, String, String)], String)> {
+    func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         
-        let headers = HTTPHeaders(["Referer": "https://www.bilibili.com/",
-                                   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+        let headers = HTTPHeaders(
+            ["Referer": "https://www.bilibili.com/",
+             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+        
+        // https://github.com/xioxin/biliATV/issues/24
+        var cookieProperties = [HTTPCookiePropertyKey: String]()
+        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
+        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
+        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
+        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
+        let cookie = HTTPCookie(properties: cookieProperties)
+        HTTPCookieStorage.shared.setCookie(cookie!)
         
         return Promise { resolver in
             AF.request(url.absoluteString, headers: headers).response { response in
@@ -687,49 +602,87 @@ extension VideoGet {
                 }
                 let playInfoData = response.text?.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
                 let initialStateData = response.text?.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
-                    
-                do {
-                    let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
-                    let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
-                    
-                    var title: String = try initialStateJson.value(for: "videoData.title")
-                    struct Page: Unmarshaling {
-                        var page: Int
-                        var part: String
-                        init(object: MarshaledObject) throws {
-                            page = try object.value(for: "page")
-                            part = try object.value(for: "part")
-                        }
+                
+                self.decodeBilibiliDatas(
+                    url,
+                    playInfoData: playInfoData,
+                    initialStateData: initialStateData).done {
+                        resolver.fulfill($0)
+                }.catch {
+                    resolver.reject($0)
+                }
+            }
+        }
+    }
+    
+    func decodeBilibiliDatas(_ url: URL,
+                             playInfoData: Data,
+                             initialStateData: Data) -> Promise<(YouGetJSON)> {
+        var yougetJson = YouGetJSON(url:"")
+        yougetJson.streams.removeAll()
+        
+        return Promise { resolver in
+            do {
+                let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
+                let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
+                
+                var title: String = try initialStateJson.value(for: "videoData.title")
+                
+                struct Page: Unmarshaling {
+                    var page: Int
+                    var part: String
+                    init(object: MarshaledObject) throws {
+                        page = try object.value(for: "page")
+                        part = try object.value(for: "part")
                     }
-                    let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                    let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
-                    let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
-                    
-                    var descriptionDic = [Int: String]()
-                    acceptQuality.enumerated().forEach {
-                        descriptionDic[$0.element] = acceptDescription[$0.offset]
+                }
+                let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
+                let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
+                let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
+                
+                if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
+                     let pInt = Int(p),
+                     pInt - 1 > 0, pInt - 1 < pages.count {
+                     title += " - P\(pInt) - \(pages[pInt - 1].part)"
+                 }
+                yougetJson.title = title
+                
+                var descriptionDic = [Int: String]()
+                acceptQuality.enumerated().forEach {
+                    descriptionDic[$0.element] = acceptDescription[$0.offset]
+                }
+                
+                struct VideoInfo: Unmarshaling {
+                    var url: String
+                    var id: Int
+                    var description: String = ""
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "baseUrl")
+                        id = try object.value(for: "id")
                     }
-                    
-                    struct VideoInfo: Unmarshaling {
-                        var url: String
-                        var id: Int
-                        var description: String = ""
-                        init(object: MarshaledObject) throws {
-                            url = try object.value(for: "baseUrl")
-                            id = try object.value(for: "id")
-                        }
+                }
+                
+                struct AudioInfo: Unmarshaling {
+                    var url: String
+                    var bandwidth: Int
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "baseUrl")
+                        bandwidth = try object.value(for: "bandwidth")
                     }
-                    
-                    struct AudioInfo: Unmarshaling {
-                        var url: String
-                        var bandwidth: Int
-                        init(object: MarshaledObject) throws {
-                            url = try object.value(for: "baseUrl")
-                            bandwidth = try object.value(for: "bandwidth")
-                        }
+                }
+                
+                struct Durl: Unmarshaling {
+                    var url: String
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "url")
                     }
+                }
+                
+                
+                // New Fromat
+                if var videos: [VideoInfo] = try? playInfoJson.value(for: "data.dash.video") {
                     
-                    var videos: [VideoInfo] = try playInfoJson.value(for: "data.dash.video")
+                    
                     let audios: [AudioInfo]? = try playInfoJson.value(for: "data.dash.audio")
                     
                     videos.enumerated().forEach {
@@ -744,27 +697,38 @@ extension VideoGet {
                     }
                     videos = visVideos
                     
-                    if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        let pInt = Int(p),
-                        pInt - 1 > 0, pInt - 1 < pages.count {
-                        title += " - P\(pInt) - \(pages[pInt - 1].part)"
+                    videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                        var stream = Stream(url: $0.element.url)
+                        stream.videoProfile = $0.element.description
+                        yougetJson.streams["\($0.offset + 1)"] = stream
                     }
                     
-                    guard audios != nil, videos.count > 0 else {
-                        resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), ""))
+                    guard audios != nil else {
+                        resolver.fulfill(yougetJson)
                         return
                     }
                     
                     guard let audioUrl = audios?.max(by: { $0.bandwidth > $1.bandwidth }),
                         videos.count > 0 else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
+                            resolver.reject(VideoGetError.notFindUrls)
+                            return
                     }
                     
-                    resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), audioUrl.url))
-                } catch let error {
-                    resolver.reject(error)
+                    yougetJson.audio = audioUrl.url
+                    resolver.fulfill(yougetJson)
+                    
+                } else if let durls: [Durl] = try? playInfoJson.value(for: "data.durl"),
+                    let u = durls.first?.url {
+                    
+                    var stream = Stream(url: u)
+                    stream.videoProfile = "video"
+                    yougetJson.streams["video"] = stream
+                    resolver.fulfill(yougetJson)
+                } else {
+                    resolver.reject(VideoGetError.notFindUrls)
                 }
+            } catch let error {
+                resolver.reject(error)
             }
         }
     }
@@ -832,57 +796,7 @@ extension VideoGet {
         }
     }
     
-    // MARK: - AcFun
-    //        https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/acfun.py
-    func getAcfun(url: URL) -> Promise<AcFunVideo>  {
-        return Promise { resolver in
-            AF.request(url.absoluteString).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let pageData = response.text?.subString(from: "var pageInfo = ", to: "</script>").data(using: .utf8) ?? Data()
-                    
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(pageData)
-                    let acfunVideo = try AcFunVideo(object: json)
-                    resolver.fulfill(acfunVideo)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getAcFunVideList(_ videoId: Int, _ url: String) -> Promise<([String])>  {
-        return Promise { resolver in
-            AF.request("http://www.acfun.cn/video/getVideo.aspx?id=\(videoId)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info = try AcFunVideo.AcInfo(object: json)
-                    
-                    let u = "http://www.acfun.cn/rest/pc-direct/video/hlsMasterPlayList?vid=\(info.sourceId)&ct=85&ev=3&sign=\(info.encode)&time=\(Int(Date().timeIntervalSince1970))"
-                    
-                    AF.request(u, headers: ["referer": url]).response { response in
-                        if let error = response.error {
-                            resolver.reject(error)
-                        }
-                        let list = response.text?.split(separator: "\n").map {
-                            String($0)
-                        }.filter {
-                            $0.starts(with: "#EXT-X-STREAM-INF") || $0.starts(with: "http")
-                        }
-                        resolver.fulfill(list ?? [])
-                    }
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
+// MARK: - KingKong
     func getKingKongInfo(_ roomID: Int) -> Promise<(KingKongLiveInfo)> {
         let url = "https://api.kingkongapp.com/webapi/v1/room/info?room_id=\(roomID)"
         return Promise { resolver in

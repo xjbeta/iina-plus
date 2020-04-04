@@ -143,26 +143,18 @@ class MainViewController: NSViewController {
         if let url = URL(string: str),
             url.host == "www.bilibili.com",
             !str.contains("?p=") {
+            
+            
+            
+            var vid = ""
+            let pathComponents = NSString(string: str).pathComponents
+            guard pathComponents.count > 3 else {
+                return
+            }
+            vid = pathComponents[3]
             bilibili.getVideoList(url.absoluteString).done { infos in
                 if infos.count > 1 {
-                    self.showSelectVideo("", infos: infos)
-                    self.isSearching = false
-                    self.progressStatusChanged(false)
-                } else {
-                    decodeUrl()
-                }
-                }.catch { error in
-                    Log("Get video list error: \(error)")
-            }
-        } else if let url = URL(string: str),
-            url.host == "www.acfun.cn",
-            url.lastPathComponent.starts(with: "ac"),
-            !url.lastPathComponent.contains("_") {
-            let acId = url.lastPathComponent.replacingOccurrences(of: "ac", with: "")
-            
-            Processes.shared.videoGet.getAcfun(url: url).done {
-                if $0.videoList.count > 1 {
-                    self.showSelectVideo(acId, infos: $0.videoList)
+                    self.showSelectVideo(vid, infos: infos)
                     self.isSearching = false
                     self.progressStatusChanged(false)
                 } else {
@@ -246,7 +238,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .acfun, .kingkong:
+            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
             case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
@@ -257,7 +249,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .acfun, .kingkong:
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .kingkong:
                     self.danmaku?.stop()
                     self.danmaku = Danmaku(site, url: self.searchField.stringValue)
                     self.danmaku?.start()
@@ -346,12 +338,22 @@ class MainViewController: NSViewController {
     var canLoadMoreBilibiliCards = true
     
     @objc func scrollViewDidScroll(_ notification: Notification) {
+        bilibiliTableView.enumerateAvailableRowViews { (view, i) in
+            guard let v = view as? MainWindowTableRowView,
+                let cellV = v.subviews.first as? BilibiliCardTableCellView,
+                let boxV = cellV.imageBoxView,
+                boxV.state != .stop else { return }
+            
+            boxV.updatePreview(.stop)
+            boxV.stopTimer()
+        }
+        
         guard canLoadMoreBilibiliCards else { return }
 
         if let scrollView = notification.object as? NSScrollView {
             let visibleRect = scrollView.contentView.documentVisibleRect
             let documentRect = scrollView.contentView.documentRect
-            if documentRect.height - visibleRect.height - visibleRect.origin.y < 10 {
+            if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
                 loadBilibiliCards(.history)
             }
         }
