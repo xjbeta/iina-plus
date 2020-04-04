@@ -112,14 +112,7 @@ class VideoGet: NSObject {
                 }
             case .bilibili:
                 getBilibili(url).done {
-                    yougetJson.title = $0.0
-                    yougetJson.audio = $0.2
-                    $0.1.sorted(by: { $0.0 > $1.0 }).enumerated().forEach {
-                        var stream = Stream(url: $0.element.2)
-                        stream.videoProfile = $0.element.1
-                        yougetJson.streams["\($0.offset + 1)"] = stream
-                    }
-                    resolver.fulfill(yougetJson)
+                    resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
                 }
@@ -587,10 +580,20 @@ extension VideoGet {
     }
     
     // MARK: - Bilibili
-    func getBilibili(_ url: URL) -> Promise<(String, [(Int, String, String)], String)> {
+    func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         
-        let headers = HTTPHeaders(["Referer": "https://www.bilibili.com/",
-                                   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+        let headers = HTTPHeaders(
+            ["Referer": "https://www.bilibili.com/",
+             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+        
+        // https://github.com/xioxin/biliATV/issues/24
+        var cookieProperties = [HTTPCookiePropertyKey: String]()
+        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
+        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
+        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
+        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
+        let cookie = HTTPCookie(properties: cookieProperties)
+        HTTPCookieStorage.shared.setCookie(cookie!)
         
         return Promise { resolver in
             AF.request(url.absoluteString, headers: headers).response { response in
@@ -599,49 +602,87 @@ extension VideoGet {
                 }
                 let playInfoData = response.text?.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
                 let initialStateData = response.text?.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
-                    
-                do {
-                    let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
-                    let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
-                    
-                    var title: String = try initialStateJson.value(for: "videoData.title")
-                    struct Page: Unmarshaling {
-                        var page: Int
-                        var part: String
-                        init(object: MarshaledObject) throws {
-                            page = try object.value(for: "page")
-                            part = try object.value(for: "part")
-                        }
+                
+                self.decodeBilibiliDatas(
+                    url,
+                    playInfoData: playInfoData,
+                    initialStateData: initialStateData).done {
+                        resolver.fulfill($0)
+                }.catch {
+                    resolver.reject($0)
+                }
+            }
+        }
+    }
+    
+    func decodeBilibiliDatas(_ url: URL,
+                             playInfoData: Data,
+                             initialStateData: Data) -> Promise<(YouGetJSON)> {
+        var yougetJson = YouGetJSON(url:"")
+        yougetJson.streams.removeAll()
+        
+        return Promise { resolver in
+            do {
+                let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
+                let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
+                
+                var title: String = try initialStateJson.value(for: "videoData.title")
+                
+                struct Page: Unmarshaling {
+                    var page: Int
+                    var part: String
+                    init(object: MarshaledObject) throws {
+                        page = try object.value(for: "page")
+                        part = try object.value(for: "part")
                     }
-                    let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                    let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
-                    let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
-                    
-                    var descriptionDic = [Int: String]()
-                    acceptQuality.enumerated().forEach {
-                        descriptionDic[$0.element] = acceptDescription[$0.offset]
+                }
+                let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
+                let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
+                let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
+                
+                if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
+                     let pInt = Int(p),
+                     pInt - 1 > 0, pInt - 1 < pages.count {
+                     title += " - P\(pInt) - \(pages[pInt - 1].part)"
+                 }
+                yougetJson.title = title
+                
+                var descriptionDic = [Int: String]()
+                acceptQuality.enumerated().forEach {
+                    descriptionDic[$0.element] = acceptDescription[$0.offset]
+                }
+                
+                struct VideoInfo: Unmarshaling {
+                    var url: String
+                    var id: Int
+                    var description: String = ""
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "baseUrl")
+                        id = try object.value(for: "id")
                     }
-                    
-                    struct VideoInfo: Unmarshaling {
-                        var url: String
-                        var id: Int
-                        var description: String = ""
-                        init(object: MarshaledObject) throws {
-                            url = try object.value(for: "baseUrl")
-                            id = try object.value(for: "id")
-                        }
+                }
+                
+                struct AudioInfo: Unmarshaling {
+                    var url: String
+                    var bandwidth: Int
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "baseUrl")
+                        bandwidth = try object.value(for: "bandwidth")
                     }
-                    
-                    struct AudioInfo: Unmarshaling {
-                        var url: String
-                        var bandwidth: Int
-                        init(object: MarshaledObject) throws {
-                            url = try object.value(for: "baseUrl")
-                            bandwidth = try object.value(for: "bandwidth")
-                        }
+                }
+                
+                struct Durl: Unmarshaling {
+                    var url: String
+                    init(object: MarshaledObject) throws {
+                        url = try object.value(for: "url")
                     }
+                }
+                
+                
+                // New Fromat
+                if var videos: [VideoInfo] = try? playInfoJson.value(for: "data.dash.video") {
                     
-                    var videos: [VideoInfo] = try playInfoJson.value(for: "data.dash.video")
+                    
                     let audios: [AudioInfo]? = try playInfoJson.value(for: "data.dash.audio")
                     
                     videos.enumerated().forEach {
@@ -656,27 +697,38 @@ extension VideoGet {
                     }
                     videos = visVideos
                     
-                    if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        let pInt = Int(p),
-                        pInt - 1 > 0, pInt - 1 < pages.count {
-                        title += " - P\(pInt) - \(pages[pInt - 1].part)"
+                    videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                        var stream = Stream(url: $0.element.url)
+                        stream.videoProfile = $0.element.description
+                        yougetJson.streams["\($0.offset + 1)"] = stream
                     }
                     
-                    guard audios != nil, videos.count > 0 else {
-                        resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), ""))
+                    guard audios != nil else {
+                        resolver.fulfill(yougetJson)
                         return
                     }
                     
                     guard let audioUrl = audios?.max(by: { $0.bandwidth > $1.bandwidth }),
                         videos.count > 0 else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
+                            resolver.reject(VideoGetError.notFindUrls)
+                            return
                     }
                     
-                    resolver.fulfill((title, videos.map({ ($0.id, $0.description, $0.url) }), audioUrl.url))
-                } catch let error {
-                    resolver.reject(error)
+                    yougetJson.audio = audioUrl.url
+                    resolver.fulfill(yougetJson)
+                    
+                } else if let durls: [Durl] = try? playInfoJson.value(for: "data.durl"),
+                    let u = durls.first?.url {
+                    
+                    var stream = Stream(url: u)
+                    stream.videoProfile = "video"
+                    yougetJson.streams["video"] = stream
+                    resolver.fulfill(yougetJson)
+                } else {
+                    resolver.reject(VideoGetError.notFindUrls)
                 }
+            } catch let error {
+                resolver.reject(error)
             }
         }
     }
