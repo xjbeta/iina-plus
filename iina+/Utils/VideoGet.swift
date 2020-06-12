@@ -532,7 +532,16 @@ extension VideoGet {
                         return
                     }
                     
-                    let huyaUrl: [HuyaUrl] = try playerInfoJson.value(for: "stream.data")
+                    let streamStr: String = try playerInfoJson.value(for: "stream")
+                    
+                    guard let streamData = Data(base64Encoded: streamStr) else {
+                        resolver.reject(VideoGetError.notFindUrls)
+                        return
+                    }
+                    
+                    let streamJSON: JSONObject = try JSONParser.JSONObjectWithData(streamData)
+                    
+                    let huyaUrl: [HuyaUrl] = try streamJSON.value(for: "data")
                     guard let urls = huyaUrl.first?.urls else {
                         resolver.reject(VideoGetError.notFindUrls)
                         return
