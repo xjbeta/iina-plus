@@ -154,7 +154,10 @@ class Processes: NSObject {
         let task = Process()
         let pipe = Pipe()
         task.standardInput = pipe
-        var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(title)"]
+        
+        // Fix title
+        let t = title.replacingOccurrences(of: "\"", with: "''")
+        var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(t)"]
         
         switch options {
         case .douyu:
