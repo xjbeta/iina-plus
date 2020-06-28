@@ -150,7 +150,7 @@ class Processes: NSObject {
         case douyu, bilibili, withoutYtdl, none
     }
     
-    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions) {
+    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions, uuid: String) {
         let task = Process()
         let pipe = Pipe()
         task.standardInput = pipe
@@ -211,6 +211,7 @@ class Processes: NSObject {
         if Preferences.shared.livePlayer == .iina {
             if Preferences.shared.enableDanmaku {
                 mpvArgs.append("--danmaku")
+                mpvArgs.append("--uuid=\(uuid)")
             }
             if options == .bilibili {
                 mpvArgs.append("--directly")

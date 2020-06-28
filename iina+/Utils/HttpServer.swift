@@ -10,29 +10,62 @@ import Cocoa
 import Swifter
 
 class HttpServer: NSObject {
-    private var server: Swifter.HttpServer!
-    private var writeText: ((String) -> Void)?
-    var connected: (() -> Void)?
-    var disConnected: (() -> Void)?
+    private var server = Swifter.HttpServer()
+    
+    struct RegisteredItem {
+        enum ContentState: Int {
+            case unknown, contented, discontented
+        }
+        
+        
+        var id: String
+        var site: LiveSupportList
+        var url: String
+        var session: WebSocketSession? = nil
+        var danmaku: Danmaku
+        
+        var state: ContentState = .unknown
+    }
+    
+    
+    private var unknownSessions = [WebSocketSession]()
+    private var registeredItems = [RegisteredItem]()
+    
+    
+    func register(_ id: String,
+                  site: LiveSupportList,
+                  url: String) {
+        registeredItems.append(.init(id: id, site: site, url: url, danmaku: .init(site, url: url)))
+    }
     
     func start() {
         do {
-            server = Swifter.HttpServer()
             if let resourcePath = Bundle.main.resourcePath {
                 let dir = resourcePath + "/danmaku"
                 server["/danmaku/:path"] = directoryBrowser(dir)
             }
             
-            server["/danmaku-websocket"] = websocket(connected: { [weak self] session in
-                Log("Websocket client connected.")
-                self?.writeText = {
-                    session.writeText($0)
+            server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
+                
+                guard let sessions = self?.unknownSessions,
+                    sessions.contains(session),
+                    let i = self?.registeredItems.firstIndex(where: { $0.id == text }) else { return }
+                self?.unknownSessions.removeAll {
+                    $0 == session
                 }
-                self?.connected?()
+                
+                self?.registeredItems[i].state = .contented
+                self?.registeredItems[i].session = session
+                Log(self?.registeredItems.map({ $0.url }))
+                
+            }, connected: { [weak self] session in
+                Log("Websocket client connected.")
+                self?.unknownSessions.append(session)
             }, disconnected: { [weak self] session in
                 Log("Websocket client disconnected.")
-                self?.writeText = nil
-                self?.disConnected?()
+                self?.registeredItems.removeAll { $0.session == session
+                }
+                Log(self?.registeredItems.map({ $0.url }))
             })
             
             server.listenAddressIPv4 = "127.0.0.1"
