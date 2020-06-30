@@ -208,6 +208,7 @@ class MainViewController: NSViewController {
     }
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
+        let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
         guard row != -1,
             let yougetJSON = yougetResult,
@@ -232,31 +233,32 @@ class MainViewController: NSViewController {
         let site = LiveSupportList(raw: url.host)
         
         Processes.shared.videoGet.prepareDanmakuFile(url).done {
-            switch site {
-            case .douyu:
-                if Preferences.shared.liveDecoder == .internal😀 {
-                    title = key
-                }
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
-            case .bilibili, .biliLive:
-                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
-            case .unsupported:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
-            }
             
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
                 case .bilibili, .biliLive, .douyu, .huya, .eGame, .kingkong:
-                    self.danmaku?.stop()
-                    self.danmaku = Danmaku(site, url: self.searchField.stringValue)
-                    self.danmaku?.start()
+                    self.httpServer.register(uuid, site: site, url: url.absoluteString)
                 default:
                     break
                 }
             }
+            
+            
+            switch site {
+            case .douyu:
+                if Preferences.shared.liveDecoder == .internal😀 {
+                    title = key
+                }
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
+            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
+            case .bilibili, .biliLive:
+                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid)
+            case .unsupported:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
+            }
+
             }.ensure {
                 self.isSearching = false
                 self.yougetResult = nil
@@ -266,12 +268,14 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    var danmaku: Danmaku? = nil
+    let httpServer = HttpServer()
     
     
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        httpServer.start()
+        
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
@@ -294,10 +298,11 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
-        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) { _ in
-            self.danmaku?.stop()
-            self.danmaku = Danmaku(.bilibili, url: "https://swift.org")
-            self.danmaku?.start()
+        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) {
+            guard let dic = $0.userInfo as? [String: String],
+                let id = dic["id"] else { return }
+            
+            self.httpServer.register(id, site: .bilibili, url: "https://swift.org")
         }
         
         // esc key down event
