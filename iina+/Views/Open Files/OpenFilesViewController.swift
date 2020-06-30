@@ -52,14 +52,15 @@ class OpenFilesViewController: NSViewController {
                 let urlStr = stream.url else {
                 return
             }
+            let id = UUID().uuidString
             
             if self.isBilibiliVideo() {
-                Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili)
+                Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili, uuid: id)
             } else {
-                Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl)
+                Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl, uuid: id)
             }
             
-            NotificationCenter.default.post(name: .loadDanmaku, object: nil)
+            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
             self.view.window?.close()
         }.catch {
             Log($0)

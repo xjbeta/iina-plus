@@ -14,10 +14,16 @@ import Gzip
 import JavaScriptCore
 import CryptoSwift
 
+protocol DanmakuDelegate {
+    func send(_ method: DanamkuMethod, text: String, id: String)
+}
+
 class Danmaku: NSObject {
     var socket: SRWebSocket? = nil
     var liveSite: LiveSupportList = .unsupported
     var url = ""
+    var id = ""
+    var delegate: DanmakuDelegate?
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveRoomID = 0
@@ -28,15 +34,10 @@ class Danmaku: NSObject {
     
     let huyaServer = URL(string: "wss://cdnws.api.huya.com")
     var huyaUserInfo = ("", "", "")
+    let huyaJSContext = JSContext()
     
     var egameInfo: EgameInfo?
     private var egameTimer: DispatchSourceTimer?
-    
-    var danmukuObservers: [NSObjectProtocol] = []
-    
-    let httpServer = HttpServer()
-    
-    let huyaJSContext = JSContext()
     
     let kingKongServer = URL(string: "wss://cht.ws.kingkong.com.tw/chat_nsp/?EIO=3&transport=websocket")
     var kingKongUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
@@ -44,55 +45,22 @@ class Danmaku: NSObject {
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
         self.url = url
-        if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
-            huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
-        } else {
-            Log("Not found huya.js.")
+        
+        if site == .huya {
+            if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
+                huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
+            } else {
+                Log("Not found huya.js.")
+            }
         }
     }
-    
-    func start() {
-        do {
-            try prepareBlockList()
-        } catch let error {
-            Log("Prepare DM block list error: \(error)")
-        }
-        
-        httpServer.connected = { [weak self] in
-            self?.loadCustomFont()
-            self?.customDMSpeed()
-            self?.customDMOpdacity()
-            self?.loadDM()
-            self?.loadFilters()
-        }
-        
-        httpServer.disConnected = { [weak self] in
-            self?.stop()
-        }
-        httpServer.start()
-        
-        danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
-            self.loadCustomFont()
-        }))
-        danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
-            self.customDMSpeed()
-        }))
-        danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
-            self.customDMOpdacity()
-        }))
-    }
-    
     
     func stop() {
         socket?.close()
         socket = nil
-        httpServer.stop()
         timer?.cancel()
         egameTimer?.cancel()
         douyuSavedData = Data()
-        danmukuObservers.forEach {
-            NotificationCenter.default.removeObserver($0)
-        }
     }
     
     func prepareBlockList() throws {
@@ -114,35 +82,15 @@ class Danmaku: NSObject {
             FileManager.default.createFile(atPath: targetPath, contents: Preferences.shared.dmBlockList.customBlockListData, attributes: nil)
         }
     }
-    
-    func loadFilters() {
-        var types = Preferences.shared.dmBlockType
-        if Preferences.shared.dmBlockList.type != .none {
-            types.append("List")
-        }
-        httpServer.send(.dmBlockList, text: types.joined(separator: ", "))
-    }
-    
-    private func loadCustomFont() {
-        guard let font = Preferences.shared.danmukuFontFamilyName else { return }
-        httpServer.send(.customFont, text: font)
-    }
-    
-    private func customDMSpeed() {
-        let dmSpeed = Int(Preferences.shared.dmSpeed)
-        httpServer.send(.dmSpeed, text: "\(dmSpeed)")
-    }
-    
-    private func customDMOpdacity() {
-        httpServer.send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)")
-    }
+
     
     func loadDM() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
         switch liveSite {
         case .bilibili:
-            httpServer.send(.loadDM)
+            delegate?.send(.loadDM, text: "", id: id)
+            break
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self
@@ -228,7 +176,7 @@ class Danmaku: NSObject {
     }
     
     private func sendDM(_ str: String) {
-        httpServer.send(.sendDM, text: str)
+        delegate?.send(.sendDM, text: str, id: id)
     }
     
     private func initDouYuSocket(_ roomID: String) {
@@ -493,7 +441,7 @@ new Uint8Array(sendRegister(wsUserInfo));
         default:
             break
         }
-        httpServer.send(.liveDMServer, text: "error")
+        delegate?.send(.liveDMServer, text: "error", id: id)
     }
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith string: String) {
@@ -696,7 +644,7 @@ new Uint8Array(sendRegister(wsUserInfo));
                         }
                     } else if $0.starts(with: "type@=error") {
                         Log("douyu socket disconnected: \($0)")
-                        self.httpServer.send(.liveDMServer, text: "error")
+                        self.delegate?.send(.liveDMServer, text: "error", id: id)
                         socket?.close()
                     }
             }

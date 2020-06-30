@@ -298,10 +298,11 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
-        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) { _ in
-            self.danmaku?.stop()
-            self.danmaku = Danmaku(.bilibili, url: "https://swift.org")
-            self.danmaku?.start()
+        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) {
+            guard let dic = $0.userInfo as? [String: String],
+                let id = dic["id"] else { return }
+            
+            self.httpServer.register(id, site: .bilibili, url: "https://swift.org")
         }
         
         // esc key down event
