@@ -13,6 +13,7 @@ import SocketRocket
 import Gzip
 import JavaScriptCore
 import CryptoSwift
+import PromiseKit
 
 protocol DanmakuDelegate {
     func send(_ method: DanamkuMethod, text: String, id: String)
@@ -26,7 +27,19 @@ class Danmaku: NSObject {
     var delegate: DanmakuDelegate?
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
-    var biliLiveRoomID = 0
+    var biliLiveIDs = (rid: "", token: "")
+    
+    struct BiliLiveDanmuMsg: Decodable {
+        struct ResultObj: Decodable {
+            let msg: String?
+            init(from decoder: Decoder) throws {
+                let unkeyedContainer = try decoder.singleValueContainer()
+                msg = try? unkeyedContainer.decode(String.self)
+            }
+        }
+        var info: [ResultObj]
+    }
+    
     
     let douyuServer = URL(string: "wss://danmuproxy.douyu.com:8506")
     var douyuRoomID = ""
@@ -94,14 +107,17 @@ class Danmaku: NSObject {
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self
-            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-                    self.biliLiveRoomID = try json.value(for: "data.room_id")
-                    self.socket?.open()
-                } catch let error {
-                    Log("can't find bilibili live room id \(error)")
-                }
+            
+            bililiveRid(roomID).get {
+                self.biliLiveIDs.rid = $0
+            }.then {
+                self.bililiveToken($0)
+            }.get {
+                self.biliLiveIDs.token = $0
+            }.done { _ in
+                self.socket?.open()
+            }.catch {
+                Log("can't find bilibili ids \($0).")
             }
         case .douyu:
             
@@ -318,6 +334,34 @@ class Danmaku: NSObject {
     }
     
     
+    func bililiveRid(_ roomID: String) -> Promise<(String)> {
+        return Promise { resolver in
+            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response {
+                do {
+                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
+                    let id: Int = try json.value(for: "data.room_id")
+                    resolver.fulfill("\(id)")
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func bililiveToken(_ rid: String) -> Promise<(String)> {
+        return Promise { resolver in
+            AF.request("https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=\(rid)&type=0").response {
+                do {
+                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
+                    let token: String = try json.value(for: "data.token")
+                    resolver.fulfill(token)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
     /*
     func testedBilibiliAPI() {
         let p = ["aid": 31027408,
@@ -364,7 +408,7 @@ extension Danmaku: SRWebSocketDelegate {
         switch liveSite {
         case .biliLive:
             let json = """
-            {"uid":0,"roomid": \(biliLiveRoomID)}
+            {"uid":0,"roomid":\(biliLiveIDs.rid),"protover":2,"platform":"web","clientver":"1.14.0","type":2,"key":"\(biliLiveIDs.token)"}
             """
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
@@ -470,19 +514,42 @@ new Uint8Array(sendRegister(wsUserInfo));
         case .biliLive:
             //            0000 0234
             //            0-4 json length + head
-            
             if data.count == 20 {
                 Log("received heartbeat")
-            } else if data.count == 16 {
+                return
+            } else if data.count == 26 {
                 Log("connect success")
+                return
             }
             
+            func checkIntegrity(_ data: Data) -> Data? {
+                var d = data
+                let head = d.subdata(in: 0..<4)
+                let count = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
+                guard count == data.count else {
+                    Log("BiliLive Checking for integrity failed.")
+                    return nil
+                }
+                d = d.subdata(in: 16..<count)
+                do {
+                    d = try d.gunzipped()
+                    return d
+                }  catch let error {
+                    if let str = String(data: data, encoding: .utf8), str.contains("cmd") {
+                        return nil
+                    } else {
+                        Log("decode bililive msg error \(error)")
+                    }
+                }
+                return nil
+            }
+            
+            
             var datas: [Data] = []
-            var d = data
+            guard var d = checkIntegrity(data) else { return }
             while d.count > 20 {
                 let head = d.subdata(in: 0..<4)
                 let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { $0.load(as: UInt32.self) }))
-                
                 if endIndex <= d.endIndex {
                     datas.append(d.subdata(in: 16..<endIndex))
                     d = d.subdata(in: endIndex..<d.endIndex)
@@ -490,20 +557,10 @@ new Uint8Array(sendRegister(wsUserInfo));
                     d.removeAll()
                 }
             }
-            
-            struct DanmuMsg: Decodable {
-                struct ResultObj: Decodable {
-                    let msg: String?
-                    init(from decoder: Decoder) throws {
-                        let unkeyedContainer = try decoder.singleValueContainer()
-                        msg = try? unkeyedContainer.decode(String.self)
-                    }
-                }
-                var info: [ResultObj]
-            }
-            
+
+
             datas.compactMap {
-                try? JSONDecoder().decode(DanmuMsg.self, from: $0)
+                try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: $0)
                 }.compactMap {
                     $0.info.compactMap ({ $0.msg }).first
                 }.forEach {
