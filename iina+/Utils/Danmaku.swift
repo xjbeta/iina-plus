@@ -588,7 +588,11 @@ new Uint8Array(sendRegister(wsUserInfo));
                     d = try d.gunzipped()
                     return d
                 }  catch let error {
-                    Log("decode bililive msg error \(error)")
+                    if let str = String(data: data, encoding: .utf8), str.contains("cmd") {
+                        return nil
+                    } else {
+                        Log("decode bililive msg error \(error)")
+                    }
                 }
                 return nil
             }
