@@ -566,7 +566,6 @@ new Uint8Array(sendRegister(wsUserInfo));
         case .biliLive:
             //            0000 0234
             //            0-4 json length + head
-            Log(data.count)
             if data.count == 20 {
                 Log("received heartbeat")
                 return
