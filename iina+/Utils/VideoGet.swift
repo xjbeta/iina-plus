@@ -23,7 +23,7 @@ enum LiveSupportList: String {
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
-    case kingkong = "www.kingkong.com.tw"
+    case langPlay = "play.lang.live"
     case unsupported
     
     init(raw: String?) {
@@ -116,9 +116,9 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .kingkong:
+            case .langPlay:
                 let roomId = Int(url.lastPathComponent) ?? -1
-                getKingKongInfo(roomId).done {
+                getLangPlayInfo(roomId).done {
                     yougetJson.title = $0.title
                     $0.streamItems.forEach {
                         yougetJson.streams[$0.title] = Stream(url: $0.url)
@@ -221,8 +221,8 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .kingkong:
-                getKingKongInfo(roomId).done {
+            case .langPlay:
+                getLangPlayInfo(roomId).done {
                     resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
@@ -805,9 +805,9 @@ extension VideoGet {
         }
     }
     
-// MARK: - KingKong
-    func getKingKongInfo(_ roomID: Int) -> Promise<(KingKongLiveInfo)> {
-        let url = "https://api.kingkongapp.com/webapi/v1/room/info?room_id=\(roomID)"
+// MARK: - LangPlay
+    func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
+        let url = "https://game-api.lang.live/webapi/v1/room/info?room_id=\(roomID)"
         return Promise { resolver in
             AF.request(url).response { response in
                 if let error = response.error {
@@ -815,7 +815,7 @@ extension VideoGet {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info = try KingKongLiveInfo(object: json)
+                    let info = try LangPlayInfo(object: json)
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)

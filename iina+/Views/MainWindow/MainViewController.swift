@@ -237,7 +237,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if Preferences.shared.enableDanmaku {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .kingkong:
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .langPlay:
                     self.httpServer.register(uuid, site: site, url: url.absoluteString)
                 default:
                     break
@@ -251,7 +251,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
-            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
+            case .huya, .longzhu, .quanmin, .eGame, .langPlay:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .biliLive:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid)

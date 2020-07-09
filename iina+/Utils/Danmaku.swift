@@ -52,8 +52,8 @@ class Danmaku: NSObject {
     var egameInfo: EgameInfo?
     private var egameTimer: DispatchSourceTimer?
     
-    let kingKongServer = URL(string: "wss://cht.ws.kingkong.com.tw/chat_nsp/?EIO=3&transport=websocket")
-    var kingKongUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
+    let langPlayServer = URL(string: "wss://cht-web.lv-show.com/chat_nsp/?EIO=3&transport=websocket")
+    var langPlayUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
     
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
@@ -158,9 +158,9 @@ class Danmaku: NSObject {
                 }.catch {
                     Log("Get Egame Info for DM error: \($0)")
             }
-        case .kingkong:
+        case .langPlay:
             guard let id = Int(roomID) else { return }
-            Processes.shared.videoGet.getKingKongInfo(id).done {
+            Processes.shared.videoGet.getLangPlayInfo(id).done {
                 
 //                https://sgkoi.dev/2019/01/24/kingkong-live-danmaku-2/
                 
@@ -178,13 +178,13 @@ class Danmaku: NSObject {
                 
                 let s3 = encStr
                 let token = ss + "." + s3
-                self.kingKongUserInfo = ($0.liveID, $0.roomID, token)
+                self.langPlayUserInfo = ($0.liveID, $0.roomID, token)
                 
-                self.socket = SRWebSocket(url: self.kingKongServer!)
+                self.socket = SRWebSocket(url: self.langPlayServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
             }.catch {
-                Log("Get KingKong Info for DM error: \($0)")
+                Log("Get LangPlay Info for DM error: \($0)")
             }
         default:
             break
@@ -232,7 +232,7 @@ class Danmaku: NSObject {
                         try self.socket?.send(data: self.douyuSocketFormatter(keeplive))
                     case .huya:
                         try self.socket?.sendPing(nil)
-                    case .kingkong:
+                    case .langPlay:
                         try self.socket?.send(string: "2")
                     default:
                         break
@@ -469,7 +469,7 @@ new Uint8Array(sendRegister(wsUserInfo));
             try? webSocket.send(data: douyuSocketFormatter(joingroup))
             startTimer()
             
-        case .kingkong:
+        case .langPlay:
             startTimer()
         default:
             break
@@ -490,19 +490,30 @@ new Uint8Array(sendRegister(wsUserInfo));
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith string: String) {
         switch liveSite {
-        case .kingkong:
+        case .langPlay:
+            if !string.starts(with: #"42/chat_nsp,["join""#) {
+                print(string)
+            }
+            
+            
 //            0{"sid":"dyeL2p6yeiDpBiTaA0r2","upgrades":[],"pingInterval":50000,"pingTimeout":60000}
             if string.starts(with: #"42/chat_nsp,["msg""#) {
-                let str = string.subString(from: #""msg":""#, to: #"","#)
+                let str = string.subString(from: #""msg":""#, to: #"",""#)
                 sendDM(str)
-            } else if string.starts(with: #"0{"sid":""#) {
+            } else if string.starts(with: #"0{"sid""#) {
                 try? webSocket.send(string: "40/chat_nsp,")
             } else if string == "40/chat_nsp" {
-                let info = kingKongUserInfo
+                let info = langPlayUserInfo
                 let str = """
-42/chat_nsp,["authentication",{"live_id":"\(info.liveID)","anchor_pfid":"\(info.pfid)","access_token":"\(info.accessToken)","token":"\(info.accessToken)","from":"WEB","client_type":"web","r":0}]
+42/chat_nsp,["authentication",{"live_id":"\(info.liveID)","anchor_pfid":"\(info.pfid)","access_token":"\(info.accessToken)","token":"\(info.accessToken)","from":"LANG_WEB","client_type":"LANG_WEB","r":0}]
 """
                 try? webSocket.send(string: str)
+            } else if string == #"42/chat_nsp,["authenticated",true]"# {
+                Log("LangPlay authenticated.")
+            } else if string.starts(with: #"42/chat_nsp,["join""#) {
+                return
+            } else {
+//                print(string)
             }
         default:
             break
