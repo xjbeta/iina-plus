@@ -48,6 +48,8 @@ class HttpServer: NSObject, DanmakuDelegate {
     private var danmukuObservers: [NSObjectProtocol] = []
     private let sid = "rua-uuid~~~"
     
+    private var httpFilesURL: URL?
+    
     
     func register(_ id: String,
                   site: LiveSupportList,
@@ -66,6 +68,8 @@ class HttpServer: NSObject, DanmakuDelegate {
     }
     
     func start() {
+        prepareWebSiteFiles()
+        
         danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
             self.loadCustomFont()
         }))
@@ -77,10 +81,9 @@ class HttpServer: NSObject, DanmakuDelegate {
         }))
         
         do {
-            if let resourcePath = Bundle.main.resourcePath {
-                let dir = resourcePath + "/danmaku"
-                server["/danmaku/:path"] = directoryBrowser(dir)
-            }
+            guard let dir = httpFilesURL?.path else { return }
+            
+            server["/danmaku/:path"] = directoryBrowser(dir)
             
             server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
                 
@@ -130,6 +133,26 @@ class HttpServer: NSObject, DanmakuDelegate {
         server.stop()
         danmukuObservers.forEach {
             NotificationCenter.default.removeObserver($0)
+        }
+    }
+    
+    private func prepareWebSiteFiles() {
+        do {
+            guard var resourceURL = Bundle.main.resourceURL,
+                let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
+            let folderName = "danmaku"
+            resourceURL.appendPathComponent(folderName)
+            
+            var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            filesURL.appendPathComponent(bundleIdentifier)
+            filesURL.appendPathComponent(folderName)
+            
+            httpFilesURL = filesURL
+            
+            try FileManager.default.removeItem(at: filesURL)
+            try FileManager.default.copyItem(at: resourceURL, to: filesURL)
+        } catch let error {
+            Log(error)
         }
     }
     
