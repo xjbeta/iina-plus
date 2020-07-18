@@ -103,7 +103,6 @@ class Danmaku: NSObject {
         switch liveSite {
         case .bilibili:
             delegate?.send(.loadDM, text: "", id: id)
-            break
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
             socket?.delegate = self

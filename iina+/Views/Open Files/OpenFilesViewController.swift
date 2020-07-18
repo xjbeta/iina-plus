@@ -42,17 +42,16 @@ class OpenFilesViewController: NSViewController {
     
     @IBAction func open(_ sender: NSButton) {
         var yougetJSON: YouGetJSON?
-        
+        let id = UUID().uuidString
         getVideo().get {
             yougetJSON = $0
             }.then { _ in
-                self.getDanmaku()
+                self.getDanmaku(id)
         }.done {
             guard let stream = yougetJSON?.streams.sorted(by: { $0.key < $1.key }).first?.value,
                 let urlStr = stream.url else {
                 return
             }
-            let id = UUID().uuidString
             
             if self.isBilibiliVideo() {
                 Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili, uuid: id)
@@ -121,17 +120,23 @@ class OpenFilesViewController: NSViewController {
         }
     }
     
-    func getDanmaku() -> Promise<()> {
+    func getDanmaku(_ id: String) -> Promise<()> {
         return Promise { resolver in
             guard danmakuURL == nil else {
                 if let url = danmakuURL {
-                    guard let resourcePath = Bundle.main.resourcePath else {
+                    guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
                         resolver.reject(VideoGetError.prepareDMFailed)
                         return
                     }
-                    let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-                    try FileManager.default.removeItem(atPath: danmakuFilePath)
-                    try FileManager.default.copyItem(atPath: url.path, toPath: danmakuFilePath)
+                    let folderName = "danmaku"
+                    var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                    filesURL.appendPathComponent(bundleIdentifier)
+                    filesURL.appendPathComponent(folderName)
+                    let fileName = "danmaku" + "-" + id + ".xml"
+                    filesURL.appendPathComponent(fileName)
+                    
+                    try FileManager.default.removeItem(atPath: fileName)
+                    try FileManager.default.copyItem(atPath: url.path, toPath: fileName)
                     resolver.fulfill(())
                 } else {
                     resolver.reject(OpenFilesError.invalidDanmakuUrl)
@@ -146,7 +151,7 @@ class OpenFilesViewController: NSViewController {
                     resolver.reject(OpenFilesError.invalidVideoString)
                     return
                 }
-                Processes.shared.videoGet.prepareDanmakuFile(url).done {
+                Processes.shared.videoGet.prepareDanmakuFile(url, id: id).done {
                     resolver.fulfill(())
                     }.catch {
                         resolver.reject($0)

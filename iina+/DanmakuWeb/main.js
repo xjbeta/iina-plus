@@ -159,7 +159,7 @@ function start(websocketServerLocation){
             if (event.text == 'acfun') {
                 loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
             } else {
-                loadDM('/danmaku/iina-plus-danmaku.xml');
+                loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
             }
             isLiving = false;
             break;

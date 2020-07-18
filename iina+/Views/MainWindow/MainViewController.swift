@@ -231,7 +231,7 @@ class MainViewController: NSViewController {
         var title = yougetJSON.title
         let site = LiveSupportList(raw: url.host)
         
-        Processes.shared.videoGet.prepareDanmakuFile(url).done {
+        Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
             
             // init Danmaku
             if Preferences.shared.enableDanmaku {

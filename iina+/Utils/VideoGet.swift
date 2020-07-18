@@ -133,7 +133,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(_ url: URL) -> Promise<()> {
+    func prepareDanmakuFile(_ url: URL, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
@@ -153,7 +153,7 @@ class VideoGet: NSObject {
                         }
                     }
                     }.then { _ in
-                        self.downloadDMFile(cid)
+                        self.downloadDMFile(cid, id: id)
                     }.done {
                         resolver.fulfill(())
                     }.catch {
@@ -742,7 +742,7 @@ extension VideoGet {
         }
     }
     
-    func downloadDMFile(_ cid: Int) -> Promise<()> {
+    func downloadDMFile(_ cid: Int, id: String) -> Promise<()> {
         return Promise { resolver in
             
             AF.request("https://comment.bilibili.com/\(cid).xml").response { response in
@@ -750,13 +750,22 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                guard let resourcePath = Bundle.main.resourcePath else {
+                guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+                    var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
                     resolver.reject(VideoGetError.prepareDMFailed)
                     return
                 }
-                let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-                FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
-                Log("Saved DM in \(danmakuFilePath)")
+                let folderName = "danmaku"
+                
+                filesURL.appendPathComponent(bundleIdentifier)
+                filesURL.appendPathComponent(folderName)
+                let fileName = "danmaku" + "-" + id + ".xml"
+                
+                filesURL.appendPathComponent(fileName)
+                let path = filesURL.path
+                
+                FileManager.default.createFile(atPath: path, contents: response.data, attributes: nil)
+                Log("Saved DM in \(path)")
                 resolver.fulfill(())
             }
         }
