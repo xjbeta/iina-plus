@@ -9,30 +9,116 @@
 import Cocoa
 import Swifter
 
-class HttpServer: NSObject {
-    private var server: Swifter.HttpServer!
-    private var writeText: ((String) -> Void)?
-    var connected: (() -> Void)?
-    var disConnected: (() -> Void)?
+enum DanamkuMethod: String {
+    case start,
+    stop,
+    initDM,
+    resize,
+    customFont,
+    loadDM,
+    sendDM,
+    liveDMServer,
+    dmSpeed,
+    dmOpacity,
+    dmFontSize,
+    dmBlockList
+}
+
+class HttpServer: NSObject, DanmakuDelegate {
+    private var server = Swifter.HttpServer()
+    
+    struct RegisteredItem {
+        enum ContentState: Int {
+            case unknown, contented, discontented
+        }
+        
+        
+        var id: String
+        var site: LiveSupportList
+        var url: String
+        var session: WebSocketSession? = nil
+        var danmaku: Danmaku
+        
+        var state: ContentState = .unknown
+    }
+    
+    
+    private var unknownSessions = [WebSocketSession]()
+    private var registeredItems = [RegisteredItem]()
+    private var danmukuObservers: [NSObjectProtocol] = []
+    private let sid = "rua-uuid~~~"
+    
+    private var httpFilesURL: URL?
+    
+    
+    func register(_ id: String,
+                  site: LiveSupportList,
+                  url: String) {
+        let d = Danmaku(site, url: url)
+        d.id = id
+        d.delegate = self
+        if site == .bilibili {
+            do {
+                try d.prepareBlockList()
+            } catch let error {
+                Log("Prepare DM block list error: \(error)")
+            }
+        }
+        registeredItems.append(.init(id: id, site: site, url: url, danmaku: d))
+    }
     
     func start() {
+        prepareWebSiteFiles()
+        
+        danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
+            self.loadCustomFont()
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
+            self.customDMSpeed()
+        }))
+        danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
+            self.customDMOpdacity()
+        }))
+        
         do {
-            server = Swifter.HttpServer()
-            if let resourcePath = Bundle.main.resourcePath {
-                let dir = resourcePath + "/danmaku"
-                server["/danmaku/:path"] = directoryBrowser(dir)
-            }
+            guard let dir = httpFilesURL?.path else { return }
             
-            server["/danmaku-websocket"] = websocket(connected: { [weak self] session in
-                Log("Websocket client connected.")
-                self?.writeText = {
-                    session.writeText($0)
+            server["/danmaku/:path"] = directoryBrowser(dir)
+            
+            server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
+                
+                guard let sessions = self?.unknownSessions,
+                    sessions.contains(session),
+                    let i = self?.registeredItems.firstIndex(where: { $0.id == text }) else { return }
+                self?.unknownSessions.removeAll {
+                    $0 == session
                 }
-                self?.connected?()
+                
+                self?.registeredItems[i].state = .contented
+                self?.registeredItems[i].session = session
+                Log(self?.registeredItems.map({ $0.url }))
+                
+                self?.loadCustomFont(text)
+                self?.customDMSpeed(text)
+                self?.customDMOpdacity(text)
+                if let site = self?.registeredItems[i].site,
+                    site == .bilibili {
+                    self?.loadFilters(text)
+                }
+                
+                self?.registeredItems[i].danmaku.loadDM()
+            }, connected: { [weak self] session in
+                Log("Websocket client connected.")
+                self?.unknownSessions.append(session)
             }, disconnected: { [weak self] session in
                 Log("Websocket client disconnected.")
-                self?.writeText = nil
-                self?.disConnected?()
+                self?.registeredItems.first {
+                    $0.session == session
+                    }?.danmaku.stop()
+                
+                self?.registeredItems.removeAll { $0.session == session
+                }
+                Log(self?.registeredItems.map({ $0.url }))
             })
             
             server.listenAddressIPv4 = "127.0.0.1"
@@ -45,21 +131,29 @@ class HttpServer: NSObject {
 
     func stop() {
         server.stop()
+        danmukuObservers.forEach {
+            NotificationCenter.default.removeObserver($0)
+        }
     }
     
-    enum DanamkuMethod: String {
-        case start,
-        stop,
-        initDM,
-        resize,
-        customFont,
-        loadDM,
-        sendDM,
-        liveDMServer,
-        dmSpeed,
-        dmOpacity,
-        dmFontSize,
-        dmBlockList
+    private func prepareWebSiteFiles() {
+        do {
+            guard var resourceURL = Bundle.main.resourceURL,
+                let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
+            let folderName = "danmaku"
+            resourceURL.appendPathComponent(folderName)
+            
+            var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            filesURL.appendPathComponent(bundleIdentifier)
+            filesURL.appendPathComponent(folderName)
+            
+            httpFilesURL = filesURL
+            
+            try FileManager.default.removeItem(at: filesURL)
+            try FileManager.default.copyItem(at: resourceURL, to: filesURL)
+        } catch let error {
+            Log(error)
+        }
     }
     
     struct DanmakuEvent: Encodable {
@@ -67,17 +161,45 @@ class HttpServer: NSObject {
         var text: String
     }
     
-    func send(_ method: DanamkuMethod, text: String = "") {
-        do {
-            let data = try JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text))
-            if let str = String(data: data, encoding: .utf8) {
-                writeText?(str)
-                if !str.contains("sendDM") {
-                    Log("WriteText to websocket: \(str)")
-                }
+    private func loadCustomFont(_ id: String = "rua-uuid~~~") {
+        guard let font = Preferences.shared.danmukuFontFamilyName else { return }
+        send(.customFont, text: font, id: id)
+    }
+
+    private func customDMSpeed(_ id: String = "rua-uuid~~~") {
+        let dmSpeed = Int(Preferences.shared.dmSpeed)
+        send(.dmSpeed, text: "\(dmSpeed)", id: id)
+    }
+
+    private func customDMOpdacity(_ id: String = "rua-uuid~~~") {
+        send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)", id: id)
+    }
+    
+    private func loadFilters(_ id: String = "rua-uuid~~~") {
+        var types = Preferences.shared.dmBlockType
+        if Preferences.shared.dmBlockList.type != .none {
+            types.append("List")
+        }
+        send(.dmBlockList, text: types.joined(separator: ", "), id: id)
+    }
+
+    
+    func send(_ method: DanamkuMethod, text: String = "", id: String) {
+        guard let data = try? JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text)),
+            let str = String(data: data, encoding: .utf8) else { return }
+        
+        if id == sid {
+            self.registeredItems.forEach {
+                $0.session?.writeText(str)
             }
-        } catch let error {
-            Log(error)
+        } else {
+            self.registeredItems.first {
+                $0.id == id
+                }?.session?.writeText(str)
+        }
+        
+        if !str.contains("sendDM") {
+            Log("WriteText to websocket: \(str)")
         }
     }
 }

@@ -3,6 +3,7 @@ $ = function(a) {
 };
 var isLiving = true;
 var defWidth = 680;
+var uuid = '';
 
 function bind() {
     window.cm = new CommentManager($('commentCanvas'));
@@ -134,6 +135,7 @@ function start(websocketServerLocation){
     updateStatus('warning');
     ws.onopen = function(evt) { 
         updateStatus();
+        ws.send(uuid);
     };
     ws.onmessage = function(evt) { 
         var event = JSON.parse(evt.data);
@@ -157,7 +159,7 @@ function start(websocketServerLocation){
             if (event.text == 'acfun') {
                 loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
             } else {
-                loadDM('/danmaku/iina-plus-danmaku.xml');
+                loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
             }
             isLiving = false;
             break;
@@ -228,13 +230,13 @@ function start(websocketServerLocation){
     };
 }
 
-window.addEventListener("load", function() {
+function initContent(id){
     bind();
     initDM();
+    resize();
+    uuid = id;
     start('ws://127.0.0.1:19080/danmaku-websocket');
-    // Block unknown types. 
+    // Block unknown types.
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;
-
-});
-
+}

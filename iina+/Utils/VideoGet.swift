@@ -23,7 +23,7 @@ enum LiveSupportList: String {
     case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
-    case kingkong = "www.kingkong.com.tw"
+    case langPlay = "play.lang.live"
     case unsupported
     
     init(raw: String?) {
@@ -116,9 +116,9 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .kingkong:
+            case .langPlay:
                 let roomId = Int(url.lastPathComponent) ?? -1
-                getKingKongInfo(roomId).done {
+                getLangPlayInfo(roomId).done {
                     yougetJson.title = $0.title
                     $0.streamItems.forEach {
                         yougetJson.streams[$0.title] = Stream(url: $0.url)
@@ -133,7 +133,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(_ url: URL) -> Promise<()> {
+    func prepareDanmakuFile(_ url: URL, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
@@ -153,7 +153,7 @@ class VideoGet: NSObject {
                         }
                     }
                     }.then { _ in
-                        self.downloadDMFile(cid)
+                        self.downloadDMFile(cid, id: id)
                     }.done {
                         resolver.fulfill(())
                     }.catch {
@@ -221,8 +221,8 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
-            case .kingkong:
-                getKingKongInfo(roomId).done {
+            case .langPlay:
+                getLangPlayInfo(roomId).done {
                     resolver.fulfill($0)
                     }.catch {
                         resolver.reject($0)
@@ -742,7 +742,7 @@ extension VideoGet {
         }
     }
     
-    func downloadDMFile(_ cid: Int) -> Promise<()> {
+    func downloadDMFile(_ cid: Int, id: String) -> Promise<()> {
         return Promise { resolver in
             
             AF.request("https://comment.bilibili.com/\(cid).xml").response { response in
@@ -750,13 +750,22 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                guard let resourcePath = Bundle.main.resourcePath else {
+                guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+                    var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
                     resolver.reject(VideoGetError.prepareDMFailed)
                     return
                 }
-                let danmakuFilePath = resourcePath + "/danmaku/iina-plus-danmaku.xml"
-                FileManager.default.createFile(atPath: danmakuFilePath, contents: response.data, attributes: nil)
-                Log("Saved DM in \(danmakuFilePath)")
+                let folderName = "danmaku"
+                
+                filesURL.appendPathComponent(bundleIdentifier)
+                filesURL.appendPathComponent(folderName)
+                let fileName = "danmaku" + "-" + id + ".xml"
+                
+                filesURL.appendPathComponent(fileName)
+                let path = filesURL.path
+                
+                FileManager.default.createFile(atPath: path, contents: response.data, attributes: nil)
+                Log("Saved DM in \(path)")
                 resolver.fulfill(())
             }
         }
@@ -805,9 +814,9 @@ extension VideoGet {
         }
     }
     
-// MARK: - KingKong
-    func getKingKongInfo(_ roomID: Int) -> Promise<(KingKongLiveInfo)> {
-        let url = "https://api.kingkongapp.com/webapi/v1/room/info?room_id=\(roomID)"
+// MARK: - LangPlay
+    func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
+        let url = "https://game-api.lang.live/webapi/v1/room/info?room_id=\(roomID)"
         return Promise { resolver in
             AF.request(url).response { response in
                 if let error = response.error {
@@ -815,7 +824,7 @@ extension VideoGet {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info = try KingKongLiveInfo(object: json)
+                    let info = try LangPlayInfo(object: json)
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)

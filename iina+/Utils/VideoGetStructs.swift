@@ -250,9 +250,9 @@ struct BilibiliVideo: Unmarshaling {
     }
 }
 
-// MARK: - KingKong
+// MARK: - LangPlay
 
-struct KingKongLiveInfo: Unmarshaling, LiveInfo {
+struct LangPlayInfo: Unmarshaling, LiveInfo {
     var title: String
     var name: String
     var userCover: String
@@ -262,9 +262,9 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
     var liveID: String
     var liveKey: String
     
-    struct KingKongVideo: Unmarshaling, VideoSelector {
+    struct LangPlayVideo: Unmarshaling, VideoSelector {
         var site: LiveSupportList {
-            return .kingkong
+            return .langPlay
         }
         var index: Int
         var title: String
@@ -276,7 +276,7 @@ struct KingKongLiveInfo: Unmarshaling, LiveInfo {
         }
     }
     
-    var streamItems: [KingKongVideo]
+    var streamItems: [LangPlayVideo]
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "data.live_info.room_title")

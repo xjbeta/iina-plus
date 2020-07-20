@@ -17,7 +17,12 @@ class LiveStatusTableCellView: NSTableCellView {
     
     var url: URL? {
         didSet {
-            getInfo()
+            if oldValue == url {
+                getInfo()
+            } else {
+                resetInfo()
+                getInfo()
+            }
         }
     }
     
@@ -29,6 +34,7 @@ class LiveStatusTableCellView: NSTableCellView {
     func getInfo() {
         guard let url = url else { return }
         Processes.shared.videoGet.liveInfo(url.absoluteString).done(on: .main) {
+            guard url == self.url else { return }
             self.setInfo($0)
             }.catch(on: .main) {
                 Log("Get live status error: \($0)")

@@ -121,21 +121,20 @@ class MainViewController: NSViewController {
                     self.progressStatusChanged(false)
                 }.catch(on: .main, policy: .allErrors) { error in
                     Log("\(error)")
-                    guard self.suggestionsTableView.numberOfRows > 0 else {
-                        return
-                    }
-                    
-                    if let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? WaitingTableCellView {
-                        switch error {
-                        case PMKError.cancelled:
+
+                    guard self.suggestionsTableView.numberOfRows == 1,
+                        let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: true) as? WaitingTableCellView else {
                             return
-                        case VideoGetError.isNotLiving:
-                            view.setStatus(.isNotLiving)
-                        case VideoGetError.notSupported:
-                            view.setStatus(.notSupported)
-                        default:
-                            view.setStatus(.error)
-                        }
+                    }
+                    switch error {
+                    case PMKError.cancelled:
+                        return
+                    case VideoGetError.isNotLiving:
+                        view.setStatus(.isNotLiving)
+                    case VideoGetError.notSupported:
+                        view.setStatus(.notSupported)
+                    default:
+                        view.setStatus(.error)
                     }
             }
         }
@@ -208,6 +207,7 @@ class MainViewController: NSViewController {
     }
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
+        let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
         guard row != -1,
             let yougetJSON = yougetResult,
@@ -231,32 +231,33 @@ class MainViewController: NSViewController {
         var title = yougetJSON.title
         let site = LiveSupportList(raw: url.host)
         
-        Processes.shared.videoGet.prepareDanmakuFile(url).done {
+        Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
+            
+            // init Danmaku
+            if Preferences.shared.enableDanmaku {
+                switch site {
+                case .bilibili, .biliLive, .douyu, .huya, .eGame, .langPlay:
+                    self.httpServer.register(uuid, site: site, url: url.absoluteString)
+                default:
+                    break
+                }
+            }
+            
+            
             switch site {
             case .douyu:
                 if Preferences.shared.liveDecoder == .internal😀 {
                     title = key
                 }
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu)
-            case .huya, .longzhu, .quanmin, .eGame, .kingkong:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl)
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
+            case .huya, .longzhu, .quanmin, .eGame, .langPlay:
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .biliLive:
-                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili)
+                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid)
             case .unsupported:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .none)
+                Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }
-            
-            // init Danmaku
-            if Preferences.shared.enableDanmaku {
-                switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .kingkong:
-                    self.danmaku?.stop()
-                    self.danmaku = Danmaku(site, url: self.searchField.stringValue)
-                    self.danmaku?.start()
-                default:
-                    break
-                }
-            }
+
             }.ensure {
                 self.isSearching = false
                 self.yougetResult = nil
@@ -266,12 +267,14 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    var danmaku: Danmaku? = nil
+    let httpServer = HttpServer()
     
     
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        httpServer.start()
+        
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
@@ -294,10 +297,11 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
-        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) { _ in
-            self.danmaku?.stop()
-            self.danmaku = Danmaku(.bilibili, url: "https://swift.org")
-            self.danmaku?.start()
+        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) {
+            guard let dic = $0.userInfo as? [String: String],
+                let id = dic["id"] else { return }
+            
+            self.httpServer.register(id, site: .bilibili, url: "https://swift.org")
         }
         
         // esc key down event
