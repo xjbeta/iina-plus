@@ -149,7 +149,10 @@ class HttpServer: NSObject, DanmakuDelegate {
             
             httpFilesURL = filesURL
             
-            try FileManager.default.removeItem(at: filesURL)
+            if FileManager.default.fileExists(atPath: filesURL.path) {
+                try FileManager.default.removeItem(at: filesURL)
+            }
+            
             try FileManager.default.copyItem(at: resourceURL, to: filesURL)
         } catch let error {
             Log(error)
