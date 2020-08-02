@@ -30,6 +30,14 @@ extension String {
         return ""
     }
     
+    func subString(to endString: String) -> String {
+        var str = self
+        if let endIndex = str.range(of: endString)?.lowerBound {
+            str.removeSubrange(endIndex ..< str.endIndex)
+            return str
+        }
+        return ""
+    }
     
     func delete(between startString: String, and endString: String) -> String {
         var str = self

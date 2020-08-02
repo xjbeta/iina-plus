@@ -121,18 +121,62 @@ struct HuyaUrl: Unmarshaling {
     }
     init(object: MarshaledObject) throws {
         let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
-        
+//https://github.com/wbt5/real-url/blob/183d14aff80fee1dceee27f97ae3c816a900ce52/huya.py#L13
+//        def live(e):
+//        i, b = e.split('?')
+//        r = i.split('/')
+//        s = re.sub(r'.(flv|m3u8)', '', r[-1])
+//        c = b.split('&', 3)
+//        c = [i for i in c if i != '']
+//        n = {i.split('=')[0]: i.split('=')[1] for i in c}
+//        fm = urllib.parse.unquote(n['fm'])
+//        u = base64.b64decode(fm).decode('utf-8')
+//        p = u.split('_')[0]
+//        f = str(int(time.time() * 1e7))
+//        l = n['wsTime']
+//        t = '0'
+//        h = '_'.join([p, t, s, f, l])
+//        m = hashlib.md5(h.encode('utf-8')).hexdigest()
+//        y = c[-1]
+//        url = "{}?wsSecret={}&wsTime={}&u={}&seqid={}&{}".format(i, m, l, t, f, y)
+//        return url
+        func urlFormatter(_ u: String) -> String? {
+            let ib = u.split(separator: "?").map(String.init)
+            guard ib.count == 2 else { return nil }
+            let i = ib[0]
+            let b = ib[1]
+            guard let s = i.components(separatedBy: "/").last?.subString(to: ".") else { return nil }
+            let d = b.components(separatedBy: "&").reduce([String: String]()) { (re, str) -> [String: String] in
+                var r = re
+                let kv = str.components(separatedBy: "=")
+                guard kv.count == 2 else { return r }
+                r[kv[0]] = kv[1]
+                return r
+            }
+            
+            
+            
+            guard let fm = d["fm"]?.removingPercentEncoding, let fmData = Data(base64Encoded: fm) else { return nil }
+            let u = String(data: fmData, encoding: .utf8)
+            guard let p = u?.components(separatedBy: "_").first else { return nil }
+            
+            let f = "\(Int(Date().timeIntervalSince1970 * 10000000))"
+            guard let l = d["wsTime"] else { return nil }
+            let t = "0"
+            let h = [p, t, s, f, l].joined(separator: "_")
+            
+            let m = h.md5()
+            guard let y = b.split(separator: "&", maxSplits: 3, omittingEmptySubsequences: false).map(String.init).last else { return nil }
+            let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&u=\(t)&seqid=\(f)&\(y)"
+            return url
+        }
         
         urls =
             streamInfos.map {
             $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
-            }
-//            + streamInfos.map {
-//                $0.sHlsUrl + "/" + $0.sStreamName + "." + $0.sHlsUrlSuffix + "?" + $0.sHlsAntiCode
-//            }
-//            + streamInfos.map {
-//                $0.sP2pUrl + "/" + $0.sStreamName + "." + $0.sP2pUrlSuffix + "?" + $0.sP2pAntiCode
-//        }
+            }.compactMap {
+                urlFormatter($0)
+        }
     }
 }
 

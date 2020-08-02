@@ -300,10 +300,13 @@ class Danmaku: NSObject {
                 // 10002   ?????
                 // 35 进入直播间
                 
+                // 23 关注了主播
+                // 41 xxx 送出x个 xxx
+                
                 
                 // 3, 0, 9   弹幕
                 
-                let blockType = [29, 33, 24, 7, 28, 22, 31, 30, 10002, 1, 35]
+                let blockType = [29, 33, 24, 7, 28, 22, 31, 30, 10002, 1, 35, 23, 41]
                 
                 let dmMsgs = dm.msgList.filter {
                     !blockType.contains($0.type)
