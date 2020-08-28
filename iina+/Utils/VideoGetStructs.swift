@@ -51,7 +51,7 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "room.room_name")
         name = try object.value(for: "room.nickname")
         userCover = try object.value(for: "room.avatar.big")
-        isLiving = "\(try object.any(for: "room.show_status"))" == "1"
+        isLiving = try object.value(for: "room.show_status") == 1 && object.value(for: "room.videoLoop") == 0
     }
 }
 
