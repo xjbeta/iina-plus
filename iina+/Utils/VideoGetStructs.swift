@@ -80,66 +80,34 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
 
 struct HuyaUrl: Unmarshaling {
     var urls: [String]
-    struct StreamInfo: Unmarshaling {
-        var sStreamName: String
-        
-        var sFlvUrl: String
-        var sFlvUrlSuffix: String
-        var sFlvAntiCode: String
-        
-        var sHlsUrl: String
-        var sHlsUrlSuffix: String
-        var sHlsAntiCode: String
-        
-        var sP2pUrl: String
-        var sP2pUrlSuffix: String
-        var sP2pAntiCode: String
-        
-        
-        
-        init(object: MarshaledObject) throws {
-            sStreamName = try object.value(for: "sStreamName")
-            
-            sFlvUrl = try object.value(for: "sFlvUrl")
-            sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
-            var flvStr: String = try object.value(for: "sFlvAntiCode")
-            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: "&")
-            sFlvAntiCode = flvStr
-            
-            sHlsUrl = try object.value(for: "sHlsUrl")
-            sHlsUrlSuffix = try object.value(for: "sHlsUrlSuffix")
-            var hlsStr: String = try object.value(for: "sHlsAntiCode")
-            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: "&")
-            sHlsAntiCode = hlsStr
-            
-            sP2pUrl = try object.value(for: "sP2pUrl")
-            sP2pUrlSuffix = try object.value(for: "sP2pUrlSuffix")
-            var p2pStr: String = try object.value(for: "sP2pAntiCode")
-            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: "&")
-            sP2pAntiCode = p2pStr
-        }
-    }
+
     init(object: MarshaledObject) throws {
-        let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
-//https://github.com/wbt5/real-url/blob/183d14aff80fee1dceee27f97ae3c816a900ce52/huya.py#L13
-//        def live(e):
-//        i, b = e.split('?')
-//        r = i.split('/')
-//        s = re.sub(r'.(flv|m3u8)', '', r[-1])
-//        c = b.split('&', 3)
-//        c = [i for i in c if i != '']
-//        n = {i.split('=')[0]: i.split('=')[1] for i in c}
-//        fm = urllib.parse.unquote(n['fm'])
-//        u = base64.b64decode(fm).decode('utf-8')
-//        p = u.split('_')[0]
-//        f = str(int(time.time() * 1e7))
-//        l = n['wsTime']
-//        t = '0'
-//        h = '_'.join([p, t, s, f, l])
-//        m = hashlib.md5(h.encode('utf-8')).hexdigest()
-//        y = c[-1]
-//        url = "{}?wsSecret={}&wsTime={}&u={}&seqid={}&{}".format(i, m, l, t, f, y)
-//        return url
+        let bitRateArray: [JSONObject] = try object.value(for: "vMultiStreamInfo")
+        let topBitRate: Int = try (bitRateArray.first ?? JSONObject()).value(for: "iBitRate")
+
+        let dataArray: [JSONObject] = try object.value(for: "data")
+        let streamInfos: [StreamInfo] = try (dataArray.first ?? JSONObject()).value(for: "gameStreamInfoList")
+
+        // https://github.com/wbt5/real-url/blob/183d14aff80fee1dceee27f97ae3c816a900ce52/huya.py#L13
+        //    def live(e):
+        //    i, b = e.split('?')
+        //    r = i.split('/')
+        //    s = re.sub(r'.(flv|m3u8)', '', r[-1])
+        //    c = b.split('&', 3)
+        //    c = [i for i in c if i != '']
+        //    n = {i.split('=')[0]: i.split('=')[1] for i in c}
+        //    fm = urllib.parse.unquote(n['fm'])
+        //    u = base64.b64decode(fm).decode('utf-8')
+        //    p = u.split('_')[0]
+        //    f = str(int(time.time() * 1e7))
+        //    l = n['wsTime']
+        //    t = '0'
+        //    h = '_'.join([p, t, s, f, l])
+        //    m = hashlib.md5(h.encode('utf-8')).hexdigest()
+        //    y = c[-1]
+        //    url = "{}?wsSecret={}&wsTime={}&u={}&seqid={}&{}".format(i, m, l, t, f, y)
+        //    return url
+
         func urlFormatter(_ u: String) -> String? {
             let ib = u.split(separator: "?").map(String.init)
             guard ib.count == 2 else { return nil }
@@ -153,9 +121,7 @@ struct HuyaUrl: Unmarshaling {
                 r[kv[0]] = kv[1]
                 return r
             }
-            
-            
-            
+
             guard let fm = d["fm"]?.removingPercentEncoding, let fmData = Data(base64Encoded: fm) else { return nil }
             let u = String(data: fmData, encoding: .utf8)
             guard let p = u?.components(separatedBy: "_").first else { return nil }
@@ -173,9 +139,49 @@ struct HuyaUrl: Unmarshaling {
         
         urls =
             streamInfos.map {
-            $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
+                $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode + (topBitRate == 0 ? "" : "&ratio=\(topBitRate)")
             }.compactMap {
                 urlFormatter($0)
+            }
+    }
+}
+
+extension HuyaUrl {
+    struct StreamInfo: Unmarshaling {
+        var sStreamName: String
+
+        var sFlvUrl: String
+        var sFlvUrlSuffix: String
+        var sFlvAntiCode: String
+
+        var sHlsUrl: String
+        var sHlsUrlSuffix: String
+        var sHlsAntiCode: String
+
+        var sP2pUrl: String
+        var sP2pUrlSuffix: String
+        var sP2pAntiCode: String
+
+        init(object: MarshaledObject) throws {
+            sStreamName = try object.value(for: "sStreamName")
+
+            sFlvUrl = try object.value(for: "sFlvUrl")
+            sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
+            var flvStr: String = try object.value(for: "sFlvAntiCode")
+            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: "&")
+            sFlvAntiCode = flvStr
+
+            sHlsUrl = try object.value(for: "sHlsUrl")
+            sHlsUrlSuffix = try object.value(for: "sHlsUrlSuffix")
+            var hlsStr: String = try object.value(for: "sHlsAntiCode")
+            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: "&")
+            sHlsAntiCode = hlsStr
+
+            sP2pUrl = try object.value(for: "sP2pUrl")
+            sP2pUrlSuffix = try object.value(for: "sP2pUrlSuffix")
+            var p2pStr: String = try object.value(for: "sP2pAntiCode")
+            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: "&")
+            sP2pAntiCode = p2pStr
         }
     }
 }

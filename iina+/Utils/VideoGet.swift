@@ -539,14 +539,10 @@ extension VideoGet {
                         return
                     }
                     
-                    let streamJSON: JSONObject = try JSONParser.JSONObjectWithData(streamData)
+                    let streamJSON = try JSONParser.JSONObjectWithData(streamData)
+                    let huyaUrl = try HuyaUrl(object: streamJSON)
                     
-                    let huyaUrl: [HuyaUrl] = try streamJSON.value(for: "data")
-                    guard let urls = huyaUrl.first?.urls else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
-                    }
-                    resolver.fulfill((info, urls))
+                    resolver.fulfill((info, huyaUrl.urls))
                 } catch let error {
                     resolver.reject(error)
                 }
