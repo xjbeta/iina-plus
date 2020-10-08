@@ -45,13 +45,14 @@ class OpenFilesViewController: NSViewController {
         let id = UUID().uuidString
         getVideo().get {
             yougetJSON = $0
-            }.then { _ in
-                self.getDanmaku(id)
+        }.then { _ in
+            self.getDanmaku(id)
         }.done {
             guard let stream = yougetJSON?.streams.sorted(by: { $0.key < $1.key }).first?.value,
                 let urlStr = stream.url else {
                 return
             }
+            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
             
             if self.isBilibiliVideo() {
                 Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili, uuid: id)
@@ -59,7 +60,6 @@ class OpenFilesViewController: NSViewController {
                 Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl, uuid: id)
             }
             
-            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
             self.view.window?.close()
         }.catch {
             Log($0)
@@ -135,14 +135,15 @@ class OpenFilesViewController: NSViewController {
                     let fileName = "danmaku" + "-" + id + ".xml"
                     filesURL.appendPathComponent(fileName)
                     
-                    try FileManager.default.removeItem(atPath: fileName)
-                    try FileManager.default.copyItem(atPath: url.path, toPath: fileName)
+                    try? FileManager.default.removeItem(atPath: filesURL.path)
+                    try FileManager.default.copyItem(atPath: url.path, toPath: filesURL.path)
                     resolver.fulfill(())
                 } else {
                     resolver.reject(OpenFilesError.invalidDanmakuUrl)
                 }
                 return
             }
+            
             
             let danmakuStr = danmakuTextField.stringValue
             

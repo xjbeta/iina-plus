@@ -301,7 +301,7 @@ class MainViewController: NSViewController {
             guard let dic = $0.userInfo as? [String: String],
                 let id = dic["id"] else { return }
             
-            self.httpServer.register(id, site: .bilibili, url: "https://swift.org")
+            self.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
         }
         
         // esc key down event
