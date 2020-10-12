@@ -52,6 +52,7 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
         name = try object.value(for: "room.nickname")
         userCover = try object.value(for: "room.avatar.big")
         isLiving = "\(try object.any(for: "room.show_status"))" == "1"
+//        isLiving = try object.value(for: "room.show_status") == 1 && object.value(for: "room.videoLoop") != 0
     }
 }
 
@@ -67,6 +68,9 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
     var name: String = ""
     var userCover: String
     var isLiving = false
+    var rid: Int
+    
+    var isSeeTogetherRoom = false
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "introduction")
@@ -74,110 +78,105 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
         userCover = try object.value(for: "avatar")
         userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
         isLiving = "\(try object.any(for: "isOn"))" == "1"
+        let str: String = try object.value(for: "profileRoom")
+        rid = Int(str) ?? -1
+        let gameHostName: String = try object.value(for: "gameHostName")
+        
+        isSeeTogetherRoom = gameHostName == "seeTogether"
     }
 }
 
-
-struct HuyaUrl: Unmarshaling {
-    var urls: [String]
+struct HuyaStream: Unmarshaling {
+    var data: [HuyaUrl]
+    var vMultiStreamInfo: [StreamInfo]
+    
     struct StreamInfo: Unmarshaling {
-        var sStreamName: String
-        
-        var sFlvUrl: String
-        var sFlvUrlSuffix: String
-        var sFlvAntiCode: String
-        
-        var sHlsUrl: String
-        var sHlsUrlSuffix: String
-        var sHlsAntiCode: String
-        
-        var sP2pUrl: String
-        var sP2pUrlSuffix: String
-        var sP2pAntiCode: String
-        
-        
+        var sDisplayName: String
+        var iBitRate: Int
         
         init(object: MarshaledObject) throws {
-            sStreamName = try object.value(for: "sStreamName")
-            
-            sFlvUrl = try object.value(for: "sFlvUrl")
-            sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
-            var flvStr: String = try object.value(for: "sFlvAntiCode")
-            flvStr = flvStr.replacingOccurrences(of: "&amp;", with: "&")
-            sFlvAntiCode = flvStr
-            
-            sHlsUrl = try object.value(for: "sHlsUrl")
-            sHlsUrlSuffix = try object.value(for: "sHlsUrlSuffix")
-            var hlsStr: String = try object.value(for: "sHlsAntiCode")
-            hlsStr = hlsStr.replacingOccurrences(of: "&amp;", with: "&")
-            sHlsAntiCode = hlsStr
-            
-            sP2pUrl = try object.value(for: "sP2pUrl")
-            sP2pUrlSuffix = try object.value(for: "sP2pUrlSuffix")
-            var p2pStr: String = try object.value(for: "sP2pAntiCode")
-            p2pStr = p2pStr.replacingOccurrences(of: "&amp;", with: "&")
-            sP2pAntiCode = p2pStr
+            sDisplayName = try object.value(for: "sDisplayName")
+            iBitRate = try object.value(for: "iBitRate")
         }
     }
-    init(object: MarshaledObject) throws {
-        let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
-//https://github.com/wbt5/real-url/blob/183d14aff80fee1dceee27f97ae3c816a900ce52/huya.py#L13
-//        def live(e):
-//        i, b = e.split('?')
-//        r = i.split('/')
-//        s = re.sub(r'.(flv|m3u8)', '', r[-1])
-//        c = b.split('&', 3)
-//        c = [i for i in c if i != '']
-//        n = {i.split('=')[0]: i.split('=')[1] for i in c}
-//        fm = urllib.parse.unquote(n['fm'])
-//        u = base64.b64decode(fm).decode('utf-8')
-//        p = u.split('_')[0]
-//        f = str(int(time.time() * 1e7))
-//        l = n['wsTime']
-//        t = '0'
-//        h = '_'.join([p, t, s, f, l])
-//        m = hashlib.md5(h.encode('utf-8')).hexdigest()
-//        y = c[-1]
-//        url = "{}?wsSecret={}&wsTime={}&u={}&seqid={}&{}".format(i, m, l, t, f, y)
-//        return url
-        func urlFormatter(_ u: String) -> String? {
-            let ib = u.split(separator: "?").map(String.init)
-            guard ib.count == 2 else { return nil }
-            let i = ib[0]
-            let b = ib[1]
-            guard let s = i.components(separatedBy: "/").last?.subString(to: ".") else { return nil }
-            let d = b.components(separatedBy: "&").reduce([String: String]()) { (re, str) -> [String: String] in
-                var r = re
-                let kv = str.components(separatedBy: "=")
-                guard kv.count == 2 else { return r }
-                r[kv[0]] = kv[1]
-                return r
+    
+    struct HuyaUrl: Unmarshaling {
+        var url: String?
+        var sUrl: String?
+        
+        struct StreamInfo: Unmarshaling {
+            var sStreamName: String
+            var sFlvUrl: String
+            var newCFlvAntiCode: String
+            var sFlvAntiCode: String
+            
+            init(object: MarshaledObject) throws {
+                sStreamName = try object.value(for: "sStreamName")
+                sFlvUrl = try object.value(for: "sFlvUrl")
+                newCFlvAntiCode = try object.value(for: "newCFlvAntiCode")
+                sFlvAntiCode = try object.value(for: "sFlvAntiCode")
+            }
+        }
+        init(object: MarshaledObject) throws {
+            let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
+
+            if let i = streamInfos.first {
+                url = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
             }
             
+            url = url?.replacingOccurrences(of: "&amp;", with: "&")
             
+            func urlFormatter(_ u: String) -> String? {
+                let ib = u.split(separator: "?").map(String.init)
+                guard ib.count == 2 else { return nil }
+                let i = ib[0]
+                let b = ib[1]
+                guard let s = i.components(separatedBy: "/").last?.subString(to: ".") else { return nil }
+                let d = b.components(separatedBy: "&").reduce([String: String]()) { (re, str) -> [String: String] in
+                    var r = re
+                    let kv = str.components(separatedBy: "=")
+                    guard kv.count == 2 else { return r }
+                    r[kv[0]] = kv[1]
+                    return r
+                }
+                
+                let n = "\(Int(Date().timeIntervalSince1970 * 10000000))"
+                
+                guard let fm = d["fm"]?.removingPercentEncoding,
+                      let fmData = Data(base64Encoded: fm),
+                      var u = String(data: fmData, encoding: .utf8),
+                      let l = d["wsTime"] else { return nil }
+                
+                u = u.replacingOccurrences(of: "$0", with: "0")
+                u = u.replacingOccurrences(of: "$1", with: s)
+                u = u.replacingOccurrences(of: "$2", with: n)
+                u = u.replacingOccurrences(of: "$3", with: l)
             
-            guard let fm = d["fm"]?.removingPercentEncoding, let fmData = Data(base64Encoded: fm) else { return nil }
-            let u = String(data: fmData, encoding: .utf8)
-            guard let p = u?.components(separatedBy: "_").first else { return nil }
+                let m = u.md5()
+
+                let y = b.split(separator: "&").map(String.init).filter {
+                    !$0.contains("wsSecret") &&
+                        !$0.contains("wsTime") &&
+                        !$0.contains("ctyp")
+                }.joined(separator: "&")
+                
+                let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv=2010101135"
+                return url
+            }
             
-            let f = "\(Int(Date().timeIntervalSince1970 * 10000000))"
-            guard let l = d["wsTime"] else { return nil }
-            let t = "0"
-            let h = [p, t, s, f, l].joined(separator: "_")
-            
-            let m = h.md5()
-            guard let y = b.split(separator: "&", maxSplits: 3, omittingEmptySubsequences: false).map(String.init).last else { return nil }
-            let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&u=\(t)&seqid=\(f)&\(y)"
-            return url
-        }
-        
-        urls =
-            streamInfos.map {
-            $0.sFlvUrl + "/" + $0.sStreamName + "." + $0.sFlvUrlSuffix + "?" + $0.sFlvAntiCode
-            }.compactMap {
-                urlFormatter($0)
+            if let i = streamInfos.first {
+                let u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.sFlvAntiCode
+                
+                sUrl = urlFormatter(u.replacingOccurrences(of: "&amp;", with: "&"))?.replacingOccurrences(of: "http://", with: "https://")
+            }
         }
     }
+    
+    init(object: MarshaledObject) throws {
+        data = try object.value(for: "data")
+        vMultiStreamInfo = try object.value(for: "vMultiStreamInfo")
+    }
+    
 }
 
 struct QuanMinInfo: Unmarshaling, LiveInfo {

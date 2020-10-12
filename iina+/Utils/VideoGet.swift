@@ -532,6 +532,8 @@ extension VideoGet {
                         return
                     }
                     
+
+                    
                     let streamStr: String = try playerInfoJson.value(for: "stream")
                     
                     guard let streamData = Data(base64Encoded: streamStr) else {
@@ -541,12 +543,22 @@ extension VideoGet {
                     
                     let streamJSON: JSONObject = try JSONParser.JSONObjectWithData(streamData)
                     
-                    let huyaUrl: [HuyaUrl] = try streamJSON.value(for: "data")
-                    guard let urls = huyaUrl.first?.urls else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
+                    let huyaStream: HuyaStream = try HuyaStream(object: streamJSON)
+                
+                    let urls = huyaStream.data.compactMap {
+                        $0.url
                     }
-                    resolver.fulfill((info, urls))
+                    
+                    let sUrls = huyaStream.data.compactMap {
+                        $0.sUrl
+                    }
+                    
+                    if info.isSeeTogetherRoom {
+                        resolver.fulfill((info, sUrls))
+                        return
+                    } else {
+                        resolver.fulfill((info, urls))
+                    }
                 } catch let error {
                     resolver.reject(error)
                 }
