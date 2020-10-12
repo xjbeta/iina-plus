@@ -75,7 +75,6 @@ class MainViewController: NSViewController {
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
             let card = bilibiliCards[bilibiliTableView.selectedRow]
-            let aid = card.aid
             let bvid = card.bvid
             if card.videos == 1 {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
