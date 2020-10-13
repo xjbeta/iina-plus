@@ -45,13 +45,14 @@ class OpenFilesViewController: NSViewController {
         let id = UUID().uuidString
         getVideo().get {
             yougetJSON = $0
-            }.then { _ in
-                self.getDanmaku(id)
+        }.then { _ in
+            self.getDanmaku(id)
         }.done {
             guard let stream = yougetJSON?.streams.sorted(by: { $0.key < $1.key }).first?.value,
                 let urlStr = stream.url else {
                 return
             }
+            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
             
             if self.isBilibiliVideo() {
                 Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili, uuid: id)
@@ -59,7 +60,6 @@ class OpenFilesViewController: NSViewController {
                 Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl, uuid: id)
             }
             
-            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
             self.view.window?.close()
         }.catch {
             Log($0)
@@ -85,7 +85,8 @@ class OpenFilesViewController: NSViewController {
     func isBilibiliVideo() -> Bool {
         if videoURL == nil {
             let videoStr = videoTextField.stringValue
-            return videoStr.starts(with: "av") || videoStr.starts(with: "https://www.bilibili.com/video/av")
+            return videoStr.starts(with: "av") || videoStr.starts(with: "https://www.bilibili.com/video/av") ||
+                videoStr.starts(with: "BV") || videoStr.starts(with: "https://www.bilibili.com/video/BV")
         } else {
             return false
         }
@@ -104,18 +105,24 @@ class OpenFilesViewController: NSViewController {
             
             let videoStr = videoTextField.stringValue
             
-            if videoStr.starts(with: "av") || videoStr.starts(with: "https://www.bilibili.com/video/av") {
-                guard let aid = Int(videoStr.subString(from: "av")) else {
-                        resolver.reject(OpenFilesError.invalidVideoString)
-                        return
-                }
-                Processes.shared.videoGet.decodeUrl("https://www.bilibili.com/video/av\(aid)").done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
+            var url = ""
+            
+            if videoStr.starts(with: "av") ||
+                videoStr.starts(with: "BV") {
+                url = "https://www.bilibili.com/video/" + videoStr
+
+            } else if videoStr.starts(with: "https://www.bilibili.com/video/av") ||
+                        videoStr.starts(with: "https://www.bilibili.com/video/BV") {
+                url = videoStr
             } else {
                 resolver.fulfill(YouGetJSON(url: videoStr))
+                return
+            }
+            
+            Processes.shared.videoGet.decodeUrl(url).done {
+                resolver.fulfill($0)
+                }.catch {
+                    resolver.reject($0)
             }
         }
     }
@@ -135,8 +142,8 @@ class OpenFilesViewController: NSViewController {
                     let fileName = "danmaku" + "-" + id + ".xml"
                     filesURL.appendPathComponent(fileName)
                     
-                    try FileManager.default.removeItem(atPath: fileName)
-                    try FileManager.default.copyItem(atPath: url.path, toPath: fileName)
+                    try? FileManager.default.removeItem(atPath: filesURL.path)
+                    try FileManager.default.copyItem(atPath: url.path, toPath: filesURL.path)
                     resolver.fulfill(())
                 } else {
                     resolver.reject(OpenFilesError.invalidDanmakuUrl)
@@ -144,20 +151,29 @@ class OpenFilesViewController: NSViewController {
                 return
             }
             
-            let danmakuStr = danmakuTextField.stringValue
             
-            if danmakuStr.starts(with: "av") || danmakuStr.starts(with: "https://www.bilibili.com/video/av") {
-                guard let aid = Int(danmakuStr.subString(from: "av")), let url = URL(string: "https://www.bilibili.com/video/av\(aid)") else {
-                    resolver.reject(OpenFilesError.invalidVideoString)
-                    return
-                }
-                Processes.shared.videoGet.prepareDanmakuFile(url, id: id).done {
-                    resolver.fulfill(())
-                    }.catch {
-                        resolver.reject($0)
-                }
+            let danmakuStr = danmakuTextField.stringValue
+            var url = ""
+                
+            if danmakuStr.starts(with: "av") ||
+                danmakuStr.starts(with: "BV") {
+                url = "https://www.bilibili.com/video/" + danmakuStr
+
+            } else if danmakuStr.starts(with: "https://www.bilibili.com/video/av") ||
+                        danmakuStr.starts(with: "https://www.bilibili.com/video/BV") {
+                url = danmakuStr
             } else {
                 resolver.reject(OpenFilesError.unsupported)
+            }
+            guard let u = URL(string: url) else {
+                resolver.reject(OpenFilesError.unsupported)
+                return
+            }
+
+            Processes.shared.videoGet.prepareDanmakuFile(u, id: id).done {
+                resolver.fulfill(())
+                }.catch {
+                    resolver.reject($0)
             }
         }
     }

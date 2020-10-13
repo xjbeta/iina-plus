@@ -778,7 +778,6 @@ struct EgameDM: Unmarshaling {
 
 fileprivate extension String {
     func kkBase64() -> String {
-        var s = self.bytes.toBase64() ?? ""
         return s.kkFormatterBase64()
     }
     

@@ -75,7 +75,6 @@ class MainViewController: NSViewController {
     @IBAction func sendBilibiliURL(_ sender: Any) {
         if bilibiliTableView.selectedRow != -1 {
             let card = bilibiliCards[bilibiliTableView.selectedRow]
-            let aid = card.aid
             let bvid = card.bvid
             if card.videos == 1 {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
@@ -301,7 +300,7 @@ class MainViewController: NSViewController {
             guard let dic = $0.userInfo as? [String: String],
                 let id = dic["id"] else { return }
             
-            self.httpServer.register(id, site: .bilibili, url: "https://swift.org")
+            self.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
         }
         
         // esc key down event
