@@ -101,8 +101,8 @@ struct HuyaStream: Unmarshaling {
     }
     
     struct HuyaUrl: Unmarshaling {
-        var url: String?
-        var sUrl: String?
+        var urls: [String] = []
+        var urlsBak: [String] = []
         
         struct StreamInfo: Unmarshaling {
             var sStreamName: String
@@ -118,14 +118,6 @@ struct HuyaStream: Unmarshaling {
             }
         }
         init(object: MarshaledObject) throws {
-            let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
-
-            if let i = streamInfos.first {
-                url = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
-            }
-            
-            url = url?.replacingOccurrences(of: "&amp;", with: "&")
-            
             func urlFormatter(_ u: String) -> String? {
                 let ib = u.split(separator: "?").map(String.init)
                 guard ib.count == 2 else { return nil }
@@ -155,19 +147,32 @@ struct HuyaStream: Unmarshaling {
                 let m = u.md5()
 
                 let y = b.split(separator: "&").map(String.init).filter {
-                    !$0.contains("wsSecret") &&
-                        !$0.contains("wsTime") &&
-                        !$0.contains("ctyp")
+                    $0.contains("txyp=") ||
+                        $0.contains("fs=") ||
+                        $0.contains("sphdcdn=") ||
+                        $0.contains("sphdDC=") ||
+                        $0.contains("sphd=")
                 }.joined(separator: "&")
                 
                 let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv=2010101135"
                 return url
             }
             
-            if let i = streamInfos.first {
+            let streamInfos: [StreamInfo] = try object.value(for: "gameStreamInfoList")
+            
+            
+            urls = streamInfos.compactMap { i -> String? in
+                var u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
+                return u
+                    .replacingOccurrences(of: "&amp;", with: "&")
+                    .replacingOccurrences(of: "http://", with: "https://")
+                    .replacingOccurrences(of: "https://tx.flv.huya.com/huyalive/", with: "https://tx.flv.huya.com/src/")
+            }
+            
+            
+            urlsBak = streamInfos.compactMap { i -> String? in
                 let u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.sFlvAntiCode
-                
-                sUrl = urlFormatter(u.replacingOccurrences(of: "&amp;", with: "&"))?.replacingOccurrences(of: "http://", with: "https://")
+                return urlFormatter(u.replacingOccurrences(of: "&amp;", with: "&"))?.replacingOccurrences(of: "http://", with: "https://")
             }
         }
     }

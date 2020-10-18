@@ -545,19 +545,18 @@ extension VideoGet {
                     
                     let huyaStream: HuyaStream = try HuyaStream(object: streamJSON)
                 
-                    let urls = huyaStream.data.compactMap {
-                        $0.url
-                    }
-                    
-                    let sUrls = huyaStream.data.compactMap {
-                        $0.sUrl
-                    }
+                    var urls = [String]()
                     
                     if info.isSeeTogetherRoom {
-                        resolver.fulfill((info, sUrls))
-                        return
+                        urls = huyaStream.data.first?.urlsBak ?? []
                     } else {
+                        urls = huyaStream.data.first?.urls ?? []
+                    }
+                    
+                    if urls.count > 0 {
                         resolver.fulfill((info, urls))
+                    } else {
+                        resolver.reject(VideoGetError.notFindUrls)
                     }
                 } catch let error {
                     resolver.reject(error)
