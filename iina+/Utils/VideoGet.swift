@@ -506,9 +506,7 @@ extension VideoGet {
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
-                let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8) ?? Data()
-                
+                 
                 let hyPlayerConfigStr: String? = {
                     guard let text = response.text else { return nil }
                     var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
@@ -517,8 +515,13 @@ extension VideoGet {
                     return str
                 }()
                 
-                let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) ?? Data()
-
+                guard let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
+                      let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
+                      let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) else {
+                    resolver.reject(VideoGetError.notFindUrls)
+                    return
+                }
+                
                 do {
                     var roomInfoJson: JSONObject = try JSONParser.JSONObjectWithData(roomInfoData)
                     let profileInfoData: JSONObject = try JSONParser.JSONObjectWithData(profileInfoData)

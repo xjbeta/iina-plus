@@ -154,7 +154,7 @@ struct HuyaStream: Unmarshaling {
                         $0.contains("sphd=")
                 }.joined(separator: "&")
                 
-                let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv=2010101135"
+                let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv="
                 return url
             }
             
@@ -162,7 +162,7 @@ struct HuyaStream: Unmarshaling {
             
             
             urls = streamInfos.compactMap { i -> String? in
-                var u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
+                let u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
                 return u
                     .replacingOccurrences(of: "&amp;", with: "&")
                     .replacingOccurrences(of: "http://", with: "https://")
