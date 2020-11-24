@@ -9,6 +9,7 @@
 import Foundation
 import Marshal
 import PromiseKit
+import Cocoa
 
 class Processes: NSObject {
     
@@ -40,7 +41,13 @@ class Processes: NSObject {
         return []
     }
 
-
+    func iinaBuildVersion() -> Int {
+        let b = Bundle.init(path: "/Applications/IINA.app")
+//        let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
+        return Int(build) ?? 0
+    }
+    
     
     func decodeURL(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in
@@ -170,56 +177,85 @@ class Processes: NSObject {
             mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
         case .none: break
         }
-        
-        let mergeWithEdl = true
-        if !mergeWithEdl {
-            if urls.count > 1 {
-                mpvArgs.append(MPVOption.ProgramBehavior.mergeFiles)
+
+        var u = ""
+        if urls.count == 1 {
+            u = urls.first ?? ""
+        } else if urls.count > 1 {
+            let edlString = urls.reduce(String()) { result, url in
+                var re = result
+                re += "%\(url.count)%\(url);"
+                return re
             }
+            u = "edl://" + edlString
         }
         
+        let buildVersion = iinaBuildVersion()
+        
         switch Preferences.shared.livePlayer {
-        case .iina:
-            task.launchPath = Preferences.shared.livePlayer.rawValue
-            mpvArgs = mpvArgs.map {
-                "--mpv-" + $0
-            }
+        case .iina where buildVersion < 15:
+                task.launchPath = Preferences.shared.livePlayer.rawValue
+                mpvArgs = mpvArgs.map {
+                    "--mpv-" + $0
+                }
         case .mpv:
             task.launchPath = self.which(Preferences.shared.livePlayer.rawValue).first ?? ""
             mpvArgs.append(MPVOption.Terminal.reallyQuiet)
             mpvArgs = mpvArgs.map {
                 "--" + $0
             }
-        }
-        if urls.count == 1 {
-            mpvArgs.insert(urls.first ?? "", at: 0)
-        } else if urls.count > 1 {
-            if mergeWithEdl {
-                var edlString = urls.reduce(String()) { result, url in
-                    var re = result
-                    re += "%\(url.count)%\(url);"
-                    return re
-                }
-                edlString = "edl://" + edlString
-                
-                mpvArgs.insert(edlString, at: 0)
-            } else {
-                mpvArgs.insert(contentsOf: urls, at: 0)
-            }
             
+        default:
+            break
         }
+        
+        mpvArgs.insert(u, at: 0)
+
         if Preferences.shared.livePlayer == .iina {
             if Preferences.shared.enableDanmaku {
                 mpvArgs.append("--danmaku")
                 mpvArgs.append("--uuid=\(uuid)")
             }
-            if options == .bilibili {
-                mpvArgs.append("--directly")
-            }
+            mpvArgs.append("--directly")
         }
+        
+        if buildVersion >= 15 {
+            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
+            return
+        }
+        
         Log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
+    }
+    
+    
+    func openWithIINAUrlScheme(_ url: String, args: [String], uuid: String) {
+        var u = "iina://iina-plus.base64?"
+        
+        var args = args.map {
+            "mpv_" + $0
+        }
+        
+        args.insert("url=\(url)", at: 0)
+        
+        if Preferences.shared.enableDanmaku {
+            args.append("danmaku")
+            args.append("uuid=\(uuid)")
+        }
+        args.append("directly")
+        
+        
+        let str = args.joined(separator: "👻")
+        guard let base64Str = str.data(using: .utf8)?.base64EncodedString() else {
+            return
+        }
+        
+        u += base64Str
+        guard let uu = URL(string: u) else { return }
+        
+        Log("Open IINA URL:  iina://iina-plus.base64?\(str)")
+        NSWorkspace.shared.open(uu)
     }
     
 }
