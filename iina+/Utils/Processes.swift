@@ -254,7 +254,8 @@ class Processes: NSObject {
         u += base64Str
         guard let uu = URL(string: u) else { return }
         
-        Log("Open IINA URL:  iina://iina-plus.base64?\(str)")
+        Log("Open IINA URL:  \(str)")
+        Log("Open IINA URL:  \(u)")
         NSWorkspace.shared.open(uu)
     }
     
