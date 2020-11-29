@@ -21,6 +21,16 @@ class Processes: NSObject {
     fileprivate override init() {
     }
     
+    var urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@?/" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        
+        var allowed = CharacterSet.urlQueryAllowed
+        allowed.remove(charactersIn: generalDelimitersToEncode + subDelimitersToEncode)
+        
+        return allowed
+    }()
+    
     func which(_ str: String) -> [String] {
         // which you-get
         // command -v you-get
@@ -43,9 +53,14 @@ class Processes: NSObject {
 
     func iinaBuildVersion() -> Int {
         let b = Bundle.init(path: "/Applications/IINA.app")
-//        let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
         return Int(build) ?? 0
+    }
+    
+    func isDanmakuVersion() -> Bool {
+        let b = Bundle.init(path: "/Applications/IINA.app")
+        let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        return version.contains("Danmaku")
     }
     
     
@@ -171,15 +186,18 @@ class Processes: NSObject {
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
         case .bilibili:
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                "\(MPVOption.Network.referrer)=https://www.bilibili.com/",
-                "\(MPVOption.Audio.audioFile)=\(audioUrl)"])
+                "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
+            if audioUrl != "" {
+                mpvArgs.append("\(MPVOption.Audio.audioFile)=\(audioUrl)")
+            }
         case .withoutYtdl:
             mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
         case .none: break
         }
 
         var u = ""
-        if urls.count == 1 {
+        let isDV = isDanmakuVersion()
+        if urls.count == 1 || !isDV {
             u = urls.first ?? ""
         } else if urls.count > 1 {
             let edlString = urls.reduce(String()) { result, url in
@@ -209,9 +227,9 @@ class Processes: NSObject {
             break
         }
         
-        mpvArgs.insert(u, at: 0)
+        
 
-        if Preferences.shared.livePlayer == .iina {
+        if Preferences.shared.livePlayer == .iina, isDV {
             if Preferences.shared.enableDanmaku {
                 mpvArgs.append("--danmaku")
                 mpvArgs.append("--uuid=\(uuid)")
@@ -224,6 +242,7 @@ class Processes: NSObject {
             return
         }
         
+        mpvArgs.insert(u, at: 0)
         Log("Player arguments: \(mpvArgs)")
         task.arguments = mpvArgs
         task.launch()
@@ -231,32 +250,54 @@ class Processes: NSObject {
     
     
     func openWithIINAUrlScheme(_ url: String, args: [String], uuid: String) {
-        var u = "iina://iina-plus.base64?"
+        let isDV = isDanmakuVersion()
+        
+        var u = ""
+        
+        u += isDV ? "iina://iina-plus.base64?" : "iina://open?"
         
         var args = args.map {
             "mpv_" + $0
         }
         
-        args.insert("url=\(url)", at: 0)
-        
-        if Preferences.shared.enableDanmaku {
-            args.append("danmaku")
-            args.append("uuid=\(uuid)")
+        if isDV {
+            args.insert("url=\(url)", at: 0)
+        } else {
+            args.insert("url=\(url)", at: 0)
+            
+            args = args.compactMap { kvs -> String? in
+                let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
+                guard kv.count == 2 else {
+                    return kvs
+                }
+                
+                guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return nil }
+                let k = kv[0]
+                return "\(k)=\(v)"
+            }
+            
         }
-        args.append("directly")
         
+        var argsStr = ""
         
-        let str = args.joined(separator: "👻")
-        guard let base64Str = str.data(using: .utf8)?.base64EncodedString() else {
-            return
+        if isDV {
+            let str = args.joined(separator: "👻")
+            Log("Open IINA args:  \(str)")
+            guard let base64Str = str.data(using: .utf8)?.base64EncodedString() else {
+                return
+            }
+            argsStr = base64Str
+        } else {
+            argsStr = args.joined(separator: "&")
         }
         
-        u += base64Str
+        u += argsStr
+        
         guard let uu = URL(string: u) else { return }
         
-        Log("Open IINA URL:  \(str)")
         Log("Open IINA URL:  \(u)")
         NSWorkspace.shared.open(uu)
+        
     }
     
 }
