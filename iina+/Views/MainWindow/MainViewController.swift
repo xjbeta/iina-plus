@@ -516,9 +516,11 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 view.imageBoxView.aid = bilibiliCards[row].aid
                 view.imageBoxView.imageView?.image = nil
                 view.imageBoxView.updatePreview(.stop)
-                ImageLoader.request(bilibiliCards[row].picUrl) {
-                    view.imageBoxView.pic = $0
-                    view.imageBoxView.imageView?.image = $0
+                ImageLoader.request(bilibiliCards[row].picUrl) { img in
+                    DispatchQueue.main.async {
+                        view.imageBoxView.pic = img
+                        view.imageView?.image = img
+                    }
                 }
                 return view
             }

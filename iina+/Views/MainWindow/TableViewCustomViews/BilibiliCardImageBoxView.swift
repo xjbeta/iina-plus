@@ -17,11 +17,11 @@ class BilibiliCardImageBoxView: NSView {
     var state: PreviewStatus = .init🐴
     
     var imageView: NSImageView? {
-        return self.subviews.compactMap { $0 as? NSImageView }.first
+        return (self.superview as? BilibiliCardTableCellView)?.imageView
     }
     
     var progressView: BilibiliCardProgressView? {
-        return self.subviews.compactMap { $0 as? BilibiliCardProgressView }.first
+        return (self.superview as? BilibiliCardTableCellView)?.progressView
     }
     
     var timer: DispatchSourceTimer?

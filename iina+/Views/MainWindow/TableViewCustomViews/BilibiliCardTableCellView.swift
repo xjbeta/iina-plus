@@ -11,6 +11,7 @@ import Cocoa
 class BilibiliCardTableCellView: NSTableCellView {
 
     @IBOutlet weak var imageBoxView: BilibiliCardImageBoxView!
+    @IBOutlet var progressView: BilibiliCardProgressView!
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
