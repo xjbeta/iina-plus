@@ -169,7 +169,7 @@ class Processes: NSObject {
     }
     
     enum PlayerOptions {
-        case douyu, bilibili, withoutYtdl, none
+        case douyu, bilibili, bililive, withoutYtdl, none
     }
     
     func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions, uuid: String, rawBiliURL: String = "") {
@@ -202,6 +202,9 @@ class Processes: NSObject {
             if audioUrl != "" {
                 mpvArgs.append("\(MPVOption.Audio.audioFile)=\(audioUrl)")
             }
+        case .bililive:
+            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
+                "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
         case .withoutYtdl:
             mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
         case .none: break
@@ -266,7 +269,7 @@ class Processes: NSObject {
         u += isDV ? "iina://iina-plus.base64?" : "iina://open?"
         
         var args = args.map {
-            "mpv_" + $0
+            $0.starts(with: "--") ? "\($0.dropFirst(2))" : "mpv_" + $0
         }
         
         if isDV {
