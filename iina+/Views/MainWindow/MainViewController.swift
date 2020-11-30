@@ -233,7 +233,8 @@ class MainViewController: NSViewController {
         Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
             
             // init Danmaku
-            if Preferences.shared.enableDanmaku {
+            if Preferences.shared.enableDanmaku,
+               Processes.shared.isDanmakuVersion() {
                 switch site {
                 case .bilibili, .biliLive, .douyu, .huya, .eGame, .langPlay:
                     self.httpServer.register(uuid, site: site, url: url.absoluteString)
@@ -252,7 +253,7 @@ class MainViewController: NSViewController {
             case .huya, .longzhu, .quanmin, .eGame, .langPlay:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .biliLive:
-                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid)
+                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: url.absoluteString)
             case .unsupported:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }
