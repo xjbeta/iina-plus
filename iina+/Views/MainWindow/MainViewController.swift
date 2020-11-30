@@ -233,7 +233,8 @@ class MainViewController: NSViewController {
         Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
             
             // init Danmaku
-            if Preferences.shared.enableDanmaku {
+            if Preferences.shared.enableDanmaku,
+               Processes.shared.isDanmakuVersion() {
                 switch site {
                 case .bilibili, .biliLive, .douyu, .huya, .eGame, .langPlay:
                     self.httpServer.register(uuid, site: site, url: url.absoluteString)
