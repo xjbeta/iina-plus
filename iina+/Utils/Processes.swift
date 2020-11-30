@@ -269,7 +269,7 @@ class Processes: NSObject {
         u += isDV ? "iina://iina-plus.base64?" : "iina://open?"
         
         var args = args.map {
-            "mpv_" + $0
+            $0.starts(with: "--") ? "\($0.dropFirst(2))" : "mpv_" + $0
         }
         
         if isDV {
