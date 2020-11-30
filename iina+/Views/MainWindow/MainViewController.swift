@@ -252,7 +252,7 @@ class MainViewController: NSViewController {
             case .huya, .longzhu, .quanmin, .eGame, .langPlay:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .biliLive:
-                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid)
+                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: url.absoluteString)
             case .unsupported:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }

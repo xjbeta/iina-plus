@@ -172,10 +172,13 @@ class Processes: NSObject {
         case douyu, bilibili, withoutYtdl, none
     }
     
-    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions, uuid: String) {
+    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions, uuid: String, rawBiliURL: String = "") {
         let task = Process()
         let pipe = Pipe()
         task.standardInput = pipe
+        
+        let isDV = isDanmakuVersion()
+        let buildVersion = iinaBuildVersion()
         
         // Fix title
         let t = title.replacingOccurrences(of: "\"", with: "''")
@@ -185,6 +188,15 @@ class Processes: NSObject {
         case .douyu:
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
         case .bilibili:
+            if !isDV, !rawBiliURL.contains("?p=") {
+                guard let v = rawBiliURL.addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return }
+                let u = "iina://open?url=\(v)"
+                guard let uu = URL(string: u) else { return }
+                Log("Open IINA URL:  \(u)")
+                NSWorkspace.shared.open(uu)
+                return
+            }
+            
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
                 "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
             if audioUrl != "" {
@@ -196,7 +208,6 @@ class Processes: NSObject {
         }
 
         var u = ""
-        let isDV = isDanmakuVersion()
         if urls.count == 1 || !isDV {
             u = urls.first ?? ""
         } else if urls.count > 1 {
@@ -207,8 +218,6 @@ class Processes: NSObject {
             }
             u = "edl://" + edlString
         }
-        
-        let buildVersion = iinaBuildVersion()
         
         switch Preferences.shared.livePlayer {
         case .iina where buildVersion < 15:
