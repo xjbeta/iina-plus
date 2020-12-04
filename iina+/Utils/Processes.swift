@@ -187,16 +187,13 @@ class Processes: NSObject {
         switch options {
         case .douyu:
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
-        case .bilibili:
-            if !isDV, !rawBiliURL.contains("?p=") {
-                guard let v = rawBiliURL.addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return }
-                let u = "iina://open?url=\(v)"
-                guard let uu = URL(string: u) else { return }
-                Log("Open IINA URL:  \(u)")
-                NSWorkspace.shared.open(uu)
-                return
-            }
             
+        case .bilibili where Preferences.shared.livePlayer == .iina
+                && !isDV
+                && (rawBiliURL.contains("?p=1") || !rawBiliURL.contains("?p=")):
+            openWithYtdl(rawBiliURL)
+            return
+        case .bilibili:
             mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
                 "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
             if audioUrl != "" {
@@ -223,40 +220,69 @@ class Processes: NSObject {
         }
         
         switch Preferences.shared.livePlayer {
-        case .iina where buildVersion < 15:
-                task.launchPath = Preferences.shared.livePlayer.rawValue
-                mpvArgs = mpvArgs.map {
-                    "--mpv-" + $0
-                }
+        case .iina where isDV && buildVersion >= 15:
+//            IINA-Danmaku 1.1.2 NEW API
+            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
+        case .iina where isDV && buildVersion < 15:
+            openWithProcess(u, args: mpvArgs, uuid: uuid)
+        case .iina where !isDV && buildVersion >= 90:
+//            1.0.0 beta3 build 86  URL Scheme without mpv options
+//            1.0.0 beta4 build 90
+            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
+        case .iina where !isDV && buildVersion >= 56:
+//            iinc-cli build 56
+            openWithProcess(u, args: mpvArgs, uuid: uuid)
         case .mpv:
-            task.launchPath = self.which(Preferences.shared.livePlayer.rawValue).first ?? ""
-            mpvArgs.append(MPVOption.Terminal.reallyQuiet)
-            mpvArgs = mpvArgs.map {
-                "--" + $0
-            }
-            
+            openWithProcess(u, args: mpvArgs, uuid: uuid)
         default:
             break
         }
         
-        
-
-        if Preferences.shared.livePlayer == .iina, isDV {
-            if Preferences.shared.enableDanmaku {
-                mpvArgs.append("--danmaku")
-                mpvArgs.append("--uuid=\(uuid)")
+    }
+    
+    func openWithYtdl(_ url: String) {
+        // Use IINA's ytdl to open the raw url
+        let buildVersion = iinaBuildVersion()
+        guard let v = url.addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return }
+        if buildVersion >= 90 {
+            let u = "iina://open?url=\(v)"
+            guard let uu = URL(string: u) else { return }
+            Log("Open IINA URL:  \(u)")
+            NSWorkspace.shared.open(uu)
+        } else if buildVersion >= 56 {
+            openWithProcess(url, args: [], uuid: "")
+        }
+    }
+    
+    func openWithProcess(_ url: String, args: [String], uuid: String) {
+        let livePlayer = Preferences.shared.livePlayer
+        let isIINA = livePlayer == .iina
+        var args = args
+        let task = Process()
+        let pipe = Pipe()
+        task.standardInput = pipe
+        task.launchPath = isIINA ? livePlayer.rawValue : self.which(livePlayer.rawValue).first ?? ""
+        if isIINA {
+            let isDV = isDanmakuVersion()
+            args = args.map {
+                "--mpv-" + $0
             }
-            mpvArgs.append("--directly")
+            if isDV {
+                if Preferences.shared.enableDanmaku {
+                    args.append("--danmaku")
+                    args.append("--uuid=\(uuid)")
+                }
+                args.append("--directly")
+            }
+        } else {
+            args.append(MPVOption.Terminal.reallyQuiet)
+            args = args.map {
+                "--" + $0
+            }
         }
-        
-        if buildVersion >= 15 {
-            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
-            return
-        }
-        
-        mpvArgs.insert(u, at: 0)
-        Log("Player arguments: \(mpvArgs)")
-        task.arguments = mpvArgs
+        args.insert(url, at: 0)
+        Log("Player arguments: \(args)")
+        task.arguments = args
         task.launch()
     }
     
@@ -266,14 +292,21 @@ class Processes: NSObject {
         
         var u = ""
         
+//        1.0.0 beta3 build 86  iina://weblink
+        
         u += isDV ? "iina://iina-plus.base64?" : "iina://open?"
         
         var args = args.map {
-            $0.starts(with: "--") ? "\($0.dropFirst(2))" : "mpv_" + $0
+            "mpv_" + $0
         }
         
         if isDV {
             args.insert("url=\(url)", at: 0)
+            if Preferences.shared.enableDanmaku {
+                args.append("danmaku")
+                args.append("uuid=\(uuid)")
+            }
+            args.append("directly")
         } else {
             args.insert("url=\(url)", at: 0)
             
