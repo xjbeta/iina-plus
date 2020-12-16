@@ -16,7 +16,8 @@ import WebKit
 
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
-    case bilibili = "www.bilibili.com"
+    case bilibili = "www.bilibili.com/video"
+    case bangumi = "www.bilibili.com/bangumi"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
     case quanmin = "www.quanmin.tv"
@@ -26,8 +27,23 @@ enum LiveSupportList: String {
     case langPlay = "play.lang.live"
     case unsupported
     
-    init(raw: String?) {
-        if let list = LiveSupportList(rawValue: raw ?? "") {
+    init(url: String) {
+        guard let u = URL(string: url) else {
+            self = .unsupported
+            return
+        }
+        
+        let host = u.host ?? ""
+        if host == "www.bilibili.com", u.pathComponents.count >= 2 {
+            switch u.pathComponents[1] {
+            case "video":
+                self = .bilibili
+            case "bangumi":
+                self = .bangumi
+            default:
+                self = .unsupported
+            }
+        } else if let list = LiveSupportList(rawValue: host) {
             self = list
         } else {
             self = .unsupported
