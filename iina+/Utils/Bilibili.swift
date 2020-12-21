@@ -261,6 +261,10 @@ struct BangumiInfo: Unmarshaling {
 
 class Bilibili: NSObject {
     
+    enum BilibiliApiError: Error {
+        case biliCSRFNotFound
+    }
+    
     func isLogin() -> Promise<(Bool, String)> {
         return Promise { resolver in
             AF.request("https://api.bilibili.com/x/web-interface/nav").response { response in
@@ -287,7 +291,14 @@ class Bilibili: NSObject {
     
     func logout() -> Promise<()> {
         return Promise { resolver in
-            AF.request("https://account.bilibili.com/login?act=exit").response { response in
+            guard let url = URL(string: "https://www.bilibili.com"),
+                  let biliCSRF = HTTPCookieStorage.shared.cookies(for: url)?.first(where: { $0.name == "bili_jct" })?.value else {
+                
+                resolver.reject(BilibiliApiError.biliCSRFNotFound)
+                return
+            }
+            
+            AF.request("https://passport.bilibili.com/login/exit/v2", method: .post, parameters: ["biliCSRF": biliCSRF]).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
