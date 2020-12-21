@@ -65,7 +65,7 @@ class VideoGet: NSObject {
                 resolver.reject(VideoGetError.notSupported)
                 return
             }
-            let site = LiveSupportList(raw:url.host)
+            let site = LiveSupportList(url: url.absoluteString)
             
             switch site {
             case .biliLive:
@@ -132,6 +132,13 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
+                
+            case .bangumi:
+                getBangumi(url).done {
+                    resolver.fulfill($0)
+                    }.catch {
+                        resolver.reject($0)
+                }
             case .langPlay:
                 let roomId = Int(url.lastPathComponent) ?? -1
                 getLangPlayInfo(roomId).done {
@@ -155,17 +162,18 @@ class VideoGet: NSObject {
                 resolver.fulfill(())
                 return
             }
-            if url.host == "www.bilibili.com" {
+            
+            if url.host == "www.bilibili.com", !url.absoluteString.contains("bangumi") {
                 var cid = 0
                 Bilibili().getVideoList(url.absoluteString).get { vInfo in
                     if vInfo.count == 1 {
-                        cid = vInfo[0].cid
+                        cid = vInfo[0].id
                     } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                         var pInt = Int(p) {
                         pInt -= 1
                         if pInt < vInfo.count,
                             pInt >= 0 {
-                            cid = vInfo[pInt].cid
+                            cid = vInfo[pInt].id
                         }
                     }
                     }.then { _ in
@@ -187,7 +195,7 @@ class VideoGet: NSObject {
                 resolver.reject(VideoGetError.notSupported)
                 return
             }
-            let site = LiveSupportList(raw:url.host)
+            let site = LiveSupportList(url: url.absoluteString)
             let roomId = Int(url.lastPathComponent) ?? -1
             switch site {
             case .biliLive:
@@ -621,19 +629,27 @@ extension VideoGet {
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         
+        setBilibiliQuality()
+        
+        return getBilibiliHTMLDatas(url).then { (playInfoData, initialStateData) -> Promise<(YouGetJSON)> in
+            if url.absoluteString.contains("bangumi") {
+                return self.decodeBangumiDatas(
+                    url,
+                    playInfoData: playInfoData,
+                    initialStateData: initialStateData)
+            } else {
+                return self.decodeBilibiliDatas(
+                    url,
+                    playInfoData: playInfoData,
+                    initialStateData: initialStateData)
+            }
+        }
+    }
+    
+    func getBilibiliHTMLDatas(_ url: URL) -> Promise<((playInfoData: Data, initialStateData: Data))> {
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
-        
-        // https://github.com/xioxin/biliATV/issues/24
-        var cookieProperties = [HTTPCookiePropertyKey: String]()
-        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
-        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
-        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
-        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
-        let cookie = HTTPCookie(properties: cookieProperties)
-        HTTPCookieStorage.shared.setCookie(cookie!)
-        
         return Promise { resolver in
             AF.request(url.absoluteString, headers: headers).response { response in
                 if let error = response.error {
@@ -641,15 +657,8 @@ extension VideoGet {
                 }
                 let playInfoData = response.text?.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
                 let initialStateData = response.text?.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
-                
-                self.decodeBilibiliDatas(
-                    url,
-                    playInfoData: playInfoData,
-                    initialStateData: initialStateData).done {
-                        resolver.fulfill($0)
-                }.catch {
-                    resolver.reject($0)
-                }
+                resolver.fulfill((playInfoData: playInfoData,
+                                  initialStateData: initialStateData))
             }
         }
     }
@@ -676,8 +685,8 @@ extension VideoGet {
                     }
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                let acceptQuality: [Int] = try playInfoJson.value(for: "data.accept_quality")
-                let acceptDescription: [String] = try playInfoJson.value(for: "data.accept_description")
+                
+                
                 
                 if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                      let pInt = Int(p),
@@ -686,77 +695,28 @@ extension VideoGet {
                  }
                 yougetJson.title = title
                 
-                var descriptionDic = [Int: String]()
-                acceptQuality.enumerated().forEach {
-                    descriptionDic[$0.element] = acceptDescription[$0.offset]
-                }
                 
-                struct VideoInfo: Unmarshaling {
-                    var url: String
-                    var id: Int
-                    var description: String = ""
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "baseUrl")
-                        id = try object.value(for: "id")
-                    }
-                }
-                
-                struct AudioInfo: Unmarshaling {
-                    var url: String
-                    var bandwidth: Int
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "baseUrl")
-                        bandwidth = try object.value(for: "bandwidth")
-                    }
-                }
-                
-                struct Durl: Unmarshaling {
-                    var url: String
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "url")
-                    }
-                }
-                
-                
-                // New Fromat
-                if var videos: [VideoInfo] = try? playInfoJson.value(for: "data.dash.video") {
-                    
-                    
-                    let audios: [AudioInfo]? = try playInfoJson.value(for: "data.dash.audio")
-                    
-                    videos.enumerated().forEach {
-                        videos[$0.offset].description = descriptionDic[$0.element.id] ?? "unkonwn"
-                    }
-                    
-                    var visVideos = [VideoInfo]()
-                    videos.forEach {
-                        if !visVideos.map({ $0.id }).contains($0.id) {
-                            visVideos.append($0)
-                        }
-                    }
-                    videos = visVideos
-                    
-                    videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                if let playInfo = try? BilibiliPlayInfo(object: playInfoJson) {
+                    playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
                         stream.videoProfile = $0.element.description
                         yougetJson.streams["\($0.offset + 1)"] = stream
                     }
                     
-                    guard audios != nil else {
+                    guard let audios = playInfo.audios else {
                         resolver.fulfill(yougetJson)
                         return
                     }
                     
-                    guard let audioUrl = audios?.max(by: { $0.bandwidth > $1.bandwidth }),
-                        videos.count > 0 else {
+                    guard let audio = audios.max(by: { $0.bandwidth > $1.bandwidth }),
+                          playInfo.videos.count > 0 else {
                             resolver.reject(VideoGetError.notFindUrls)
                             return
                     }
                     
-                    yougetJson.audio = audioUrl.url
+                    yougetJson.audio = audio.url
                     resolver.fulfill(yougetJson)
-                    
-                } else if let durls: [Durl] = try? playInfoJson.value(for: "data.durl"),
+                } else if let durls: [BilibiliPlayInfo.Durl] = try? playInfoJson.value(for: "data.durl"),
                     let u = durls.first?.url {
                     
                     var stream = Stream(url: u)
@@ -771,6 +731,109 @@ extension VideoGet {
             }
         }
     }
+    
+    func setBilibiliQuality() {
+        // https://github.com/xioxin/biliATV/issues/24
+        var cookieProperties = [HTTPCookiePropertyKey: String]()
+        cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
+        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
+        cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
+        cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
+        let cookie = HTTPCookie(properties: cookieProperties)
+        HTTPCookieStorage.shared.setCookie(cookie!)
+        
+    }
+
+    // MARK: - Bangumi
+    
+    func getBangumi(_ url: URL) -> Promise<(YouGetJSON)> {
+        setBilibiliQuality()
+
+        return getBilibiliHTMLDatas(url).then { (playInfoData, initialStateData) -> Promise<(YouGetJSON)> in
+            return self.decodeBangumiDatas(
+                url,
+                playInfoData: playInfoData,
+                initialStateData: initialStateData)
+        }
+    }
+    
+    func decodeBangumiDatas(_ url: URL,
+                            playInfoData: Data,
+                            initialStateData: Data) -> Promise<(YouGetJSON)> {
+        
+        
+        var yougetJson = YouGetJSON(url:"")
+        yougetJson.streams.removeAll()
+        
+        return Promise { resolver in
+            do {
+                let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
+                
+                let bangumiInfo = try BangumiInfo(object: initialStateJson)
+                yougetJson.title = bangumiInfo.title
+                
+                var vipVideo = false
+                let epStatus = bangumiInfo.epInfo.epStatus
+                switch epStatus {
+                case 13:
+                    print("vip video")
+                    vipVideo = true
+                    
+                    if playInfoData.count == 0 {
+                        resolver.reject(VideoGetError.needVip)
+                        return
+                    }
+                case 2:
+                    print("playable")
+                    vipVideo = false
+                default:
+                    resolver.reject(VideoGetError.cantWatch)
+                    Log("unknown epStatus \(epStatus)")
+                    return
+                }
+                
+                let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
+                
+                if let playInfo = try? BilibiliPlayInfo(object: playInfoJson) {
+                    playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                        var stream = Stream(url: $0.element.url)
+                        stream.videoProfile = $0.element.description
+                        yougetJson.streams["\($0.offset + 1)"] = stream
+                    }
+                    
+                    guard let audios = playInfo.audios else {
+                        resolver.fulfill(yougetJson)
+                        return
+                    }
+                    
+                    guard let audio = audios.max(by: { $0.bandwidth > $1.bandwidth }),
+                          playInfo.videos.count > 0 else {
+                            resolver.reject(VideoGetError.notFindUrls)
+                            return
+                    }
+                    
+                    yougetJson.audio = audio.url
+                    resolver.fulfill(yougetJson)
+                } else {
+                    
+                    let playInfo = try BangumiPlayInfo(object: playInfoJson)
+                    
+
+                    guard let des = playInfo.supportFormats.first(where: { $0.quality == playInfo.quality })?.description,
+                          let u = playInfo.durl.first?.url else {
+                        resolver.fulfill(yougetJson)
+                        return
+                    }
+                    
+                    yougetJson.streams = [des: .init(url: u)]
+                    resolver.fulfill(yougetJson)
+                }
+            } catch let error {
+                resolver.reject(error)
+            }
+        }
+    }
+    
     
     func downloadDMFile(_ cid: Int, id: String) -> Promise<()> {
         return Promise { resolver in
@@ -882,6 +945,8 @@ extension VideoGet {
 }
 
 enum VideoGetError: Error {
+    case invalidLink
+    
     case douyuUrlError
     case douyuSignError
     case douyuNotFoundRoomId
@@ -895,4 +960,8 @@ enum VideoGetError: Error {
     case cantFindIdForDM
     
     case prepareDMFailed
+    
+    case cantWatch
+    
+    case needVip
 }
