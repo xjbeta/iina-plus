@@ -94,96 +94,7 @@ class MainViewController: NSViewController {
     // MARK: - Search Tab Item
     @IBOutlet weak var searchField: NSSearchField!
     @IBAction func startSearch(_ sender: Any) {
-        Processes.shared.stopDecodeURL()
-        
-        let str = searchField.stringValue
-        yougetResult = nil
-        guard str != "", str.isUrl else {
-            isSearching = false
-            return
-        }
-        isSearching = true
-
-        progressStatusChanged(true)
-        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
-        
-        func decodeUrl() {
-            Processes.shared.videoGet.liveInfo(str, false).get {
-                if !$0.isLiving {
-                    throw VideoGetError.isNotLiving
-                }
-                }.then { _ in
-                    Processes.shared.decodeURL(str)
-                }.done(on: .main) {
-                    self.yougetResult = $0
-                }.ensure {
-                    self.progressStatusChanged(false)
-                }.catch(on: .main, policy: .allErrors) { error in
-                    Log("\(error)")
-
-                    guard self.suggestionsTableView.numberOfRows == 1,
-                        let view = self.suggestionsTableView.view(atColumn: 0, row: 0, makeIfNecessary: true) as? WaitingTableCellView else {
-                            return
-                    }
-                    switch error {
-                    case PMKError.cancelled:
-                        return
-                    case VideoGetError.isNotLiving:
-                        view.setStatus(.isNotLiving)
-                    case VideoGetError.notSupported:
-                        view.setStatus(.notSupported)
-                    default:
-                        view.setStatus(.error)
-                    }
-            }
-        }
-        
-        if let url = URL(string: str),
-            url.host == "www.bilibili.com",
-            !str.contains("?p=") {
-            
-            
-            
-            var vid = ""
-            let pathComponents = NSString(string: str).pathComponents
-            guard pathComponents.count > 3 else {
-                return
-            }
-            vid = pathComponents[3]
-            bilibili.getVideoList(url.absoluteString).done { infos in
-                if infos.count > 1 {
-                    self.showSelectVideo(vid, infos: infos)
-                    self.isSearching = false
-                    self.progressStatusChanged(false)
-                } else {
-                    decodeUrl()
-                }
-                }.catch { error in
-                    Log("Get video list error: \(error)")
-            }
-        } else if let url = URL(string: str),
-            url.host == "www.douyu.com",
-            url.pathComponents.count > 2,
-            url.pathComponents[1] == "topic" {
-            
-            Processes.shared.videoGet.getDouyuHtml(str).done {
-                if $0.roomIds.count > 0 {
-                    let infos = $0.roomIds.enumerated().map {
-                        DouyuVideoList(index: $0.offset, title: "频道 - \($0.offset + 1) - \($0.element)", roomId: Int($0.element) ?? 0)
-                    }
-
-                    self.showSelectVideo("", infos: infos)
-                    self.isSearching = false
-                    self.progressStatusChanged(false)
-                } else {
-                    decodeUrl()
-                }
-                }.catch { error in
-                    Log("Get douyu room list error: \(error)")
-            }
-        } else {
-            decodeUrl()
-        }
+        startSearchingUrl(searchField.stringValue)
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
@@ -205,6 +116,12 @@ class MainViewController: NSViewController {
         }
     }
     
+    var waitingErrorMessage: String? = nil {
+        didSet {
+            suggestionsTableView.reloadData()
+        }
+    }
+    
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
@@ -213,11 +130,12 @@ class MainViewController: NSViewController {
             let key = yougetResult?.streams.keys.sorted()[row],
             let stream = yougetResult?.streams[key],
             let url = URL(string: searchField.stringValue) else {
-                if isSearching {
-                    Processes.shared.stopDecodeURL()
-                }
-                isSearching = false
-                yougetResult = nil
+            if isSearching {
+                Processes.shared.stopDecodeURL()
+            }
+            isSearching = false
+            waitingErrorMessage = nil
+            yougetResult = nil
             return
         }
         
@@ -228,7 +146,7 @@ class MainViewController: NSViewController {
             urlStr = stream.src
         }
         var title = yougetJSON.title
-        let site = LiveSupportList(raw: url.host)
+        let site = LiveSupportList(url: url.absoluteString)
         
         Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
             
@@ -252,7 +170,7 @@ class MainViewController: NSViewController {
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
             case .huya, .longzhu, .quanmin, .eGame, .langPlay:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
-            case .bilibili:
+            case .bilibili, .bangumi:
                 Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: url.absoluteString)
             case .biliLive:
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .bililive, uuid: uuid)
@@ -262,6 +180,7 @@ class MainViewController: NSViewController {
 
             }.ensure {
                 self.isSearching = false
+                self.waitingErrorMessage = nil
                 self.yougetResult = nil
             }.catch {
                 Log("Prepare DM file error : \($0)")
@@ -450,6 +369,148 @@ class MainViewController: NSViewController {
         }
     }
     
+    func startSearchingUrl(_ url: String, directly: Bool = false) {
+        guard url != "" else { return }
+        
+        Processes.shared.stopDecodeURL()
+        waitingErrorMessage = nil
+        isSearching = true
+        progressStatusChanged(true)
+        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        let str = searchField.stringValue
+        decodeUrl(url, directly: directly).ensure {
+            self.isSearching = false
+            self.progressStatusChanged(false)
+        }.done {
+            Log("decodeUrl success: \(str)")
+        }.catch { error in
+            var s = "ಠ_ಠ  oops, "
+            switch error {
+            case PMKError.cancelled:
+                return
+            case VideoGetError.invalidLink:
+                s += "invalid url."
+            case VideoGetError.isNotLiving:
+                s += "the host is not online."
+            case VideoGetError.notSupported:
+                s += "the website is not supported."
+            case VideoGetError.needVip:
+                s += "need vip."
+            default:
+                s += "something went wrong."
+            }
+            
+            self.waitingErrorMessage = s
+        }
+    }
+    
+    func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
+        
+        return Promise { resolver in
+            
+            let videoGet = Processes.shared.videoGet
+            let str = url
+            yougetResult = nil
+            guard str.isUrl,
+                  let url = URL(string: str) else {
+                resolver.reject(VideoGetError.invalidLink)
+                return
+            }
+            
+            func decodeUrl() {
+                videoGet.liveInfo(str, false).get {
+                    if !$0.isLiving {
+                        throw VideoGetError.isNotLiving
+                    }
+                }.then { _ in
+                    Processes.shared.decodeURL(str)
+                }.done(on: .main) {
+                    self.yougetResult = $0
+                    print($0)
+                    resolver.fulfill(())
+                }.catch(on: .main, policy: .allErrors) {
+                    print($0)
+                    resolver.reject($0)
+                }
+            }
+            
+            if directly {
+                decodeUrl()
+            } else if url.host == "www.bilibili.com" {
+                
+                let pc = url.pathComponents
+                
+                if pc.count >= 3,
+                   pc[1] == "video" {
+//                    ([String]?) $R0 = 3 values {
+//                        [0] = "/"
+//                        [1] = "video"
+//                        [2] = "BV1ft4y1a7Yd"
+//                    }
+                    let vid = pc[2]
+                    bilibili.getVideoList(url.absoluteString).done { infos in
+                        if infos.count > 1 {
+                            self.showSelectVideo(vid, infos: infos)
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
+                    }.catch {
+                        resolver.reject($0)
+                    }
+                } else if pc.count >= 4,
+                          pc[1] == "bangumi",
+                          pc[2] == "play" {
+                    
+//                    let vid = pc[3]
+//                    ([String]) $R2 = 4 values {
+//                        [0] = "/"
+//                        [1] = "bangumi"
+//                        [2] = "play"
+//                        [3] = "ep339061" // ss34407
+//                    }
+                    bilibili.getBangumiInfo(url).done {
+                        let epVS = $0.epVideoSelectors
+//                        let selectionVS = $0.selectionVideoSelectors
+//                        let c = epVS.count + selectionVS.count
+//                        if c == 1, let vs = epVS.first ?? selectionVS.first {
+                        if epVS.count == 1 {
+                            decodeUrl()
+                        } else {
+                            self.showSelectVideo("", infos: epVS)
+                            resolver.fulfill(())
+                        }
+                    }.catch {
+                        resolver.reject($0)
+                    }
+                }
+            } else if url.host == "www.douyu.com",
+                      url.pathComponents.count > 2,
+                      url.pathComponents[1] == "topic" {
+                
+                videoGet.getDouyuHtml(str).done {
+                    if $0.roomIds.count > 0 {
+                        let infos = $0.roomIds.enumerated().map {
+                            DouyuVideoSelector(index: $0.offset,
+                                               title: "频道 - \($0.offset + 1) - \($0.element)",
+                                               id: Int($0.element) ?? 0,
+                                               coverUrl: nil)
+                        }
+                        
+                        self.showSelectVideo("", infos: infos)
+                        resolver.fulfill(())
+                    } else {
+                        decodeUrl()
+                    }
+                }.catch {
+                    resolver.reject($0)
+                }
+            } else {
+                decodeUrl()
+            }
+        }
+    }
+    
     deinit {
         bookmarkArrayCountObserver?.invalidate()
     }
@@ -465,7 +526,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 return obj.streams.count
-            } else if isSearching {
+            } else if isSearching || waitingErrorMessage != nil {
                 return 1
             }
         default:
@@ -478,13 +539,11 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         switch tableView {
         case bookmarkTableView:
             let str = dataManager.requestData()[row].url
-            if let url = URL(string: str) {
-                switch LiveSupportList(raw: url.host) {
-                case .unsupported, .bilibili:
-                    return 20
-                default:
-                    return 55
-                }
+            switch LiveSupportList(url: str) {
+            case .unsupported, .bilibili, .bangumi:
+                return 23
+            default:
+                return 55
             }
         case bilibiliTableView:
             return tableView.rowHeight
@@ -500,18 +559,18 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         switch tableView {
         case bookmarkTableView:
             let str = dataManager.requestData()[row].url
-            if let url = URL(string: str) {
-                switch LiveSupportList(raw: url.host) {
-                case .unsupported, .bilibili:
-                    if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
-                        view.textField?.stringValue = str
-                        return view
+            switch LiveSupportList(url: str) {
+            case .unsupported, .bilibili, .bangumi:
+                if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
+                    view.textField?.stringValue = str
+                    return view
+                }
+            default:
+                if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+                    if let u = URL(string: str) {
+                        view.url = u
                     }
-                default:
-                    if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                        view.url = url
-                        return view
-                    }
+                    return view
                 }
             }
         case bilibiliTableView:
@@ -541,7 +600,11 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 }
             } else {
                 if let view = tableView.makeView(withIdentifier: .waitingTableCellView, owner: self) as? WaitingTableCellView {
-                    view.setStatus(.waiting)
+                    let waiting = waitingErrorMessage == nil
+                    view.waitProgressIndicator.startAnimation(nil)
+                    view.waitProgressIndicator.isHidden = !waiting
+                    view.errorInfoTextField.isHidden = waiting
+                    view.errorInfoTextField.stringValue = waitingErrorMessage ?? ""
                     return view
                 }
             }
