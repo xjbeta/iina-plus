@@ -55,16 +55,24 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             return item
         }
         let info = videoInfos[indexPath.item]
+        
+        var s = ""
         switch info.site {
         case .bilibili:
-            selectVideoItem.titleTextField.stringValue = "\(info.index)、\(info.title)"
-            selectVideoItem.titleTextField.toolTip = "\(info.index)、\(info.title)"
+            s = "\(info.index)  \(info.title)"
+        case .bangumi:
+            s = "\(info.title)"
+            if let longTitle = (info as? BilibiliVideoSelector)?.longTitle {
+                s += "  \(longTitle)"
+            }
         case .douyu:
-            selectVideoItem.titleTextField.stringValue = "\(info.title)"
-            selectVideoItem.titleTextField.toolTip = "\(info.title)"
+            s = "\(info.title)"
         default:
             break
         }
+        
+        selectVideoItem.titleTextField.stringValue = s
+        selectVideoItem.titleTextField.toolTip = s
         return selectVideoItem
     }
     
@@ -83,16 +91,21 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             if let main = self.parent as? MainViewController {
                 main.selectTabItem(.search)
                 let info = videoInfos[item]
+                
+                var u = ""
                 switch info.site {
                 case .bilibili:
-                    main.searchField.stringValue = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
+                    u = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
                 case .douyu:
-                    main.searchField.stringValue = "https://www.douyu.com/\((info as! DouyuVideoList).roomId)"
+                    u = "https://www.douyu.com/\(info.id)"
+                case .bangumi:
+                    u = "https://www.bilibili.com/bangumi/play/ep\(info.id)"
                 default:
                     break
                 }
+                main.searchField.stringValue = u
                 main.searchField.becomeFirstResponder()
-                main.startSearch(self)
+                main.startSearchingUrl(u, directly: true)
                 view.isSelected = false
             }
         }
