@@ -20,6 +20,8 @@ protocol VideoSelector {
     var site: LiveSupportList { get }
     var index: Int { get }
     var title: String { get }
+    var id: Int { get }
+    var coverUrl: URL? { get }
 }
 
 struct BilibiliInfo: Unmarshaling, LiveInfo {
@@ -56,11 +58,12 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     }
 }
 
-struct DouyuVideoList: VideoSelector {
+struct DouyuVideoSelector: VideoSelector {
     let site = LiveSupportList.douyu
     let index: Int
     let title: String
-    let roomId: Int
+    let id: Int
+    let coverUrl: URL?
 }
 
 struct HuyaInfo: Unmarshaling, LiveInfo {
@@ -298,6 +301,117 @@ struct BilibiliVideo: Unmarshaling {
     }
 }
 
+struct BilibiliPlayInfo: Unmarshaling {
+    let videos: [VideoInfo]
+    let audios: [AudioInfo]?
+    
+    struct VideoInfo: Unmarshaling {
+        var url: String
+        var id: Int
+        var description: String = ""
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "baseUrl")
+            id = try object.value(for: "id")
+        }
+    }
+    
+    struct AudioInfo: Unmarshaling {
+        var url: String
+        var bandwidth: Int
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "baseUrl")
+            bandwidth = try object.value(for: "bandwidth")
+        }
+    }
+    
+    struct Durl: Unmarshaling {
+        var url: String
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "url")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        let videos: [VideoInfo] = try object.value(for: "data.dash.video")
+        audios = try? object.value(for: "data.dash.audio")
+        
+        let acceptQuality: [Int] = try object.value(for: "data.accept_quality")
+        let acceptDescription: [String] = try object.value(for: "data.accept_description")
+        
+        var descriptionDic = [Int: String]()
+        acceptQuality.enumerated().forEach {
+            descriptionDic[$0.element] = acceptDescription[$0.offset]
+        }
+        
+        var newVideos = [VideoInfo]()
+        
+        videos.forEach {
+            var video = $0
+            let des = descriptionDic[$0.id] ?? "unkonwn"
+            
+            if !newVideos.map({ $0.id }).contains($0.id) {
+                video.description = des
+                newVideos.append(video)
+            }
+        }
+        self.videos = newVideos
+    }
+}
+
+struct BangumiPlayInfo: Unmarshaling {
+    let session: String
+    let isPreview: Bool
+    let vipType: Int
+    let durl: [BangumiPlayDurl]
+    let format: String
+    let supportFormats: [BangumiVideoFormat]
+    let acceptQuality: [Int]
+    let quality: Int
+    let hasPaid: Bool
+    let vipStatus: Int
+    
+    init(object: MarshaledObject) throws {
+        session = try object.value(for: "session")
+        isPreview = try object.value(for: "data.is_preview")
+        vipType = try object.value(for: "data.vip_type")
+        durl = try object.value(for: "data.durl")
+        format = try object.value(for: "data.format")
+        supportFormats = try object.value(for: "data.support_formats")
+        acceptQuality = try object.value(for: "data.accept_quality")
+        quality = try object.value(for: "data.quality")
+        hasPaid = try object.value(for: "data.has_paid")
+        vipStatus = try object.value(for: "data.vip_status")
+    }
+    
+    struct BangumiPlayDurl: Unmarshaling {
+        let size: Int
+        let length: Int
+        let url: String
+        let backupUrl: [String]
+        init(object: MarshaledObject) throws {
+            size = try object.value(for: "size")
+            length = try object.value(for: "length")
+            url = try object.value(for: "url")
+            backupUrl = try object.value(for: "backup_url")
+        }
+    }
+    
+    struct BangumiVideoFormat: Unmarshaling {
+        let needLogin: Bool
+        let format: String
+        let description: String
+        let needVip: Bool
+        let quality: Int
+        init(object: MarshaledObject) throws {
+            needLogin = (try? object.value(for: "need_login")) ?? false
+            format = try object.value(for: "format")
+            description = try object.value(for: "description")
+            needVip = (try? object.value(for: "need_vip")) ?? false
+            quality = try object.value(for: "quality")
+        }
+    }
+}
+
 // MARK: - LangPlay
 
 struct LangPlayInfo: Unmarshaling, LiveInfo {
@@ -310,21 +424,23 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
     var liveID: String
     var liveKey: String
     
-    struct LangPlayVideo: Unmarshaling, VideoSelector {
-        var site: LiveSupportList {
-            return .langPlay
-        }
-        var index: Int
-        var title: String
-        var url: String
+    struct LangPlayVideoSelector: Unmarshaling, VideoSelector {
+        let id: Int
+        let coverUrl: URL?
+        let site = LiveSupportList.langPlay
+        let index: Int
+        let title: String
+        let url: String
         init(object: MarshaledObject) throws {
             title = try object.value(for: "title")
             index = try object.value(for: "id")
             url = try object.value(for: "video")
+            id = -1
+            coverUrl = nil
         }
     }
     
-    var streamItems: [LangPlayVideo]
+    var streamItems: [LangPlayVideoSelector]
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "data.live_info.room_title")

@@ -135,35 +135,129 @@ struct BilibiliPvideo: Unmarshaling {
     }
 }
 
-struct BilibiliSimpleVideoInfo: Unmarshaling, VideoSelector {
-    var cid: Int = 0
-    var page: Int = 0
-    var part: String = ""
-    var duration: TimeInterval = 0
+struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
+    // epid
+    let id: Int
+    var index: Int
+    let part: String
+    let duration: TimeInterval
+    let title: String
+    let longTitle: String
+    let coverUrl: URL?
+    let badge: Badge?
+    let site: LiveSupportList
     
-    var site: LiveSupportList {
+    struct Badge {
+        let badge: String
+        let badgeColor: NSColor
+        let badgeType: Int
+    }
+    
+    init(object: MarshaledObject) throws {
+        id = try object.value(for: "cid")
+        index = try object.value(for: "page")
+        part = try object.value(for: "part")
+        duration = try object.value(for: "duration")
+        title = part
+        longTitle = ""
+        coverUrl = nil
+        badge = nil
+        site = .bilibili
+    }
+    
+    init(ep: BangumiInfo.BangumiEp) {
+        id = ep.id
+        index = -1
+        part = ""
+        duration = 0
+        title = ep.title
+        longTitle = ep.longTitle
+        coverUrl = nil
+//        ep.badgeColor
+        badge = .init(badge: ep.badge,
+                      badgeColor: .red,
+                      badgeType: ep.badgeType)
+        site = .bangumi
+    }
+}
+
+struct BangumiInfo: Unmarshaling {
+    let title: String
+    let epList: [BangumiEp]
+    let epInfo: BangumiEp
+    let sections: [BangumiSections]
+    let isLogin: Bool
+    
+    var epVideoSelectors: [BilibiliVideoSelector] {
         get {
-            return .bilibili
+            var list = epList.map(BilibiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
         }
     }
-    var index: Int {
+    
+    var selectionVideoSelectors: [BilibiliVideoSelector] {
         get {
-            return page
-        }
-    }
-    var title: String {
-        get {
-            return part
+            var list = sections.compactMap {
+                $0.epList.first
+            }.map(BilibiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
         }
     }
     
     init(object: MarshaledObject) throws {
-        cid = try object.value(for: "cid")
-        page = try object.value(for: "page")
-        part = try object.value(for: "part")
-        duration = try object.value(for: "duration")
+        title = try object.value(for: "mediaInfo.title")
+        epList = try object.value(for: "epList")
+        epInfo = try object.value(for: "epInfo")
+        sections = try object.value(for: "sections")
+        isLogin = try object.value(for: "isLogin")
+    }
+    
+    struct BangumiSections: Unmarshaling {
+        let id: Int
+        let title: String
+        let type: Int
+        let epList: [BangumiEp]
+        init(object: MarshaledObject) throws {
+            id = try object.value(for: "id")
+            title = try object.value(for: "title")
+            type = try object.value(for: "type")
+            epList = try object.value(for: "epList")
+        }
+    }
+
+    struct BangumiEp: Unmarshaling {
+        let id: Int
+        let badge: String
+        let badgeType: Int
+        let badgeColor: String
+        let epStatus: Int
+        let aid: Int
+        let bvid: String
+        let cid: Int
+        let title: String
+        let longTitle: String
+        
+        init(object: MarshaledObject) throws {
+            id = try object.value(for: "id")
+            badge = try object.value(for: "badge")
+            badgeType = try object.value(for: "badgeType")
+            badgeColor = try object.value(for: "badgeColor")
+            epStatus = try object.value(for: "epStatus")
+            aid = try object.value(for: "aid")
+            bvid = try object.value(for: "bvid")
+            cid = try object.value(for: "cid")
+            title = try object.value(for: "title")
+            longTitle = try object.value(for: "longTitle")
+        }
     }
 }
+
 
 class Bilibili: NSObject {
     
