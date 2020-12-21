@@ -776,21 +776,20 @@ extension VideoGet {
                 let epStatus = bangumiInfo.epInfo.epStatus
                 switch epStatus {
                 case 13:
-                    print("vip video")
                     vipVideo = true
-                    
                     if playInfoData.count == 0 {
                         resolver.reject(VideoGetError.needVip)
                         return
                     }
                 case 2:
-                    print("playable")
                     vipVideo = false
                 default:
                     resolver.reject(VideoGetError.cantWatch)
                     Log("unknown epStatus \(epStatus)")
                     return
                 }
+                
+                Log("Bangumi \(url) isVipVideo \(vipVideo)")
                 
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
