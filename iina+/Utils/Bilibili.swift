@@ -364,7 +364,7 @@ class Bilibili: NSObject {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BilibiliSimpleVideoInfo]> {
+    func getVideoList(_ url: String) -> Promise<[BilibiliVideoSelector]> {
         
         return Promise { resolver in
             var aid = -1
@@ -400,12 +400,21 @@ class Bilibili: NSObject {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
+                    let infos: [BilibiliVideoSelector] = try json.value(for: "data")
                     resolver.fulfill(infos)
                 } catch let error {
                     resolver.reject(error)
                 }
             }
+        }
+    }
+    
+    func getBangumiInfo(_ url: URL,
+                        initialStateData: Data? = nil) -> Promise<(BangumiInfo)> {
+        return VideoGet().getBilibiliHTMLDatas(url).map {
+            let stateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
+            let state = try BangumiInfo(object: stateJson)
+            return state
         }
     }
 }
