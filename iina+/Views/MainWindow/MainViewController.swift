@@ -469,7 +469,7 @@ class MainViewController: NSViewController {
 //                        [2] = "play"
 //                        [3] = "ep339061" // ss34407
 //                    }
-                    bilibili.getBangumiInfo(url).done {
+                    bilibili.getBangumiList(url).done {
                         let epVS = $0.epVideoSelectors
 //                        let selectionVS = $0.selectionVideoSelectors
 //                        let c = epVS.count + selectionVS.count

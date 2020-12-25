@@ -397,6 +397,62 @@ struct BangumiPlayInfo: Unmarshaling {
     }
 }
 
+struct BangumiInfo: Unmarshaling {
+    let title: String
+    let epList: [BangumiEp]
+    let epInfo: BangumiEp
+    let sections: [BangumiSections]
+    let isLogin: Bool
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "mediaInfo.title")
+        epList = try object.value(for: "epList")
+        epInfo = try object.value(for: "epInfo")
+        sections = try object.value(for: "sections")
+        isLogin = try object.value(for: "isLogin")
+    }
+    
+    struct BangumiSections: Unmarshaling {
+        let id: Int
+        let title: String
+        let type: Int
+        let epList: [BangumiEp]
+        init(object: MarshaledObject) throws {
+            id = try object.value(for: "id")
+            title = try object.value(for: "title")
+            type = try object.value(for: "type")
+            epList = try object.value(for: "epList")
+        }
+    }
+
+    struct BangumiEp: Unmarshaling {
+        let id: Int
+        let badge: String
+        let badgeType: Int
+        let badgeColor: String
+        let epStatus: Int
+        let aid: Int
+        let bvid: String
+        let cid: Int
+        let title: String
+        let longTitle: String
+        
+        init(object: MarshaledObject) throws {
+            id = try object.value(for: "id")
+            badge = try object.value(for: "badge")
+            badgeType = try object.value(for: "badgeType")
+            badgeColor = try object.value(for: "badgeColor")
+            epStatus = try object.value(for: "epStatus")
+            aid = try object.value(for: "aid")
+            bvid = try object.value(for: "bvid")
+            cid = try object.value(for: "cid")
+            title = try object.value(for: "title")
+            longTitle = try object.value(for: "longTitle")
+        }
+    }
+}
+
+
 // MARK: - LangPlay
 
 struct LangPlayInfo: Unmarshaling, LiveInfo {
