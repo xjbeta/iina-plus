@@ -259,65 +259,25 @@ struct EgameInfo: Unmarshaling, LiveInfo {
 
 // MARK: - Bilibili
 
-struct BilibiliVideo: Unmarshaling {
-    var videos: [String: String]
-    var audios: [String]
-    
-    
-    struct DashObject: Unmarshaling {
-        var id: Int
-        var url: String
-        var backupUrl: [String]
-        init(object: MarshaledObject) throws {
-            id = try object.value(for: "id")
-            url = try object.value(for: "baseUrl")
-            backupUrl = try object.value(for: "backupUrl")
-        }
-    }
-    
-    init(object: MarshaledObject) throws {
-        
-        let acceptDescription: [String] = try object.value(for: "accept_description")
-        let acceptQuality: [Int] = try object.value(for: "accept_quality")
-        
-        let video: [DashObject] = try object.value(for: "dash.video")
-        let audio: [DashObject] = try object.value(for: "dash.audio")
-        
-        var videos: [String: String] = [:]
-        
-        video.forEach {
-            guard let index = acceptQuality.firstIndex(of: $0.id),
-                index > 0,
-                index < acceptDescription.count else {
-                    return
-            }
-            let des = acceptDescription[index]
-            videos[des] = $0.url
-        }
-        self.videos = videos
-        audios = audio.map {
-            $0.url
-        }
-    }
-}
-
 struct BilibiliPlayInfo: Unmarshaling {
     let videos: [VideoInfo]
     let audios: [AudioInfo]?
     
     struct VideoInfo: Unmarshaling {
-        var url: String
-        var id: Int
+        let url: String
+        let id: Int
+        let bandwidth: Int
         var description: String = ""
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             id = try object.value(for: "id")
+            bandwidth = try object.value(for: "bandwidth")
         }
     }
     
     struct AudioInfo: Unmarshaling {
-        var url: String
-        var bandwidth: Int
+        let url: String
+        let bandwidth: Int
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             bandwidth = try object.value(for: "bandwidth")
@@ -325,18 +285,20 @@ struct BilibiliPlayInfo: Unmarshaling {
     }
     
     struct Durl: Unmarshaling {
-        var url: String
+        let url: String
+        let backupUrls: [String]
         init(object: MarshaledObject) throws {
             url = try object.value(for: "url")
+            backupUrls = try object.value(for: "backup_url")
         }
     }
     
     init(object: MarshaledObject) throws {
-        let videos: [VideoInfo] = try object.value(for: "data.dash.video")
-        audios = try? object.value(for: "data.dash.audio")
+        let videos: [VideoInfo] = try object.value(for: "dash.video")
+        audios = try? object.value(for: "dash.audio")
         
-        let acceptQuality: [Int] = try object.value(for: "data.accept_quality")
-        let acceptDescription: [String] = try object.value(for: "data.accept_description")
+        let acceptQuality: [Int] = try object.value(for: "accept_quality")
+        let acceptDescription: [String] = try object.value(for: "accept_description")
         
         var descriptionDic = [Int: String]()
         acceptQuality.enumerated().forEach {
@@ -349,12 +311,35 @@ struct BilibiliPlayInfo: Unmarshaling {
             var video = $0
             let des = descriptionDic[$0.id] ?? "unkonwn"
             
+            // ignore low bandwidth video
             if !newVideos.map({ $0.id }).contains($0.id) {
                 video.description = des
                 newVideos.append(video)
             }
         }
         self.videos = newVideos
+    }
+}
+
+struct BilibiliSimplePlayInfo: Unmarshaling {
+    let url: String?
+    var description: String = ""
+    
+    init(object: MarshaledObject) throws {
+        let durl: [BilibiliPlayInfo.Durl] = try object.value(for: "durl")
+        url = durl.first?.url
+        
+        let acceptQuality: [Int] = try object.value(for: "accept_quality")
+        let acceptDescription: [String] = try object.value(for: "accept_description")
+        
+        var descriptionDic = [Int: String]()
+        acceptQuality.enumerated().forEach {
+            descriptionDic[$0.element] = acceptDescription[$0.offset]
+        }
+        
+        let quality: Int = try object.value(for: "quality")
+        
+        description = descriptionDic[quality] ?? "unkonwn"
     }
 }
 
