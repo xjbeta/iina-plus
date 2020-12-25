@@ -628,21 +628,12 @@ extension VideoGet {
     
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
-        
         setBilibiliQuality()
-        
-        return getBilibiliHTMLDatas(url).then { (playInfoData, initialStateData) -> Promise<(YouGetJSON)> in
-            if url.absoluteString.contains("bangumi") {
-                return self.decodeBangumiDatas(
-                    url,
-                    playInfoData: playInfoData,
-                    initialStateData: initialStateData)
-            } else {
-                return self.decodeBilibiliDatas(
-                    url,
-                    playInfoData: playInfoData,
-                    initialStateData: initialStateData)
-            }
+        return getBilibiliHTMLDatas(url).then {
+            self.decodeBilibiliDatas(
+                url,
+                playInfoData: $0.playInfoData,
+                initialStateData: $0.initialStateData)
         }
     }
     
@@ -696,7 +687,7 @@ extension VideoGet {
                 yougetJson.title = title
                 
                 
-                if let playInfo = try? BilibiliPlayInfo(object: playInfoJson) {
+                if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
                         stream.videoProfile = $0.element.description
@@ -716,12 +707,11 @@ extension VideoGet {
                     
                     yougetJson.audio = audio.url
                     resolver.fulfill(yougetJson)
-                } else if let durls: [BilibiliPlayInfo.Durl] = try? playInfoJson.value(for: "data.durl"),
-                    let u = durls.first?.url {
+                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "data"), let url = info.url {
                     
-                    var stream = Stream(url: u)
-                    stream.videoProfile = "video"
-                    yougetJson.streams["video"] = stream
+                    var stream = Stream(url: url)
+                    stream.videoProfile = info.description
+                    yougetJson.streams[info.description] = stream
                     resolver.fulfill(yougetJson)
                 } else {
                     resolver.reject(VideoGetError.notFindUrls)
@@ -749,17 +739,60 @@ extension VideoGet {
     func getBangumi(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
 
-        return getBilibiliHTMLDatas(url).then { (playInfoData, initialStateData) -> Promise<(YouGetJSON)> in
-            return self.decodeBangumiDatas(
+        return getBilibiliHTMLDatas(url).then {
+            self.getBangumiVipData(
                 url,
-                playInfoData: playInfoData,
-                initialStateData: initialStateData)
+                bangumiInfo: try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData)),
+                playInfoData: $0.playInfoData)
+        }.then {
+            self.decodeBangumiDatas(
+                url,
+                bangumiInfo: $0.bangumiInfo,
+                playInfoData: $0.playInfoData)
+        }
+    }
+    
+    
+    func getBangumiVipData(_ url: URL,
+                           bangumiInfo: BangumiInfo,
+                           playInfoData: Data) -> Promise<((bangumiInfo: BangumiInfo, playInfoData: Data))> {
+        return Promise { resolver in
+            guard url.absoluteString.contains("bangumi") else {
+                resolver.fulfill((bangumiInfo, playInfoData))
+                return
+            }
+            
+            getBangumiVideoData(info: bangumiInfo).done {
+                guard let data = $0 else {
+                    resolver.reject(VideoGetError.notFountData)
+                    return
+                }
+                
+                
+                struct Message: Decodable {
+                    let code: Int
+                    let message: String
+                }
+                
+                let message = try JSONDecoder().decode(Message.self, from: data)
+                
+                guard message.code == 0,
+                      message.message == "success" else {
+                    Log((message.code, message.message))
+                    resolver.reject(VideoGetError.needVip)
+                    return
+                }
+                
+                resolver.fulfill((bangumiInfo, data))
+            }.catch {
+                resolver.reject($0)
+            }
         }
     }
     
     func decodeBangumiDatas(_ url: URL,
-                            playInfoData: Data,
-                            initialStateData: Data) -> Promise<(YouGetJSON)> {
+                            bangumiInfo: BangumiInfo,
+                            playInfoData: Data) -> Promise<(YouGetJSON)> {
         
         
         var yougetJson = YouGetJSON(url:"")
@@ -767,33 +800,11 @@ extension VideoGet {
         
         return Promise { resolver in
             do {
-                let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(initialStateData)
-                
-                let bangumiInfo = try BangumiInfo(object: initialStateJson)
                 yougetJson.title = bangumiInfo.title
-                
-                var vipVideo = false
-                let epStatus = bangumiInfo.epInfo.epStatus
-                switch epStatus {
-                case 13:
-                    vipVideo = true
-                    if playInfoData.count == 0 {
-                        resolver.reject(VideoGetError.needVip)
-                        return
-                    }
-                case 2:
-                    vipVideo = false
-                default:
-                    resolver.reject(VideoGetError.cantWatch)
-                    Log("unknown epStatus \(epStatus)")
-                    return
-                }
-                
-                Log("Bangumi \(url) isVipVideo \(vipVideo)")
                 
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
-                if let playInfo = try? BilibiliPlayInfo(object: playInfoJson) {
+                if let playInfo: BilibiliPlayInfo = (try? playInfoJson.value(for: "result")) ?? (try? playInfoJson.value(for: "data")) {
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
                         stream.videoProfile = $0.element.description
@@ -813,23 +824,57 @@ extension VideoGet {
                     
                     yougetJson.audio = audio.url
                     resolver.fulfill(yougetJson)
-                } else {
+                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result"),
+                          let url = info.url {
                     
-                    let playInfo = try BangumiPlayInfo(object: playInfoJson)
-                    
-
-                    guard let des = playInfo.supportFormats.first(where: { $0.quality == playInfo.quality })?.description,
-                          let u = playInfo.durl.first?.url else {
-                        resolver.fulfill(yougetJson)
-                        return
-                    }
-                    
-                    yougetJson.streams = [des: .init(url: u)]
+                    var stream = Stream(url: url)
+                    stream.videoProfile = info.description
+                    yougetJson.streams[info.description] = stream
                     resolver.fulfill(yougetJson)
+                } else {
+                    resolver.reject(VideoGetError.notFindUrls)
                 }
             } catch let error {
                 resolver.reject(error)
             }
+        }
+    }
+    
+    
+    
+    func getBangumiVideoData(info: BangumiInfo) -> Promise<(Data?)> {
+        return Promise { resolver in
+            
+            let header = HTTPHeaders(
+                ["User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.2 Safari/605.1.15",
+                 "origin": "https://www.bilibili.com",
+                 "referer": "https://www.bilibili.com/bangumi/play/ep\(info.epInfo.id)"])
+            
+            let pars: [String: Any] = [
+                "bvid": info.epInfo.bvid,
+                "cid": info.epInfo.cid,
+                "ep_id": info.epInfo.id,
+                "fnval": 80,
+                "fnver": 0,
+                "fourk": 1,
+                "otype": "json",
+                "qn": 80,
+                //                "session": info.epInfo,
+                "type": ""]
+            
+            AF.request("https://api.bilibili.com/pgc/player/web/playurl",
+                       method: .get,
+                       parameters: pars,
+                       headers: header).response { response in
+                        
+                        if let error = response.error {
+                            resolver.reject(error)
+                        }
+                        resolver.fulfill(response.data)
+                       }
+//            https://api.bilibili.com/pgc/player/web/playurl?cid=237945449&qn=80&type=&otype=json&fourk=1&bvid=BV1GA411J7Zh&ep_id=339061&fnver=0&fnval=80&session=e7b6ccb354f010af13a689cb0f057a72
+            
+
         }
     }
     
@@ -961,6 +1006,6 @@ enum VideoGetError: Error {
     case prepareDMFailed
     
     case cantWatch
-    
+    case notFountData
     case needVip
 }
