@@ -8,6 +8,7 @@
 
 import Cocoa
 import WebKit
+import PromiseKit
 
 class BilibiliLoginViewController: NSViewController {
 
@@ -21,6 +22,7 @@ class BilibiliLoginViewController: NSViewController {
         loadWebView()
     }
     
+    var webviewObserver: NSKeyValueObservation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,7 +79,6 @@ document.getElementsByClassName("btn btn-reg")[0].remove()
     
     func displayWait() {
         webView.isHidden = true
-        webView.stopLoading(self)
         waitProgressIndicator.isHidden = false
         waitProgressIndicator.startAnimation(self)
     }
@@ -85,25 +86,34 @@ document.getElementsByClassName("btn btn-reg")[0].remove()
 }
 
 
-
 extension BilibiliLoginViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        if let str = webView.url?.absoluteString, str.contains("bili_jct") {
-            displayWait()
-            
-            Bilibili().isLogin().done(on: .main) {
-                if $0.0 {
-                    self.dismiss?()
-                } else {
-                    self.tabView.selectTabViewItem(at: 1)
-                }
+        guard let str = webView.url?.absoluteString,
+              str.contains("bili_jct") else { return }
+        displayWait()
+        webviewObserver = webView.observe(\.isLoading) { (webView, _) in
+            if !webView.isLoading {
+                Log("Finish loading")
+                firstly {
+                    after(seconds: 3)
+                }.then {
+                    Bilibili().isLogin()
+                }.done(on: .main) {
+                    Log("islogin \($0.0), \($0.1)")
+                    
+                    if $0.0 {
+                        self.dismiss?()
+                    } else {
+                        self.tabView.selectTabViewItem(at: 1)
+                    }
                 }.catch(on: .main) { _ in
                     self.tabView.selectTabViewItem(at: 1)
+                }
             }
         }
     }
-
+    
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nserr = error as NSError
