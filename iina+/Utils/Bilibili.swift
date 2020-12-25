@@ -135,37 +135,91 @@ struct BilibiliPvideo: Unmarshaling {
     }
 }
 
-struct BilibiliSimpleVideoInfo: Unmarshaling, VideoSelector {
-    var cid: Int = 0
-    var page: Int = 0
-    var part: String = ""
-    var duration: TimeInterval = 0
+struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
+    // epid
+    let id: Int
+    var index: Int
+    let part: String
+    let duration: TimeInterval
+    let title: String
+    let longTitle: String
+    let coverUrl: URL?
+    let badge: Badge?
+    let site: LiveSupportList
     
-    var site: LiveSupportList {
+    struct Badge {
+        let badge: String
+        let badgeColor: NSColor
+        let badgeType: Int
+    }
+    
+    init(object: MarshaledObject) throws {
+        id = try object.value(for: "cid")
+        index = try object.value(for: "page")
+        part = try object.value(for: "part")
+        duration = try object.value(for: "duration")
+        title = part
+        longTitle = ""
+        coverUrl = nil
+        badge = nil
+        site = .bilibili
+    }
+    
+    init(ep: BangumiInfo.BangumiEp) {
+        id = ep.id
+        index = -1
+        part = ""
+        duration = 0
+        title = ep.title
+        longTitle = ep.longTitle
+        coverUrl = nil
+//        ep.badgeColor
+        badge = .init(badge: ep.badge,
+                      badgeColor: .red,
+                      badgeType: ep.badgeType)
+        site = .bangumi
+    }
+}
+
+struct BangumiList: Unmarshaling {
+    let epList: [BangumiInfo.BangumiEp]
+    let sections: [BangumiInfo.BangumiSections]
+    
+    var epVideoSelectors: [BilibiliVideoSelector] {
         get {
-            return .bilibili
+            var list = epList.map(BilibiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
         }
     }
-    var index: Int {
+    
+    var selectionVideoSelectors: [BilibiliVideoSelector] {
         get {
-            return page
-        }
-    }
-    var title: String {
-        get {
-            return part
+            var list = sections.compactMap {
+                $0.epList.first
+            }.map(BilibiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
         }
     }
     
     init(object: MarshaledObject) throws {
-        cid = try object.value(for: "cid")
-        page = try object.value(for: "page")
-        part = try object.value(for: "part")
-        duration = try object.value(for: "duration")
+        epList = try object.value(for: "epList")
+        sections = try object.value(for: "sections")
     }
 }
 
+
+
 class Bilibili: NSObject {
+    
+    enum BilibiliApiError: Error {
+        case biliCSRFNotFound
+    }
     
     func isLogin() -> Promise<(Bool, String)> {
         return Promise { resolver in
@@ -193,7 +247,14 @@ class Bilibili: NSObject {
     
     func logout() -> Promise<()> {
         return Promise { resolver in
-            AF.request("https://account.bilibili.com/login?act=exit").response { response in
+            guard let url = URL(string: "https://www.bilibili.com"),
+                  let biliCSRF = HTTPCookieStorage.shared.cookies(for: url)?.first(where: { $0.name == "bili_jct" })?.value else {
+                
+                resolver.reject(BilibiliApiError.biliCSRFNotFound)
+                return
+            }
+            
+            AF.request("https://passport.bilibili.com/login/exit/v2", method: .post, parameters: ["biliCSRF": biliCSRF]).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -270,7 +331,7 @@ class Bilibili: NSObject {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BilibiliSimpleVideoInfo]> {
+    func getVideoList(_ url: String) -> Promise<[BilibiliVideoSelector]> {
         
         return Promise { resolver in
             var aid = -1
@@ -306,12 +367,21 @@ class Bilibili: NSObject {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let infos: [BilibiliSimpleVideoInfo] = try json.value(for: "data")
+                    let infos: [BilibiliVideoSelector] = try json.value(for: "data")
                     resolver.fulfill(infos)
                 } catch let error {
                     resolver.reject(error)
                 }
             }
+        }
+    }
+    
+    func getBangumiList(_ url: URL,
+                        initialStateData: Data? = nil) -> Promise<(BangumiList)> {
+        return VideoGet().getBilibiliHTMLDatas(url).map {
+            let stateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
+            let state = try BangumiList(object: stateJson)
+            return state
         }
     }
 }
