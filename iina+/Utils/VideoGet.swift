@@ -685,8 +685,9 @@ extension VideoGet {
                      title += " - P\(pInt) - \(pages[pInt - 1].part)"
                  }
                 yougetJson.title = title
-                
-                
+                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
+                yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
+
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
@@ -798,6 +799,8 @@ extension VideoGet {
         var yougetJson = YouGetJSON(url:"")
         yougetJson.streams.removeAll()
         
+        yougetJson.bilibiliCid = bangumiInfo.epInfo.cid
+        
         return Promise { resolver in
             do {
                 yougetJson.title = bangumiInfo.title
@@ -805,6 +808,9 @@ extension VideoGet {
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
                 if let playInfo: BilibiliPlayInfo = (try? playInfoJson.value(for: "result")) ?? (try? playInfoJson.value(for: "data")) {
+                    
+                    yougetJson.duration = playInfo.duration
+                    
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
                         stream.videoProfile = $0.element.description
@@ -825,7 +831,9 @@ extension VideoGet {
                     yougetJson.audio = audio.url
                     resolver.fulfill(yougetJson)
                 } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result"),
-                          let url = info.url {
+                          let url = info.url,
+                          let duration = info.duration {
+                    yougetJson.duration = duration
                     
                     var stream = Stream(url: url)
                     stream.videoProfile = info.description

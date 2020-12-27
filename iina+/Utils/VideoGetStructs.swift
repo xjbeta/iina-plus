@@ -262,6 +262,7 @@ struct EgameInfo: Unmarshaling, LiveInfo {
 struct BilibiliPlayInfo: Unmarshaling {
     let videos: [VideoInfo]
     let audios: [AudioInfo]?
+    let duration: Int
     
     struct VideoInfo: Unmarshaling {
         let url: String
@@ -287,9 +288,11 @@ struct BilibiliPlayInfo: Unmarshaling {
     struct Durl: Unmarshaling {
         let url: String
         let backupUrls: [String]
+        let length: Int
         init(object: MarshaledObject) throws {
             url = try object.value(for: "url")
             backupUrls = try object.value(for: "backup_url")
+            length = try object.value(for: "length")
         }
     }
     
@@ -318,16 +321,22 @@ struct BilibiliPlayInfo: Unmarshaling {
             }
         }
         self.videos = newVideos
+        duration = try object.value(for: "dash.duration")
     }
 }
 
 struct BilibiliSimplePlayInfo: Unmarshaling {
     let url: String?
     var description: String = ""
+    var duration: Int?
     
     init(object: MarshaledObject) throws {
         let durl: [BilibiliPlayInfo.Durl] = try object.value(for: "durl")
         url = durl.first?.url
+        
+        if let l = durl.first?.length {
+            duration = l / 1000
+        }
         
         let acceptQuality: [Int] = try object.value(for: "accept_quality")
         let acceptDescription: [String] = try object.value(for: "accept_description")
