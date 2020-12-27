@@ -127,53 +127,71 @@ class OpenFilesViewController: NSViewController {
         }
     }
     
-    func getDanmaku(_ id: String) -> Promise<()> {
+    func getDanmaku(_ id: String, yougetJSON: YouGetJSON? = nil) -> Promise<()> {
+        let videoGet = Processes.shared.videoGet
         return Promise { resolver in
             guard danmakuURL == nil else {
-                if let url = danmakuURL {
-                    guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
-                        resolver.reject(VideoGetError.prepareDMFailed)
-                        return
-                    }
-                    let folderName = "danmaku"
-                    var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-                    filesURL.appendPathComponent(bundleIdentifier)
-                    filesURL.appendPathComponent(folderName)
-                    let fileName = "danmaku" + "-" + id + ".xml"
-                    filesURL.appendPathComponent(fileName)
-                    
-                    try? FileManager.default.removeItem(atPath: filesURL.path)
-                    try FileManager.default.copyItem(atPath: url.path, toPath: filesURL.path)
-                    resolver.fulfill(())
-                } else {
-                    resolver.reject(OpenFilesError.invalidDanmakuUrl)
-                }
+                let url = danmakuURL!
+                let data = FileManager.default.contents(atPath: url.path)
+                videoGet.saveDMFile(data, with: id)
+                resolver.fulfill(())
                 return
             }
             
             
-            let danmakuStr = danmakuTextField.stringValue
             var url = ""
-                
-            if danmakuStr.starts(with: "av") ||
-                danmakuStr.starts(with: "BV") {
-                url = "https://www.bilibili.com/video/" + danmakuStr
+            
+            let s = danmakuTextField.stringValue
+            
 
-            } else if danmakuStr.starts(with: "https://www.bilibili.com/video/av") ||
-                        danmakuStr.starts(with: "https://www.bilibili.com/video/BV") {
-                url = danmakuStr
+            if s.starts(with: "https://www.bilibili.com") {
+                url = s
             } else {
-                resolver.reject(OpenFilesError.unsupported)
+                guard s.count > 2 else {
+                    resolver.reject(OpenFilesError.invalidDanmakuString)
+                    return
+                }
+                
+                let i2 = s.index(s.startIndex, offsetBy: 2)
+                let head = s[i2...]
+                let v = s[s.startIndex..<i2]
+
+                if let type = BilibiliIdType(rawValue: String(head)),
+                   type != .ss,
+                   let _ = Int(v) {
+                    url = type.url() + s
+                } else {
+                    resolver.reject(OpenFilesError.unsupported)
+                }
             }
+            
             guard let u = URL(string: url) else {
                 resolver.reject(OpenFilesError.unsupported)
                 return
             }
-
-            Processes.shared.videoGet.prepareDanmakuFile(u, id: id).done {
+            
+            videoGet.decodeUrl(url).then {
+                videoGet.prepareDanmakuFile(u, yougetJSON: $0, id: id)
+            }.done {
                 resolver.fulfill(())
-                }.catch {
-                    resolver.reject($0)
+            }.catch {
+                resolver.reject($0)
+            }
+        }
+    }
+    
+    enum BilibiliIdType: String {
+        case ep
+        case ss
+        case bv = "BV"
+        case av
+        
+        func url() -> String {
+            switch self {
+            case .av, .bv:
+                return "https://www.bilibili.com/video/"
+            case .ss, .ep:
+                return "https://www.bilibili.com/bangumi/play/"
             }
         }
     }
