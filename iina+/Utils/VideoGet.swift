@@ -156,32 +156,21 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(_ url: URL, id: String) -> Promise<()> {
+    func prepareDanmakuFile(_ url: URL, yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
                 return
             }
             
-            if url.host == "www.bilibili.com", !url.absoluteString.contains("bangumi") {
-                var cid = 0
-                Bilibili().getVideoList(url.absoluteString).get { vInfo in
-                    if vInfo.count == 1 {
-                        cid = vInfo[0].id
-                    } else if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                        var pInt = Int(p) {
-                        pInt -= 1
-                        if pInt < vInfo.count,
-                            pInt >= 0 {
-                            cid = vInfo[pInt].id
-                        }
-                    }
-                    }.then { _ in
-                        self.downloadDMFile(cid, id: id)
-                    }.done {
-                        resolver.fulfill(())
-                    }.catch {
-                        resolver.reject($0)
+            if url.host == "www.bilibili.com" {
+                self.downloadDMFileV2(
+                    cid: yougetJSON.bilibiliCid,
+                    length: yougetJSON.duration,
+                    id: id).done {
+                    resolver.fulfill(())
+                }.catch {
+                    resolver.reject($0)
                 }
             } else {
                 resolver.fulfill(())
@@ -685,8 +674,9 @@ extension VideoGet {
                      title += " - P\(pInt) - \(pages[pInt - 1].part)"
                  }
                 yougetJson.title = title
-                
-                
+                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
+                yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
+
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
@@ -798,6 +788,8 @@ extension VideoGet {
         var yougetJson = YouGetJSON(url:"")
         yougetJson.streams.removeAll()
         
+        yougetJson.bilibiliCid = bangumiInfo.epInfo.cid
+        
         return Promise { resolver in
             do {
                 yougetJson.title = bangumiInfo.title
@@ -805,6 +797,9 @@ extension VideoGet {
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
                 if let playInfo: BilibiliPlayInfo = (try? playInfoJson.value(for: "result")) ?? (try? playInfoJson.value(for: "data")) {
+                    
+                    yougetJson.duration = playInfo.duration
+                    
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
                         stream.videoProfile = $0.element.description
@@ -825,7 +820,9 @@ extension VideoGet {
                     yougetJson.audio = audio.url
                     resolver.fulfill(yougetJson)
                 } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result"),
-                          let url = info.url {
+                          let url = info.url,
+                          let duration = info.duration {
+                    yougetJson.duration = duration
                     
                     var stream = Stream(url: url)
                     stream.videoProfile = info.description
@@ -878,36 +875,96 @@ extension VideoGet {
         }
     }
     
-    
+    // MARK: - Bilibili Danmaku
     func downloadDMFile(_ cid: Int, id: String) -> Promise<()> {
         return Promise { resolver in
-            
             AF.request("https://comment.bilibili.com/\(cid).xml").response { response in
-                
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                guard let bundleIdentifier = Bundle.main.bundleIdentifier,
-                    var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
-                    resolver.reject(VideoGetError.prepareDMFailed)
-                    return
-                }
-                let folderName = "danmaku"
-                
-                filesURL.appendPathComponent(bundleIdentifier)
-                filesURL.appendPathComponent(folderName)
-                let fileName = "danmaku" + "-" + id + ".xml"
-                
-                filesURL.appendPathComponent(fileName)
-                let path = filesURL.path
-                
-                FileManager.default.createFile(atPath: path, contents: response.data, attributes: nil)
-                Log("Saved DM in \(path)")
+                self.saveDMFile(response.data, with: id)
                 resolver.fulfill(())
             }
         }
     }
     
+    
+    func downloadDMFileV2(cid: Int, length: Int, id: String) -> Promise<()> {
+        
+//        segment_index  6min
+        
+        let c = Int(ceil(Double(length) / 360))
+        let s = c > 1 ? Array(1...c) : [1]
+        
+        return when(fulfilled: s.map {
+            getDanmakuContent(cid: cid, index: $0)
+        }).done {
+            let dms = Array($0.joined()).map { dm -> String in
+                let s1 = ["\(Double(dm.progress) / 1000)",
+                          "\(dm.mode)",
+                          "\(dm.fontsize)",
+                          "\(dm.color)",
+                          "\(dm.ctime)",
+                          "\(dm.pool)",
+                          "\(dm.midHash)",
+                          "\(dm.id)"].joined(separator: ",")
+                let s2 = dm.content
+                
+                return "<d p=\"\(s1)\">\(s2)</d>"
+            }
+
+            var dmContent = #"<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.tv</chatserver><chatid>170102</chatid>"#
+            
+            dmContent += dms.joined(separator: "\\n")
+            dmContent += "\\n</i>"
+            
+            self.saveDMFile(dmContent.data(using: .utf8), with: id)
+        }
+    }
+    
+    func saveDMFile(_ data: Data?, with id: String) {
+        
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+            var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
+            return
+        }
+        let folderName = "danmaku"
+        
+        filesURL.appendPathComponent(bundleIdentifier)
+        filesURL.appendPathComponent(folderName)
+        let fileName = "danmaku" + "-" + id + ".xml"
+        
+        filesURL.appendPathComponent(fileName)
+        let path = filesURL.path
+        
+        FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
+        Log("Saved DM in \(path)")
+    }
+    
+    func getDanmakuContent(cid: Int, index: Int) -> Promise<([DanmakuElem])> {
+        return Promise { resolver in
+            let u = "https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=\(cid)&segment_index=\(index)"
+            
+            AF.request(u).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                    return
+                }
+
+                guard let d = response.data else {
+                    resolver.fulfill([])
+                    return
+                }
+                
+                do {
+                    let re = try DmSegMobileReply(serializedData: d)
+                    resolver.fulfill(re.elems)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
     
     // MARK: - QuanMin
     func getQuanMinInfo(_ roomID: Int) -> Promise<QuanMinInfo> {

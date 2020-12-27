@@ -92,6 +92,10 @@
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
+		01DCD2F42597105A00D286C8 /* SwiftProtobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */; };
+		01DCD2F62597106B00D286C8 /* SwiftProtobuf.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01DCD2F72597107200D286C8 /* SwiftProtobuf.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */; };
+		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
 		01E40FE022C06BDC00864118 /* DataResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
@@ -107,6 +111,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				01DCD2F72597107200D286C8 /* SwiftProtobuf.framework.dSYM in CopyFiles */,
 				0189C94D23D3037D00FAAF83 /* CryptoSwift.framework.dSYM in CopyFiles */,
 				018DB08D233CF1A000D0391B /* Alamofire.framework.dSYM in CopyFiles */,
 				018DB08E233CF1A000D0391B /* Cache.framework.dSYM in CopyFiles */,
@@ -150,6 +155,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				01DCD2F62597106B00D286C8 /* SwiftProtobuf.framework in Embed Frameworks */,
 				018DB085233CF18400D0391B /* Alamofire.framework in Embed Frameworks */,
 				018DB086233CF18400D0391B /* Cache.framework in Embed Frameworks */,
 				018DB087233CF18400D0391B /* Gzip.framework in Embed Frameworks */,
@@ -241,6 +247,9 @@
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftProtobuf.framework; path = Carthage/Build/Mac/SwiftProtobuf.framework; sourceTree = SOURCE_ROOT; };
+		01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftProtobuf.framework.dSYM; path = Carthage/Build/Mac/SwiftProtobuf.framework.dSYM; sourceTree = SOURCE_ROOT; };
+		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
 		01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataResponseExtension.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		01E40FF322C3992D00864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
@@ -270,6 +279,7 @@
 				018DB083233CF17000D0391B /* Sparkle.framework in Frameworks */,
 				018DB07D233CF16900D0391B /* SocketRocket.framework in Frameworks */,
 				018DB073233CF16900D0391B /* Marshal.framework in Frameworks */,
+				01DCD2F42597105A00D286C8 /* SwiftProtobuf.framework in Frameworks */,
 				018DB07C233CF16900D0391B /* Alamofire.framework in Frameworks */,
 				018DB074233CF16900D0391B /* Cache.framework in Frameworks */,
 			);
@@ -339,6 +349,8 @@
 				018DB06E233CF16900D0391B /* Sparkle.framework.dSYM */,
 				018DB064233CF16900D0391B /* Swifter.framework */,
 				018DB06F233CF16900D0391B /* Swifter.framework.dSYM */,
+				01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */,
+				01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -357,6 +369,7 @@
 		012601722119BA6D00C9C639 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				01DCD2F8259710D800D286C8 /* BilibiliDM.swift */,
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
 				013CE8DF21854813000271FB /* VideoGet.swift */,
@@ -619,6 +632,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */,
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
@@ -830,7 +844,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.8;
+				MARKETING_VERSION = 0.5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -857,7 +871,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.8;
+				MARKETING_VERSION = 0.5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
