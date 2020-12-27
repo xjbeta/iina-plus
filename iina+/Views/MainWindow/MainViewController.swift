@@ -148,13 +148,16 @@ class MainViewController: NSViewController {
         var title = yougetJSON.title
         let site = LiveSupportList(url: url.absoluteString)
         
-        Processes.shared.videoGet.prepareDanmakuFile(url, id: uuid).done {
+        Processes.shared.videoGet.prepareDanmakuFile(
+            url,
+            yougetJSON: yougetJSON,
+            id: uuid).done {
             
             // init Danmaku
             if Preferences.shared.enableDanmaku,
                Processes.shared.isDanmakuVersion() {
                 switch site {
-                case .bilibili, .biliLive, .douyu, .huya, .eGame, .langPlay:
+                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .eGame, .langPlay:
                     self.httpServer.register(uuid, site: site, url: url.absoluteString)
                 default:
                     break

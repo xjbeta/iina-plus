@@ -101,7 +101,7 @@ class Danmaku: NSObject {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
         switch liveSite {
-        case .bilibili:
+        case .bilibili, .bangumi:
             delegate?.send(.loadDM, text: "", id: id)
         case .biliLive:
             socket = SRWebSocket(url: biliLiveServer!)
