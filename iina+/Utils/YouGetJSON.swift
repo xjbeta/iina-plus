@@ -13,6 +13,9 @@ struct YouGetJSON: Unmarshaling {
     var title: String = ""
     var streams: [String: Stream] = [:]
     var audio = ""
+    
+    var bilibiliCid = -1
+    var duration = -1
 
     init(object: MarshaledObject) throws {
         let titleStr: String? = try? object.value(for: "title")
