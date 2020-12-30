@@ -12,7 +12,8 @@ import Marshal
 protocol LiveInfo {
     var title: String { get }
     var name: String { get }
-    var userCover: String { get }
+    var avatar: String { get }
+    var cover: String { get }
     var isLiving: Bool { get }
 }
 
@@ -27,9 +28,10 @@ protocol VideoSelector {
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String = ""
+    var avatar: String = ""
     var isLiving = false
     var roomId: Int = -1
+    var cover: String = ""
     
     init() {
     }
@@ -37,7 +39,7 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         name = try object.value(for: "info.uname")
-        userCover = try object.value(for: "info.face")
+        avatar = try object.value(for: "info.face")
         isLiving = "\(try object.any(for: "live_status"))" == "1"
     }
 }
@@ -46,15 +48,18 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
 struct DouyuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String
+    var avatar: String
     var isLiving = false
+    var cover: String = ""
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "room.room_name")
         name = try object.value(for: "room.nickname")
-        userCover = try object.value(for: "room.avatar.big")
+        avatar = try object.value(for: "room.avatar.big")
         isLiving = "\(try object.any(for: "room.show_status"))" == "1"
 //        isLiving = try object.value(for: "room.show_status") == 1 && object.value(for: "room.videoLoop") != 0
+        
+        cover = try object.value(for: "room.room_pic")
     }
 }
 
@@ -69,18 +74,22 @@ struct DouyuVideoSelector: VideoSelector {
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String
+    var avatar: String
     var isLiving = false
     var rid: Int
+    var cover: String = ""
     
     var isSeeTogetherRoom = false
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "introduction")
         name = try object.value(for: "nick")
-        userCover = try object.value(for: "avatar")
-        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+        avatar = try object.value(for: "avatar")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
         isLiving = "\(try object.any(for: "isOn"))" == "1"
+        cover = try object.value(for: "screenshot")
+        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        
         let str: String = try object.value(for: "profileRoom")
         rid = Int(str) ?? -1
         let gameHostName: String = try object.value(for: "gameHostName")
@@ -190,13 +199,14 @@ struct HuyaStream: Unmarshaling {
 struct QuanMinInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String
+    var avatar: String
     var isLiving = false
+    var cover: String = ""
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         name = try object.value(for: "nick")
-        userCover = try object.value(for: "avatar")
+        avatar = try object.value(for: "avatar")
         isLiving = "\(try object.any(for: "status"))" == "2"
     }
 }
@@ -204,8 +214,9 @@ struct QuanMinInfo: Unmarshaling, LiveInfo {
 struct LongZhuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String
+    var avatar: String
     var isLiving = false
+    var cover: String = ""
     
     init(object: MarshaledObject) throws {
         if let title: String = try object.value(for: "live.title") {
@@ -216,8 +227,8 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
             isLiving = false
         }
         name = try object.value(for: "username")
-        userCover = try object.value(for: "avatar")
-        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+        avatar = try object.value(for: "avatar")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
     }
 }
 
@@ -237,21 +248,25 @@ struct EgameUrl: Unmarshaling {
 struct EgameInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
-    var userCover: String
+    var avatar: String
     var isLiving = false
     var pid = ""
     var anchorId: Int
     var lastTm = 0
     
+    var cover: String = ""
+    
     init(object: MarshaledObject) throws {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
         name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
-        userCover = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
-        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+        avatar = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
         let liveStatus: Int = try object.value(for: "state.live-info.liveInfo.profileInfo.isLive")
         isLiving = liveStatus == 1
         pid = try object.value(for: "state.live-info.liveInfo.videoInfo.pid")
         anchorId = try object.value(for: "state.live-info.liveInfo.videoInfo.anchorId")
+        cover = try object.value(for: "state.live-info.liveBaseInfo.programInfo.highCoverUrl")
+        cover = cover.replacingOccurrences(of: "http://", with: "https://")
     }
 }
 
@@ -467,8 +482,9 @@ struct BangumiInfo: Unmarshaling {
 struct LangPlayInfo: Unmarshaling, LiveInfo {
     var title: String
     var name: String
-    var userCover: String
+    var avatar: String
     var isLiving: Bool
+    var cover: String = ""
     
     var roomID: String
     var liveID: String
@@ -495,8 +511,8 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "data.live_info.room_title")
         name = try object.value(for: "data.live_info.nickname")
-        userCover = try object.value(for: "data.live_info.avatar")
-        userCover = userCover.replacingOccurrences(of: "http://", with: "https://")
+        avatar = try object.value(for: "data.live_info.avatar")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
         let liveStatus: Int = try object.value(for: "data.live_info.live_status")
         isLiving = liveStatus == 1
         streamItems = try object.value(for: "data.live_info.stream_items")
@@ -504,5 +520,7 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
         liveID = try object.value(for: "data.live_info.live_id")
         roomID = try object.value(for: "data.live_info.room_id")
         liveKey = try object.value(for: "data.live_info.live_key")
+        
+        cover = "https://play-web-assets.lang.live/public/live/screenshot/" + liveID   
     }
 }

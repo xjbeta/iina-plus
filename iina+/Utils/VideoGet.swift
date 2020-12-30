@@ -195,7 +195,7 @@ class VideoGet: NSObject {
                         self.getBiliUserInfo($0.roomId)
                     }.done {
                         info.name = $0.name
-                        info.userCover = $0.userCover
+                        info.avatar = $0.avatar
                         resolver.fulfill(info)
                     }.catch {
                         resolver.reject($0)
@@ -273,13 +273,12 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let longID: Int = try json.value(for: "data.room_id")
-                    let title: String = try json.value(for: "data.title")
-                    let status: Int = try json.value(for: "data.live_status")
-                    
+
                     var info = BilibiliInfo()
-                    info.title = title
-                    info.isLiving = status == 1
+                    info.title = try json.value(for: "data.title")
+                    info.isLiving = try json.value(for: "data.live_status") == 1
                     info.roomId = longID
+                    info.cover = try json.value(for: "data.user_cover")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
@@ -298,7 +297,7 @@ extension VideoGet {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     var info = BilibiliInfo()
                     info.name = try json.value(for: "data.info.uname")
-                    info.userCover = try json.value(for: "data.info.face")
+                    info.avatar = try json.value(for: "data.info.face")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
