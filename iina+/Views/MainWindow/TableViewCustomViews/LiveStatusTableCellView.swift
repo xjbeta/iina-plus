@@ -52,7 +52,7 @@ class LiveStatusTableCellView: NSTableCellView {
     func setInfo(_ info: LiveInfo) {
         self.titleTextField.stringValue = info.title
         self.nameTextField.stringValue = info.name
-        self.userCoverImageView.setImage(info.userCover)
+        self.userCoverImageView.setImage(info.avatar)
         self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
     }
     

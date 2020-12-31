@@ -188,7 +188,7 @@ class VideoGet: NSObject {
             let roomId = Int(url.lastPathComponent) ?? -1
             switch site {
             case .biliLive:
-                var info = BilibiliInfo()
+                var info = BiliLiveInfo()
                 getBiliLiveRoomId(url).get {
                     info = $0
                     }.then {
@@ -240,11 +240,42 @@ class VideoGet: NSObject {
                     }.catch {
                         resolver.reject($0)
                 }
+                
+            case .bilibili:
+                getBilibiliHTMLDatas(url).done {
+                    let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
+                    
+                    var info = BilibiliInfo()
+                    info.title = try initialStateJson.value(for: "videoData.title")
+                    info.cover = try initialStateJson.value(for: "videoData.pic")
+                    info.cover = info.cover.replacingOccurrences(of: "http://", with: "https://")
+                    info.name = try initialStateJson.value(for: "videoData.owner.name")
+                    resolver.fulfill(info)
+                }.catch {
+                    resolver.reject($0)
+            }
+                
+            case .bangumi:
+                getBilibiliHTMLDatas(url).map {
+                    try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData))
+                }.done {
+                    var info = BilibiliInfo()
+                    
+                    let titles = [$0.title, $0.epInfo.title, $0.epInfo.longTitle].filter {
+                        $0 != ""
+                    }
+                    
+                    info.title = titles.joined(separator: " ")
+                    info.cover = $0.epInfo.cover
+                    resolver.fulfill(info)
+                }.catch {
+                    resolver.reject($0)
+            }
             default:
                 if checkSupport {
                     resolver.reject(VideoGetError.notSupported)
                 } else {
-                    var info = BilibiliInfo()
+                    var info = BiliLiveInfo()
                     info.isLiving = true
                     resolver.fulfill(info)
                 }
@@ -263,7 +294,7 @@ class VideoGet: NSObject {
 extension VideoGet {
     
     // MARK: - BiliLive
-    func getBiliLiveRoomId(_ url: URL) -> Promise<(BilibiliInfo)> {
+    func getBiliLiveRoomId(_ url: URL) -> Promise<(BiliLiveInfo)> {
         let roomID = url.lastPathComponent
         return Promise { resolver in
             AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response { response in
@@ -274,7 +305,7 @@ extension VideoGet {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let longID: Int = try json.value(for: "data.room_id")
 
-                    var info = BilibiliInfo()
+                    var info = BiliLiveInfo()
                     info.title = try json.value(for: "data.title")
                     info.isLiving = try json.value(for: "data.live_status") == 1
                     info.roomId = longID
@@ -287,7 +318,7 @@ extension VideoGet {
         }
     }
     
-    func getBiliUserInfo(_ roomId: Int) -> Promise<(BilibiliInfo)> {
+    func getBiliUserInfo(_ roomId: Int) -> Promise<(BiliLiveInfo)> {
         return Promise { resolver in
             AF.request("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)").response { response in
                 if let error = response.error {
@@ -295,7 +326,7 @@ extension VideoGet {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    var info = BilibiliInfo()
+                    var info = BiliLiveInfo()
                     info.name = try json.value(for: "data.info.uname")
                     info.avatar = try json.value(for: "data.info.face")
                     resolver.fulfill(info)
@@ -306,6 +337,24 @@ extension VideoGet {
         }
     }
     
+    func getBiliLiveRoomInfo(_ mid: Int) -> Promise<(BiliLiveInfo)> {
+        return Promise { resolver in
+            AF.request("http://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=\(mid)").response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+//                    var info = BilibiliInfo()
+//                    info.name = try json.value(for: "data.info.uname")
+//                    info.userCover = try json.value(for: "data.info.face")
+//                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
     
     func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
 //        4 原画

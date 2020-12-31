@@ -15,6 +15,8 @@ protocol LiveInfo {
     var avatar: String { get }
     var cover: String { get }
     var isLiving: Bool { get }
+    
+    var site: LiveSupportList { get }
 }
 
 protocol VideoSelector {
@@ -25,13 +27,15 @@ protocol VideoSelector {
     var coverUrl: URL? { get }
 }
 
-struct BilibiliInfo: Unmarshaling, LiveInfo {
+struct BiliLiveInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
     var avatar: String = ""
     var isLiving = false
     var roomId: Int = -1
     var cover: String = ""
+    
+    var site: LiveSupportList = .biliLive
     
     init() {
     }
@@ -44,6 +48,25 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct BilibiliInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var avatar: String = ""
+    var isLiving = false
+    var cover: String = ""
+    
+    var site: LiveSupportList = .bilibili
+    
+    init() {
+    }
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "title")
+        name = try object.value(for: "info.uname")
+        avatar = try object.value(for: "info.face")
+        isLiving = "\(try object.any(for: "live_status"))" == "1"
+    }
+}
 
 struct DouyuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
@@ -51,6 +74,7 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     var avatar: String
     var isLiving = false
     var cover: String = ""
+    var site: LiveSupportList = .douyu
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "room.room_name")
@@ -78,6 +102,7 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     var rid: Int
     var cover: String = ""
+    var site: LiveSupportList = .huya
     
     var isSeeTogetherRoom = false
     
@@ -203,6 +228,8 @@ struct QuanMinInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     var cover: String = ""
     
+    var site: LiveSupportList = .quanmin
+    
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
         name = try object.value(for: "nick")
@@ -217,6 +244,7 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
     var avatar: String
     var isLiving = false
     var cover: String = ""
+    var site: LiveSupportList = .longzhu
     
     init(object: MarshaledObject) throws {
         if let title: String = try object.value(for: "live.title") {
@@ -253,6 +281,8 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     var pid = ""
     var anchorId: Int
     var lastTm = 0
+    
+    var site: LiveSupportList = .eGame
     
     var cover: String = ""
     
@@ -430,6 +460,8 @@ struct BangumiInfo: Unmarshaling {
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "mediaInfo.title")
+//        title = try object.value(for: "h1Title")
+        
         epList = try object.value(for: "epList")
         epInfo = try object.value(for: "epInfo")
         sections = try object.value(for: "sections")
@@ -460,6 +492,7 @@ struct BangumiInfo: Unmarshaling {
         let cid: Int
         let title: String
         let longTitle: String
+        let cover: String
         
         init(object: MarshaledObject) throws {
             id = try object.value(for: "id")
@@ -472,6 +505,8 @@ struct BangumiInfo: Unmarshaling {
             cid = try object.value(for: "cid")
             title = try object.value(for: "title")
             longTitle = try object.value(for: "longTitle")
+            let u: String = try object.value(for: "cover")
+            cover = "https:" + u
         }
     }
 }
@@ -489,6 +524,8 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
     var roomID: String
     var liveID: String
     var liveKey: String
+    
+    var site: LiveSupportList = .langPlay
     
     struct LangPlayVideoSelector: Unmarshaling, VideoSelector {
         let id: Int
