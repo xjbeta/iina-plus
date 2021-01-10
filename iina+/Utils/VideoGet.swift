@@ -250,6 +250,7 @@ class VideoGet: NSObject {
                     info.cover = try initialStateJson.value(for: "videoData.pic")
                     info.cover = info.cover.replacingOccurrences(of: "http://", with: "https://")
                     info.name = try initialStateJson.value(for: "videoData.owner.name")
+                    info.isLiving = true
                     resolver.fulfill(info)
                 }.catch {
                     resolver.reject($0)
@@ -267,6 +268,7 @@ class VideoGet: NSObject {
                     
                     info.title = titles.joined(separator: " ")
                     info.cover = $0.epInfo.cover
+                    info.isLiving = true
                     resolver.fulfill(info)
                 }.catch {
                     resolver.reject($0)
