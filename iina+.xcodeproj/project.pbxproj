@@ -235,7 +235,6 @@
 		018DB06F233CF16900D0391B /* Swifter.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Swifter.framework.dSYM; path = Carthage/Build/Mac/Swifter.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB070233CF16900D0391B /* Marshal.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Marshal.framework.dSYM; path = Carthage/Build/Mac/Marshal.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
-		019EB39B21453A0F000FD123 /* devmate.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = devmate.pem; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* iina+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iina+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -427,7 +426,6 @@
 			children = (
 				015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */,
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
-				019EB39B21453A0F000FD123 /* devmate.pem */,
 				013850F9214EA2AA003817CE /* huya.js */,
 				01E40FF822C39E7100864118 /* Localizable.strings */,
 			);
@@ -844,7 +842,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.9;
+				MARKETING_VERSION = 0.5.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -871,7 +869,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.9;
+				MARKETING_VERSION = 0.5.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

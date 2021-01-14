@@ -908,7 +908,13 @@ extension VideoGet {
                           "\(dm.pool)",
                           "\(dm.midHash)",
                           "\(dm.id)"].joined(separator: ",")
-                let s2 = dm.content
+                var s2 = dm.content
+                        
+                s2 = s2.replacingOccurrences(of: "<", with: "&lt;")
+                s2 = s2.replacingOccurrences(of: ">", with: "&gt;")
+                s2 = s2.replacingOccurrences(of: "&", with: "&amp;")
+                s2 = s2.replacingOccurrences(of: "'", with: "&apos;")
+                s2 = s2.replacingOccurrences(of: "\"", with: "&quot;")
                 
                 return "<d p=\"\(s1)\">\(s2)</d>"
             }

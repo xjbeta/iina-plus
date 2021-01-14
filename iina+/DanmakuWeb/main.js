@@ -139,6 +139,11 @@ function start(websocketServerLocation){
     };
     ws.onmessage = function(evt) { 
         var event = JSON.parse(evt.data);
+        
+        if (event.method != 'sendDM') {
+            console.log(event.method, event.text);
+        }
+        
         switch(event.method) {
         case 'start':
             window.cm.start();
@@ -160,6 +165,8 @@ function start(websocketServerLocation){
                 loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
             } else {
                 loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
+                
+                console.log('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
             }
             isLiving = false;
             break;
@@ -239,4 +246,5 @@ function initContent(id){
     // Block unknown types.
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;
+    console.log('initContent', id);
 }
