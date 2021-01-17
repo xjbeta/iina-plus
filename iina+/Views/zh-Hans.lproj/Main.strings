@@ -27,7 +27,7 @@
 "7I5-KS-9Yq.title" = "速度:";
 
 /* Class = "NSButtonCell"; title = "Log in"; ObjectID = "7cP-0P-Xey"; */
-"7cP-0P-Xey.title" = "登陆";
+"7cP-0P-Xey.title" = "登录";
 
 /* Class = "NSTextFieldCell"; title = "Can't Connect to BiliBili."; ObjectID = "7gt-4Z-oJN"; */
 "7gt-4Z-oJN.title" = "无法连接到 BiliBili.";
