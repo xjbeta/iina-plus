@@ -453,6 +453,7 @@ struct BangumiPlayInfo: Unmarshaling {
 
 struct BangumiInfo: Unmarshaling {
     let title: String
+    let mediaInfo: BangumiMediaInfo
     let epList: [BangumiEp]
     let epInfo: BangumiEp
     let sections: [BangumiSections]
@@ -461,11 +462,28 @@ struct BangumiInfo: Unmarshaling {
     init(object: MarshaledObject) throws {
         title = try object.value(for: "mediaInfo.title")
 //        title = try object.value(for: "h1Title")
-        
+        mediaInfo = try object.value(for: "mediaInfo")
         epList = try object.value(for: "epList")
         epInfo = try object.value(for: "epInfo")
         sections = try object.value(for: "sections")
         isLogin = try object.value(for: "isLogin")
+    }
+    
+    struct BangumiMediaInfo: Unmarshaling {
+        let id: Int
+        let ssid: Int?
+        let title: String
+        let squareCover: String
+        let cover: String
+        
+        init(object: MarshaledObject) throws {
+            
+            id = try object.value(for: "id")
+            ssid = try? object.value(for: "ssid")
+            title = try object.value(for: "title")
+            squareCover = "https:" + (try object.value(for: "squareCover"))
+            cover = "https:" + (try object.value(for: "cover"))
+        }
     }
     
     struct BangumiSections: Unmarshaling {
@@ -498,10 +516,10 @@ struct BangumiInfo: Unmarshaling {
             id = try object.value(for: "id")
             badge = try object.value(for: "badge")
             badgeType = try object.value(for: "badgeType")
-            badgeColor = try object.value(for: "badgeColor")
+            badgeColor = (try? object.value(for: "badgeColor")) ?? ""
             epStatus = try object.value(for: "epStatus")
             aid = try object.value(for: "aid")
-            bvid = try object.value(for: "bvid")
+            bvid = (try? object.value(for: "bvid")) ?? ""
             cid = try object.value(for: "cid")
             title = try object.value(for: "title")
             longTitle = try object.value(for: "longTitle")

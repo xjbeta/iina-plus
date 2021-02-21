@@ -262,17 +262,13 @@ class VideoGet: NSObject {
                 }.done {
                     var info = BilibiliInfo()
                     
-                    let titles = [$0.title, $0.epInfo.title, $0.epInfo.longTitle].filter {
-                        $0 != ""
-                    }
-                    
-                    info.title = titles.joined(separator: " ")
-                    info.cover = $0.epInfo.cover
+                    info.title = $0.mediaInfo.title
+                    info.cover = $0.mediaInfo.squareCover
                     info.isLiving = true
                     resolver.fulfill(info)
                 }.catch {
                     resolver.reject($0)
-            }
+                }
             default:
                 if checkSupport {
                     resolver.reject(VideoGetError.notSupported)
