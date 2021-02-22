@@ -109,7 +109,38 @@ extension NSImageView {
     public func setImage(_ url: String) {
         self.image = nil
         ImageLoader.request(url) { [weak self] in
-            self?.image = $0
+            guard let iv = self, let i = $0 else { return }
+            
+            if iv.isSquare(), i.size.width != i.size.height {
+                
+                let w = i.size.width
+                let h = i.size.height
+                var rect = CGRect(x: 0, y: 0, width: 0, height: 0)
+                
+                let v = min(w, h)
+                rect.size.width = v
+                rect.size.height = v
+                
+                let o = abs(w - h) / 2
+                
+                if w > h {
+                    rect.origin.x = o
+                } else {
+                    rect.origin.y = o
+                }
+        
+                guard let re = i.cgImage(forProposedRect: nil, context: nil, hints: nil)?.cropping(to: rect) else {
+                    return
+                }
+                
+                iv.image = NSImage.init(cgImage: re, size: rect.size)
+            } else {
+                iv.image = i
+            }
         }
+    }
+    
+    func isSquare() -> Bool {
+        return frame.size.width == frame.size.height
     }
 }

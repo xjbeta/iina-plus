@@ -543,7 +543,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case bookmarkTableView:
             let str = dataManager.requestData()[row].url
             switch LiveSupportList(url: str) {
-            case .unsupported, .bilibili, .bangumi:
+            case .unsupported:
                 return 23
             default:
                 return 55
@@ -563,7 +563,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case bookmarkTableView:
             let str = dataManager.requestData()[row].url
             switch LiveSupportList(url: str) {
-            case .unsupported, .bilibili, .bangumi:
+            case .unsupported:
                 if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
                     view.textField?.stringValue = str
                     return view

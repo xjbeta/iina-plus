@@ -58,101 +58,80 @@ class VideoGet: NSObject {
     var douyuWebviewObserver: NSKeyValueObservation?
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        return Promise { resolver in
-            var yougetJson = YouGetJSON(url:"")
-            yougetJson.streams.removeAll()
-            guard let url = URL(string: url) else {
-                resolver.reject(VideoGetError.notSupported)
-                return
+        
+        var yougetJson = YouGetJSON(url:"")
+        yougetJson.streams.removeAll()
+        guard let url = URL(string: url) else {
+            return .init(error: VideoGetError.notSupported)
+        }
+        let site = LiveSupportList(url: url.absoluteString)
+        
+        switch site {
+        case .biliLive:
+            return getBiliLiveRoomId(url).get {
+                yougetJson.title = $0.title
+            }.then {
+                self.getBiliLiveJSON("\($0.roomId)")
+            }.map {
+                $0.2.enumerated().forEach {
+                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                }
+                return yougetJson
             }
-            let site = LiveSupportList(url: url.absoluteString)
+        case .douyu:
+            var roomId = 0
+            var roomTitle = ""
+            return getDouyuHtml(url.absoluteString).get {
+                guard let rid = Int($0.roomId) else {
+                    throw VideoGetError.douyuNotFoundRoomId
+                }
+                roomId = rid
+            }.then { _ in
+                self.douyuBetard(roomId)
+            }.get {
+                roomTitle = $0.title
+            }.then { _ in
+                self.getDouyuUrl(roomId)
+            }.map {
+                yougetJson.streams[roomTitle] = Stream(url: $0)
+                return yougetJson
+            }
+        case .huya:
+            return getHuyaInfo(url).map {
+                yougetJson.title = $0.0.title
+                $0.1.enumerated().forEach {
+                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                }
+                return yougetJson
+            }
+        case .eGame:
+            return getEgameInfo(url).map {
+                yougetJson.title = $0.0.title
+                $0.1.sorted {
+                    $0.levelType > $1.levelType
+                }.enumerated().forEach {
+                    var stream = Stream(url: $0.element.playUrl)
+                    stream.videoProfile = $0.element.desc
+                    yougetJson.streams["\($0.offset + 1)"] = stream
+                }
+                return yougetJson
+            }
+        case .bilibili:
+            return getBilibili(url)
             
-            switch site {
-            case .biliLive:
-                getBiliLiveRoomId(url).get {
-                    yougetJson.title = $0.title
-                    }.then {
-                        self.getBiliLiveJSON("\($0.roomId)")
-                    }.done {
-                        $0.2.enumerated().forEach {
-                            yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
-                        }
-                        resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
+        case .bangumi:
+            return getBangumi(url)
+        case .langPlay:
+            let roomId = Int(url.lastPathComponent) ?? -1
+            return getLangPlayInfo(roomId).map {
+                yougetJson.title = $0.title
+                $0.streamItems.forEach {
+                    yougetJson.streams[$0.title] = Stream(url: $0.url)
                 }
-            case .douyu:
-                var roomId = 0
-                var roomTitle = ""
-                getDouyuHtml(url.absoluteString).get {
-                    guard let rid = Int($0.roomId) else {
-                        resolver.reject(VideoGetError.douyuNotFoundRoomId)
-                        return
-                    }
-                    roomId = rid
-                    }.then { _ in
-                        self.douyuBetard(roomId)
-                    }.get {
-                        roomTitle = $0.title
-                    }.then { _ in
-                        self.getDouyuUrl(roomId)
-                    }.done {
-                        yougetJson.streams[roomTitle] = Stream(url: $0)
-                        resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .huya:
-                getHuyaInfo(url).done {
-                    yougetJson.title = $0.0.title
-                    $0.1.enumerated().forEach {
-                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
-                    }
-                    resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .eGame:
-                getEgameInfo(url).done {
-                    yougetJson.title = $0.0.title
-                    $0.1.sorted {
-                        $0.levelType > $1.levelType
-                        }.enumerated().forEach {
-                            var stream = Stream(url: $0.element.playUrl)
-                            stream.videoProfile = $0.element.desc
-                            yougetJson.streams["\($0.offset + 1)"] = stream
-                    }
-                    resolver.fulfill(yougetJson)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .bilibili:
-                getBilibili(url).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-                
-            case .bangumi:
-                getBangumi(url).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .langPlay:
-                let roomId = Int(url.lastPathComponent) ?? -1
-                getLangPlayInfo(roomId).done {
-                    yougetJson.title = $0.title
-                    $0.streamItems.forEach {
-                        yougetJson.streams[$0.title] = Stream(url: $0.url)
-                    }
-                    resolver.fulfill(yougetJson)
-                }.catch {
-                    resolver.reject($0)
-                }
-            default:
-                resolver.reject(VideoGetError.notSupported)
+                return yougetJson
             }
+        default:
+            return .init(error: VideoGetError.notSupported)
         }
     }
     
@@ -179,75 +158,84 @@ class VideoGet: NSObject {
     }
     
     func liveInfo(_ url: String, _ checkSupport: Bool = true) -> Promise<LiveInfo> {
-        return Promise { resolver in
-            guard let url = URL(string: url) else {
-                resolver.reject(VideoGetError.notSupported)
-                return
+        
+        guard let url = URL(string: url) else {
+            return .init(error: VideoGetError.notSupported)
+        }
+        let site = LiveSupportList(url: url.absoluteString)
+        let roomId = Int(url.lastPathComponent) ?? -1
+        switch site {
+        case .biliLive:
+            var info = BiliLiveInfo()
+            return getBiliLiveRoomId(url).get {
+                info = $0
+            }.then {
+                self.getBiliUserInfo($0.roomId)
+            }.map {
+                info.name = $0.name
+                info.avatar = $0.avatar
+                return info
             }
-            let site = LiveSupportList(url: url.absoluteString)
-            let roomId = Int(url.lastPathComponent) ?? -1
-            switch site {
-            case .biliLive:
+        case .douyu:
+            return getDouyuHtml(url.absoluteString).map {
+                Int($0.roomId) ?? -1
+            }.then {
+                self.douyuBetard($0)
+            }.map {
+                $0 as LiveInfo
+            }
+        case .huya:
+            return getHuyaInfo(url).map {
+                $0.0
+            }
+        case .quanmin:
+            return getQuanMinInfo(roomId).map {
+                $0 as LiveInfo
+            }
+        case .longzhu:
+            return getLongZhuInfo(url).map {
+                $0 as LiveInfo
+            }
+        case .eGame:
+            return getEgameInfo(url).map {
+                $0.0
+            }
+        case .langPlay:
+            return getLangPlayInfo(roomId).map {
+                $0 as LiveInfo
+            }
+        case .bilibili:
+            return getBilibiliHTMLDatas(url).map {
+                let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
+                
                 var info = BilibiliInfo()
-                getBiliLiveRoomId(url).get {
-                    info = $0
-                    }.then {
-                        self.getBiliUserInfo($0.roomId)
-                    }.done {
-                        info.name = $0.name
-                        info.userCover = $0.userCover
-                        resolver.fulfill(info)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .douyu:
-                getDouyuHtml(url.absoluteString).map {
-                    Int($0.roomId) ?? -1
-                    }.then {
-                        self.douyuBetard($0)
-                    }.done {
-                        resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .huya:
-                getHuyaInfo(url).done {
-                    resolver.fulfill($0.0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .quanmin:
-                getQuanMinInfo(roomId).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .longzhu:
-                getLongZhuInfo(url).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .eGame:
-                getEgameInfo(url).done {
-                    resolver.fulfill($0.0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            case .langPlay:
-                getLangPlayInfo(roomId).done {
-                    resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                }
-            default:
-                if checkSupport {
-                    resolver.reject(VideoGetError.notSupported)
-                } else {
-                    var info = BilibiliInfo()
-                    info.isLiving = true
-                    resolver.fulfill(info)
-                }
+                info.title = try initialStateJson.value(for: "videoData.title")
+                info.cover = try initialStateJson.value(for: "videoData.pic")
+                info.cover = info.cover.replacingOccurrences(of: "http://", with: "https://")
+                info.name = try initialStateJson.value(for: "videoData.owner.name")
+                info.isLiving = true
+                return info
+            }
+            
+        case .bangumi:
+            return getBilibiliHTMLDatas(url).map {
+                try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData))
+            }.map {
+                var info = BilibiliInfo()
+                
+                info.title = $0.mediaInfo.title
+                info.cover = $0.mediaInfo.squareCover
+                info.isLiving = true
+                return info
+            }
+        default:
+            if checkSupport {
+                return .init(error: VideoGetError.notSupported)
+            } else {
+                var info = BiliLiveInfo()
+                info.isLiving = true
+                
+                return .value(info)
             }
         }
     }
@@ -263,7 +251,7 @@ class VideoGet: NSObject {
 extension VideoGet {
     
     // MARK: - BiliLive
-    func getBiliLiveRoomId(_ url: URL) -> Promise<(BilibiliInfo)> {
+    func getBiliLiveRoomId(_ url: URL) -> Promise<(BiliLiveInfo)> {
         let roomID = url.lastPathComponent
         return Promise { resolver in
             AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response { response in
@@ -273,13 +261,12 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let longID: Int = try json.value(for: "data.room_id")
-                    let title: String = try json.value(for: "data.title")
-                    let status: Int = try json.value(for: "data.live_status")
-                    
-                    var info = BilibiliInfo()
-                    info.title = title
-                    info.isLiving = status == 1
+
+                    var info = BiliLiveInfo()
+                    info.title = try json.value(for: "data.title")
+                    info.isLiving = try json.value(for: "data.live_status") == 1
                     info.roomId = longID
+                    info.cover = try json.value(for: "data.user_cover")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
@@ -288,7 +275,7 @@ extension VideoGet {
         }
     }
     
-    func getBiliUserInfo(_ roomId: Int) -> Promise<(BilibiliInfo)> {
+    func getBiliUserInfo(_ roomId: Int) -> Promise<(BiliLiveInfo)> {
         return Promise { resolver in
             AF.request("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)").response { response in
                 if let error = response.error {
@@ -296,9 +283,9 @@ extension VideoGet {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    var info = BilibiliInfo()
+                    var info = BiliLiveInfo()
                     info.name = try json.value(for: "data.info.uname")
-                    info.userCover = try json.value(for: "data.info.face")
+                    info.avatar = try json.value(for: "data.info.face")
                     resolver.fulfill(info)
                 } catch let error {
                     resolver.reject(error)
@@ -307,6 +294,24 @@ extension VideoGet {
         }
     }
     
+    func getBiliLiveRoomInfo(_ mid: Int) -> Promise<(BiliLiveInfo)> {
+        return Promise { resolver in
+            AF.request("http://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=\(mid)").response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+//                    var info = BilibiliInfo()
+//                    info.name = try json.value(for: "data.info.uname")
+//                    info.userCover = try json.value(for: "data.info.face")
+//                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
     
     func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
 //        4 原画
@@ -792,7 +797,11 @@ extension VideoGet {
         
         return Promise { resolver in
             do {
-                yougetJson.title = bangumiInfo.title
+                let titles = [bangumiInfo.title,
+                              bangumiInfo.epInfo.title,
+                              bangumiInfo.epInfo.longTitle]
+                
+                yougetJson.title = titles.joined(separator: " - ")
                 
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
@@ -899,7 +908,12 @@ extension VideoGet {
         return when(fulfilled: s.map {
             getDanmakuContent(cid: cid, index: $0)
         }).done {
-            let dms = Array($0.joined()).map { dm -> String in
+            
+            let element = try XMLElement(xmlString: #"<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.tv</chatserver><chatid>170102</chatid></i>"#)
+
+            let doc = XMLDocument(rootElement: element)
+
+            Array($0.joined()).map { dm -> String in
                 let s1 = ["\(Double(dm.progress) / 1000)",
                           "\(dm.mode)",
                           "\(dm.fontsize)",
@@ -917,14 +931,15 @@ extension VideoGet {
                 s2 = s2.replacingOccurrences(of: "\"", with: "&quot;")
                 
                 return "<d p=\"\(s1)\">\(s2)</d>"
+            }.forEach {
+                if let node = try? XMLElement(xmlString: $0) {
+                    element.addChild(node)
+                } else {
+                    Log("Invalid Bangumi Line: \($0)")
+                }
             }
-
-            var dmContent = #"<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.tv</chatserver><chatid>170102</chatid>"#
             
-            dmContent += dms.joined(separator: "\\n")
-            dmContent += "\\n</i>"
-            
-            self.saveDMFile(dmContent.data(using: .utf8), with: id)
+            self.saveDMFile(doc.xmlData, with: id)
         }
     }
     
