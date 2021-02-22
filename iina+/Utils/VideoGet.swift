@@ -908,7 +908,12 @@ extension VideoGet {
         return when(fulfilled: s.map {
             getDanmakuContent(cid: cid, index: $0)
         }).done {
-            let dms = Array($0.joined()).map { dm -> String in
+            
+            let element = try XMLElement(xmlString: #"<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.tv</chatserver><chatid>170102</chatid></i>"#)
+
+            let doc = XMLDocument(rootElement: element)
+
+            Array($0.joined()).map { dm -> String in
                 let s1 = ["\(Double(dm.progress) / 1000)",
                           "\(dm.mode)",
                           "\(dm.fontsize)",
@@ -926,14 +931,15 @@ extension VideoGet {
                 s2 = s2.replacingOccurrences(of: "\"", with: "&quot;")
                 
                 return "<d p=\"\(s1)\">\(s2)</d>"
+            }.forEach {
+                if let node = try? XMLElement(xmlString: $0) {
+                    element.addChild(node)
+                } else {
+                    Log("Invalid Bangumi Line: \($0)")
+                }
             }
-
-            var dmContent = #"<?xml version="1.0" encoding="UTF-8"?><i><chatserver>chat.bilibili.tv</chatserver><chatid>170102</chatid>"#
             
-            dmContent += dms.joined(separator: "\\n")
-            dmContent += "\\n</i>"
-            
-            self.saveDMFile(dmContent.data(using: .utf8), with: id)
+            self.saveDMFile(doc.xmlData, with: id)
         }
     }
     
