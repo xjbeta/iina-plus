@@ -797,7 +797,11 @@ extension VideoGet {
         
         return Promise { resolver in
             do {
-                yougetJson.title = bangumiInfo.title
+                let titles = [bangumiInfo.title,
+                              bangumiInfo.epInfo.title,
+                              bangumiInfo.epInfo.longTitle]
+                
+                yougetJson.title = titles.joined(separator: " - ")
                 
                 let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
                 
