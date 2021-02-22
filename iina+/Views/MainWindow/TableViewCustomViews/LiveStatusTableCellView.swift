@@ -15,6 +15,8 @@ class LiveStatusTableCellView: NSTableCellView {
     @IBOutlet weak var titleTextField: NSTextField!
     @IBOutlet weak var nameTextField: NSTextField!
     
+    private var isLiveSite = false
+    
     var url: URL? {
         didSet {
             if oldValue == url {
@@ -33,7 +35,13 @@ class LiveStatusTableCellView: NSTableCellView {
     
     func getInfo() {
         guard let url = url else { return }
-        Processes.shared.videoGet.liveInfo(url.absoluteString).done(on: .main) {
+        let str = url.absoluteString
+        let site = LiveSupportList(url: str)
+        
+        isLiveSite = site != .bangumi && site != .bilibili
+        
+        let vg = Processes.shared.videoGet
+        vg.liveInfo(str).done(on: .main) {
             guard url == self.url else { return }
             self.setInfo($0)
             }.catch(on: .main) {
@@ -50,10 +58,17 @@ class LiveStatusTableCellView: NSTableCellView {
     }
     
     func setInfo(_ info: LiveInfo) {
-        self.titleTextField.stringValue = info.title
-        self.nameTextField.stringValue = info.name
-        self.userCoverImageView.setImage(info.userCover)
-        self.liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+        titleTextField.stringValue = info.title
+        nameTextField.stringValue = info.name
+        
+        if isLiveSite {
+            userCoverImageView.setImage(info.avatar)
+            liveStatusImageView.isHidden = false
+            liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
+        } else {
+            userCoverImageView.setImage(info.cover)
+            liveStatusImageView.isHidden = true
+        }
     }
     
     func setErrorInfo(_ str: String) {
