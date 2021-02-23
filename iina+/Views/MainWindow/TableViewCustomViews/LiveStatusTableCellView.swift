@@ -69,6 +69,15 @@ class LiveStatusTableCellView: NSTableCellView {
             userCoverImageView.setImage(info.cover)
             liveStatusImageView.isHidden = true
         }
+        
+        if info.site == .bangumi {
+            nameTextField.stringValue = "Bangumi"
+            
+            nameTextField.textColor = NSColor(red:0.94, green:0.58, blue:0.70, alpha:1.00)
+        } else {
+            nameTextField.textColor = .labelColor
+        }
+        
     }
     
     func setErrorInfo(_ str: String) {

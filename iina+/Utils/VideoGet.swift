@@ -222,10 +222,9 @@ class VideoGet: NSObject {
                 try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData))
             }.map {
                 var info = BilibiliInfo()
-                
+                info.site = .bangumi
                 info.title = $0.mediaInfo.title
                 info.cover = $0.mediaInfo.squareCover
-                info.isLiving = true
                 return info
             }
         default:
@@ -662,24 +661,28 @@ extension VideoGet {
                 var title: String = try initialStateJson.value(for: "videoData.title")
                 
                 struct Page: Unmarshaling {
-                    var page: Int
-                    var part: String
+                    let page: Int
+                    let part: String
+                    let cid: Int
+                    
                     init(object: MarshaledObject) throws {
                         page = try object.value(for: "page")
                         part = try object.value(for: "part")
+                        cid = try object.value(for: "cid")
                     }
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                
-                
+                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
                 
                 if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
-                     let pInt = Int(p),
-                     pInt - 1 > 0, pInt - 1 < pages.count {
-                     title += " - P\(pInt) - \(pages[pInt - 1].part)"
-                 }
+                   let pInt = Int(p),
+                   pInt - 1 > 0, pInt - 1 < pages.count {
+                    let page = pages[pInt - 1]
+                    title += " - P\(pInt) - \(page.part)"
+                    yougetJson.bilibiliCid = page.cid
+                }
+                
                 yougetJson.title = title
-                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
                 yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
 
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
