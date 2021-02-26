@@ -1227,12 +1227,12 @@ Gw
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <customView key="view" id="r1P-qL-yvV" userLabel="View">
-                        <rect key="frame" x="0.0" y="0.0" width="398" height="649"/>
+                    <customView key="view" misplaced="YES" id="r1P-qL-yvV" userLabel="View">
+                        <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="P2p-GB-s4i">
-                                <rect key="frame" x="0.0" y="0.0" width="398" height="649"/>
+                                <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="bookmarks" identifier="bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
@@ -1292,21 +1292,21 @@ Gw
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="zBU-wQ-RCc">
-                                                                                        <rect key="frame" x="53" y="-2" width="424" height="5"/>
+                                                                                        <rect key="frame" x="51" y="-2" width="424" height="5"/>
                                                                                     </box>
                                                                                     <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ooL-0t-lJ1">
-                                                                                        <rect key="frame" x="8" y="11" width="461" height="39"/>
+                                                                                        <rect key="frame" x="3" y="9" width="464" height="42"/>
                                                                                         <subviews>
                                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kWK-JR-5PF">
-                                                                                                <rect key="frame" x="0.0" y="0.0" width="39" height="39"/>
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="42" height="42"/>
                                                                                                 <constraints>
-                                                                                                    <constraint firstAttribute="width" constant="39" id="Txg-B6-zwm"/>
-                                                                                                    <constraint firstAttribute="height" constant="39" id="mcH-e5-1Gv"/>
+                                                                                                    <constraint firstAttribute="width" constant="42" id="Txg-B6-zwm"/>
+                                                                                                    <constraint firstAttribute="width" secondItem="kWK-JR-5PF" secondAttribute="height" multiplier="1:1" id="klM-5V-rE8"/>
                                                                                                 </constraints>
                                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="S5V-PO-wAR"/>
                                                                                             </imageView>
                                                                                             <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="7YV-l3-b6e">
-                                                                                                <rect key="frame" x="43" y="11" width="341" height="16"/>
+                                                                                                <rect key="frame" x="46" y="13" width="341" height="16"/>
                                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" id="lXA-VE-Hc3">
                                                                                                     <font key="font" metaFont="system"/>
                                                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1314,7 +1314,7 @@ Gw
                                                                                                 </textFieldCell>
                                                                                             </textField>
                                                                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0cQ-KL-PmZ">
-                                                                                                <rect key="frame" x="386" y="12" width="54" height="14"/>
+                                                                                                <rect key="frame" x="389" y="14" width="54" height="14"/>
                                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" id="k83-of-pTA">
                                                                                                     <font key="font" metaFont="message" size="11"/>
                                                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1322,7 +1322,7 @@ Gw
                                                                                                 </textFieldCell>
                                                                                             </textField>
                                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gVN-M8-Fmd">
-                                                                                                <rect key="frame" x="444" y="11" width="17" height="17"/>
+                                                                                                <rect key="frame" x="447" y="13" width="17" height="17"/>
                                                                                                 <constraints>
                                                                                                     <constraint firstAttribute="width" constant="17" id="h9g-dy-uYt"/>
                                                                                                     <constraint firstAttribute="height" constant="17" id="skG-yP-rJN"/>
@@ -1347,7 +1347,7 @@ Gw
                                                                                 <constraints>
                                                                                     <constraint firstItem="7YV-l3-b6e" firstAttribute="leading" secondItem="zBU-wQ-RCc" secondAttribute="leading" id="9Mv-pG-lvo"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="ooL-0t-lJ1" secondAttribute="trailing" constant="8" id="Qm4-bO-ffl"/>
-                                                                                    <constraint firstItem="ooL-0t-lJ1" firstAttribute="leading" secondItem="OMv-zq-neh" secondAttribute="leading" constant="8" id="Uao-M1-Mhs"/>
+                                                                                    <constraint firstItem="ooL-0t-lJ1" firstAttribute="leading" secondItem="OMv-zq-neh" secondAttribute="leading" constant="3" id="Uao-M1-Mhs"/>
                                                                                     <constraint firstItem="ooL-0t-lJ1" firstAttribute="centerY" secondItem="OMv-zq-neh" secondAttribute="centerY" id="nmZ-8h-1Gu"/>
                                                                                     <constraint firstAttribute="trailing" secondItem="zBU-wQ-RCc" secondAttribute="trailing" id="pPY-9k-D7g"/>
                                                                                     <constraint firstAttribute="bottom" secondItem="zBU-wQ-RCc" secondAttribute="bottom" id="xF0-tR-oht"/>
@@ -1442,7 +1442,7 @@ Gw
                                                     <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="389" height="633"/>
@@ -1468,10 +1468,10 @@ Gw
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="NUP-CZ-sYI">
-                                                                                        <rect key="frame" x="185" y="-2" width="201" height="5"/>
+                                                                                        <rect key="frame" x="180" y="-2" width="206" height="5"/>
                                                                                     </box>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="mwf-9B-2sj">
-                                                                                        <rect key="frame" x="183" y="69" width="4" height="15"/>
+                                                                                        <rect key="frame" x="178" y="69" width="4" height="15"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="w1L-DN-eMK">
                                                                                             <font key="font" metaFont="cellTitle"/>
                                                                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -1482,7 +1482,7 @@ Gw
                                                                                         </connections>
                                                                                     </textField>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Ouy-dX-dat">
-                                                                                        <rect key="frame" x="183" y="86" width="197" height="16"/>
+                                                                                        <rect key="frame" x="178" y="86" width="202" height="16"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="height" relation="lessThanOrEqual" constant="38" id="ckQ-5Y-mn5"/>
                                                                                         </constraints>
@@ -1496,7 +1496,7 @@ Gw
                                                                                         </connections>
                                                                                     </textField>
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fxk-sb-jHl">
-                                                                                        <rect key="frame" x="183" y="53" width="4" height="14"/>
+                                                                                        <rect key="frame" x="178" y="53" width="4" height="14"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="H6X-QJ-IXX">
                                                                                             <customFormatter key="formatter" id="wis-kV-jaR" customClass="VideoViewsFormatter" customModule="iina_" customModuleProvider="target"/>
                                                                                             <font key="font" metaFont="message" size="11"/>
@@ -1508,7 +1508,7 @@ Gw
                                                                                         </connections>
                                                                                     </textField>
                                                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="A3d-KV-bZ7" customClass="BilibiliCardImageBoxView" customModule="iina_" customModuleProvider="target">
-                                                                                        <rect key="frame" x="8" y="8" width="169" height="94"/>
+                                                                                        <rect key="frame" x="3" y="8" width="169" height="94"/>
                                                                                         <subviews>
                                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fz7-9I-cWr">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="169" height="94"/>
@@ -1551,7 +1551,7 @@ Gw
                                                                                 </subviews>
                                                                                 <constraints>
                                                                                     <constraint firstItem="mwf-9B-2sj" firstAttribute="top" secondItem="Ouy-dX-dat" secondAttribute="bottom" constant="2" id="8PB-bn-alR"/>
-                                                                                    <constraint firstItem="A3d-KV-bZ7" firstAttribute="leading" secondItem="kat-6P-xcH" secondAttribute="leading" constant="8" id="8fE-PG-sQY"/>
+                                                                                    <constraint firstItem="A3d-KV-bZ7" firstAttribute="leading" secondItem="kat-6P-xcH" secondAttribute="leading" constant="3" id="8fE-PG-sQY"/>
                                                                                     <constraint firstItem="Fxk-sb-jHl" firstAttribute="top" secondItem="mwf-9B-2sj" secondAttribute="bottom" constant="2" id="G8K-aB-4Tl"/>
                                                                                     <constraint firstItem="Ouy-dX-dat" firstAttribute="top" secondItem="kat-6P-xcH" secondAttribute="top" constant="8" id="GQt-U0-eZd"/>
                                                                                     <constraint firstItem="A3d-KV-bZ7" firstAttribute="top" secondItem="kat-6P-xcH" secondAttribute="top" constant="8" id="HED-Ps-lNe"/>
