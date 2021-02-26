@@ -1099,16 +1099,16 @@ Gw
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="dDP-PF-C0a">
-                                <rect key="frame" x="0.0" y="0.0" width="68" height="623"/>
+                                <rect key="frame" x="0.0" y="0.0" width="68" height="621"/>
                                 <subviews>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="300" width="68" height="283"/>
+                                        <rect key="frame" x="0.0" y="300" width="68" height="281"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="283"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="281"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="iina_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="283"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="281"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1201,12 +1201,12 @@ Gw
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <customView key="view" misplaced="YES" id="r1P-qL-yvV" userLabel="View">
-                        <rect key="frame" x="0.0" y="0.0" width="449" height="649"/>
+                    <customView key="view" id="r1P-qL-yvV" userLabel="View">
+                        <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="P2p-GB-s4i">
-                                <rect key="frame" x="0.0" y="0.0" width="398" height="649"/>
+                                <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="bookmarks" identifier="bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
@@ -1355,8 +1355,9 @@ Gw
                                                         <nil key="backgroundColor"/>
                                                         <edgeInsets key="contentInsets" left="8" right="12" top="8" bottom="8"/>
                                                     </clipView>
+                                                    <edgeInsets key="scrollerInsets" left="0.0" right="0.0" top="-25" bottom="3"/>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.20000000000000001" horizontal="YES" id="pPI-Nn-fv1">
-                                                        <rect key="frame" x="0.0" y="633" width="398" height="16"/>
+                                                        <rect key="frame" x="0.0" y="630" width="398" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="fcK-y5-QLE">
@@ -1415,7 +1416,7 @@ Gw
                                                     <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="389" height="633"/>
@@ -1567,6 +1568,7 @@ Gw
                                                         <nil key="backgroundColor"/>
                                                         <edgeInsets key="contentInsets" left="8" right="12" top="8" bottom="8"/>
                                                     </clipView>
+                                                    <edgeInsets key="scrollerInsets" left="0.0" right="0.0" top="-25" bottom="3"/>
                                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.40000000000000002" horizontal="YES" id="baG-5p-gSI">
                                                         <rect key="frame" x="0.0" y="633" width="389" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
@@ -1727,11 +1729,11 @@ Gw
                                     </tabViewItem>
                                     <tabViewItem label="selectVideos" identifier="selectVideos" id="gnN-wP-ZUv">
                                         <view key="view" id="cz5-5j-ukf">
-                                            <rect key="frame" x="0.0" y="0.0" width="400" height="649"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="449" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <containerView translatesAutoresizingMaskIntoConstraints="NO" id="HDM-Wo-Iow">
-                                                    <rect key="frame" x="20" y="0.0" width="372" height="649"/>
+                                                    <rect key="frame" x="20" y="0.0" width="421" height="649"/>
                                                     <connections>
                                                         <segue destination="8fg-cx-WNn" kind="embed" id="4hn-6v-UXp"/>
                                                     </connections>
