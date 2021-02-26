@@ -225,6 +225,7 @@ class VideoGet: NSObject {
                 info.site = .bangumi
                 info.title = $0.mediaInfo.title
                 info.cover = $0.mediaInfo.squareCover
+                info.isLiving = true
                 return info
             }
         default:
