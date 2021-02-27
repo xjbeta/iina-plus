@@ -310,7 +310,7 @@ class MainViewController: NSViewController {
             }
             
         case .bilibili:
-            loadBilibiliCards()
+            loadBilibiliCards(.new)
         case .search:
             mainWindowController.window?.makeFirstResponder(searchField)
         default:
@@ -356,7 +356,9 @@ class MainViewController: NSViewController {
                 case .history:
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
-                    self.bilibiliCards.insert(contentsOf: cards, at: 0)
+                    if cards.count > 0 {
+                        self.bilibiliCards.insert(contentsOf: cards, at: 0)
+                    }
                 }
             }.ensure(on: .main) {
                 self.canLoadMoreBilibiliCards = true

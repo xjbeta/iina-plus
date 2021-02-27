@@ -306,6 +306,8 @@ class Bilibili: NSObject {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     let cards: [BilibiliCard] = try json.value(for: "data.cards")
                     resolver.fulfill(cards)
+                } catch MarshalError.keyNotFound {
+                    resolver.fulfill([])
                 } catch let error {
                     resolver.reject(error)
                 }
