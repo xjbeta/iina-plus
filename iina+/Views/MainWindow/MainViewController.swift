@@ -294,19 +294,28 @@ class MainViewController: NSViewController {
     }
     
     @objc func reloadTableView() {
-        var row = 0
-        while row < bookmarkTableView.numberOfRows {
-            if let view = bookmarkTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView {
-                view.getInfo()
+        guard let str = mainTabView.selectedTabViewItem?.identifier as? String,
+              let item = SidebarItem(raw: str) else {
+            return
+        }
+        
+        switch item {
+        case .bookmarks:
+            var row = 0
+            while row < bookmarkTableView.numberOfRows {
+                if let view = bookmarkTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView {
+                    view.getInfo()
+                }
+                row += 1
             }
-            row += 1
-        }
-        
-        loadBilibiliCards()
-        if mainTabView.selectedTabViewItem?.label == "Search" {
+            
+        case .bilibili:
+            loadBilibiliCards(.new)
+        case .search:
             mainWindowController.window?.makeFirstResponder(searchField)
+        default:
+            break
         }
-        
     }
     
     func selectTabItem(_ item: SidebarItem) {
@@ -347,7 +356,9 @@ class MainViewController: NSViewController {
                 case .history:
                     self.bilibiliCards.append(contentsOf: cards)
                 case .new:
-                    self.bilibiliCards.insert(contentsOf: cards, at: 0)
+                    if cards.count > 0 {
+                        self.bilibiliCards.insert(contentsOf: cards, at: 0)
+                    }
                 }
             }.ensure(on: .main) {
                 self.canLoadMoreBilibiliCards = true

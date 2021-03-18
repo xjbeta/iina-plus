@@ -294,25 +294,6 @@ extension VideoGet {
         }
     }
     
-    func getBiliLiveRoomInfo(_ mid: Int) -> Promise<(BiliLiveInfo)> {
-        return Promise { resolver in
-            AF.request("http://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=\(mid)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-//                    var info = BilibiliInfo()
-//                    info.name = try json.value(for: "data.info.uname")
-//                    info.userCover = try json.value(for: "data.info.face")
-//                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
     func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
 //        4 原画
 //        3 高清
