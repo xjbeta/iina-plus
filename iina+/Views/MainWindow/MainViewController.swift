@@ -80,8 +80,9 @@ class MainViewController: NSViewController {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
                 searchField.becomeFirstResponder()
                 startSearch(self)
-            } else if card.videos > 1 {
-                let u = "https://www.bilibili.com/video/\(bvid)"
+            } else if card.videos > 1,
+                      let u = URL(string: "https://www.bilibili.com/video/\(bvid)") {
+                
                 bilibili.getVideoList(u).done { infos in
                     self.showSelectVideo(bvid, infos: infos)
                     }.catch { error in
@@ -462,7 +463,7 @@ class MainViewController: NSViewController {
 //                        [2] = "BV1ft4y1a7Yd"
 //                    }
                     let vid = pc[2]
-                    bilibili.getVideoList(url.absoluteString).done { infos in
+                    bilibili.getVideoList(url).done { infos in
                         if infos.count > 1 {
                             self.showSelectVideo(vid, infos: infos)
                             resolver.fulfill(())
