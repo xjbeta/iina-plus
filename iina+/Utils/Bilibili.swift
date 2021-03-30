@@ -333,17 +333,18 @@ class Bilibili: NSObject {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BilibiliVideoSelector]> {
+    func getVideoList(_ url: URL) -> Promise<[BilibiliVideoSelector]> {
         
         return Promise { resolver in
             var aid = -1
             var bvid = ""
-            let pathComponents = NSString(string: url).pathComponents
-            guard pathComponents.count > 3 else {
+            let pathComponents = url.pathComponents
+            
+            guard pathComponents.count >= 3 else {
                 resolver.reject(VideoGetError.cantFindIdForDM)
                 return
             }
-            let idP = pathComponents[3]
+            let idP = pathComponents[2]
             if idP.starts(with: "av"), let id = Int(idP.replacingOccurrences(of: "av", with: "")) {
                 aid = id
             } else if idP.starts(with: "BV") {

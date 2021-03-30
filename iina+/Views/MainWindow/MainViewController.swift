@@ -9,6 +9,7 @@
 import Cocoa
 import CoreData
 import PromiseKit
+import Alamofire
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -80,8 +81,9 @@ class MainViewController: NSViewController {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
                 searchField.becomeFirstResponder()
                 startSearch(self)
-            } else if card.videos > 1 {
-                let u = "https://www.bilibili.com/video/\(bvid)"
+            } else if card.videos > 1,
+                      let u = URL(string: "https://www.bilibili.com/video/\(bvid)") {
+                
                 bilibili.getVideoList(u).done { infos in
                     self.showSelectVideo(bvid, infos: infos)
                     }.catch { error in
@@ -125,6 +127,13 @@ class MainViewController: NSViewController {
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
+        
+        func clear() {
+            isSearching = false
+            waitingErrorMessage = nil
+            yougetResult = nil
+        }
+        
         guard row != -1,
             let yougetJSON = yougetResult,
             let key = yougetResult?.streams.keys.sorted()[row],
@@ -133,11 +142,10 @@ class MainViewController: NSViewController {
             if isSearching {
                 Processes.shared.stopDecodeURL()
             }
-            isSearching = false
-            waitingErrorMessage = nil
-            yougetResult = nil
+            clear()
             return
         }
+        clear()
         
         var urlStr: [String] = []
         if let videoUrl = stream.url {
@@ -181,10 +189,6 @@ class MainViewController: NSViewController {
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }
 
-            }.ensure {
-                self.isSearching = false
-                self.waitingErrorMessage = nil
-                self.yougetResult = nil
             }.catch {
                 Log("Prepare DM file error : \($0)")
         }
@@ -193,6 +197,7 @@ class MainViewController: NSViewController {
     // MARK: - Danmaku
     let httpServer = HttpServer()
     
+    let iinaProxyAF = Alamofire.Session()
     
     // MARK: - Functions
     override func viewDidLoad() {
@@ -462,7 +467,7 @@ class MainViewController: NSViewController {
 //                        [2] = "BV1ft4y1a7Yd"
 //                    }
                     let vid = pc[2]
-                    bilibili.getVideoList(url.absoluteString).done { infos in
+                    bilibili.getVideoList(url).done { infos in
                         if infos.count > 1 {
                             self.showSelectVideo(vid, infos: infos)
                             resolver.fulfill(())
@@ -521,6 +526,53 @@ class MainViewController: NSViewController {
                 }
             } else {
                 decodeUrl()
+            }
+        }
+    }
+    
+    func checkIINAProxy() -> Promise<(Bool)> {
+        return Promise { resolver in
+            guard var u = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+                resolver.fulfill(true)
+                return
+            }
+            u.appendPathComponent("Preferences")
+            u.appendPathComponent("com.colliderli.iina.plist")
+            
+            var dic = NSDictionary(contentsOf: u)
+            
+            guard let proxyStr = dic?["httpProxy"] as? String else {
+                resolver.fulfill(true)
+                return
+            }
+            
+            dic = nil
+            
+            let proxyArray = proxyStr.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+            
+            guard proxyArray.count == 2 else {
+                resolver.fulfill(true)
+                return
+            }
+            let host = "http://" + proxyArray[0]
+            let port = proxyArray[1]
+            
+            iinaProxyAF.session.configuration.connectionProxyDictionary = [
+                kCFNetworkProxiesHTTPEnable: 1,
+                kCFNetworkProxiesHTTPProxy: host,
+                kCFNetworkProxiesHTTPPort: port,
+                
+    //            kCFProxyUsernameKey: "",
+    //            kCFProxyPasswordKey: "",
+            ]
+            
+            iinaProxyAF.request("https://al.flv.huya.com").response {
+                if let error = $0.error {
+                    print("Connect to video url error: \(error)")
+                    resolver.fulfill(false)
+                } else {
+                    resolver.fulfill(true)
+                }
             }
         }
     }
