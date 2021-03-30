@@ -127,6 +127,13 @@ class MainViewController: NSViewController {
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
+        
+        func clear() {
+            isSearching = false
+            waitingErrorMessage = nil
+            yougetResult = nil
+        }
+        
         guard row != -1,
             let yougetJSON = yougetResult,
             let key = yougetResult?.streams.keys.sorted()[row],
@@ -135,11 +142,10 @@ class MainViewController: NSViewController {
             if isSearching {
                 Processes.shared.stopDecodeURL()
             }
-            isSearching = false
-            waitingErrorMessage = nil
-            yougetResult = nil
+            clear()
             return
         }
+        clear()
         
         var urlStr: [String] = []
         if let videoUrl = stream.url {
@@ -183,10 +189,6 @@ class MainViewController: NSViewController {
                 Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }
 
-            }.ensure {
-                self.isSearching = false
-                self.waitingErrorMessage = nil
-                self.yougetResult = nil
             }.catch {
                 Log("Prepare DM file error : \($0)")
         }
