@@ -20,9 +20,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
-        #if !DEBUG
         NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
-        #endif
     }
     
 }
