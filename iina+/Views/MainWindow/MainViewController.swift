@@ -9,6 +9,7 @@
 import Cocoa
 import CoreData
 import PromiseKit
+import Alamofire
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -194,6 +195,7 @@ class MainViewController: NSViewController {
     // MARK: - Danmaku
     let httpServer = HttpServer()
     
+    let iinaProxyAF = Alamofire.Session()
     
     // MARK: - Functions
     override func viewDidLoad() {
@@ -522,6 +524,53 @@ class MainViewController: NSViewController {
                 }
             } else {
                 decodeUrl()
+            }
+        }
+    }
+    
+    func checkIINAProxy() -> Promise<(Bool)> {
+        return Promise { resolver in
+            guard var u = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+                resolver.fulfill(true)
+                return
+            }
+            u.appendPathComponent("Preferences")
+            u.appendPathComponent("com.colliderli.iina.plist")
+            
+            var dic = NSDictionary(contentsOf: u)
+            
+            guard let proxyStr = dic?["httpProxy"] as? String else {
+                resolver.fulfill(true)
+                return
+            }
+            
+            dic = nil
+            
+            let proxyArray = proxyStr.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+            
+            guard proxyArray.count == 2 else {
+                resolver.fulfill(true)
+                return
+            }
+            let host = "http://" + proxyArray[0]
+            let port = proxyArray[1]
+            
+            iinaProxyAF.session.configuration.connectionProxyDictionary = [
+                kCFNetworkProxiesHTTPEnable: 1,
+                kCFNetworkProxiesHTTPProxy: host,
+                kCFNetworkProxiesHTTPPort: port,
+                
+    //            kCFProxyUsernameKey: "",
+    //            kCFProxyPasswordKey: "",
+            ]
+            
+            iinaProxyAF.request("https://al.flv.huya.com").response {
+                if let error = $0.error {
+                    print("Connect to video url error: \(error)")
+                    resolver.fulfill(false)
+                } else {
+                    resolver.fulfill(true)
+                }
             }
         }
     }
