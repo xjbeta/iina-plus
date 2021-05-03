@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -1074,7 +1074,7 @@ Gw
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MainWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="IINA Plus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="IQv-IB-iLA">
+                    <window key="window" title="IINA Plus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="MainWIndow" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
                         <rect key="contentRect" x="809" y="251" width="500" height="650"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
@@ -1128,13 +1128,13 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="68" height="648"/>
                                 <subviews>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="331" width="68" height="277"/>
+                                        <rect key="frame" x="0.0" y="333" width="68" height="275"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="277"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="275"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="iina_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="277"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="275"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1228,11 +1228,11 @@ Gw
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
                     <customView key="view" id="r1P-qL-yvV" userLabel="View">
-                        <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
+                        <rect key="frame" x="0.0" y="0.0" width="398" height="649"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="P2p-GB-s4i">
-                                <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
+                                <rect key="frame" x="0.0" y="0.0" width="398" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="bookmarks" identifier="bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
@@ -1442,7 +1442,7 @@ Gw
                                                     <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="cNc-cP-Jc0">
                                                         <rect key="frame" x="0.0" y="0.0" width="389" height="649"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="110" viewBased="YES" id="H7N-WI-EUW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="389" height="633"/>
@@ -1826,6 +1826,7 @@ Gw
                     </items>
                 </menu>
                 <arrayController objectClassName="BilibiliCard" editable="NO" automaticallyPreparesContent="YES" id="l5L-7R-ZIy">
+                    <classReference key="objectClass" className="BilibiliCard"/>
                     <connections>
                         <binding destination="XfG-lQ-9wD" name="contentArray" keyPath="self.bilibiliCards" id="4pg-RU-3aY"/>
                     </connections>
