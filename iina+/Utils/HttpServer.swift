@@ -165,8 +165,22 @@ class HttpServer: NSObject, DanmakuDelegate {
     }
     
     private func loadCustomFont(_ id: String = "rua-uuid~~~") {
-        guard let font = Preferences.shared.danmukuFontFamilyName else { return }
-        send(.customFont, text: font, id: id)
+        let pref = Preferences.shared
+        let font = pref.danmukuFontFamilyName
+        let size = pref.danmukuFontSize
+        let weight = pref.danmukuFontWeight
+        
+        var text = ".customFont {"
+        text += "color: #fff;"
+        text += "font-family: '\(font) \(weight)', SimHei, SimSun, Heiti, 'MS Mincho', 'Meiryo', 'Microsoft YaHei', monospace;"
+        text += "font-size: \(size)px;"
+        
+        
+        text += "letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}"
+        
+        Log("Danmaku font \(font) \(weight), \(size)px.")
+        
+        send(.customFont, text: text, id: id)
     }
 
     private func customDMSpeed(_ id: String = "rua-uuid~~~") {

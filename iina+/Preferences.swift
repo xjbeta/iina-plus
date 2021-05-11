@@ -67,13 +67,34 @@ class Preferences: NSObject {
         }
     }
     
-    @objc var danmukuFontFamilyName: String? {
+    @objc var danmukuFontFamilyName: String {
         get {
-            return defaults(.danmukuFontFamilyName) as? String
+            return defaults(.danmukuFontFamilyName) as? String ?? "SimHei"
         }
         set {
-            defaultsSet(newValue ?? "", forKey: .danmukuFontFamilyName)
+            defaultsSet(newValue, forKey: .danmukuFontFamilyName)
             didChangeValue(for: \.danmukuFontFamilyName)
+        }
+    }
+    
+    @objc var danmukuFontWeight: String {
+        get {
+            return defaults(.danmukuFontWeight) as? String ?? "Regular"
+        }
+        set {
+            defaultsSet(newValue, forKey: .danmukuFontWeight)
+            didChangeValue(for: \.danmukuFontWeight)
+        }
+    }
+    
+    @objc var danmukuFontSize: Int {
+        get {
+//            return defaults(.danmukuFontSize) as? Int ?? 24
+            return 24
+        }
+        set {
+            defaultsSet(newValue, forKey: .danmukuFontSize)
+            didChangeValue(for: \.danmukuFontSize)
         }
     }
     
@@ -115,6 +136,8 @@ enum PreferenceKeys: String {
     case liveDecoder
     case enableDanmaku
     case danmukuFontFamilyName
+    case danmukuFontWeight
+    case danmukuFontSize
     case dmSpeed
     case dmOpacity
     case dmBlockType

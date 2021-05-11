@@ -38,7 +38,7 @@ function bind() {
         cm.start();
     };
 
-    window.customFont = function(font) {
+    window.customFont = function(fontStyle) {
         var element = document.getElementsByTagName("style"), index;
         for (index = element.length - 1; index >= 0; index--) {
         element[index].parentNode.removeChild(element[index]);
@@ -46,7 +46,7 @@ function bind() {
 
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = '.customFont {color: #fff;font-family: ' + font + ', SimHei, SimSun, Heiti, "MS Mincho", "Meiryo", "Microsoft YaHei", monospace;font-size: 25px;letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}';
+        style.innerHTML = fontStyle;
         document.getElementsByTagName('head')[0].appendChild(style);
         window.cm.options.global.className = 'customFont'
     };
