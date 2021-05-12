@@ -36,7 +36,6 @@ class FontSelectorViewController: NSViewController {
                 style = w
                 pref.danmukuFontWeight = w
             }
-            stylePopUpButton.selectItem(withTitle: style)
         case stylePopUpButton:
             pref.danmukuFontWeight = title
         default:
