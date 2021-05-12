@@ -10,27 +10,15 @@ import Cocoa
 
 class GereralViewController: NSViewController, NSMenuDelegate {
     
-    @IBOutlet weak var fontPicker: NSPopUpButton!
+    @IBOutlet var fontSelectorButton: NSButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
 
-    @IBAction func newFontSet(_ sender: NSPopUpButton) {
-        let newFamilyName = sender.selectedItem?.title
-        Preferences.shared.danmukuFontFamilyName = newFamilyName
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        initFontSelector()
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
-        
-        // Configure the font picker
-        let names = NSFontManager.shared.availableFontFamilies
-        fontPicker.addItems(withTitles: names)
-        if let lastFamilyName = Preferences.shared.danmukuFontFamilyName {
-            let item = fontPicker.itemArray.filter() { $0.title == lastFamilyName }.first
-            fontPicker.select(item)
-        }
     }
     
     func menuDidClose(_ menu: NSMenu) {
@@ -56,6 +44,60 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         }
     }
     
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        let pref = Preferences.shared
+        guard let vc = segue.destinationController as? FontSelectorViewController else { return }
+        checkFontWeight()
+        
+        let name = pref.danmukuFontFamilyName
+        vc.delegate = self
+        vc.families = NSFontManager.shared.availableFontFamilies
+        vc.family = name
+        vc.styles = fontWeights(ofFontFamily: name)
+        vc.style = pref.danmukuFontWeight
+        vc.size = pref.danmukuFontSize
+    }
+    
+    func fontWeights(ofFontFamily name: String) -> [String] {
+        guard let members = NSFontManager.shared.availableMembers(ofFontFamily: name) else { return [] }
+        
+        let names = members.filter {
+            $0.count == 4
+        }.compactMap {
+            $0[1] as? String
+        }
+        
+        return names
+    }
+    
+    func initFontSelector() {
+        checkFontWeight()
+        
+        let pref = Preferences.shared
+        let name = pref.danmukuFontFamilyName
+        let weight = pref.danmukuFontWeight
+        
+//        let size = pref.danmukuFontSize
+//        fontSelectorButton.title = "\(name) - \(weight) \(size)px"
+        fontSelectorButton.title = "\(name) - \(weight)"
+    }
+    
+    func checkFontWeight() {
+        let pref = Preferences.shared
+        let name = pref.danmukuFontFamilyName
+        let weight = pref.danmukuFontWeight
+        let weights = fontWeights(ofFontFamily: name)
+        if !weights.contains(weight),
+           let w = weights.first {
+            pref.danmukuFontWeight = w
+        }
+    }
+}
+
+extension GereralViewController: FontSelectorDelegate {
+    func fontDidUpdated() {
+        initFontSelector()
+    }
 }
 
 

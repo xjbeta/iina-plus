@@ -92,6 +92,7 @@
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
+		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F42597105A00D286C8 /* SwiftProtobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */; };
 		01DCD2F62597106B00D286C8 /* SwiftProtobuf.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01DCD2F72597107200D286C8 /* SwiftProtobuf.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */; };
@@ -246,6 +247,7 @@
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftProtobuf.framework; path = Carthage/Build/Mac/SwiftProtobuf.framework; sourceTree = SOURCE_ROOT; };
 		01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftProtobuf.framework.dSYM; path = Carthage/Build/Mac/SwiftProtobuf.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
@@ -504,6 +506,7 @@
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				01683DDD211924160016A886 /* BilibiliViewController.swift */,
 				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
+				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
 				01260170211948BF00C9C639 /* PreferencesTabViewController.swift */,
 				01398984210F27A600B7042F /* PreferencesWindowController.swift */,
 			);
@@ -640,6 +643,7 @@
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
+				01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
@@ -842,7 +846,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.15;
+				MARKETING_VERSION = 0.5.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -869,7 +873,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.15;
+				MARKETING_VERSION = 0.5.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
