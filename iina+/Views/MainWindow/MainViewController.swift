@@ -315,7 +315,11 @@ class MainViewController: NSViewController {
             }
             
         case .bilibili:
-            loadBilibiliCards(.new)
+            if bilibiliCards.count > 0 {
+                loadBilibiliCards(.new)
+            } else {
+                loadBilibiliCards(.init😅)
+            }
         case .search:
             mainWindowController.window?.makeFirstResponder(searchField)
         default:
