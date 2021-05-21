@@ -45,7 +45,7 @@ class LiveStatusTableCellView: NSTableCellView {
             guard url == self.url else { return }
             self.setInfo($0)
             }.catch(on: .main) {
-                Log("Get live status error: \($0)")
+                Log("Get live status error: \($0) \n - \(str)")
                 self.setErrorInfo(url.absoluteString)
         }
     }
