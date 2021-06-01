@@ -48,6 +48,38 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct BiliLivePlayUrl: Unmarshaling {
+    let currentQuality: Int
+    let acceptQuality: [String]
+    let currentQn: Int
+    let qualityDescription: [QualityDescription]
+    let durl: [Durl]
+    
+    struct QualityDescription: Unmarshaling {
+        let qn: Int
+        let desc: String
+        init(object: MarshaledObject) throws {
+            qn = try object.value(for: "qn")
+            desc = try object.value(for: "desc")
+        }
+    }
+    
+    struct Durl: Unmarshaling {
+        var url: String
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "url")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        currentQuality = try object.value(for: "data.current_quality")
+        acceptQuality = try object.value(for: "data.accept_quality")
+        currentQn = try object.value(for: "data.current_qn")
+        qualityDescription = try object.value(for: "data.quality_description")
+        durl = try object.value(for: "data.durl")
+    }
+}
+
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""

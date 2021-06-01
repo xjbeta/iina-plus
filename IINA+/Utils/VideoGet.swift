@@ -73,9 +73,10 @@ class VideoGet: NSObject {
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
-                $0.2.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                $0.durl.enumerated().forEach {
+                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element.url)
                 }
+                
                 return yougetJson
             }
         case .douyu:
@@ -294,29 +295,20 @@ extension VideoGet {
         }
     }
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
-//        4 原画
-//        3 高清
+    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
+//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=20000&platform=web
+        
+        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+        
         return Promise { resolver in
-//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=10000&platform=web
-            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web").response { response in
+            AF.request(u).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                struct Durl: Unmarshaling {
-                    var url: String
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "url")
-                    }
-                }
-                
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let currentQuality: Int = try json.value(for: "data.current_quality")
-                    let acceptQuality: [String] = try json.value(for: "data.accept_quality")
-                    let dUrls: [Durl] = try json.value(for: "data.durl")
-                    let urls = dUrls.map({ $0.url })
-                    resolver.fulfill((currentQuality, acceptQuality, urls))
+                    let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+                    resolver.fulfill(playUrl)
                 } catch let error {
                     resolver.reject(error)
                 }
