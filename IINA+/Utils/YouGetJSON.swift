@@ -14,6 +14,7 @@ struct YouGetJSON: Unmarshaling {
     var streams: [String: Stream] = [:]
     var audio = ""
     
+    var bililiveRid = -1
     var bilibiliCid = -1
     var duration = -1
 

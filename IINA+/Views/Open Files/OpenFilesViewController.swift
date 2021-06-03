@@ -171,7 +171,7 @@ class OpenFilesViewController: NSViewController {
             }
             
             videoGet.decodeUrl(url).then {
-                videoGet.prepareDanmakuFile(u, yougetJSON: $0, id: id)
+                videoGet.prepareDanmakuFile(yougetJSON: $0, id: id)
             }.done {
                 resolver.fulfill(())
             }.catch {

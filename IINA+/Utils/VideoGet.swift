@@ -70,13 +70,24 @@ class VideoGet: NSObject {
         case .biliLive:
             return getBiliLiveRoomId(url).get {
                 yougetJson.title = $0.title
+                yougetJson.bililiveRid = $0.roomId
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
-                $0.durl.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element.url)
+                let urls = $0.durl.map {
+                    $0.url
                 }
+                let cqn = $0.currentQn
                 
+                $0.qualityDescription.forEach {
+                    var s = Stream(url: "")
+                    s.quality = "\($0.qn)"
+                    if cqn == $0.qn {
+                        s.src = urls
+                        s.url = urls.first
+                    }
+                    yougetJson.streams[$0.desc] = s
+                }
                 return yougetJson
             }
         case .douyu:
@@ -136,14 +147,14 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(_ url: URL, yougetJSON: YouGetJSON, id: String) -> Promise<()> {
+    func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
                 return
             }
             
-            if url.host == "www.bilibili.com" {
+            if yougetJSON.bilibiliCid != -1 {
                 self.downloadDMFileV2(
                     cid: yougetJSON.bilibiliCid,
                     length: yougetJSON.duration,
@@ -238,6 +249,34 @@ class VideoGet: NSObject {
                 
                 return .value(info)
             }
+        }
+    }
+    
+    func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
+        let rid = json.bililiveRid
+        if rid != -1 {
+            let key = json.streams.keys.sorted()[row]
+            guard let stream = json.streams[key],
+                  let qn = Int(stream.quality) else {
+                
+                return .init(error: VideoGetError.notFountData)
+            }
+            
+            if stream.src.count > 0 {
+                return .value(json)
+            } else {
+                return self.getBiliLiveJSON("\(rid)", qn).map {
+                    let urls = $0.durl.map {
+                        $0.url
+                    }
+                    var re = json
+                    re.streams[key]?.url = urls.first
+                    re.streams[key]?.src = urls
+                    return re
+                }
+            }
+        } else {
+            return .value(json)
         }
     }
     
