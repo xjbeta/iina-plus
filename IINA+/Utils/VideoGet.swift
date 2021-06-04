@@ -698,10 +698,10 @@ extension VideoGet {
                 yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
 
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
-                    playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                    playInfo.videos.enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
-                        stream.videoProfile = $0.element.description
-                        yougetJson.streams["\($0.offset + 1)"] = stream
+                        stream.quality = $0.element.bandwidth
+                        yougetJson.streams[$0.element.description] = stream
                     }
                     
                     guard let audios = playInfo.audios else {
