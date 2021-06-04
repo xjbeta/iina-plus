@@ -13,6 +13,7 @@ import Marshal
 import CommonCrypto
 import JavaScriptCore
 import WebKit
+import SwiftSoup
 
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
@@ -25,6 +26,7 @@ enum LiveSupportList: String {
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
     case langPlay = "play.lang.live"
+    case cc163 = "cc.163.com"
     case unsupported
     
     init(url: String) {
@@ -144,6 +146,36 @@ class VideoGet: NSObject {
                 }
                 return yougetJson
             }
+        case .cc163:
+            let pcs = url.pathComponents
+            
+            if pcs.count == 4,
+               pcs[1] == "ccid" {
+                let ccid = pcs[2]
+                yougetJson.title = String(data: Data(base64Encoded: pcs[3]) ?? Data(), encoding: .utf8) ?? ""
+                
+                return getCC163(ccid).map {
+                    $0.enumerated().forEach {
+                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    }
+                    return yougetJson
+                }
+                
+            } else {
+                return getCC163Info(url).get {
+                    yougetJson.title = $0.title
+                }.compactMap {
+                    $0 as? CC163Info
+                }.then {
+                    self.getCC163("\($0.ccid)")
+                }.map {
+                    $0.enumerated().forEach {
+                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    }
+                    return yougetJson
+                }
+                
+            }
         default:
             return .init(error: VideoGetError.notSupported)
         }
@@ -241,6 +273,16 @@ class VideoGet: NSObject {
                 info.cover = $0.mediaInfo.squareCover
                 info.isLiving = true
                 return info
+            }
+        case .cc163:
+            if url.pathComponents.count == 4,
+               url.pathComponents[1] == "ccid" {
+                var info = BilibiliInfo()
+                info.site = .cc163
+                info.isLiving = true
+                return .value(info)
+            } else {
+                return getCC163Info(url)
             }
         default:
             if checkSupport {
@@ -1047,7 +1089,7 @@ extension VideoGet {
         }
     }
     
-// MARK: - LangPlay
+    // MARK: - LangPlay
     func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
         let url = "https://game-api.lang.live/webapi/v1/room/info?room_id=\(roomID)"
         return Promise { resolver in
@@ -1065,7 +1107,136 @@ extension VideoGet {
             }
         }
     }
+    // MARK: - CC163
     
+    func getCC163Info(_ url: URL) -> Promise<LiveInfo> {
+        return Promise { resolver in
+            getCC163State(url.absoluteString).done {
+                if let i = $0.info {
+                    resolver.fulfill(i)
+                } else if let cid = $0.list.first?.cid {
+                    self.getCC163ZtState(cid: cid).done {
+                        resolver.fulfill($0)
+                    }.catch {
+                        resolver.reject($0)
+                    }
+                } else {
+                    resolver.reject(VideoGetError.invalidLink)
+                }
+            }.catch {
+                resolver.reject($0)
+            }
+        }
+    }
+    
+    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ZTInfo])> {
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                let json = response.text?.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">")
+                
+                let jsonData = json?.data(using: .utf8) ?? Data()
+                
+                do {
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    
+                    if let domain: String = try? jsonObj.value(for: "query.domain") {
+                        let list = try self.getCC163ZtRoomList(response.text ?? "")
+                        resolver.fulfill((nil, list))
+                    } else if let cid: String = try? jsonObj.value(for: "query.subcId") {
+                        self.getCC163ZtState(cid: cid).done {
+                            resolver.fulfill(($0, []))
+                        }.catch {
+                            resolver.reject($0)
+                        }
+                    } else {
+                        let info = try CC163Info(object: jsonObj)
+                        resolver.fulfill((info, []))
+                    }
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163ZtRoomList(_ text: String) throws -> [CC163ZTInfo] {
+        return try SwiftSoup.parse(text)
+            .getElementsByClass("channel_list").first()?
+            .children().map {
+                
+                CC163ZTInfo(
+                    name: try $0.children().first()?.children().first()?.text() ?? "",
+                    ccid: try $0.attr("ccid"),
+                    channel: try "https:" + $0.attr("channel"),
+                    cid: try $0.attr("cid"),
+                    index: try $0.attr("index"),
+                    roomid: try $0.attr("roomid"),
+                    isLiving:  $0.children().first()?.children().hasClass("icon-live") ?? false)
+            }.filter {
+                $0.ccid != "" && $0.roomid != ""
+            } ?? []
+    }
+    
+    func getCC163ZtState(cid: String) -> Promise<LiveInfo> {
+        
+        let url = "https://cc.163.com/live/channel/?channelids=\(cid)"
+
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+                    let infos: [CC163ChannelInfo] = try json.value(for: "data")
+                
+                    guard let info = infos.first else {
+                        resolver.reject(VideoGetError.notFountData)
+                        return
+                    }
+                    guard info.isLiving else {
+                        resolver.reject(VideoGetError.isNotLiving)
+                        return
+                    }
+                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163(_ ccid: String) -> Promise<[String]> {
+        let url = "https://vapi.cc.163.com/video_play_url/\(ccid)"
+        
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                let json = response.text
+                let jsonData = json?.data(using: .utf8) ?? Data()
+                
+                do {
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    
+                    var re = [String]()
+                    re.append(try jsonObj.value(for: "videourl"))
+                    re.append(try jsonObj.value(for: "bakvideourl"))
+                    
+                    resolver.fulfill(re)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: - MD5
     // https://stackoverflow.com/a/53044349
     func MD5(_ string: String) -> String? {
         let length = Int(CC_MD5_DIGEST_LENGTH)

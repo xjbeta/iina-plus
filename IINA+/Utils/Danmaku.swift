@@ -55,6 +55,11 @@ class Danmaku: NSObject {
     let langPlayServer = URL(string: "wss://cht-web.lv-show.com/chat_nsp/?EIO=3&transport=websocket")
     var langPlayUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
     
+    let cc163Server = URL(string: "wss://weblink.cc.163.com")
+    
+    
+    
+    
     init(_ site: LiveSupportList, url: String) {
         liveSite = site
         self.url = url

@@ -186,7 +186,7 @@ class MainViewController: NSViewController {
                     title = key
                 }
                 processes.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
-            case .huya, .longzhu, .quanmin, .eGame, .langPlay:
+            case .huya, .longzhu, .quanmin, .eGame, .langPlay, .cc163:
                 processes.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .bangumi:
                 processes.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: self.searchField.stringValue)
@@ -439,7 +439,7 @@ class MainViewController: NSViewController {
         return Promise { resolver in
             
             let videoGet = Processes.shared.videoGet
-            let str = url
+            var str = url
             yougetResult = nil
             guard str.isUrl,
                   let url = URL(string: str) else {
@@ -521,16 +521,42 @@ class MainViewController: NSViewController {
                 videoGet.getDouyuHtml(str).done {
                     if $0.roomIds.count > 0 {
                         let infos = $0.roomIds.enumerated().map {
-                            DouyuVideoSelector(index: $0.offset,
-                                               title: "频道 - \($0.offset + 1) - \($0.element)",
-                                               id: Int($0.element) ?? 0,
-                                               coverUrl: nil)
+                            DouyuVideoSelector(
+                                index: $0.offset,
+                                title: "频道 - \($0.offset + 1) - \($0.element)",
+                                id: Int($0.element) ?? 0,
+                                coverUrl: nil)
                         }
                         
                         self.showSelectVideo("", infos: infos)
                         resolver.fulfill(())
                     } else {
                         decodeUrl()
+                    }
+                }.catch {
+                    resolver.reject($0)
+                }
+            } else if url.host == "cc.163.com" {
+                videoGet.getCC163State(url.absoluteString).done {
+                    if let i = $0.info as? CC163Info {
+                        let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
+                        str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"
+                        decodeUrl()
+                    } else if let i = $0.info as? CC163ChannelInfo {
+                        let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
+                        str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"
+                        decodeUrl()
+                    } else {
+                        let infos = $0.list.enumerated().map {
+                            CC163VideoSelector(
+                                index: $0.offset,
+                                title: $0.element.name,
+                                ccid: $0.element.ccid,
+                                isLiving: $0.element.isLiving,
+                                url: $0.element.channel)
+                        }
+                        self.showSelectVideo("", infos: infos)
+                        resolver.fulfill(())
                     }
                 }.catch {
                     resolver.reject($0)
