@@ -579,3 +579,81 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
         cover = "https://play-web-assets.lang.live/public/live/screenshot/" + liveID   
     }
 }
+
+// MARK: - CC163
+
+struct CC163Info: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var ccid: String
+    var site: LiveSupportList
+    
+    init(object: MarshaledObject) throws {
+        site = .cc163
+        title = try object.value(for: "props.pageProps.roomInfoInitData.live.title")
+        name = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.nickname")
+        avatar = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.purl")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        cover = avatar
+        let living: Bool? = try? object.value(for: "props.pageProps.roomInfoInitData.is_show_live_rcm")
+        
+        ccid = try object.value(for: "query.ccid")
+        
+        isLiving = living ?? false
+    }
+}
+
+struct CC163ZTInfo {
+    var name: String = ""
+    var ccid: String = ""
+    var channel: String = ""
+    var cid: String = ""
+    var index: String = ""
+    var roomid: String = ""
+    var isLiving: Bool = false
+}
+
+struct CC163VideoSelector: VideoSelector {
+    let site = LiveSupportList.cc163
+    let index: Int
+    let title: String
+    let ccid: String
+    let isLiving: Bool
+    let url: String
+    let id: Int = -1
+    let coverUrl: URL? = nil
+}
+
+struct CC163ChannelInfo: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var site: LiveSupportList
+    
+    var ccid: Int
+
+    init(object: MarshaledObject) throws {
+        site = .cc163
+        title = try object.value(for: "title")
+        name = try object.value(for: "nickname")
+        cover = try object.value(for: "cover")
+        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        
+        if let nolive: Int = try? object.value(for: "nolive"),
+           nolive == 1 {
+            ccid = try object.value(for: "roomid")
+            avatar = cover
+            isLiving = false
+        } else {
+            ccid = try object.value(for: "ccid")
+            avatar = try object.value(for: "purl")
+            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+            isLiving = true
+        }
+    }
+}
