@@ -83,6 +83,8 @@
 		018DB094233CF1A000D0391B /* Sparkle.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB06E233CF16900D0391B /* Sparkle.framework.dSYM */; };
 		018DB095233CF1A000D0391B /* Swifter.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 018DB06F233CF16900D0391B /* Swifter.framework.dSYM */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
+		01A7BB8A26568314009BAF3D /* SwiftSoup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A7BB8826568313009BAF3D /* SwiftSoup.framework */; };
+		01A7BB8C26568324009BAF3D /* SwiftSoup.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01A7BB8826568313009BAF3D /* SwiftSoup.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -156,6 +158,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				01A7BB8C26568324009BAF3D /* SwiftSoup.framework in Embed Frameworks */,
 				01DCD2F62597106B00D286C8 /* SwiftProtobuf.framework in Embed Frameworks */,
 				018DB085233CF18400D0391B /* Alamofire.framework in Embed Frameworks */,
 				018DB086233CF18400D0391B /* Cache.framework in Embed Frameworks */,
@@ -236,6 +239,8 @@
 		018DB06F233CF16900D0391B /* Swifter.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Swifter.framework.dSYM; path = Carthage/Build/Mac/Swifter.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		018DB070233CF16900D0391B /* Marshal.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Marshal.framework.dSYM; path = Carthage/Build/Mac/Marshal.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
+		01A7BB8826568313009BAF3D /* SwiftSoup.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftSoup.framework; path = Carthage/Build/Mac/SwiftSoup.framework; sourceTree = SOURCE_ROOT; };
+		01A7BB8926568313009BAF3D /* SwiftSoup.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftSoup.framework.dSYM; path = Carthage/Build/Mac/SwiftSoup.framework.dSYM; sourceTree = SOURCE_ROOT; };
 		01AEC8A720EDFD01001406E8 /* IINA+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IINA+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -281,6 +286,7 @@
 				018DB07D233CF16900D0391B /* SocketRocket.framework in Frameworks */,
 				018DB073233CF16900D0391B /* Marshal.framework in Frameworks */,
 				01DCD2F42597105A00D286C8 /* SwiftProtobuf.framework in Frameworks */,
+				01A7BB8A26568314009BAF3D /* SwiftSoup.framework in Frameworks */,
 				018DB07C233CF16900D0391B /* Alamofire.framework in Frameworks */,
 				018DB074233CF16900D0391B /* Cache.framework in Frameworks */,
 			);
@@ -352,6 +358,8 @@
 				018DB06F233CF16900D0391B /* Swifter.framework.dSYM */,
 				01DCD2F22597105A00D286C8 /* SwiftProtobuf.framework */,
 				01DCD2F32597105A00D286C8 /* SwiftProtobuf.framework.dSYM */,
+				01A7BB8826568313009BAF3D /* SwiftSoup.framework */,
+				01A7BB8926568313009BAF3D /* SwiftSoup.framework.dSYM */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
