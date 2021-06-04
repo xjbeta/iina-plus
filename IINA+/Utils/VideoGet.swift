@@ -125,9 +125,9 @@ class VideoGet: NSObject {
                 $0.1.sorted {
                     $0.levelType > $1.levelType
                 }.enumerated().forEach {
-                    var stream = Stream(url: $0.element.playUrl)
-                    stream.videoProfile = $0.element.desc
-                    yougetJson.streams["\($0.offset + 1)"] = stream
+                    var s = Stream(url: $0.element.playUrl)
+                    s.quality = $0.element.levelType
+                    yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
             }
