@@ -81,7 +81,7 @@ class VideoGet: NSObject {
                 
                 $0.qualityDescription.forEach {
                     var s = Stream(url: "")
-                    s.quality = "\($0.qn)"
+                    s.quality = $0.qn
                     if cqn == $0.qn {
                         s.src = urls
                         s.url = urls.first
@@ -130,7 +130,6 @@ class VideoGet: NSObject {
             }
         case .bilibili:
             return getBilibili(url)
-            
         case .bangumi:
             return getBangumi(url)
         case .langPlay:
@@ -255,12 +254,12 @@ class VideoGet: NSObject {
     func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
         let rid = json.bililiveRid
         if rid != -1 {
-            let key = json.streams.keys.sorted()[row]
+            let key = json.videos[row].key
             guard let stream = json.streams[key],
-                  let qn = Int(stream.quality) else {
-                
+                  stream.quality != -1 else {
                 return .init(error: VideoGetError.notFountData)
             }
+            let qn = stream.quality
             
             if stream.src.count > 0 {
                 return .value(json)

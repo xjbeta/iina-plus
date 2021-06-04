@@ -48,7 +48,7 @@ class OpenFilesViewController: NSViewController {
         }.then { _ in
             self.getDanmaku(id)
         }.done {
-            guard let stream = yougetJSON?.streams.sorted(by: { $0.key < $1.key }).first?.value,
+            guard let stream = yougetJSON?.videos.first?.value,
                 let urlStr = stream.url else {
                 return
             }

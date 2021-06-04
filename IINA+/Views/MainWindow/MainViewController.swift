@@ -155,7 +155,7 @@ class MainViewController: NSViewController {
                 id: uuid)
         }.done {
             
-            let key = yougetJSON.streams.keys.sorted()[row]
+            let key = yougetJSON.videos[row].key
             let stream = yougetJSON.streams[key]
             
             var urlStr: [String] = []
@@ -666,13 +666,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
-                    let streams = obj.streams.sorted {
-                            $0.key < $1.key
-                        }.sorted {
-                            $0.value.size ?? 0 > $1.value.size ?? 0
-                    }
-                    let stream = streams[row]
-                    view.setStream(stream)
+                    let s = obj.videos[row]
+                    view.setStream(s)
                     return view
                 }
             } else {
