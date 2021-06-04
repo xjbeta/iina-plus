@@ -70,11 +70,23 @@ class VideoGet: NSObject {
         case .biliLive:
             return getBiliLiveRoomId(url).get {
                 yougetJson.title = $0.title
+                yougetJson.bililiveRid = $0.roomId
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
-                $0.2.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                let urls = $0.durl.map {
+                    $0.url
+                }
+                let cqn = $0.currentQn
+                
+                $0.qualityDescription.forEach {
+                    var s = Stream(url: "")
+                    s.quality = $0.qn
+                    if cqn == $0.qn {
+                        s.src = urls
+                        s.url = urls.first
+                    }
+                    yougetJson.streams[$0.desc] = s
                 }
                 return yougetJson
             }
@@ -99,8 +111,11 @@ class VideoGet: NSObject {
         case .huya:
             return getHuyaInfo(url).map {
                 yougetJson.title = $0.0.title
+                let c = $0.1.count
                 $0.1.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    var s = Stream(url: $0.element)
+                    s.quality = c - $0.offset
+                    yougetJson.streams["线路 \($0.offset + 1)"] = s
                 }
                 return yougetJson
             }
@@ -110,15 +125,14 @@ class VideoGet: NSObject {
                 $0.1.sorted {
                     $0.levelType > $1.levelType
                 }.enumerated().forEach {
-                    var stream = Stream(url: $0.element.playUrl)
-                    stream.videoProfile = $0.element.desc
-                    yougetJson.streams["\($0.offset + 1)"] = stream
+                    var s = Stream(url: $0.element.playUrl)
+                    s.quality = $0.element.levelType
+                    yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
             }
         case .bilibili:
             return getBilibili(url)
-            
         case .bangumi:
             return getBangumi(url)
         case .langPlay:
@@ -135,14 +149,14 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(_ url: URL, yougetJSON: YouGetJSON, id: String) -> Promise<()> {
+    func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
                 return
             }
             
-            if url.host == "www.bilibili.com" {
+            if yougetJSON.bilibiliCid != -1 {
                 self.downloadDMFileV2(
                     cid: yougetJSON.bilibiliCid,
                     length: yougetJSON.duration,
@@ -240,6 +254,34 @@ class VideoGet: NSObject {
         }
     }
     
+    func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
+        let rid = json.bililiveRid
+        if rid != -1 {
+            let key = json.videos[row].key
+            guard let stream = json.streams[key],
+                  stream.quality != -1 else {
+                return .init(error: VideoGetError.notFountData)
+            }
+            let qn = stream.quality
+            
+            if stream.src.count > 0 {
+                return .value(json)
+            } else {
+                return self.getBiliLiveJSON("\(rid)", qn).map {
+                    let urls = $0.durl.map {
+                        $0.url
+                    }
+                    var re = json
+                    re.streams[key]?.url = urls.first
+                    re.streams[key]?.src = urls
+                    return re
+                }
+            }
+        } else {
+            return .value(json)
+        }
+    }
+    
     deinit {
         douyuWebview.stopLoading()
         douyuWebviewObserver?.invalidate()
@@ -294,29 +336,20 @@ extension VideoGet {
         }
     }
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
-//        4 原画
-//        3 高清
+    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
+//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=20000&platform=web
+        
+        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+        
         return Promise { resolver in
-//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=10000&platform=web
-            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web").response { response in
+            AF.request(u).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                struct Durl: Unmarshaling {
-                    var url: String
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "url")
-                    }
-                }
-                
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let currentQuality: Int = try json.value(for: "data.current_quality")
-                    let acceptQuality: [String] = try json.value(for: "data.accept_quality")
-                    let dUrls: [Durl] = try json.value(for: "data.durl")
-                    let urls = dUrls.map({ $0.url })
-                    resolver.fulfill((currentQuality, acceptQuality, urls))
+                    let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+                    resolver.fulfill(playUrl)
                 } catch let error {
                     resolver.reject(error)
                 }
@@ -668,10 +701,10 @@ extension VideoGet {
                 yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
 
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
-                    playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                    playInfo.videos.enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
-                        stream.videoProfile = $0.element.description
-                        yougetJson.streams["\($0.offset + 1)"] = stream
+                        stream.quality = $0.element.bandwidth
+                        yougetJson.streams[$0.element.description] = stream
                     }
                     
                     guard let audios = playInfo.audios else {
@@ -796,8 +829,8 @@ extension VideoGet {
                     
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
-                        stream.videoProfile = $0.element.description
-                        yougetJson.streams["\($0.offset + 1)"] = stream
+                        stream.quality = $0.element.bandwidth
+                        yougetJson.streams[$0.element.description] = stream
                     }
                     
                     guard let audios = playInfo.audios else {
