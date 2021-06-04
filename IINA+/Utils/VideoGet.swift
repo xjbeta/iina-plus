@@ -111,8 +111,11 @@ class VideoGet: NSObject {
         case .huya:
             return getHuyaInfo(url).map {
                 yougetJson.title = $0.0.title
+                let c = $0.1.count
                 $0.1.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    var s = Stream(url: $0.element)
+                    s.quality = c - $0.offset
+                    yougetJson.streams["线路 \($0.offset + 1)"] = s
                 }
                 return yougetJson
             }
