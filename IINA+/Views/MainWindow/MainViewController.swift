@@ -182,9 +182,6 @@ class MainViewController: NSViewController {
             
             switch site {
             case .douyu:
-                if Preferences.shared.liveDecoder == .internal😀 {
-                    title = key
-                }
                 processes.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
             case .huya, .longzhu, .quanmin, .eGame, .langPlay, .cc163:
                 processes.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)

@@ -23,8 +23,9 @@ struct YouGetJSON: Unmarshaling {
     
     var audio = ""
     
-    var bililiveRid = -1
-    var bilibiliCid = -1
+    var site: LiveSupportList = .unsupported
+    var id = -1
+    
     var duration = -1
 
     init(object: MarshaledObject) throws {
@@ -40,6 +41,7 @@ struct YouGetJSON: Unmarshaling {
 
 struct Stream: Unmarshaling {
     var quality: Int = -1
+    var rate: Int = -1
     var url: String?
     var videoProfile: String?
     var size: Int64?

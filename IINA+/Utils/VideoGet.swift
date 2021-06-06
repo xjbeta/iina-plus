@@ -68,11 +68,13 @@ class VideoGet: NSObject {
         }
         let site = LiveSupportList(url: url.absoluteString)
         
+        yougetJson.site = site
+        
         switch site {
         case .biliLive:
             return getBiliLiveRoomId(url).get {
                 yougetJson.title = $0.title
-                yougetJson.bililiveRid = $0.roomId
+                yougetJson.id = $0.roomId
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
@@ -107,7 +109,11 @@ class VideoGet: NSObject {
             }.then { _ in
                 self.getDouyuUrl(roomId)
             }.map {
-                yougetJson.streams[roomTitle] = Stream(url: $0)
+                yougetJson.title = roomTitle
+                $0.forEach {
+                    yougetJson.streams[$0.0] = $0.1
+                }
+                yougetJson.id = roomId
                 return yougetJson
             }
         case .huya:
@@ -185,9 +191,9 @@ class VideoGet: NSObject {
                 return
             }
             
-            if yougetJSON.bilibiliCid != -1 {
+            if yougetJSON.id != -1 {
                 self.downloadDMFileV2(
-                    cid: yougetJSON.bilibiliCid,
+                    cid: yougetJSON.id,
                     length: yougetJSON.duration,
                     id: id).done {
                     resolver.fulfill(())
@@ -294,8 +300,13 @@ class VideoGet: NSObject {
     }
     
     func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
-        let rid = json.bililiveRid
-        if rid != -1 {
+        
+        guard json.id != -1 else {
+            return .value(json)
+        }
+        
+        switch json.site {
+        case .biliLive:
             let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.quality != -1 else {
@@ -306,7 +317,7 @@ class VideoGet: NSObject {
             if stream.src.count > 0 {
                 return .value(json)
             } else {
-                return self.getBiliLiveJSON("\(rid)", qn).map {
+                return self.getBiliLiveJSON("\(json.id)", qn).map {
                     let urls = $0.durl.map {
                         $0.url
                     }
@@ -316,7 +327,26 @@ class VideoGet: NSObject {
                     return re
                 }
             }
-        } else {
+        case .douyu:
+            let key = json.videos[row].key
+            guard let stream = json.streams[key],
+                  stream.quality != -1 else {
+                return .init(error: VideoGetError.notFountData)
+            }
+            let rate = stream.rate
+            if stream.url != "" {
+                return .value(json)
+            } else {
+                return self.getDouyuUrl(json.id, rate: rate).map {
+                    let url = $0.first {
+                        $0.1.rate == rate
+                    }?.1.url
+                    var re = json
+                    re.streams[key]?.url = url
+                    return re
+                }
+            }
+        default:
             return .value(json)
         }
     }
@@ -523,7 +553,7 @@ extension VideoGet {
         }
     }
     
-    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String) -> Promise<(String)> {
+    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String, rate: Int = 0) -> Promise<[(String, Stream)]> {
 //        window[Object(ae.a)(256042, "9f4f419501570ad13334")]
         return Promise { resolver in
             let time = "\(Int(Date().timeIntervalSince1970))"
@@ -538,7 +568,7 @@ extension VideoGet {
                             "tt": time,
                             "sign": signStr,
                             "cdn": "ali-h5",
-                            "rate": "0",
+                            "rate": "\(rate)",
                             "ver": "Douyu_219111405",
                             "iar": "0",
                             "ive": "0"]
@@ -548,9 +578,19 @@ extension VideoGet {
                     }
                     do {
                         let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                        let rtmpUrl: String = try json.value(for: "data.rtmp_url")
-                        let rtmpLive: String = try json.value(for: "data.rtmp_live")
-                        resolver.fulfill(rtmpUrl + "/" + rtmpLive)
+                        
+                        let play = try DouyuH5Play(object: json)
+                        
+                        let re = play.multirates.map { rate -> (String, Stream) in
+                            var s = Stream(url: "")
+                            s.quality = rate.bit
+                            s.rate = rate.rate
+                            if rate.rate == play.rate {
+                                s.url = play.url
+                            }
+                            return (rate.name, s)
+                        }
+                        resolver.fulfill(re)
                     } catch let error {
                         resolver.reject(error)
                     }
@@ -562,9 +602,9 @@ extension VideoGet {
     }
     
     
-    func getDouyuUrl(_ roomID: Int) -> Promise<(String)> {
-        return getDouyuDid().then { res -> Promise<(String)> in
-                return self.getDouyuRtmpUrl(roomID, didStr: res)
+    func getDouyuUrl(_ roomID: Int, rate: Int = 0) -> Promise<[(String, Stream)]> {
+        return getDouyuDid().then {
+            self.getDouyuRtmpUrl(roomID, didStr: $0, rate: rate)
         }
     }
     
@@ -745,14 +785,14 @@ extension VideoGet {
                     }
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
+                yougetJson.id = try initialStateJson.value(for: "videoData.cid")
                 
                 if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                    let pInt = Int(p),
                    pInt - 1 > 0, pInt - 1 < pages.count {
                     let page = pages[pInt - 1]
                     title += " - P\(pInt) - \(page.part)"
-                    yougetJson.bilibiliCid = page.cid
+                    yougetJson.id = page.cid
                 }
                 
                 yougetJson.title = title
@@ -869,7 +909,7 @@ extension VideoGet {
         var yougetJson = YouGetJSON(url:"")
         yougetJson.streams.removeAll()
         
-        yougetJson.bilibiliCid = bangumiInfo.epInfo.cid
+        yougetJson.id = bangumiInfo.epInfo.cid
         
         return Promise { resolver in
             do {

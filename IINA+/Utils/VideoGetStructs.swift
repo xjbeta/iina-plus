@@ -127,6 +127,40 @@ struct DouyuVideoSelector: VideoSelector {
     let coverUrl: URL?
 }
 
+struct DouyuH5Play: Unmarshaling {
+    let roomId: Int
+    let rtmpUrl: String
+    let rtmpLive: String
+    let rate: Int
+    let multirates: [Rate]
+    
+    let url: String
+    
+    struct Rate: Unmarshaling {
+        let name: String
+        let rate: Int
+        let highBit: Int
+        let bit: Int
+        
+        init(object: MarshaledObject) throws {
+            name = try object.value(for: "name")
+            rate = try object.value(for: "rate")
+            highBit = try object.value(for: "highBit")
+            bit = try object.value(for: "bit")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        roomId = try object.value(for: "data.room_id")
+        rtmpUrl = try object.value(for: "data.rtmp_url")
+        rtmpLive = try object.value(for: "data.rtmp_live")
+        multirates = try object.value(for: "data.multirates")
+        rate = try object.value(for: "data.rate")
+        
+        url = rtmpUrl + "/" + rtmpLive
+    }
+}
+
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
