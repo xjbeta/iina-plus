@@ -512,12 +512,12 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="df3-Sh-GKU"/>
                                             </constraints>
-                                            <popUpButtonCell key="cell" type="push" title="iina" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
+                                            <popUpButtonCell key="cell" type="push" title="IINA" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="J79-gx-iFp">
                                                     <items>
-                                                        <menuItem title="iina" state="on" id="gUQ-m3-Nbi"/>
+                                                        <menuItem title="IINA" state="on" id="gUQ-m3-Nbi"/>
                                                         <menuItem title="mpv" id="Mej-4E-emp">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
