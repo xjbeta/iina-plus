@@ -12,11 +12,11 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="iina+" id="1Xt-HY-uBw">
+                            <menuItem title="IINA+" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="iina+" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="IINA+" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About iina+" id="5kV-Vb-QxS">
+                                        <menuItem title="About IINA+" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
