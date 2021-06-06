@@ -113,11 +113,8 @@ class VideoGet: NSObject {
         case .huya:
             return getHuyaInfo(url).map {
                 yougetJson.title = $0.0.title
-                let c = $0.1.count
                 $0.1.enumerated().forEach {
-                    var s = Stream(url: $0.element)
-                    s.quality = c - $0.offset
-                    yougetJson.streams["线路 \($0.offset + 1)"] = s
+                    yougetJson.streams[$0.element.0] = $0.element.1
                 }
                 return yougetJson
             }
@@ -573,7 +570,7 @@ extension VideoGet {
     
     // MARK: - Huya
     
-    func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [String])> {
+    func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [(String, Stream)])> {
 //        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
         return Promise { resolver in
             AF.request(url.absoluteString).response { response in
@@ -589,8 +586,9 @@ extension VideoGet {
                     return str
                 }()
                 
-                guard let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
-                      let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
+                guard let text = response.text,
+                    let roomInfoData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
+                      let profileInfoData = text.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
                       let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) else {
                     resolver.reject(VideoGetError.notFindUrls)
                     return
@@ -630,11 +628,29 @@ extension VideoGet {
                         urls = huyaStream.data.first?.urls ?? []
                     }
                     
-                    if urls.count > 0 {
-                        resolver.fulfill((info, urls))
-                    } else {
+                    guard urls.count > 0 else {
                         resolver.reject(VideoGetError.notFindUrls)
+                        return
                     }
+                    
+                    let re = huyaStream.vMultiStreamInfo.enumerated().map { info -> (String, Stream) in
+                            
+                        let u = urls.first!.replacingOccurrences(of: "ratio=0", with: "ratio=\(info.element.iBitRate)")
+                        var s = Stream(url: u)
+                        
+                        if info.element.iBitRate == 0,
+                           info.offset == 0 {
+                            s.quality = huyaStream.vMultiStreamInfo.map {
+                                $0.iBitRate
+                            }.max() ?? 999999999
+                            s.quality += 1
+                        } else {
+                            s.quality = info.element.iBitRate
+                        }
+                        return (info.element.sDisplayName, s)
+                    }
+                    
+                    resolver.fulfill((info, re))
                 } catch let error {
                     resolver.reject(error)
                 }

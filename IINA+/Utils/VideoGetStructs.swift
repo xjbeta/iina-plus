@@ -162,10 +162,12 @@ struct HuyaStream: Unmarshaling {
     struct StreamInfo: Unmarshaling {
         var sDisplayName: String
         var iBitRate: Int
+        var iHEVCBitRate: Int
         
         init(object: MarshaledObject) throws {
             sDisplayName = try object.value(for: "sDisplayName")
             iBitRate = try object.value(for: "iBitRate")
+            iHEVCBitRate = try object.value(for: "iHEVCBitRate")
         }
     }
     
