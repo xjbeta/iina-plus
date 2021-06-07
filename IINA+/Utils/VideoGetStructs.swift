@@ -48,6 +48,38 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct BiliLivePlayUrl: Unmarshaling {
+    let currentQuality: Int
+    let acceptQuality: [String]
+    let currentQn: Int
+    let qualityDescription: [QualityDescription]
+    let durl: [Durl]
+    
+    struct QualityDescription: Unmarshaling {
+        let qn: Int
+        let desc: String
+        init(object: MarshaledObject) throws {
+            qn = try object.value(for: "qn")
+            desc = try object.value(for: "desc")
+        }
+    }
+    
+    struct Durl: Unmarshaling {
+        var url: String
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "url")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        currentQuality = try object.value(for: "data.current_quality")
+        acceptQuality = try object.value(for: "data.accept_quality")
+        currentQn = try object.value(for: "data.current_qn")
+        qualityDescription = try object.value(for: "data.quality_description")
+        durl = try object.value(for: "data.durl")
+    }
+}
+
 struct BilibiliInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -95,6 +127,40 @@ struct DouyuVideoSelector: VideoSelector {
     let coverUrl: URL?
 }
 
+struct DouyuH5Play: Unmarshaling {
+    let roomId: Int
+    let rtmpUrl: String
+    let rtmpLive: String
+    let rate: Int
+    let multirates: [Rate]
+    
+    let url: String
+    
+    struct Rate: Unmarshaling {
+        let name: String
+        let rate: Int
+        let highBit: Int
+        let bit: Int
+        
+        init(object: MarshaledObject) throws {
+            name = try object.value(for: "name")
+            rate = try object.value(for: "rate")
+            highBit = try object.value(for: "highBit")
+            bit = try object.value(for: "bit")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        roomId = try object.value(for: "data.room_id")
+        rtmpUrl = try object.value(for: "data.rtmp_url")
+        rtmpLive = try object.value(for: "data.rtmp_live")
+        multirates = try object.value(for: "data.multirates")
+        rate = try object.value(for: "data.rate")
+        
+        url = rtmpUrl + "/" + rtmpLive
+    }
+}
+
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -130,10 +196,12 @@ struct HuyaStream: Unmarshaling {
     struct StreamInfo: Unmarshaling {
         var sDisplayName: String
         var iBitRate: Int
+        var iHEVCBitRate: Int
         
         init(object: MarshaledObject) throws {
             sDisplayName = try object.value(for: "sDisplayName")
             iBitRate = try object.value(for: "iBitRate")
+            iHEVCBitRate = try object.value(for: "iHEVCBitRate")
         }
     }
     
@@ -577,5 +645,83 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
         liveKey = try object.value(for: "data.live_info.live_key")
         
         cover = "https://play-web-assets.lang.live/public/live/screenshot/" + liveID   
+    }
+}
+
+// MARK: - CC163
+
+struct CC163Info: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var ccid: String
+    var site: LiveSupportList
+    
+    init(object: MarshaledObject) throws {
+        site = .cc163
+        title = try object.value(for: "props.pageProps.roomInfoInitData.live.title")
+        name = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.nickname")
+        avatar = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.purl")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        cover = avatar
+        let living: Bool? = try? object.value(for: "props.pageProps.roomInfoInitData.is_show_live_rcm")
+        
+        ccid = try object.value(for: "query.ccid")
+        
+        isLiving = living ?? false
+    }
+}
+
+struct CC163ZTInfo {
+    var name: String = ""
+    var ccid: String = ""
+    var channel: String = ""
+    var cid: String = ""
+    var index: String = ""
+    var roomid: String = ""
+    var isLiving: Bool = false
+}
+
+struct CC163VideoSelector: VideoSelector {
+    let site = LiveSupportList.cc163
+    let index: Int
+    let title: String
+    let ccid: String
+    let isLiving: Bool
+    let url: String
+    let id: Int = -1
+    let coverUrl: URL? = nil
+}
+
+struct CC163ChannelInfo: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var site: LiveSupportList
+    
+    var ccid: Int
+
+    init(object: MarshaledObject) throws {
+        site = .cc163
+        title = try object.value(for: "title")
+        name = try object.value(for: "nickname")
+        cover = try object.value(for: "cover")
+        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        
+        if let nolive: Int = try? object.value(for: "nolive"),
+           nolive == 1 {
+            ccid = try object.value(for: "roomid")
+            avatar = cover
+            isLiving = false
+        } else {
+            ccid = try object.value(for: "ccid")
+            avatar = try object.value(for: "purl")
+            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+            isLiving = true
+        }
     }
 }

@@ -8,3 +8,4 @@ github "utahiosmac/Marshal"
 github "xjbeta/Cache"
 github "krzyzanowskim/CryptoSwift"
 github "apple/swift-protobuf" ~> 1.0
+github "scinfu/SwiftSoup"

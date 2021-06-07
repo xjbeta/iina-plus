@@ -127,6 +127,7 @@ class MainViewController: NSViewController {
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
+        let processes = Processes.shared
         
         func clear() {
             isSearching = false
@@ -135,38 +136,44 @@ class MainViewController: NSViewController {
         }
         
         guard row != -1,
-            let yougetJSON = yougetResult,
-            let key = yougetResult?.streams.keys.sorted()[row],
-            let stream = yougetResult?.streams[key],
-            let url = URL(string: searchField.stringValue) else {
+            var yougetJSON = yougetResult else {
             if isSearching {
-                Processes.shared.stopDecodeURL()
+                processes.stopDecodeURL()
             }
             clear()
             return
         }
         clear()
         
-        var urlStr: [String] = []
-        if let videoUrl = stream.url {
-            urlStr = [videoUrl]
-        } else {
-            urlStr = stream.src
-        }
-        var title = yougetJSON.title
-        let site = LiveSupportList(url: url.absoluteString)
+        let videoGet = processes.videoGet
         
-        Processes.shared.videoGet.prepareDanmakuFile(
-            url,
-            yougetJSON: yougetJSON,
-            id: uuid).done {
+        videoGet.prepareVideoUrl(yougetJSON, row).get {
+            yougetJSON = $0
+        }.then { _ in
+            videoGet.prepareDanmakuFile(
+                yougetJSON: yougetJSON,
+                id: uuid)
+        }.done {
+            
+            let key = yougetJSON.videos[row].key
+            let stream = yougetJSON.streams[key]
+            
+            var urlStr: [String] = []
+            if let videoUrl = stream?.url {
+                urlStr = [videoUrl]
+            } else {
+                urlStr = stream?.src ?? []
+            }
+            var title = yougetJSON.title
+            let site = LiveSupportList(url: self.searchField.stringValue)
+            
             
             // init Danmaku
             if Preferences.shared.enableDanmaku,
-               Processes.shared.isDanmakuVersion() {
+               processes.isDanmakuVersion() {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya, .eGame, .langPlay:
-                    self.httpServer.register(uuid, site: site, url: url.absoluteString)
+                    self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
                 }
@@ -175,18 +182,15 @@ class MainViewController: NSViewController {
             
             switch site {
             case .douyu:
-                if Preferences.shared.liveDecoder == .internal😀 {
-                    title = key
-                }
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
-            case .huya, .longzhu, .quanmin, .eGame, .langPlay:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
+                processes.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
+            case .huya, .longzhu, .quanmin, .eGame, .langPlay, .cc163:
+                processes.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
             case .bilibili, .bangumi:
-                Processes.shared.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: url.absoluteString)
+                processes.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: self.searchField.stringValue)
             case .biliLive:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .bililive, uuid: uuid)
+                processes.openWithPlayer(urlStr, title: title, options: .bililive, uuid: uuid)
             case .unsupported:
-                Processes.shared.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
+                processes.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
             }
 
             }.catch {
@@ -432,7 +436,7 @@ class MainViewController: NSViewController {
         return Promise { resolver in
             
             let videoGet = Processes.shared.videoGet
-            let str = url
+            var str = url
             yougetResult = nil
             guard str.isUrl,
                   let url = URL(string: str) else {
@@ -514,16 +518,42 @@ class MainViewController: NSViewController {
                 videoGet.getDouyuHtml(str).done {
                     if $0.roomIds.count > 0 {
                         let infos = $0.roomIds.enumerated().map {
-                            DouyuVideoSelector(index: $0.offset,
-                                               title: "频道 - \($0.offset + 1) - \($0.element)",
-                                               id: Int($0.element) ?? 0,
-                                               coverUrl: nil)
+                            DouyuVideoSelector(
+                                index: $0.offset,
+                                title: "频道 - \($0.offset + 1) - \($0.element)",
+                                id: Int($0.element) ?? 0,
+                                coverUrl: nil)
                         }
                         
                         self.showSelectVideo("", infos: infos)
                         resolver.fulfill(())
                     } else {
                         decodeUrl()
+                    }
+                }.catch {
+                    resolver.reject($0)
+                }
+            } else if url.host == "cc.163.com" {
+                videoGet.getCC163State(url.absoluteString).done {
+                    if let i = $0.info as? CC163Info {
+                        let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
+                        str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"
+                        decodeUrl()
+                    } else if let i = $0.info as? CC163ChannelInfo {
+                        let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
+                        str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"
+                        decodeUrl()
+                    } else {
+                        let infos = $0.list.enumerated().map {
+                            CC163VideoSelector(
+                                index: $0.offset,
+                                title: $0.element.name,
+                                ccid: $0.element.ccid,
+                                isLiving: $0.element.isLiving,
+                                url: $0.element.channel)
+                        }
+                        self.showSelectVideo("", infos: infos)
+                        resolver.fulfill(())
                     }
                 }.catch {
                     resolver.reject($0)
@@ -659,13 +689,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         case suggestionsTableView:
             if let obj = yougetResult {
                 if let view = tableView.makeView(withIdentifier: .suggestionsTableCellView, owner: self) as? SuggestionsTableCellView {
-                    let streams = obj.streams.sorted {
-                            $0.key < $1.key
-                        }.sorted {
-                            $0.value.size ?? 0 > $1.value.size ?? 0
-                    }
-                    let stream = streams[row]
-                    view.setStream(stream)
+                    let s = obj.videos[row]
+                    view.setStream(s)
                     return view
                 }
             } else {

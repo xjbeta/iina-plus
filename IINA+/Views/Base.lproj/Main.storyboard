@@ -12,11 +12,11 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="iina+" id="1Xt-HY-uBw">
+                            <menuItem title="IINA+" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="iina+" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="IINA+" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About iina+" id="5kV-Vb-QxS">
+                                        <menuItem title="About IINA+" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
@@ -243,10 +243,10 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="iina_" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="IINA_" customModuleProvider="target"/>
                 <customObject id="dO5-7Y-WGR" customClass="SUUpdater"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-                <customObject id="XfU-aw-sKA" customClass="MainMenu" customModule="iina_" customModuleProvider="target"/>
+                <customObject id="XfU-aw-sKA" customClass="MainMenu" customModule="IINA_" customModuleProvider="target"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1722" y="-287"/>
@@ -262,7 +262,7 @@
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
             <objects>
-                <windowController showSeguePresentationStyle="single" id="o5z-uq-6S0" customClass="PreferencesWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController showSeguePresentationStyle="single" id="o5z-uq-6S0" customClass="PreferencesWindowController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="tRF-S1-nJm">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -283,7 +283,7 @@
         <!--Preferences Tab View Controller-->
         <scene sceneID="cdr-KH-4tz">
             <objects>
-                <tabViewController tabStyle="toolbar" id="oNv-oZ-vTr" customClass="PreferencesTabViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController tabStyle="toolbar" id="oNv-oZ-vTr" customClass="PreferencesTabViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem label="General" image="NSPreferencesGeneral" id="pnO-IN-deJ"/>
                         <tabViewItem label="Bilibili" image="NSUserAccounts" id="PDx-hz-blM"/>
@@ -312,7 +312,7 @@
         <!--Gereral View Controller-->
         <scene sceneID="3e1-6l-J64">
             <objects>
-                <viewController id="LMy-Ki-0Sg" customClass="GereralViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="LMy-Ki-0Sg" customClass="GereralViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="UAF-uC-alO">
                         <rect key="frame" x="0.0" y="0.0" width="324" height="242"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -512,12 +512,12 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="df3-Sh-GKU"/>
                                             </constraints>
-                                            <popUpButtonCell key="cell" type="push" title="iina" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
+                                            <popUpButtonCell key="cell" type="push" title="IINA" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="gUQ-m3-Nbi" id="nrZ-NI-dX2">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="J79-gx-iFp">
                                                     <items>
-                                                        <menuItem title="iina" state="on" id="gUQ-m3-Nbi"/>
+                                                        <menuItem title="IINA" state="on" id="gUQ-m3-Nbi"/>
                                                         <menuItem title="mpv" id="Mej-4E-emp">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
@@ -586,14 +586,14 @@
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="6cO-vV-gCp" customClass="NSFontManager"/>
-                <customObject id="eYJ-hi-toS" customClass="Preferences" customModule="iina_" customModuleProvider="target"/>
+                <customObject id="eYJ-hi-toS" customClass="Preferences" customModule="IINA_" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="1607" y="954"/>
         </scene>
         <!--Bilibili View Controller-->
         <scene sceneID="wPy-Mb-sDC">
             <objects>
-                <viewController id="Wb6-iO-l3U" customClass="BilibiliViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Wb6-iO-l3U" customClass="BilibiliViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="p7j-t8-5jl">
                         <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -753,7 +753,7 @@
         <!--Advanced View Controller-->
         <scene sceneID="Vj7-6k-RdA">
             <objects>
-                <viewController id="nwS-9o-qDB" customClass="AdvancedViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="nwS-9o-qDB" customClass="AdvancedViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Bv0-yb-uMX">
                         <rect key="frame" x="0.0" y="0.0" width="370" height="211"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -964,7 +964,7 @@
         <!--Bilibili Login View Controller-->
         <scene sceneID="HYh-0z-JES">
             <objects>
-                <viewController id="hlz-mk-NWP" customClass="BilibiliLoginViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="hlz-mk-NWP" customClass="BilibiliLoginViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="LWF-An-anX">
                         <rect key="frame" x="0.0" y="0.0" width="490" height="450"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1072,7 +1072,7 @@ Gw
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MainWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MainWindowController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="IINA Plus" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="MainWindow" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
                         <rect key="contentRect" x="809" y="251" width="500" height="650"/>
@@ -1118,7 +1118,7 @@ Gw
         <!--Sidebar View Controller-->
         <scene sceneID="fyY-hb-PBe">
             <objects>
-                <viewController id="UAs-CA-fHY" customClass="SidebarViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="UAs-CA-fHY" customClass="SidebarViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="wKp-mP-wYT">
                         <rect key="frame" x="0.0" y="0.0" width="68" height="648"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1127,13 +1127,13 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="68" height="648"/>
                                 <subviews>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="343" width="68" height="265"/>
+                                        <rect key="frame" x="0.0" y="346" width="68" height="262"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="265"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="262"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="iina_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="265"/>
+                                                <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="IINA_" customModuleProvider="target">
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="262"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1151,11 +1151,11 @@ Gw
                                                             </textFieldCell>
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
-                                                                <tableCellView identifier="SidebarTableCellView" id="Fzh-n7-uTG" customClass="SidebarTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                <tableCellView identifier="SidebarTableCellView" id="Fzh-n7-uTG" customClass="SidebarTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                     <rect key="frame" x="0.0" y="12" width="67" height="49"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
-                                                                        <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="30P-h9-fzN" customClass="SideBarImageView" customModule="iina_" customModuleProvider="target">
+                                                                        <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="30P-h9-fzN" customClass="SideBarImageView" customModule="IINA_" customModuleProvider="target">
                                                                             <rect key="frame" x="11" y="2" width="46" height="46"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" secondItem="30P-h9-fzN" secondAttribute="height" multiplier="1:1" id="LOy-Ls-e3B"/>
@@ -1225,7 +1225,7 @@ Gw
         <!--Main View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <customView key="view" id="r1P-qL-yvV" userLabel="View">
                         <rect key="frame" x="0.0" y="0.0" width="378" height="649"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1264,7 +1264,7 @@ Gw
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
-                                                                            <tableCellView identifier="LiveUrlTableCellView" id="oVI-B4-xgv" customClass="LiveUrlTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                            <tableCellView identifier="LiveUrlTableCellView" id="oVI-B4-xgv" customClass="LiveUrlTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="1" width="395" height="20"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
@@ -1286,7 +1286,7 @@ Gw
                                                                                     <outlet property="textField" destination="lsr-oh-YEW" id="Jbp-ue-iy8"/>
                                                                                 </connections>
                                                                             </tableCellView>
-                                                                            <tableCellView identifier="LiveStatusTableCellView" id="OMv-zq-neh" customClass="LiveStatusTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                            <tableCellView identifier="LiveStatusTableCellView" id="OMv-zq-neh" customClass="LiveStatusTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="23" width="395" height="60"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
@@ -1359,7 +1359,7 @@ Gw
                                                                                     <outlet property="userCoverImageView" destination="kWK-JR-5PF" id="KY3-OS-1tv"/>
                                                                                 </connections>
                                                                             </tableCellView>
-                                                                            <customView identifier="MainWindowTableRowView" id="Pw9-d9-Yo4" customClass="MainWindowTableRowView" customModule="iina_" customModuleProvider="target">
+                                                                            <customView identifier="MainWindowTableRowView" id="Pw9-d9-Yo4" customClass="MainWindowTableRowView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="85" width="395" height="55"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             </customView>
@@ -1462,7 +1462,7 @@ Gw
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
-                                                                            <tableCellView identifier="BilibiliCardTableCellView" id="kat-6P-xcH" customClass="BilibiliCardTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                            <tableCellView identifier="BilibiliCardTableCellView" id="kat-6P-xcH" customClass="BilibiliCardTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="0.0" width="386" height="110"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
@@ -1497,7 +1497,7 @@ Gw
                                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fxk-sb-jHl">
                                                                                         <rect key="frame" x="178" y="53" width="4" height="14"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" id="H6X-QJ-IXX">
-                                                                                            <customFormatter key="formatter" id="wis-kV-jaR" customClass="VideoViewsFormatter" customModule="iina_" customModuleProvider="target"/>
+                                                                                            <customFormatter key="formatter" id="wis-kV-jaR" customClass="VideoViewsFormatter" customModule="IINA_" customModuleProvider="target"/>
                                                                                             <font key="font" metaFont="message" size="11"/>
                                                                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1506,7 +1506,7 @@ Gw
                                                                                             <binding destination="kat-6P-xcH" name="value" keyPath="objectValue.views" id="eva-JF-cIo"/>
                                                                                         </connections>
                                                                                     </textField>
-                                                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="A3d-KV-bZ7" customClass="BilibiliCardImageBoxView" customModule="iina_" customModuleProvider="target">
+                                                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="A3d-KV-bZ7" customClass="BilibiliCardImageBoxView" customModule="IINA_" customModuleProvider="target">
                                                                                         <rect key="frame" x="3" y="8" width="169" height="94"/>
                                                                                         <subviews>
                                                                                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fz7-9I-cWr">
@@ -1514,7 +1514,7 @@ Gw
                                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="2gK-pa-5zY"/>
                                                                                                 <color key="contentTintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                             </imageView>
-                                                                                            <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVj-gu-ivu" customClass="BilibiliCardProgressView" customModule="iina_" customModuleProvider="target">
+                                                                                            <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVj-gu-ivu" customClass="BilibiliCardProgressView" customModule="IINA_" customModuleProvider="target">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="169" height="4"/>
                                                                                                 <constraints>
                                                                                                     <constraint firstAttribute="height" constant="4" id="eJP-xz-Y7N"/>
@@ -1524,7 +1524,7 @@ Gw
                                                                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fiY-gH-vb8">
                                                                                                 <rect key="frame" x="160" y="5" width="4" height="15"/>
                                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" drawsBackground="YES" id="Pn8-Yp-6gK">
-                                                                                                    <customFormatter key="formatter" id="pnk-Zb-ENt" customClass="VideoDurationFormatter" customModule="iina_" customModuleProvider="target"/>
+                                                                                                    <customFormatter key="formatter" id="pnk-Zb-ENt" customClass="VideoDurationFormatter" customModule="IINA_" customModuleProvider="target"/>
                                                                                                     <font key="font" metaFont="systemSemibold" size="12"/>
                                                                                                     <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1571,7 +1571,7 @@ Gw
                                                                                     <outlet property="progressView" destination="gVj-gu-ivu" id="Njg-kb-c3g"/>
                                                                                 </connections>
                                                                             </tableCellView>
-                                                                            <customView identifier="MainWindowTableRowView" id="25R-ux-QnQ" customClass="MainWindowTableRowView" customModule="iina_" customModuleProvider="target">
+                                                                            <customView identifier="MainWindowTableRowView" id="25R-ux-QnQ" customClass="MainWindowTableRowView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="110" width="386" height="96"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             </customView>
@@ -1634,7 +1634,7 @@ Gw
                                                         <rect key="frame" x="0.0" y="0.0" width="340" height="570"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
-                                                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="iina_" customModuleProvider="target">
+                                                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="IINA_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="340" height="570"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <size key="intercellSpacing" width="3" height="0.0"/>
@@ -1653,7 +1653,7 @@ Gw
                                                                         </textFieldCell>
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
-                                                                            <tableCellView identifier="WaitingTableCellView" id="1HF-l3-tIB" customClass="WaitingTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                            <tableCellView identifier="WaitingTableCellView" id="1HF-l3-tIB" customClass="WaitingTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="0.0" width="337" height="30"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
@@ -1687,7 +1687,7 @@ Gw
                                                                                     <outlet property="waitProgressIndicator" destination="zbT-Mz-jKJ" id="2Va-Xw-T7x"/>
                                                                                 </connections>
                                                                             </tableCellView>
-                                                                            <tableCellView identifier="SuggestionsTableCellView" id="yHG-6J-zmG" customClass="SuggestionsTableCellView" customModule="iina_" customModuleProvider="target">
+                                                                            <tableCellView identifier="SuggestionsTableCellView" id="yHG-6J-zmG" customClass="SuggestionsTableCellView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="30" width="337" height="30"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
@@ -1715,7 +1715,7 @@ Gw
                                                                                     <outlet property="textField" destination="0hM-FQ-dIv" id="A1s-xh-blc"/>
                                                                                 </connections>
                                                                             </tableCellView>
-                                                                            <customView identifier="MainWindowTableRowView" id="Pr6-25-nCD" customClass="MainWindowTableRowView" customModule="iina_" customModuleProvider="target">
+                                                                            <customView identifier="MainWindowTableRowView" id="Pr6-25-nCD" customClass="MainWindowTableRowView" customModule="IINA_" customModuleProvider="target">
                                                                                 <rect key="frame" x="1" y="60" width="337" height="96"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                             </customView>
@@ -1836,7 +1836,7 @@ Gw
         <!--Font Selector View Controller-->
         <scene sceneID="yR4-fw-gag">
             <objects>
-                <viewController showSeguePresentationStyle="single" id="8V6-VC-QHB" customClass="FontSelectorViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController showSeguePresentationStyle="single" id="8V6-VC-QHB" customClass="FontSelectorViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Rn2-SU-Osm">
                         <rect key="frame" x="0.0" y="0.0" width="250" height="86"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1977,7 +1977,7 @@ Gw
         <!--Add Bookmark View Controller-->
         <scene sceneID="blH-EK-Tgd">
             <objects>
-                <viewController id="Rej-VG-aRz" customClass="AddBookmarkViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Rej-VG-aRz" customClass="AddBookmarkViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="4EU-ZT-haP">
                         <rect key="frame" x="0.0" y="0.0" width="338" height="112"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -2040,7 +2040,7 @@ Gw
         <!--Select Video View Controller-->
         <scene sceneID="I5S-Dk-rFP">
             <objects>
-                <viewController id="8fg-cx-WNn" customClass="SelectVideoViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="8fg-cx-WNn" customClass="SelectVideoViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="YVv-FP-caQ">
                         <rect key="frame" x="0.0" y="0.0" width="340" height="358"/>
                         <autoresizingMask key="autoresizingMask"/>

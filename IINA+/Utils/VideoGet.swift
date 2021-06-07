@@ -13,6 +13,7 @@ import Marshal
 import CommonCrypto
 import JavaScriptCore
 import WebKit
+import SwiftSoup
 
 enum LiveSupportList: String {
     case biliLive = "live.bilibili.com"
@@ -25,6 +26,7 @@ enum LiveSupportList: String {
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
     case langPlay = "play.lang.live"
+    case cc163 = "cc.163.com"
     case unsupported
     
     init(url: String) {
@@ -66,15 +68,29 @@ class VideoGet: NSObject {
         }
         let site = LiveSupportList(url: url.absoluteString)
         
+        yougetJson.site = site
+        
         switch site {
         case .biliLive:
             return getBiliLiveRoomId(url).get {
                 yougetJson.title = $0.title
+                yougetJson.id = $0.roomId
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
-                $0.2.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                let urls = $0.durl.map {
+                    $0.url
+                }
+                let cqn = $0.currentQn
+                
+                $0.qualityDescription.forEach {
+                    var s = Stream(url: "")
+                    s.quality = $0.qn
+                    if cqn == $0.qn {
+                        s.src = urls
+                        s.url = urls.first
+                    }
+                    yougetJson.streams[$0.desc] = s
                 }
                 return yougetJson
             }
@@ -93,14 +109,18 @@ class VideoGet: NSObject {
             }.then { _ in
                 self.getDouyuUrl(roomId)
             }.map {
-                yougetJson.streams[roomTitle] = Stream(url: $0)
+                yougetJson.title = roomTitle
+                $0.forEach {
+                    yougetJson.streams[$0.0] = $0.1
+                }
+                yougetJson.id = roomId
                 return yougetJson
             }
         case .huya:
             return getHuyaInfo(url).map {
                 yougetJson.title = $0.0.title
                 $0.1.enumerated().forEach {
-                    yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    yougetJson.streams[$0.element.0] = $0.element.1
                 }
                 return yougetJson
             }
@@ -110,15 +130,14 @@ class VideoGet: NSObject {
                 $0.1.sorted {
                     $0.levelType > $1.levelType
                 }.enumerated().forEach {
-                    var stream = Stream(url: $0.element.playUrl)
-                    stream.videoProfile = $0.element.desc
-                    yougetJson.streams["\($0.offset + 1)"] = stream
+                    var s = Stream(url: $0.element.playUrl)
+                    s.quality = $0.element.levelType
+                    yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
             }
         case .bilibili:
             return getBilibili(url)
-            
         case .bangumi:
             return getBangumi(url)
         case .langPlay:
@@ -130,21 +149,51 @@ class VideoGet: NSObject {
                 }
                 return yougetJson
             }
+        case .cc163:
+            let pcs = url.pathComponents
+            
+            if pcs.count == 4,
+               pcs[1] == "ccid" {
+                let ccid = pcs[2]
+                yougetJson.title = String(data: Data(base64Encoded: pcs[3]) ?? Data(), encoding: .utf8) ?? ""
+                
+                return getCC163(ccid).map {
+                    $0.enumerated().forEach {
+                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    }
+                    return yougetJson
+                }
+                
+            } else {
+                return getCC163Info(url).get {
+                    yougetJson.title = $0.title
+                }.compactMap {
+                    $0 as? CC163Info
+                }.then {
+                    self.getCC163("\($0.ccid)")
+                }.map {
+                    $0.enumerated().forEach {
+                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                    }
+                    return yougetJson
+                }
+                
+            }
         default:
             return .init(error: VideoGetError.notSupported)
         }
     }
     
-    func prepareDanmakuFile(_ url: URL, yougetJSON: YouGetJSON, id: String) -> Promise<()> {
+    func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         return Promise { resolver in
             guard Preferences.shared.enableDanmaku else {
                 resolver.fulfill(())
                 return
             }
             
-            if url.host == "www.bilibili.com" {
+            if yougetJSON.id != -1 {
                 self.downloadDMFileV2(
-                    cid: yougetJSON.bilibiliCid,
+                    cid: yougetJSON.id,
                     length: yougetJSON.duration,
                     id: id).done {
                     resolver.fulfill(())
@@ -228,6 +277,16 @@ class VideoGet: NSObject {
                 info.isLiving = true
                 return info
             }
+        case .cc163:
+            if url.pathComponents.count == 4,
+               url.pathComponents[1] == "ccid" {
+                var info = BilibiliInfo()
+                info.site = .cc163
+                info.isLiving = true
+                return .value(info)
+            } else {
+                return getCC163Info(url)
+            }
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)
@@ -237,6 +296,58 @@ class VideoGet: NSObject {
                 
                 return .value(info)
             }
+        }
+    }
+    
+    func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
+        
+        guard json.id != -1 else {
+            return .value(json)
+        }
+        
+        switch json.site {
+        case .biliLive:
+            let key = json.videos[row].key
+            guard let stream = json.streams[key],
+                  stream.quality != -1 else {
+                return .init(error: VideoGetError.notFountData)
+            }
+            let qn = stream.quality
+            
+            if stream.src.count > 0 {
+                return .value(json)
+            } else {
+                return self.getBiliLiveJSON("\(json.id)", qn).map {
+                    let urls = $0.durl.map {
+                        $0.url
+                    }
+                    var re = json
+                    re.streams[key]?.url = urls.first
+                    re.streams[key]?.src = urls
+                    return re
+                }
+            }
+        case .douyu:
+            let key = json.videos[row].key
+            guard let stream = json.streams[key],
+                  stream.quality != -1 else {
+                return .init(error: VideoGetError.notFountData)
+            }
+            let rate = stream.rate
+            if stream.url != "" {
+                return .value(json)
+            } else {
+                return self.getDouyuUrl(json.id, rate: rate).map {
+                    let url = $0.first {
+                        $0.1.rate == rate
+                    }?.1.url
+                    var re = json
+                    re.streams[key]?.url = url
+                    return re
+                }
+            }
+        default:
+            return .value(json)
         }
     }
     
@@ -294,29 +405,20 @@ extension VideoGet {
         }
     }
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 10000) -> Promise<(Int, [String], [String])> {
-//        4 原画
-//        3 高清
+    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
+//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=20000&platform=web
+        
+        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+        
         return Promise { resolver in
-//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=10000&platform=web
-            AF.request("https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web").response { response in
+            AF.request(u).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                struct Durl: Unmarshaling {
-                    var url: String
-                    init(object: MarshaledObject) throws {
-                        url = try object.value(for: "url")
-                    }
-                }
-                
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let currentQuality: Int = try json.value(for: "data.current_quality")
-                    let acceptQuality: [String] = try json.value(for: "data.accept_quality")
-                    let dUrls: [Durl] = try json.value(for: "data.durl")
-                    let urls = dUrls.map({ $0.url })
-                    resolver.fulfill((currentQuality, acceptQuality, urls))
+                    let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+                    resolver.fulfill(playUrl)
                 } catch let error {
                     resolver.reject(error)
                 }
@@ -451,7 +553,7 @@ extension VideoGet {
         }
     }
     
-    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String) -> Promise<(String)> {
+    private func getDouyuRtmpUrl(_ roomID: Int, didStr: String, rate: Int = 0) -> Promise<[(String, Stream)]> {
 //        window[Object(ae.a)(256042, "9f4f419501570ad13334")]
         return Promise { resolver in
             let time = "\(Int(Date().timeIntervalSince1970))"
@@ -466,7 +568,7 @@ extension VideoGet {
                             "tt": time,
                             "sign": signStr,
                             "cdn": "ali-h5",
-                            "rate": "0",
+                            "rate": "\(rate)",
                             "ver": "Douyu_219111405",
                             "iar": "0",
                             "ive": "0"]
@@ -476,9 +578,19 @@ extension VideoGet {
                     }
                     do {
                         let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                        let rtmpUrl: String = try json.value(for: "data.rtmp_url")
-                        let rtmpLive: String = try json.value(for: "data.rtmp_live")
-                        resolver.fulfill(rtmpUrl + "/" + rtmpLive)
+                        
+                        let play = try DouyuH5Play(object: json)
+                        
+                        let re = play.multirates.map { rate -> (String, Stream) in
+                            var s = Stream(url: "")
+                            s.quality = rate.bit
+                            s.rate = rate.rate
+                            if rate.rate == play.rate {
+                                s.url = play.url
+                            }
+                            return (rate.name, s)
+                        }
+                        resolver.fulfill(re)
                     } catch let error {
                         resolver.reject(error)
                     }
@@ -490,15 +602,15 @@ extension VideoGet {
     }
     
     
-    func getDouyuUrl(_ roomID: Int) -> Promise<(String)> {
-        return getDouyuDid().then { res -> Promise<(String)> in
-                return self.getDouyuRtmpUrl(roomID, didStr: res)
+    func getDouyuUrl(_ roomID: Int, rate: Int = 0) -> Promise<[(String, Stream)]> {
+        return getDouyuDid().then {
+            self.getDouyuRtmpUrl(roomID, didStr: $0, rate: rate)
         }
     }
     
     // MARK: - Huya
     
-    func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [String])> {
+    func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [(String, Stream)])> {
 //        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
         return Promise { resolver in
             AF.request(url.absoluteString).response { response in
@@ -514,8 +626,9 @@ extension VideoGet {
                     return str
                 }()
                 
-                guard let roomInfoData = response.text?.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
-                      let profileInfoData = response.text?.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
+                guard let text = response.text,
+                    let roomInfoData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
+                      let profileInfoData = text.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
                       let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) else {
                     resolver.reject(VideoGetError.notFindUrls)
                     return
@@ -555,11 +668,29 @@ extension VideoGet {
                         urls = huyaStream.data.first?.urls ?? []
                     }
                     
-                    if urls.count > 0 {
-                        resolver.fulfill((info, urls))
-                    } else {
+                    guard urls.count > 0 else {
                         resolver.reject(VideoGetError.notFindUrls)
+                        return
                     }
+                    
+                    let re = huyaStream.vMultiStreamInfo.enumerated().map { info -> (String, Stream) in
+                            
+                        let u = urls.first!.replacingOccurrences(of: "ratio=0", with: "ratio=\(info.element.iBitRate)")
+                        var s = Stream(url: u)
+                        
+                        if info.element.iBitRate == 0,
+                           info.offset == 0 {
+                            s.quality = huyaStream.vMultiStreamInfo.map {
+                                $0.iBitRate
+                            }.max() ?? 999999999
+                            s.quality += 1
+                        } else {
+                            s.quality = info.element.iBitRate
+                        }
+                        return (info.element.sDisplayName, s)
+                    }
+                    
+                    resolver.fulfill((info, re))
                 } catch let error {
                     resolver.reject(error)
                 }
@@ -654,24 +785,24 @@ extension VideoGet {
                     }
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
-                yougetJson.bilibiliCid = try initialStateJson.value(for: "videoData.cid")
+                yougetJson.id = try initialStateJson.value(for: "videoData.cid")
                 
                 if let p = url.query?.replacingOccurrences(of: "p=", with: ""),
                    let pInt = Int(p),
                    pInt - 1 > 0, pInt - 1 < pages.count {
                     let page = pages[pInt - 1]
                     title += " - P\(pInt) - \(page.part)"
-                    yougetJson.bilibiliCid = page.cid
+                    yougetJson.id = page.cid
                 }
                 
                 yougetJson.title = title
                 yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
 
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
-                    playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
+                    playInfo.videos.enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
-                        stream.videoProfile = $0.element.description
-                        yougetJson.streams["\($0.offset + 1)"] = stream
+                        stream.quality = $0.element.bandwidth
+                        yougetJson.streams[$0.element.description] = stream
                     }
                     
                     guard let audios = playInfo.audios else {
@@ -778,7 +909,7 @@ extension VideoGet {
         var yougetJson = YouGetJSON(url:"")
         yougetJson.streams.removeAll()
         
-        yougetJson.bilibiliCid = bangumiInfo.epInfo.cid
+        yougetJson.id = bangumiInfo.epInfo.cid
         
         return Promise { resolver in
             do {
@@ -796,8 +927,8 @@ extension VideoGet {
                     
                     playInfo.videos.sorted(by: { $0.id > $1.id }).enumerated().forEach {
                         var stream = Stream(url: $0.element.url)
-                        stream.videoProfile = $0.element.description
-                        yougetJson.streams["\($0.offset + 1)"] = stream
+                        stream.quality = $0.element.bandwidth
+                        yougetJson.streams[$0.element.description] = stream
                     }
                     
                     guard let audios = playInfo.audios else {
@@ -1014,7 +1145,7 @@ extension VideoGet {
         }
     }
     
-// MARK: - LangPlay
+    // MARK: - LangPlay
     func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
         let url = "https://game-api.lang.live/webapi/v1/room/info?room_id=\(roomID)"
         return Promise { resolver in
@@ -1032,7 +1163,136 @@ extension VideoGet {
             }
         }
     }
+    // MARK: - CC163
     
+    func getCC163Info(_ url: URL) -> Promise<LiveInfo> {
+        return Promise { resolver in
+            getCC163State(url.absoluteString).done {
+                if let i = $0.info {
+                    resolver.fulfill(i)
+                } else if let cid = $0.list.first?.cid {
+                    self.getCC163ZtState(cid: cid).done {
+                        resolver.fulfill($0)
+                    }.catch {
+                        resolver.reject($0)
+                    }
+                } else {
+                    resolver.reject(VideoGetError.invalidLink)
+                }
+            }.catch {
+                resolver.reject($0)
+            }
+        }
+    }
+    
+    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ZTInfo])> {
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                let json = response.text?.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">")
+                
+                let jsonData = json?.data(using: .utf8) ?? Data()
+                
+                do {
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    
+                    if let domain: String = try? jsonObj.value(for: "query.domain") {
+                        let list = try self.getCC163ZtRoomList(response.text ?? "")
+                        resolver.fulfill((nil, list))
+                    } else if let cid: String = try? jsonObj.value(for: "query.subcId") {
+                        self.getCC163ZtState(cid: cid).done {
+                            resolver.fulfill(($0, []))
+                        }.catch {
+                            resolver.reject($0)
+                        }
+                    } else {
+                        let info = try CC163Info(object: jsonObj)
+                        resolver.fulfill((info, []))
+                    }
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163ZtRoomList(_ text: String) throws -> [CC163ZTInfo] {
+        return try SwiftSoup.parse(text)
+            .getElementsByClass("channel_list").first()?
+            .children().map {
+                
+                CC163ZTInfo(
+                    name: try $0.children().first()?.children().first()?.text() ?? "",
+                    ccid: try $0.attr("ccid"),
+                    channel: try "https:" + $0.attr("channel"),
+                    cid: try $0.attr("cid"),
+                    index: try $0.attr("index"),
+                    roomid: try $0.attr("roomid"),
+                    isLiving:  $0.children().first()?.children().hasClass("icon-live") ?? false)
+            }.filter {
+                $0.ccid != "" && $0.roomid != ""
+            } ?? []
+    }
+    
+    func getCC163ZtState(cid: String) -> Promise<LiveInfo> {
+        
+        let url = "https://cc.163.com/live/channel/?channelids=\(cid)"
+
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
+                    let infos: [CC163ChannelInfo] = try json.value(for: "data")
+                
+                    guard let info = infos.first else {
+                        resolver.reject(VideoGetError.notFountData)
+                        return
+                    }
+                    guard info.isLiving else {
+                        resolver.reject(VideoGetError.isNotLiving)
+                        return
+                    }
+                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163(_ ccid: String) -> Promise<[String]> {
+        let url = "https://vapi.cc.163.com/video_play_url/\(ccid)"
+        
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                let json = response.text
+                let jsonData = json?.data(using: .utf8) ?? Data()
+                
+                do {
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    
+                    var re = [String]()
+                    re.append(try jsonObj.value(for: "videourl"))
+                    re.append(try jsonObj.value(for: "bakvideourl"))
+                    
+                    resolver.fulfill(re)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: - MD5
     // https://stackoverflow.com/a/53044349
     func MD5(_ string: String) -> String? {
         let length = Int(CC_MD5_DIGEST_LENGTH)

@@ -12,9 +12,20 @@ import Marshal
 struct YouGetJSON: Unmarshaling {
     var title: String = ""
     var streams: [String: Stream] = [:]
+    
+    var videos: [(key: String, value: Stream)] {
+        get {
+            return streams.sorted {
+                $0.value.quality > $1.value.quality
+            }
+        }
+    }
+    
     var audio = ""
     
-    var bilibiliCid = -1
+    var site: LiveSupportList = .unsupported
+    var id = -1
+    
     var duration = -1
 
     init(object: MarshaledObject) throws {
@@ -29,7 +40,8 @@ struct YouGetJSON: Unmarshaling {
 }
 
 struct Stream: Unmarshaling {
-    var quality: String = ""
+    var quality: Int = -1
+    var rate: Int = -1
     var url: String?
     var videoProfile: String?
     var size: Int64?
