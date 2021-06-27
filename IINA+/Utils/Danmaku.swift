@@ -14,6 +14,7 @@ import Gzip
 import JavaScriptCore
 import CryptoSwift
 import PromiseKit
+import Marshal
 
 protocol DanmakuDelegate {
     func send(_ method: DanamkuMethod, text: String, id: String)
@@ -45,8 +46,8 @@ class Danmaku: NSObject {
     var douyuRoomID = ""
     var douyuSavedData = Data()
     
-    let huyaServer = URL(string: "wss://cdnws.api.huya.com")
-    var huyaUserInfo = ("", "", "")
+    let huyaServer = URL(string: "wss://wsapi.huya.com")
+    var huyaAnchorUid = -1
     let huyaJSContext = JSContext()
     
     var egameInfo: EgameInfo?
@@ -105,6 +106,7 @@ class Danmaku: NSObject {
     func loadDM() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
+        let videoGet = Processes.shared.videoGet
         switch liveSite {
         case .bilibili, .bangumi:
             delegate?.send(.loadDM, text: "", id: id)
@@ -127,36 +129,31 @@ class Danmaku: NSObject {
             
             Log("Processes.shared.videoGet.getDouyuHtml")
             
-            Processes.shared.videoGet.getDouyuHtml(url.absoluteString).done {
+            videoGet.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
                     Log($0)
             }
         case .huya:
-            let header = HTTPHeaders(["User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"])
             
-            AF.request("https://m.huya.com/\(roomID)", headers: header).response {
-                //            var SUBSID = '2460685313';
-                //            lSid: "2460685313"
+            AF.request(url.absoluteString).response { response in
+                guard response.error == nil,
+                      let text = response.text,
+                      let roomData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
+                      let roomInfo: JSONObject = try? JSONParser.JSONObjectWithData(roomData),
+                      let id: Int = try? roomInfo.value(for: "id") else {
+                    Log("Init huya AnchorUid failed.")
+                    return
+                }
                 
-                //            var TOPSID = '94525224';
-                //            lTid: "94525224"
-                
-                //            ayyuid: '1394575534',
-                //            lUid: "1394575534"
-                let text = $0.text ?? ""
-                
-                let lSid = text.subString(from: "var SUBSID = '", to: "';")
-                let lTid = text.subString(from: "var TOPSID = '", to: "';")
-                let lUid = text.subString(from: "ayyuid: '", to: "',")
-                self.huyaUserInfo = (lSid, lTid, lUid)
+                self.huyaAnchorUid = id
                 
                 self.socket = SRWebSocket(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
             }
         case .eGame:
-            Processes.shared.videoGet.getEgameInfo(url).done {
+            videoGet.getEgameInfo(url).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {
@@ -164,7 +161,7 @@ class Danmaku: NSObject {
             }
         case .langPlay:
             guard let id = Int(roomID) else { return }
-            Processes.shared.videoGet.getLangPlayInfo(id).done {
+            videoGet.getLangPlayInfo(id).done {
                 
 //                https://sgkoi.dev/2019/01/24/kingkong-live-danmaku-2/
                 
@@ -423,45 +420,9 @@ extension Danmaku: SRWebSocketDelegate {
             try? webSocket.send(data: data as Data)
             startTimer()
         case .huya:
-            /*
-             sendWup    onlineui    OnUserHeartBeat    HUYA.UserHeartBeatReq
-             sendWup    liveui    doLaunch    HUYA.LiveLaunchReq
-             sendWup    PropsUIServer    getPropsList    HUYA.GetPropsListReq
-             sendWup    liveui    getLivingInfo    HUYA.GetLivingInfoReq
-             sendWup    onlineui    OnUserHeartBeat    HUYA.UserHeartBeatReq
-             sendWup    liveui    doLaunch    HUYA.LiveLaunchReq
-             sendWup    PropsUIServer    getPropsList    HUYA.GetPropsListReq
-             sendWup    liveui    getLivingInfo    HUYA.GetLivingInfoReq
-             
-             sendRegister    HUYA.WSUserInfo
-             
-             sendWup    liveui    userIn    HUYA.UserChannelReq
- */
-            
-//            jsContext?.evaluateScript("""
-//                var wsUserInfo = new HUYA.WSUserInfo;
-//                wsUserInfo.lSid = "\(huyaSubSid)";
-//                """)
-//            var SUBSID = '2460685313';
-//            lSid: "2460685313"
-            
-//            var TOPSID = '94525224';
-//            lTid: "94525224"
-            
-//            ayyuid: '1394575534',
-//            lUid: "1394575534"
-            
-//            111111111
-//            sGuid: "7160c3b1b915fd5b5546e2eae3ea5077"
-            huyaJSContext?.evaluateScript("""
-                var wsUserInfo = new HUYA.WSUserInfo;
-                wsUserInfo.lSid = "\(huyaUserInfo.0)";
-                wsUserInfo.lTid = "\(huyaUserInfo.1)";
-                wsUserInfo.lUid = "\(huyaUserInfo.2)";
-                wsUserInfo.sGuid = "111111111";
-                """)
+            let id = huyaAnchorUid
             let result = huyaJSContext?.evaluateScript("""
-new Uint8Array(sendRegister(wsUserInfo));
+new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
 """)
             
             let data = Data(result?.toArray() as? [UInt8] ?? [])
@@ -588,20 +549,24 @@ new Uint8Array(sendRegister(wsUserInfo));
             }
         case .huya:
             let bytes = [UInt8](data)
-            if let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
-                re.isString {
-                let str = re.toString() ?? ""
-                guard str != "HUYA.EWebSocketCommandType.EWSCmd_RegisterRsp" else {
-                    Log("huya websocket inited EWSCmd_RegisterRsp")
-                    return
-                }
-                guard str != "HUYA.EWebSocketCommandType.Default" else {
-                    Log("huya websocket WebSocketCommandType.Default \(data)")
-                    return
-                }
-                guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间"), !str.contains("刚刚在打赏君活动中") else { return }
-                sendDM(str)
+            guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
+                  re.isString,
+                  let str = re.toString() else {
+                return
             }
+            
+            if str == "EWebSocketCommandType.EWSCmdS2C_RegisterGroupRsp" {
+                Log("huya websocket inited \(str)")
+                return
+            } else if str.starts(with: "EWebSocketCommandType") {
+                Log("huya websocket info \(str)")
+                return
+            }
+            
+            guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间"), !str.contains("刚刚在打赏君活动中") else { return }
+            
+            sendDM(str)
+            
             
             //            "/{dx" = "[大笑]",  😆
             //            "/{sh" = "[送花]",  🌹

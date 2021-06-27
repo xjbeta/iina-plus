@@ -214,19 +214,21 @@ class MainViewController: NSViewController {
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
         NotificationCenter.default.addObserver(forName: .sideBarSelectionChanged, object: nil, queue: .main) {
-            if let userInfo = $0.userInfo as? [String: SidebarItem],
-                let item = userInfo["selectedItem"] {
-                switch item {
-                case .bookmarks:
-                    self.selectTabItem(.bookmarks)
-                case .bilibili:
-                    self.selectTabItem(.bilibili)
-                case .search:
-                    self.selectTabItem(.search)
-                    self.mainWindowController.window?.makeFirstResponder(self.searchField)
-                default: break
-                }
+            guard let userInfo = $0.userInfo as? [String: SidebarItem],
+                  let item = userInfo["selectedItem"] else {
+                return
             }
+            switch item {
+            case .bookmarks:
+                self.selectTabItem(.bookmarks)
+            case .bilibili:
+                self.selectTabItem(.bilibili)
+            case .search:
+                self.selectTabItem(.search)
+            default:
+                break
+            }
+            self.reloadTableView()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
