@@ -1226,7 +1226,7 @@ extension VideoGet {
                 CC163ZTInfo(
                     name: try $0.children().first()?.children().first()?.text() ?? "",
                     ccid: try $0.attr("ccid"),
-                    channel: try "https:" + $0.attr("channel"),
+                    channel: try ($0.attr("channel").starts(with: "https:") ? $0.attr("channel") : "https:" + $0.attr("channel")),
                     cid: try $0.attr("cid"),
                     index: try $0.attr("index"),
                     roomid: try $0.attr("roomid"),
