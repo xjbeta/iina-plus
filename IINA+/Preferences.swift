@@ -117,6 +117,16 @@ class Preferences: NSObject {
             didChangeValue(for: \.dmOpacity)
         }
     }
+    
+    @objc dynamic var dmPort: Int {
+        get {
+            return defaults(.dmPort) as? Int ?? 19080
+        }
+        set {
+            defaultsSet(newValue, forKey: .dmPort)
+            didChangeValue(for: \.dmPort)
+        }
+    }
 
 }
 
@@ -142,4 +152,5 @@ enum PreferenceKeys: String {
     case dmOpacity
     case dmBlockType
     case dmBlockList
+    case dmPort
 }

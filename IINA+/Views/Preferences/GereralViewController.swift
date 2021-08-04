@@ -13,7 +13,15 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     @IBOutlet var fontSelectorButton: NSButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
-
+    
+    @IBAction func testInBrowser(_ sender: NSButton) {
+        let port = Preferences.shared.dmPort
+        let u = "http://127.0.0.1:\(port)/danmaku/index.htm"
+        guard let url = URL(string: u) else { return }
+        
+        NSWorkspace.shared.open(url)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initFontSelector()
