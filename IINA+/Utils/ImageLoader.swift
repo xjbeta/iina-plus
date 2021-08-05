@@ -12,8 +12,6 @@ import Kingfisher
 
 class ImageLoader: NSObject {
     
-    static let diskConfigName = "ImageCache"
-    
     static let userCacheUrl: URL? = {
         return try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
     }()
@@ -25,14 +23,20 @@ class ImageLoader: NSObject {
     static func removeOld() {
         do {
             // Old Image cache folder
-            guard let cacheUrl = userCacheUrl else { return }
-            
-            let oldFolderName = Bundle.main.bundleIdentifier! + ".imageCache"
-            let oldUrl = cacheUrl.appendingPathComponent(oldFolderName)
-            if FileManager.default.fileExists(atPath: oldUrl.path) {
-                try FileManager.default.removeItem(atPath: oldUrl.path)
+            if let cacheUrl = userCacheUrl {
+                let oldFolderName = Bundle.main.bundleIdentifier! + ".imageCache"
+                let oldUrl = cacheUrl.appendingPathComponent(oldFolderName)
+                if FileManager.default.fileExists(atPath: oldUrl.path) {
+                    try FileManager.default.removeItem(atPath: oldUrl.path)
+                }
             }
             
+            if let cacheUrl = appCacheUrl {
+                let oldUrl = cacheUrl.appendingPathComponent("ImageCache")
+                if FileManager.default.fileExists(atPath: oldUrl.path) {
+                    try FileManager.default.removeItem(atPath: oldUrl.path)
+                }
+            }
 
         } catch let error {
             Log(error)

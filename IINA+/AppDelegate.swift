@@ -39,6 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Log("App Version \(version) (Build \(build))")
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
 
+        initImageCache()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -68,9 +69,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 Log(error)
             }
         }
-        
-        
-        
     }
     
     func deleteUselessFiles() {
