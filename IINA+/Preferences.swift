@@ -120,7 +120,12 @@ class Preferences: NSObject {
     
     @objc dynamic var dmPort: Int {
         get {
-            return defaults(.dmPort) as? Int ?? 19080
+            
+            if Processes.shared.iinaBuildVersion() > 16 {
+                return defaults(.dmPort) as? Int ?? 19080
+            } else {
+                return 19080
+            }
         }
         set {
             defaultsSet(newValue, forKey: .dmPort)

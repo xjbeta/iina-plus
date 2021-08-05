@@ -306,6 +306,9 @@ class Processes: NSObject {
                 args.append("danmaku")
                 args.append("uuid=\(uuid)")
             }
+            if iinaBuildVersion() > 16 {
+                args.append("dmPort=\(Preferences.shared.dmPort)")
+            }
             args.append("directly")
         } else {
             args.insert("url=\(url)", at: 0)

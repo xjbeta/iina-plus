@@ -14,6 +14,9 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
     
+    @IBOutlet var portTextField: NSTextField!
+    @IBOutlet var portTestButton: NSButton!
+    
     @IBAction func testInBrowser(_ sender: NSButton) {
         let port = Preferences.shared.dmPort
         let u = "http://127.0.0.1:\(port)/danmaku/index.htm"
@@ -27,6 +30,10 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         initFontSelector()
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
+        
+        portTextField.isEnabled = Preferences.shared.enableDanmaku
+            && Processes.shared.isDanmakuVersion()
+            && Processes.shared.iinaBuildVersion() > 16
     }
     
     func menuDidClose(_ menu: NSMenu) {

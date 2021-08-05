@@ -40,7 +40,7 @@
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide iina+" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide IINA+" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -58,7 +58,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit iina+" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit IINA+" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -373,19 +373,19 @@
                                         <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kOd-Rf-juT">
                                             <rect key="frame" x="78" y="136" width="186" height="20"/>
                                             <subviews>
-                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gn3-kr-whg">
+                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JZ1-gg-eek">
                                                     <rect key="frame" x="0.0" y="0.0" width="65" height="20"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="border" alignment="right" title="19080" placeholderString="19080" drawsBackground="YES" id="bix-Za-pis">
-                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" formatWidth="-1" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" id="UHc-CF-e3H">
-                                                            <real key="minimum" value="99"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="border" alignment="right" placeholderString="19080" drawsBackground="YES" id="na9-et-xBZ">
+                                                        <numberFormatter key="formatter" formatterBehavior="custom10_4" localizesFormat="NO" numberStyle="decimal" usesGroupingSeparator="NO" formatWidth="-1" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="wh2-Oa-3g4">
+                                                            <real key="minimum" value="100"/>
                                                             <real key="maximum" value="65534"/>
                                                         </numberFormatter>
-                                                        <font key="font" usesAppearanceFont="YES"/>
+                                                        <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                     <connections>
-                                                        <binding destination="eYJ-hi-toS" name="value" keyPath="self.dmPort" id="8Zh-tM-FVd"/>
+                                                        <binding destination="eYJ-hi-toS" name="value" keyPath="self.dmPort" id="cOl-GI-bVu"/>
                                                     </connections>
                                                 </textField>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1xb-53-Ywv">
@@ -396,6 +396,7 @@
                                                     </buttonCell>
                                                     <connections>
                                                         <action selector="testInBrowser:" target="LMy-Ki-0Sg" id="7oj-ud-Pa3"/>
+                                                        <binding destination="eYJ-hi-toS" name="enabled" keyPath="self.enableDanmaku" id="DfH-7S-HDP"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -438,6 +439,7 @@
                                                 <font key="font" metaFont="smallSystemBold"/>
                                             </buttonCell>
                                             <connections>
+                                                <binding destination="eYJ-hi-toS" name="enabled" keyPath="self.enableDanmaku" id="0a7-EV-XAG"/>
                                                 <segue destination="8V6-VC-QHB" kind="popover" popoverAnchorView="1TK-wc-rJ0" popoverBehavior="t" preferredEdge="maxY" id="tP5-S1-6Dj"/>
                                             </connections>
                                         </button>
@@ -645,6 +647,8 @@
                         <outlet property="fontPicker" destination="yKo-LK-mRF" id="rfZ-bN-FtR"/>
                         <outlet property="fontSelectorButton" destination="1TK-wc-rJ0" id="Cm6-Dm-TPd"/>
                         <outlet property="playerPopUpButton" destination="bjh-ng-iw0" id="GBM-ep-Aq2"/>
+                        <outlet property="portTestButton" destination="1xb-53-Ywv" id="zT7-5M-we1"/>
+                        <outlet property="portTextField" destination="JZ1-gg-eek" id="n2D-ZT-fwk"/>
                     </connections>
                 </viewController>
                 <customObject id="pvU-Zd-8Ob" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1190,13 +1194,13 @@ Gw
                                 <rect key="frame" x="0.0" y="0.0" width="68" height="648"/>
                                 <subviews>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="350" width="68" height="258"/>
+                                        <rect key="frame" x="0.0" y="376" width="68" height="232"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="258"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="232"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="IINA_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="258"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="232"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
