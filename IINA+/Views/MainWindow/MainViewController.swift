@@ -10,6 +10,7 @@ import Cocoa
 import CoreData
 import PromiseKit
 import Alamofire
+import Kingfisher
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -679,12 +680,15 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
                 view.imageBoxView.aid = bilibiliCards[row].aid
                 view.imageBoxView.imageView?.image = nil
+                view.imageBoxView.pic = nil
                 view.imageBoxView.updatePreview(.stop)
-                ImageLoader.request(bilibiliCards[row].picUrl) { img in
-                    DispatchQueue.main.async {
-                        view.imageBoxView.pic = img
-                        view.imageView?.image = img
-                    }
+                
+                if let imageView = view.imageView {
+                    KF.url(.init(string: bilibiliCards[row].picUrl))
+                        .onSuccess {
+                            view.imageBoxView.pic = $0.image
+                        }
+                        .set(to: imageView)
                 }
                 return view
             }
