@@ -237,12 +237,15 @@ function start(websocketServerLocation){
     };
 }
 
-function initContent(id){
+function initContent(id, port){
     bind();
     initDM();
     resize();
     uuid = id;
-    start('ws://127.0.0.1:19080/danmaku-websocket');
+    if (port === undefined){
+        port = 10980;
+    }
+    start('ws://127.0.0.1:' + port + '/danmaku-websocket');
     // Block unknown types.
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;

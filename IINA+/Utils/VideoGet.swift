@@ -159,7 +159,9 @@ class VideoGet: NSObject {
                 
                 return getCC163(ccid).map {
                     $0.enumerated().forEach {
-                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                        var s = Stream(url: $0.element)
+                        s.quality = 999 - $0.offset
+                        yougetJson.streams["线路 \($0.offset + 1)"] = s
                     }
                     return yougetJson
                 }
@@ -173,7 +175,9 @@ class VideoGet: NSObject {
                     self.getCC163("\($0.ccid)")
                 }.map {
                     $0.enumerated().forEach {
-                        yougetJson.streams["线路 \($0.offset + 1)"] = Stream(url: $0.element)
+                        var s = Stream(url: $0.element)
+                        s.quality = 999 - $0.offset
+                        yougetJson.streams["线路 \($0.offset + 1)"] = s
                     }
                     return yougetJson
                 }
@@ -1226,7 +1230,7 @@ extension VideoGet {
                 CC163ZTInfo(
                     name: try $0.children().first()?.children().first()?.text() ?? "",
                     ccid: try $0.attr("ccid"),
-                    channel: try "https:" + $0.attr("channel"),
+                    channel: try ($0.attr("channel").starts(with: "https:") ? $0.attr("channel") : "https:" + $0.attr("channel")),
                     cid: try $0.attr("cid"),
                     index: try $0.attr("index"),
                     roomid: try $0.attr("roomid"),

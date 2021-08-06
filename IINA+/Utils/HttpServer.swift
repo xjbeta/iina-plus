@@ -122,7 +122,10 @@ class HttpServer: NSObject, DanmakuDelegate {
             })
             
             server.listenAddressIPv4 = "127.0.0.1"
-            try server.start(19080, forceIPv4: true)
+            
+            let port = Preferences.shared.dmPort
+            
+            try server.start(.init(port), forceIPv4: true)
             Log("Server has started ( port = \(try server.port()) ). Try to connect now...")
         } catch let error {
             Log("Server start error: \(error)")

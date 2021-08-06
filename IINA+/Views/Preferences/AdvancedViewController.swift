@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Kingfisher
 
 class AdvancedViewController: NSViewController, NSMenuDelegate {
     
@@ -18,8 +19,8 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     
     @IBOutlet weak var cacheSizeTextField: NSTextField!
     @IBAction func cleanUpCache(_ sender: NSButton) {
-        ImageLoader.removeAll()
-        cacheSizeTextField.stringValue = ImageLoader.cacheSize()
+        try? ImageCache.default.diskStorage.removeAll()
+        initCacheSize()
     }
     
     var blockTypeButtons: [NSButton] = []
@@ -59,7 +60,21 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     
     override func viewWillAppear() {
         super.viewWillAppear()
-        cacheSizeTextField.stringValue = ImageLoader.cacheSize()
+        initCacheSize()
+    }
+    
+    func initCacheSize() {
+        ImageCache.default.calculateDiskStorageSize { result in
+            var str = ""
+            switch result {
+            case .success(let size):
+                str = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+            case .failure(let error):
+                str = "0.0 MB"
+                Log("calculateDiskStorageSize error \(error)")
+            }
+            self.cacheSizeTextField.stringValue = str
+        }
     }
     
     func initBlockListMenu() {

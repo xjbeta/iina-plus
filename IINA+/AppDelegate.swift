@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Kingfisher
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -37,9 +38,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
         Log("App Version \(version) (Build \(build))")
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
-        ImageLoader.removeOld()
-        ImageLoader.removeExpired()
-        Log(ImageLoader.cacheSize())
+
+        initImageCache()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -55,6 +55,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         return true
+    }
+    
+    func initImageCache() {
+        ImageLoader.removeOld()
+        
+        ImageCache.default.cleanExpiredCache()
+        ImageCache.default.calculateDiskStorageSize { result in
+            switch result {
+            case .success(let size):
+                Log("Disk cache size: \(Double(size) / 1024 / 1024) MB")
+            case .failure(let error):
+                Log(error)
+            }
+        }
     }
     
     func deleteUselessFiles() {
