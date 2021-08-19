@@ -243,7 +243,7 @@ function initContent(id, port){
     resize();
     uuid = id;
     if (port === undefined){
-        port = 10980;
+        port = 19080;
     }
     start('ws://127.0.0.1:' + port + '/danmaku-websocket');
     // Block unknown types.
