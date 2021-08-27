@@ -15,13 +15,15 @@
 ## Support Status
 <!--https://www.tablesgenerator.com/markdown_tables#-->
 
-| website     | live status | video decode | danmaku |
-|-------------|-------------|--------------|---------|
-| bilibili    |      ∙      |       ✓      |    ✓    |
-| bililive    |      ✓      |       ✓      |    ✓    |
-| douyu       |      ✓      |       ✓      |    ✓    |
-| huya        |      ✓      |       ✓      |    ✓    |
-| qiedianjing |      ✓      |       ✓      |    ✓    |
+| website  | live status | video decode | danmaku |
+|----------|-------------|--------------|---------|
+| bilibili | ∙           | ✓            | ✓       |
+| bangumi  | ∙           | ✓            | ✓       |
+| bililive | ✓           | ✓            | ✓       |
+| douyu    | ✓           | ✓            | ✓       |
+| huya     | ✓           | ✓            | ✓       |
+| egame.qq | ✓           | ✓            | ✓       |
+| cc.163   | ✓           | ✓            | ✕       |
 
 
 ## Danmaku
@@ -36,7 +38,7 @@
 ##### Xcode Version: Latest Release
 
 ```
-carthage bootstrap
+carthage bootstrap --platform macOS --use-xcframeworks
 ```
 Open `.xcodeproj` file.
 
@@ -44,12 +46,16 @@ Open `.xcodeproj` file.
 ### Librarys
 - [Marshal](https://github.com/utahiosmac/Marshal)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
-- [SocketRocket](https://github.com/facebook/SocketRocket)
+- [Starscream](https://github.com/daltoniam/Starscream)
 - [GzipSwift](https://github.com/1024jp/GzipSwift)
 - [PromiseKit](https://github.com/mxcl/PromiseKit)
 - [swifter](https://github.com/httpswift/swifter)
 - [Sparkle](https://github.com/sparkle-project/Sparkle)
-- [Cache](https://github.com/hyperoslo/Cache)
+- [Kingfisher](https://github.com/onevcat/Kingfisher)
+- [SwiftSoup](https://github.com/scinfu/SwiftSoup)
+- [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
+- [swift-protobuf](https://github.com/apple/swift-protobuf)
+
 
 
 ### Danmaku library
