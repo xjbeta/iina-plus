@@ -18,6 +18,8 @@
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
+		01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; };
+		01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
@@ -46,8 +48,6 @@
 		014F53F626D8F2EB00B9E82A /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 014F53F526D8F2EB00B9E82A /* Cartfile */; };
 		014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F826D9183F00B9E82A /* Gzip.xcframework */; };
 		014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F826D9183F00B9E82A /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		014F540526D9184000B9E82A /* Kingfisher.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F926D9183F00B9E82A /* Kingfisher.xcframework */; };
-		014F540626D9184000B9E82A /* Kingfisher.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F926D9183F00B9E82A /* Kingfisher.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FA26D9183F00B9E82A /* Marshal.xcframework */; };
 		014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FA26D9183F00B9E82A /* Marshal.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014F540926D9184000B9E82A /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FB26D9183F00B9E82A /* Alamofire.xcframework */; };
@@ -123,11 +123,11 @@
 				014F540A26D9184000B9E82A /* Alamofire.xcframework in Embed Frameworks */,
 				014F540C26D9184000B9E82A /* SwiftProtobuf.xcframework in Embed Frameworks */,
 				014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */,
+				01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */,
 				014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */,
 				014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */,
 				014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */,
 				014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */,
-				014F540626D9184000B9E82A /* Kingfisher.xcframework in Embed Frameworks */,
 				014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */,
 				014F541426D9184100B9E82A /* CryptoSwift.xcframework in Embed Frameworks */,
 			);
@@ -148,6 +148,7 @@
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
+		01176CAC2713223200BB7E10 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
@@ -170,7 +171,6 @@
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014F53F526D8F2EB00B9E82A /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = SOURCE_ROOT; };
 		014F53F826D9183F00B9E82A /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
-		014F53F926D9183F00B9E82A /* Kingfisher.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Kingfisher.xcframework; path = Carthage/Build/Kingfisher.xcframework; sourceTree = "<group>"; };
 		014F53FA26D9183F00B9E82A /* Marshal.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Marshal.xcframework; path = Carthage/Build/Marshal.xcframework; sourceTree = "<group>"; };
 		014F53FB26D9183F00B9E82A /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
 		014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftProtobuf.xcframework; path = Carthage/Build/SwiftProtobuf.xcframework; sourceTree = "<group>"; };
@@ -232,11 +232,11 @@
 				014F540926D9184000B9E82A /* Alamofire.xcframework in Frameworks */,
 				014F540B26D9184000B9E82A /* SwiftProtobuf.xcframework in Frameworks */,
 				014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */,
+				01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */,
 				014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */,
 				014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */,
 				014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */,
 				014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */,
-				014F540526D9184000B9E82A /* Kingfisher.xcframework in Frameworks */,
 				014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */,
 				014F541326D9184000B9E82A /* CryptoSwift.xcframework in Frameworks */,
 			);
@@ -344,10 +344,10 @@
 		014F53F726D9183F00B9E82A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01176CAC2713223200BB7E10 /* SDWebImage.xcframework */,
 				014F53FB26D9183F00B9E82A /* Alamofire.xcframework */,
 				014F540026D9183F00B9E82A /* CryptoSwift.xcframework */,
 				014F53F826D9183F00B9E82A /* Gzip.xcframework */,
-				014F53F926D9183F00B9E82A /* Kingfisher.xcframework */,
 				014F53FA26D9183F00B9E82A /* Marshal.xcframework */,
 				014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */,
 				014F540226D9184000B9E82A /* Sparkle.xcframework */,
