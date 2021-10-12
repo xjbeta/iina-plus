@@ -10,7 +10,7 @@ import Cocoa
 import CoreData
 import PromiseKit
 import Alamofire
-import Kingfisher
+import SDWebImage
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -684,11 +684,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 view.imageBoxView.updatePreview(.stop)
                 
                 if let imageView = view.imageView {
-                    KF.url(.init(string: bilibiliCards[row].picUrl))
-                        .onSuccess {
-                            view.imageBoxView.pic = $0.image
-                        }
-                        .set(to: imageView)
+                    SDWebImageManager.shared.loadImage(with: .init(string: bilibiliCards[row].picUrl), progress: nil) { img,_,_,_,_,_ in
+                        view.imageBoxView.pic = img
+                        imageView.image = img
+                    }
                 }
                 return view
             }

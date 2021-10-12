@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import Kingfisher
+import SDWebImage
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -58,17 +58,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func initImageCache() {
-        ImageLoader.removeOld()
+        Log("Image Cache Path: \(SDImageCache.shared.diskCachePath)")
         
-        ImageCache.default.cleanExpiredCache()
-        ImageCache.default.calculateDiskStorageSize { result in
-            switch result {
-            case .success(let size):
-                Log("Disk cache size: \(Double(size) / 1024 / 1024) MB")
-            case .failure(let error):
-                Log(error)
-            }
-        }
+        SDImageCache.shared.config.maxDiskAge = 60 * 60 * 24 * 14
+        SDImageCache.shared.deleteOldFiles(completionBlock: nil)
+        
+        ImageLoader.removeOld()
     }
     
     func deleteUselessFiles() {
