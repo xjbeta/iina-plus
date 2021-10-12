@@ -64,7 +64,7 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     }
     
     func initCacheSize() {
-        SDImageCache.shared.calculateSize { size, count in
+        SDImageCache.shared.calculateSize { count, size in
             let s = String(format: "%.2f MB", Double(size) / 1024 / 1024)
             self.cacheSizeTextField.stringValue = s
         }
