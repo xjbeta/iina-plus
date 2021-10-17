@@ -1,6 +1,6 @@
 github "1024jp/GzipSwift" "5.1.1"
 github "Alamofire/Alamofire" "5.4.4"
-github "SDWebImage/SDWebImage" "5.12.0"
+github "SDWebImage/SDWebImage" "5.12.1"
 github "apple/swift-protobuf" "1.18.0"
 github "daltoniam/Starscream" "4.0.4"
 github "httpswift/swifter" "1.5.0"
