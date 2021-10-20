@@ -9,9 +9,13 @@
 import Foundation
 import Marshal
 
-struct YouGetJSON: Unmarshaling {
+struct YouGetJSON: Unmarshaling, Codable {
     var title: String = ""
     var streams: [String: Stream] = [:]
+    var audio = ""
+    var id = -1
+    var duration = -1
+    
     
     var videos: [(key: String, value: Stream)] {
         get {
@@ -21,12 +25,12 @@ struct YouGetJSON: Unmarshaling {
         }
     }
     
-    var audio = ""
-    
     var site: LiveSupportList = .unsupported
-    var id = -1
     
-    var duration = -1
+    
+    enum CodingKeys: String, CodingKey {
+        case title, streams, audio, id, duration
+    }
 
     init(object: MarshaledObject) throws {
         let titleStr: String? = try? object.value(for: "title")
@@ -39,7 +43,7 @@ struct YouGetJSON: Unmarshaling {
     }
 }
 
-struct Stream: Unmarshaling {
+struct Stream: Unmarshaling, Codable {
     var quality: Int = -1
     var rate: Int = -1
     var url: String?
