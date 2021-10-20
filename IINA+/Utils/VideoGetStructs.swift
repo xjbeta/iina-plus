@@ -272,6 +272,8 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
         let sFlvUrlSuffix: String
         let sFlvAntiCode: String
         
+        let sCdnType: String
+        
         var url: String? {
             get {
                 let u = sFlvUrl
@@ -294,6 +296,8 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
             sStreamName = try object.value(for: "sStreamName")
             sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
             sFlvAntiCode = try object.value(for: "sFlvAntiCode")
+            
+            sCdnType = try object.value(for: "sCdnType")
         }
         
 
@@ -343,11 +347,12 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
 
         let bitRateInfos: [BitRateInfo] = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.vBitRateInfo.value")
         
-        let urls = streamInfos.compactMap {
+        let urls = streamInfos.filter {
+            $0.sCdnType != "AL"
+        }.compactMap {
             $0.url
-        }.map {
-            $0.replacingOccurrences(of: "txyp=o:n6;", with: "txyp=o%3An6%3B")
         }
+
         
         guard urls.count > 0 else {
             self.urls = []
