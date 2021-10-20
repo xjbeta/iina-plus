@@ -468,10 +468,8 @@ class MainViewController: NSViewController {
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     self.yougetResult = $0
-                    print($0)
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
-                    print($0)
                     resolver.reject($0)
                 }
             }
