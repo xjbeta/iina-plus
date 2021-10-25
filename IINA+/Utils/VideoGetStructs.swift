@@ -343,16 +343,17 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
         cover = try object.value(for: "roomInfo.tLiveInfo.sScreenshot")
         
         
+        let defaultCDN: String = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.sDefaultLiveStreamLine")
+        
         let streamInfos: [StreamInfo] = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.vStreamInfo.value")
 
         let bitRateInfos: [BitRateInfo] = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.vBitRateInfo.value")
         
-        let urls = streamInfos.filter {
-            $0.sCdnType != "AL"
+        let urls = streamInfos.sorted { i1, i2 -> Bool in
+            i1.sCdnType == defaultCDN
         }.compactMap {
             $0.url
         }
-
         
         guard urls.count > 0 else {
             self.urls = []
