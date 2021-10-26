@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import Kingfisher
+import SDWebImage
 
 class LiveStatusTableCellView: NSTableCellView {
 
@@ -73,33 +73,31 @@ class LiveStatusTableCellView: NSTableCellView {
             liveStatusImageView.isHidden = true
         }
         
-        userCoverImageView.kf.setImage(with: source) { re in
-            switch re {
-            case .success(let re):
-                let size = re.image.size
-                let w = size.width
-                let h = size.height
-                var rect = CGRect(x: 0, y: 0, width: 0, height: 0)
-                
-                let v = min(w, h)
-                rect.size.width = v
-                rect.size.height = v
-                
-                let o = abs(w - h) / 2
-                
-                if w > h {
-                    rect.origin.x = o
-                } else {
-                    rect.origin.y = o
-                }
-                guard let img = re.image.cgImage(forProposedRect: nil, context: nil, hints: nil)?.cropping(to: rect) else {
-                    return
-                }
-                
-                self.userCoverImageView.image = NSImage.init(cgImage: img, size: rect.size)
-            default:
-                break
+        SDWebImageManager.shared.loadImage(with: source, progress: nil) { img,_,_,_,_,_ in
+            
+            guard let img = img else { return }
+            
+            let size = img.size
+            let w = size.width
+            let h = size.height
+            var rect = CGRect(x: 0, y: 0, width: 0, height: 0)
+
+            let v = min(w, h)
+            rect.size.width = v
+            rect.size.height = v
+
+            let o = abs(w - h) / 2
+
+            if w > h {
+                rect.origin.x = o
+            } else {
+                rect.origin.y = o
             }
+            guard let img = img.cgImage(forProposedRect: nil, context: nil, hints: nil)?.cropping(to: rect) else {
+                return
+            }
+
+            self.userCoverImageView.image = NSImage(cgImage: img, size: rect.size)
         }
         
         if info.site == .bangumi {

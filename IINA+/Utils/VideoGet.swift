@@ -59,6 +59,13 @@ class VideoGet: NSObject {
     let douyuWebview = WKWebView()
     var douyuWebviewObserver: NSKeyValueObservation?
     
+    lazy var pSession: Session = {
+        let configuration = URLSessionConfiguration.af.default
+        let ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+        configuration.headers.add(.userAgent(ua))
+        return Session(configuration: configuration)
+    }()
+    
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
         
         var yougetJson = YouGetJSON(url:"")
@@ -117,7 +124,7 @@ class VideoGet: NSObject {
                 return yougetJson
             }
         case .huya:
-            return getHuyaInfo(url).map {
+            return getHuyaInfoM(url).map {
                 yougetJson.title = $0.0.title
                 $0.1.enumerated().forEach {
                     yougetJson.streams[$0.element.0] = $0.element.1
@@ -238,7 +245,7 @@ class VideoGet: NSObject {
                 $0 as LiveInfo
             }
         case .huya:
-            return getHuyaInfo(url).map {
+            return getHuyaInfoM(url).map {
                 $0.0
             }
         case .quanmin:
@@ -695,6 +702,32 @@ extension VideoGet {
                     }
                     
                     resolver.fulfill((info, re))
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getHuyaInfoM(_ url: URL) -> Promise<(HuyaInfoM, [(String, Stream)])> {
+        return Promise { resolver in
+            pSession.request(url.absoluteString).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                guard let text = response.text,
+                      let jsonData = text.subString(from: "<script> window.HNF_GLOBAL_INIT = ", to: " </script>").data(using: .utf8)
+                else {
+                    resolver.reject(VideoGetError.notFindUrls)
+                    return
+                }
+                
+                do {
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    
+                    let info: HuyaInfoM = try HuyaInfoM(object: jsonObj)
+                          
+                    resolver.fulfill((info, info.urls))
                 } catch let error {
                     resolver.reject(error)
                 }

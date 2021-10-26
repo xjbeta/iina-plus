@@ -64,23 +64,11 @@ class SidebarViewController: NSViewController {
     
     func biliStatusChanged(_ isLogin: Bool) {
         DispatchQueue.main.async {
+            self.sideBarItems = [.bookmarks, .search]
             if isLogin {
-                if !self.sideBarItems.contains(.bilibili) {
-                    self.sideBarItems.insert(.bilibili, at: 1)
-                    self.sidebarTableView.insertRows(at: IndexSet(integer: 1), withAnimation: .effectFade)
-                } else if self.sideBarItems.count != 3 {
-                    self.sideBarItems = [.bookmarks, .bilibili, .search]
-                    self.sidebarTableView.reloadData()
-                }
-            } else {
-                if let index = self.sideBarItems.firstIndex(of: .bilibili) {
-                    self.sideBarItems.remove(at: index)
-                    self.sidebarTableView.removeRows(at: IndexSet(integer: index), withAnimation: .effectFade)
-                } else if self.sideBarItems.count != 2 {
-                    self.sideBarItems = [.bookmarks, .search]
-                    self.sidebarTableView.reloadData()
-                }
+                self.sideBarItems.insert(.bilibili, at: 1)
             }
+            self.sidebarTableView.reloadData()
         }
     }
     

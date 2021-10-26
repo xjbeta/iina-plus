@@ -18,6 +18,8 @@
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
+		01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; };
+		01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
@@ -43,6 +45,27 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
+		014F53F626D8F2EB00B9E82A /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 014F53F526D8F2EB00B9E82A /* Cartfile */; };
+		014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F826D9183F00B9E82A /* Gzip.xcframework */; };
+		014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53F826D9183F00B9E82A /* Gzip.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FA26D9183F00B9E82A /* Marshal.xcframework */; };
+		014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FA26D9183F00B9E82A /* Marshal.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F540926D9184000B9E82A /* Alamofire.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FB26D9183F00B9E82A /* Alamofire.xcframework */; };
+		014F540A26D9184000B9E82A /* Alamofire.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FB26D9183F00B9E82A /* Alamofire.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F540B26D9184000B9E82A /* SwiftProtobuf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */; };
+		014F540C26D9184000B9E82A /* SwiftProtobuf.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F540D26D9184000B9E82A /* Swifter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FD26D9183F00B9E82A /* Swifter.xcframework */; };
+		014F540E26D9184000B9E82A /* Swifter.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FD26D9183F00B9E82A /* Swifter.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */; };
+		014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */; };
+		014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F541326D9184000B9E82A /* CryptoSwift.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540026D9183F00B9E82A /* CryptoSwift.xcframework */; };
+		014F541426D9184100B9E82A /* CryptoSwift.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540026D9183F00B9E82A /* CryptoSwift.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; };
+		014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540226D9184000B9E82A /* Sparkle.xcframework */; };
+		014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540226D9184000B9E82A /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
@@ -54,17 +77,6 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
-		016E07C626BBA1F7000AB100 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07C526BBA1F7000AB100 /* Alamofire */; };
-		016E07C926BBA219000AB100 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07C826BBA219000AB100 /* Swifter */; };
-		016E07CC26BBA249000AB100 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07CB26BBA249000AB100 /* SwiftSoup */; };
-		016E07CF26BBA265000AB100 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07CE26BBA265000AB100 /* CryptoSwift */; };
-		016E07D226BBA28F000AB100 /* Marshal in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07D126BBA28F000AB100 /* Marshal */; };
-		016E07D526BBA2EF000AB100 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07D426BBA2EF000AB100 /* PromiseKit */; };
-		016E07DB26BBA360000AB100 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07DA26BBA360000AB100 /* Gzip */; };
-		016E07DE26BBA389000AB100 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07DD26BBA389000AB100 /* Sparkle */; };
-		016E07E126BBA4B2000AB100 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07E026BBA4B2000AB100 /* SwiftProtobuf */; };
-		016E07E426BBA592000AB100 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07E326BBA592000AB100 /* Starscream */; };
-		016E07E726BBADF7000AB100 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 016E07E626BBADF7000AB100 /* Kingfisher */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
@@ -101,6 +113,27 @@
 			name = "Copy Danamaku Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		014F541926D9184100B9E82A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				014F540E26D9184000B9E82A /* Swifter.xcframework in Embed Frameworks */,
+				014F540A26D9184000B9E82A /* Alamofire.xcframework in Embed Frameworks */,
+				014F540C26D9184000B9E82A /* SwiftProtobuf.xcframework in Embed Frameworks */,
+				014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */,
+				01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */,
+				014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */,
+				014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */,
+				014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */,
+				014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */,
+				014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */,
+				014F541426D9184100B9E82A /* CryptoSwift.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +148,7 @@
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
+		01176CAC2713223200BB7E10 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
@@ -135,6 +169,17 @@
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
+		014F53F526D8F2EB00B9E82A /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = SOURCE_ROOT; };
+		014F53F826D9183F00B9E82A /* Gzip.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gzip.xcframework; path = Carthage/Build/Gzip.xcframework; sourceTree = "<group>"; };
+		014F53FA26D9183F00B9E82A /* Marshal.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Marshal.xcframework; path = Carthage/Build/Marshal.xcframework; sourceTree = "<group>"; };
+		014F53FB26D9183F00B9E82A /* Alamofire.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Alamofire.xcframework; path = Carthage/Build/Alamofire.xcframework; sourceTree = "<group>"; };
+		014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftProtobuf.xcframework; path = Carthage/Build/SwiftProtobuf.xcframework; sourceTree = "<group>"; };
+		014F53FD26D9183F00B9E82A /* Swifter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Swifter.xcframework; path = Carthage/Build/Swifter.xcframework; sourceTree = "<group>"; };
+		014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSoup.xcframework; path = Carthage/Build/SwiftSoup.xcframework; sourceTree = "<group>"; };
+		014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PromiseKit.xcframework; path = Carthage/Build/PromiseKit.xcframework; sourceTree = "<group>"; };
+		014F540026D9183F00B9E82A /* CryptoSwift.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CryptoSwift.xcframework; path = Carthage/Build/CryptoSwift.xcframework; sourceTree = "<group>"; };
+		014F540126D9184000B9E82A /* Starscream.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Starscream.xcframework; path = Carthage/Build/Starscream.xcframework; sourceTree = "<group>"; };
+		014F540226D9184000B9E82A /* Sparkle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sparkle.xcframework; path = Carthage/Build/Sparkle.xcframework; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
 		015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGetStructs.swift; sourceTree = "<group>"; };
 		015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Plus.xml"; sourceTree = "<group>"; };
@@ -183,17 +228,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				016E07E426BBA592000AB100 /* Starscream in Frameworks */,
-				016E07E126BBA4B2000AB100 /* SwiftProtobuf in Frameworks */,
-				016E07DE26BBA389000AB100 /* Sparkle in Frameworks */,
-				016E07CF26BBA265000AB100 /* CryptoSwift in Frameworks */,
-				016E07C926BBA219000AB100 /* Swifter in Frameworks */,
-				016E07C626BBA1F7000AB100 /* Alamofire in Frameworks */,
-				016E07DB26BBA360000AB100 /* Gzip in Frameworks */,
-				016E07D526BBA2EF000AB100 /* PromiseKit in Frameworks */,
-				016E07E726BBADF7000AB100 /* Kingfisher in Frameworks */,
-				016E07CC26BBA249000AB100 /* SwiftSoup in Frameworks */,
-				016E07D226BBA28F000AB100 /* Marshal in Frameworks */,
+				014F540D26D9184000B9E82A /* Swifter.xcframework in Frameworks */,
+				014F540926D9184000B9E82A /* Alamofire.xcframework in Frameworks */,
+				014F540B26D9184000B9E82A /* SwiftProtobuf.xcframework in Frameworks */,
+				014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */,
+				01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */,
+				014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */,
+				014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */,
+				014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */,
+				014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */,
+				014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */,
+				014F541326D9184000B9E82A /* CryptoSwift.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +341,24 @@
 			path = MainWindow;
 			sourceTree = "<group>";
 		};
+		014F53F726D9183F00B9E82A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				01176CAC2713223200BB7E10 /* SDWebImage.xcframework */,
+				014F53FB26D9183F00B9E82A /* Alamofire.xcframework */,
+				014F540026D9183F00B9E82A /* CryptoSwift.xcframework */,
+				014F53F826D9183F00B9E82A /* Gzip.xcframework */,
+				014F53FA26D9183F00B9E82A /* Marshal.xcframework */,
+				014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */,
+				014F540226D9184000B9E82A /* Sparkle.xcframework */,
+				014F540126D9184000B9E82A /* Starscream.xcframework */,
+				014F53FD26D9183F00B9E82A /* Swifter.xcframework */,
+				014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */,
+				014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		016792E8212BF89A003517A7 /* SelectVideoCollectionView */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +386,7 @@
 			children = (
 				01AEC8A920EDFD01001406E8 /* IINA+ */,
 				01AEC8A820EDFD01001406E8 /* Products */,
+				014F53F726D9183F00B9E82A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -339,6 +403,7 @@
 			children = (
 				01C373582429F2C2006778D1 /* README.md */,
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
+				014F53F526D8F2EB00B9E82A /* Cartfile */,
 				019EB39D21453A97000FD123 /* Resources */,
 				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
@@ -407,6 +472,7 @@
 				01AEC8A520EDFD01001406E8 /* Resources */,
 				019BFF5D212485B900E715CC /* ShellScript */,
 				013CE8EF2185D09F000271FB /* Copy Danamaku Files */,
+				014F541926D9184100B9E82A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -414,17 +480,6 @@
 			);
 			name = "IINA+";
 			packageProductDependencies = (
-				016E07C526BBA1F7000AB100 /* Alamofire */,
-				016E07C826BBA219000AB100 /* Swifter */,
-				016E07CB26BBA249000AB100 /* SwiftSoup */,
-				016E07CE26BBA265000AB100 /* CryptoSwift */,
-				016E07D126BBA28F000AB100 /* Marshal */,
-				016E07D426BBA2EF000AB100 /* PromiseKit */,
-				016E07DA26BBA360000AB100 /* Gzip */,
-				016E07DD26BBA389000AB100 /* Sparkle */,
-				016E07E026BBA4B2000AB100 /* SwiftProtobuf */,
-				016E07E326BBA592000AB100 /* Starscream */,
-				016E07E626BBADF7000AB100 /* Kingfisher */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -468,17 +523,6 @@
 			);
 			mainGroup = 01AEC89E20EDFD01001406E8;
 			packageReferences = (
-				016E07C426BBA1F7000AB100 /* XCRemoteSwiftPackageReference "Alamofire" */,
-				016E07C726BBA219000AB100 /* XCRemoteSwiftPackageReference "swifter" */,
-				016E07CA26BBA249000AB100 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
-				016E07CD26BBA265000AB100 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
-				016E07D026BBA28F000AB100 /* XCRemoteSwiftPackageReference "Marshal" */,
-				016E07D326BBA2EF000AB100 /* XCRemoteSwiftPackageReference "PromiseKit" */,
-				016E07D926BBA360000AB100 /* XCRemoteSwiftPackageReference "GzipSwift" */,
-				016E07DC26BBA389000AB100 /* XCRemoteSwiftPackageReference "Sparkle" */,
-				016E07DF26BBA4B1000AB100 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
-				016E07E226BBA592000AB100 /* XCRemoteSwiftPackageReference "Starscream" */,
-				016E07E526BBADF7000AB100 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -494,6 +538,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				014F53F626D8F2EB00B9E82A /* Cartfile in Resources */,
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
@@ -743,7 +788,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.20;
+				MARKETING_VERSION = 0.5.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -767,7 +812,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 0.5.20;
+				MARKETING_VERSION = 0.5.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -799,155 +844,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		016E07C426BBA1F7000AB100 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.4.3;
-			};
-		};
-		016E07C726BBA219000AB100 /* XCRemoteSwiftPackageReference "swifter" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/httpswift/swifter";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.0;
-			};
-		};
-		016E07CA26BBA249000AB100 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/scinfu/SwiftSoup";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.3.2;
-			};
-		};
-		016E07CD26BBA265000AB100 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.1;
-			};
-		};
-		016E07D026BBA28F000AB100 /* XCRemoteSwiftPackageReference "Marshal" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/utahiosmac/Marshal";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.8;
-			};
-		};
-		016E07D326BBA2EF000AB100 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mxcl/PromiseKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.15.3;
-			};
-		};
-		016E07D926BBA360000AB100 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/1024jp/GzipSwift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
-		016E07DC26BBA389000AB100 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.26.0;
-			};
-		};
-		016E07DF26BBA4B1000AB100 /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-protobuf";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.17.0;
-			};
-		};
-		016E07E226BBA592000AB100 /* XCRemoteSwiftPackageReference "Starscream" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/daltoniam/Starscream";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.4;
-			};
-		};
-		016E07E526BBADF7000AB100 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.3.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		016E07C526BBA1F7000AB100 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07C426BBA1F7000AB100 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
-		016E07C826BBA219000AB100 /* Swifter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07C726BBA219000AB100 /* XCRemoteSwiftPackageReference "swifter" */;
-			productName = Swifter;
-		};
-		016E07CB26BBA249000AB100 /* SwiftSoup */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07CA26BBA249000AB100 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
-			productName = SwiftSoup;
-		};
-		016E07CE26BBA265000AB100 /* CryptoSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07CD26BBA265000AB100 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
-			productName = CryptoSwift;
-		};
-		016E07D126BBA28F000AB100 /* Marshal */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07D026BBA28F000AB100 /* XCRemoteSwiftPackageReference "Marshal" */;
-			productName = Marshal;
-		};
-		016E07D426BBA2EF000AB100 /* PromiseKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07D326BBA2EF000AB100 /* XCRemoteSwiftPackageReference "PromiseKit" */;
-			productName = PromiseKit;
-		};
-		016E07DA26BBA360000AB100 /* Gzip */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07D926BBA360000AB100 /* XCRemoteSwiftPackageReference "GzipSwift" */;
-			productName = Gzip;
-		};
-		016E07DD26BBA389000AB100 /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07DC26BBA389000AB100 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
-		016E07E026BBA4B2000AB100 /* SwiftProtobuf */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07DF26BBA4B1000AB100 /* XCRemoteSwiftPackageReference "swift-protobuf" */;
-			productName = SwiftProtobuf;
-		};
-		016E07E326BBA592000AB100 /* Starscream */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07E226BBA592000AB100 /* XCRemoteSwiftPackageReference "Starscream" */;
-			productName = Starscream;
-		};
-		016E07E626BBADF7000AB100 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 016E07E526BBADF7000AB100 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */ = {

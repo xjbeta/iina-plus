@@ -10,7 +10,7 @@ import Cocoa
 import CoreData
 import PromiseKit
 import Alamofire
-import Kingfisher
+import SDWebImage
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -66,6 +66,8 @@ class MainViewController: NSViewController {
         bookmarks.undoManager = UndoManager()
         super.init(coder: coder)
     }
+    
+    var reloadLimitDate: Date?
     
     // MARK: - Bilibili Tab Item
     @IBOutlet weak var bilibiliTableView: NSTableView!
@@ -229,6 +231,7 @@ class MainViewController: NSViewController {
             default:
                 break
             }
+            self.reloadLimitDate = nil
             self.reloadTableView()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
@@ -307,20 +310,29 @@ class MainViewController: NSViewController {
     
     @objc func reloadTableView() {
         guard let str = mainTabView.selectedTabViewItem?.identifier as? String,
-              let item = SidebarItem(raw: str) else {
+              let item = SidebarItem(raw: str)
+              
+        else {
             return
         }
         
+        
+        if let d = reloadLimitDate {
+            let time = Date().timeIntervalSince1970 - d.timeIntervalSince1970
+            if time < 20 {
+                return
+            }
+        }
+        
+        reloadLimitDate = Date()
+        
         switch item {
         case .bookmarks:
-            var row = 0
-            while row < bookmarkTableView.numberOfRows {
-                if let view = bookmarkTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? LiveStatusTableCellView {
-                    view.getInfo()
-                }
-                row += 1
+            (0..<bookmarkTableView.numberOfRows).compactMap {
+                bookmarkTableView.view(atColumn: 0, row: $0, makeIfNecessary: false) as? LiveStatusTableCellView
+            }.forEach {
+                $0.getInfo()
             }
-            
         case .bilibili:
             if bilibiliCards.count > 0 {
                 loadBilibiliCards(.new)
@@ -456,10 +468,8 @@ class MainViewController: NSViewController {
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     self.yougetResult = $0
-                    print($0)
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
-                    print($0)
                     resolver.reject($0)
                 }
             }
@@ -684,11 +694,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 view.imageBoxView.updatePreview(.stop)
                 
                 if let imageView = view.imageView {
-                    KF.url(.init(string: bilibiliCards[row].picUrl))
-                        .onSuccess {
-                            view.imageBoxView.pic = $0.image
-                        }
-                        .set(to: imageView)
+                    SDWebImageManager.shared.loadImage(with: .init(string: bilibiliCards[row].picUrl), progress: nil) { img,_,_,_,_,_ in
+                        view.imageBoxView.pic = img
+                        imageView.image = img
+                    }
                 }
                 return view
             }

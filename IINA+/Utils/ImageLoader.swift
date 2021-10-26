@@ -8,7 +8,6 @@
 
 import Cocoa
 import Alamofire
-import Kingfisher
 
 class ImageLoader: NSObject {
     
@@ -37,7 +36,17 @@ class ImageLoader: NSObject {
                     try FileManager.default.removeItem(atPath: oldUrl.path)
                 }
             }
-
+            
+            if let cacheUrl = userCacheUrl {
+                let u = cacheUrl.appendingPathComponent("com.onevcat.Kingfisher.ImageCache.default")
+                guard FileManager.default.fileExists(atPath: u.path)
+//                      let d = try FileManager.default.attributesOfItem(atPath: u.path)[.creationDate] as? Date,
+//                      d.timeIntervalSince1970 < 1633951000
+                else { return }
+                
+                try FileManager.default.removeItem(atPath: u.path)
+            }
+            
         } catch let error {
             Log(error)
         }

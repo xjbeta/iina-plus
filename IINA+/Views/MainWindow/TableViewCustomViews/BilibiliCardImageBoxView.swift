@@ -101,7 +101,7 @@ class BilibiliCardImageBoxView: NSView {
             if pImages.count > 0 {
                 let index = lroundf(Float(pImages.count - 1) * per)
                 if index != displayedIndex,
-                    index <= pImages.count,
+                    index < pImages.count,
                     index >= 0 {
                     imageView?.image = pImages[index]
                     displayedIndex = index

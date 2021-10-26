@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import Kingfisher
+import SDWebImage
 
 class AdvancedViewController: NSViewController, NSMenuDelegate {
     
@@ -19,7 +19,7 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     
     @IBOutlet weak var cacheSizeTextField: NSTextField!
     @IBAction func cleanUpCache(_ sender: NSButton) {
-        try? ImageCache.default.diskStorage.removeAll()
+        SDImageCache.shared.clearDisk(onCompletion: nil)
         initCacheSize()
     }
     
@@ -64,16 +64,9 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     }
     
     func initCacheSize() {
-        ImageCache.default.calculateDiskStorageSize { result in
-            var str = ""
-            switch result {
-            case .success(let size):
-                str = String(format: "%.2f MB", Double(size) / 1024 / 1024)
-            case .failure(let error):
-                str = "0.0 MB"
-                Log("calculateDiskStorageSize error \(error)")
-            }
-            self.cacheSizeTextField.stringValue = str
+        SDImageCache.shared.calculateSize { count, size in
+            let s = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+            self.cacheSizeTextField.stringValue = s
         }
     }
     

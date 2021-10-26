@@ -50,6 +50,7 @@ class HttpServer: NSObject, DanmakuDelegate {
     
     private var httpFilesURL: URL?
     
+    let videoGet = VideoGet()
     
     func register(_ id: String,
                   site: LiveSupportList,
@@ -82,6 +83,37 @@ class HttpServer: NSObject, DanmakuDelegate {
         
         do {
             guard let dir = httpFilesURL?.path else { return }
+            
+            server.POST["/video"] = { request -> HttpResponse in
+                let requestBodys = String(bytes: request.body, encoding: .utf8)?.split(separator: "&") ?? []
+                
+                var parameters = [String: String]()
+                requestBodys.forEach {
+                    let kv = $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
+                    guard kv.count == 2 else { return }
+                    parameters[kv[0]] = kv[1]
+                }
+                
+                guard let url = parameters["url"]?.removingPercentEncoding else {
+                    return HttpResponse.badRequest(nil)
+                }
+                
+                var re = Data()
+                let queue = DispatchGroup()
+                queue.enter()
+                    
+                self.videoGet.decodeUrl(url).done {
+                    let encoder = JSONEncoder()
+                    encoder.outputFormatting = .prettyPrinted
+                    re = try encoder.encode($0)
+                }.ensure {
+                    queue.leave()
+                }.catch {
+                    print($0)
+                }
+                queue.wait()
+                return HttpResponse.ok(.data(re))
+            }
             
             server["/danmaku/:path"] = directoryBrowser(dir)
             
