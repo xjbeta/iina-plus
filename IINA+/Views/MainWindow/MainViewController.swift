@@ -442,6 +442,7 @@ class MainViewController: NSViewController {
                 s += "something went wrong."
             }
             
+            Log(error)
             self.waitingErrorMessage = s
         }
     }
