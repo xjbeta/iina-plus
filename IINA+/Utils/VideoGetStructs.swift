@@ -610,6 +610,24 @@ struct BilibiliPlayInfo: Unmarshaling {
         self.videos = newVideos
         duration = try object.value(for: "dash.duration")
     }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var yougetJson = yougetJson
+        yougetJson.duration = duration
+        
+        videos.enumerated().forEach {
+            var stream = Stream(url: $0.element.url)
+            stream.quality = $0.element.bandwidth
+            yougetJson.streams[$0.element.description] = stream
+        }
+        
+        if let audios = audios,
+           let audio = audios.max(by: { $0.bandwidth > $1.bandwidth }) {
+            yougetJson.audio = audio.url
+        }
+        
+        return yougetJson
+    }
 }
 
 struct BilibiliSimplePlayInfo: Unmarshaling {
