@@ -62,43 +62,26 @@ class LiveStatusTableCellView: NSTableCellView {
         titleTextField.stringValue = info.title
         nameTextField.stringValue = info.name
         
-        var source: URL?
+        var source = isLiveSite ? info.avatar : info.cover
         
         if isLiveSite {
-            source = URL(string: info.avatar)
             liveStatusImageView.isHidden = false
             liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
         } else {
-            source = URL(string: info.cover)
             liveStatusImageView.isHidden = true
         }
         
-        SDWebImageManager.shared.loadImage(with: source, progress: nil) { img,_,_,_,_,_ in
-            
-            guard let img = img else { return }
-            
-            let size = img.size
-            let w = size.width
-            let h = size.height
-            var rect = CGRect(x: 0, y: 0, width: 0, height: 0)
-
-            let v = min(w, h)
-            rect.size.width = v
-            rect.size.height = v
-
-            let o = abs(w - h) / 2
-
-            if w > h {
-                rect.origin.x = o
-            } else {
-                rect.origin.y = o
-            }
-            guard let img = img.cgImage(forProposedRect: nil, context: nil, hints: nil)?.cropping(to: rect) else {
-                return
-            }
-
-            self.userCoverImageView.image = NSImage(cgImage: img, size: rect.size)
-        }
+        var size = userCoverImageView.frame.size
+        size.height *= 2
+        size.width *= 2
+        
+        source.coverUrlFormatter(site: info.site)
+        
+        let transformer = SDImageResizingTransformer(size: size, scaleMode: .aspectFill)
+        userCoverImageView.sd_setImage(
+            with: .init(string: source),
+            placeholderImage: nil,
+            context: [.imageTransformer: transformer])
         
         if info.site == .bangumi {
             nameTextField.stringValue = "Bangumi"
