@@ -1892,7 +1892,7 @@ Gw
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <arrayController mode="entity" entityName="Bookmark" editable="NO" automaticallyPreparesContent="YES" id="VY8-9O-I1C">
+                <arrayController mode="entity" entityName="Bookmark" editable="NO" automaticallyPreparesContent="YES" automaticallyRearrangesObjects="YES" id="VY8-9O-I1C">
                     <connections>
                         <binding destination="XfG-lQ-9wD" name="managedObjectContext" keyPath="self.context" id="F4u-uF-3YS"/>
                     </connections>
