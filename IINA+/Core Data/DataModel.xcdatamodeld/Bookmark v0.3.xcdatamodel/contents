@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="21A559" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Bookmark" representedClassName=".Bookmark" versionHashModifier="added order" syncable="YES">
+        <attribute name="cover" optional="YES" attributeType="String"/>
+        <attribute name="liveName" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="liveTitle" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="order" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="remark" optional="YES" attributeType="String"/>
+        <attribute name="state" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updateDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String" defaultValueString="https://live.bilibili.com/1010"/>
+    </entity>
+    <elements>
+        <element name="Bookmark" positionX="-103.39453125" positionY="-9" width="177.39453125" height="149"/>
+    </elements>
+</model>

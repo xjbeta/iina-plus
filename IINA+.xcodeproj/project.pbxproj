@@ -194,6 +194,7 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
+		019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.3.xcdatamodel"; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* IINA+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IINA+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -849,10 +850,11 @@
 		010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */,
 				014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */,
 				010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */,
 			);
-			currentVersion = 014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */;
+			currentVersion = 019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */;
 			path = DataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
