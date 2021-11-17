@@ -22,7 +22,7 @@ protocol DanmakuDelegate {
 
 class Danmaku: NSObject {
     var socket: WebSocket? = nil
-    var liveSite: LiveSupportList = .unsupported
+    var liveSite: SupportSites = .unsupported
     var url = ""
     var id = ""
     var delegate: DanmakuDelegate?
@@ -61,7 +61,7 @@ class Danmaku: NSObject {
     
     
     
-    init(_ site: LiveSupportList, url: String) {
+    init(_ site: SupportSites, url: String) {
         liveSite = site
         self.url = url
         

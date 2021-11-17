@@ -107,7 +107,7 @@ extension String {
     }
     
     mutating func coverUrlFormatter(
-        site: LiveSupportList,
+        site: SupportSites,
         maxH: Int = 200) {
             
         var u = self

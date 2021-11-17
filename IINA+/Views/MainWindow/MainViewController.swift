@@ -168,7 +168,7 @@ class MainViewController: NSViewController {
                 urlStr = stream?.src ?? []
             }
             var title = yougetJSON.title
-            let site = LiveSupportList(url: self.searchField.stringValue)
+            let site = SupportSites(url: self.searchField.stringValue)
             
             
             // init Danmaku

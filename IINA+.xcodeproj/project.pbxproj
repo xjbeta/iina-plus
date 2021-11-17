@@ -78,6 +78,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
+		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
@@ -195,6 +196,7 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
+		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
 		019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.3.xcdatamodel"; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* IINA+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IINA+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -307,6 +309,7 @@
 				013CE8F52185D992000271FB /* HttpServer.swift */,
 				013CE8DF21854813000271FB /* VideoGet.swift */,
 				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
+				0199489D2742852E00C71708 /* SupportSites.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
@@ -599,6 +602,7 @@
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
+				0199489E2742852E00C71708 /* SupportSites.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
