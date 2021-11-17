@@ -16,81 +16,11 @@ class LiveStatusTableCellView: NSTableCellView {
     @IBOutlet weak var titleTextField: NSTextField!
     @IBOutlet weak var nameTextField: NSTextField!
     
-    private var isLiveSite = false
-    
-    var url: URL? {
-        didSet {
-            if oldValue == url {
-                getInfo()
-            } else {
-                resetInfo()
-                getInfo()
-            }
-        }
-    }
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        
     }
     
-    func getInfo() {
-        guard let url = url else { return }
-        let str = url.absoluteString
-        let site = LiveSupportList(url: str)
-        
-        isLiveSite = site != .bangumi && site != .bilibili
-        
-        let vg = Processes.shared.videoGet
-        vg.liveInfo(str).done(on: .main) {
-            guard url == self.url else { return }
-            self.setInfo($0)
-            }.catch(on: .main) {
-                Log("Get live status error: \($0) \n - \(str)")
-                self.setErrorInfo(url.absoluteString)
-        }
-    }
-    
-    func resetInfo() {
-        titleTextField.stringValue = ""
-        nameTextField.stringValue = ""
-        userCoverImageView.image = nil
-        liveStatusImageView.image = nil
-    }
-    
-    func setInfo(_ info: LiveInfo) {
-        titleTextField.stringValue = info.title
-        nameTextField.stringValue = info.name
-        
-        var source = isLiveSite ? info.avatar : info.cover
-        
-        if isLiveSite {
-            liveStatusImageView.isHidden = false
-            liveStatusImageView.image = info.isLiving ? NSImage(named: "NSStatusAvailable") : NSImage(named: "NSStatusUnavailable")
-        } else {
-            liveStatusImageView.isHidden = true
-        }
-        
-        var size = userCoverImageView.frame.size
-        size.height *= 2
-        size.width *= 2
-        
-        source.coverUrlFormatter(site: info.site)
-        
-        let transformer = SDImageResizingTransformer(size: size, scaleMode: .aspectFill)
-        userCoverImageView.sd_setImage(
-            with: .init(string: source),
-            placeholderImage: nil,
-            context: [.imageTransformer: transformer])
-        
-        if info.site == .bangumi {
-            nameTextField.stringValue = "Bangumi"
-            nameTextField.textColor = NSColor(red:0.94, green:0.58, blue:0.70, alpha:1.00)
-        } else {
-            nameTextField.textColor = .labelColor
-        }
-        
-    }
     
     func setErrorInfo(_ str: String) {
         if self.userCoverImageView.image == nil {
