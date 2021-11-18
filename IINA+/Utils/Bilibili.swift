@@ -145,7 +145,7 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
     let longTitle: String
     let coverUrl: URL?
     let badge: Badge?
-    let site: LiveSupportList
+    let site: SupportSites
     
     struct Badge {
         let badge: String

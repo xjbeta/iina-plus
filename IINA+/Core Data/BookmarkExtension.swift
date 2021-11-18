@@ -20,5 +20,9 @@ extension Bookmark {
     @NSManaged public var order: Double
     @NSManaged public var remark: String?
     @NSManaged public var url: String
-    
+    @NSManaged public var state: Int16
+    @NSManaged public var liveTitle: String
+    @NSManaged public var liveName: String
+    @NSManaged public var updateDate: Date?
+    @NSManaged public var cover: String?
 }

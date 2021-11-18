@@ -34,7 +34,7 @@ class HttpServer: NSObject, DanmakuDelegate {
         
         
         var id: String
-        var site: LiveSupportList
+        var site: SupportSites
         var url: String
         var session: WebSocketSession? = nil
         var danmaku: Danmaku
@@ -53,7 +53,7 @@ class HttpServer: NSObject, DanmakuDelegate {
     let videoGet = VideoGet()
     
     func register(_ id: String,
-                  site: LiveSupportList,
+                  site: SupportSites,
                   url: String) {
         let d = Danmaku(site, url: url)
         d.id = id

@@ -28,16 +28,32 @@ class MainViewController: NSViewController {
     // MARK: - Bookmarks Tab Item
     @IBOutlet weak var bookmarkTableView: NSTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
-    @objc var bookmarks: NSManagedObjectContext
+    var bookmarks: [Bookmark] {
+        get {
+            return bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
+        }
+    }
+    @objc var context: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
         if bookmarkTableView.selectedRow != -1 {
-            let url = dataManager.requestData()[bookmarkTableView.selectedRow].url
+            let url = bookmarks[bookmarkTableView.selectedRow].url
             searchField.stringValue = url
             searchField.becomeFirstResponder()
             startSearch(self)
         }
     }
     
+    // MARK: - Menu
+    
+    @IBOutlet var siteFilterMenu: NSMenu!
+    @IBOutlet var liveStateMenu: NSMenu!
+    
+    enum LiveStateMenuItems: Int {
+        case all = 2
+        case living = 1
+        case offline = 0
+        case other = -1
+    }
     
     @IBAction func deleteBookmark(_ sender: Any) {
         guard let index = bookmarkTableView.selectedIndexs().first,
@@ -60,14 +76,24 @@ class MainViewController: NSViewController {
         performSegue(withIdentifier: NSStoryboardSegue.Identifier("showAddBookmarkViewController"), sender: nil)
     }
     
-    let dataManager = DataManager()
-    required init?(coder: NSCoder) {
-        bookmarks = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
-        bookmarks.undoManager = UndoManager()
-        super.init(coder: coder)
+    @IBAction func removeFilters(_ sender: NSButton) {
+        bookmarkArrayController.fetchPredicate = nil
+        Log("Remove Filters")
     }
     
-    var reloadLimitDate: Date?
+    @IBAction func decode(_ sender: NSMenuItem) {
+        let url = bookmarks[bookmarkTableView.clickedRow].url
+        searchField.stringValue = url
+        searchField.becomeFirstResponder()
+        startSearch(self)
+    }
+    
+    let dataManager = DataManager()
+    required init?(coder: NSCoder) {
+        context = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+        context.undoManager = UndoManager()
+        super.init(coder: coder)
+    }
     
     // MARK: - Bilibili Tab Item
     @IBOutlet weak var bilibiliTableView: NSTableView!
@@ -103,7 +129,7 @@ class MainViewController: NSViewController {
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
-    @IBOutlet weak var addNoticeStackView: NSStackView!
+    @IBOutlet var noticeTabView: NSTabView!
     
     var bookmarkArrayCountObserver: NSKeyValueObservation?
     
@@ -168,7 +194,7 @@ class MainViewController: NSViewController {
                 urlStr = stream?.src ?? []
             }
             var title = yougetJSON.title
-            let site = LiveSupportList(url: self.searchField.stringValue)
+            let site = SupportSites(url: self.searchField.stringValue)
             
             
             // init Danmaku
@@ -231,7 +257,6 @@ class MainViewController: NSViewController {
             default:
                 break
             }
-            self.reloadLimitDate = nil
             self.reloadTableView()
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
@@ -274,7 +299,11 @@ class MainViewController: NSViewController {
         
         bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { arrayController, _ in
             let c = (arrayController.arrangedObjects as? [Any])?.count
-            self.addNoticeStackView.isHidden = c != 0
+            
+            self.noticeTabView.isHidden = c != 0
+            
+            let i = arrayController.fetchPredicate == nil ? 0 : 1
+            self.noticeTabView.selectTabViewItem(at: i)
         }
     }
     
@@ -316,22 +345,10 @@ class MainViewController: NSViewController {
             return
         }
         
-        
-        if let d = reloadLimitDate {
-            let time = Date().timeIntervalSince1970 - d.timeIntervalSince1970
-            if time < 20 {
-                return
-            }
-        }
-        
-        reloadLimitDate = Date()
-        
         switch item {
         case .bookmarks:
-            (0..<bookmarkTableView.numberOfRows).compactMap {
-                bookmarkTableView.view(atColumn: 0, row: $0, makeIfNecessary: false) as? LiveStatusTableCellView
-            }.forEach {
-                $0.getInfo()
+            dataManager.requestData().forEach {
+                $0.updateState()
             }
         case .bilibili:
             if bilibiliCards.count > 0 {
@@ -625,6 +642,142 @@ class MainViewController: NSViewController {
         }
     }
     
+    func initLiveStateMenu() {
+        let items = liveStateMenu.items
+        if items.first(where: { $0.state == .on }) == nil {
+            items.first?.state = .on
+        }
+        
+        if bookmarkArrayController.fetchPredicate == nil {
+            items.forEach {
+                $0.state = .off
+            }
+            items.first?.state = .on
+        }
+        
+        items.forEach {
+            $0.action = #selector(selectLiveStateItem)
+        }
+    }
+    
+    @objc func selectLiveStateItem(_ menuItem: NSMenuItem) {
+        liveStateMenu.items.forEach {
+            $0.state = .off
+        }
+        menuItem.state = .on
+        updateFilter()
+    }
+    
+    func initLiveSiteMenu() {
+        let items = siteFilterMenu.items
+        if items.count == 0 {
+            initLiveSiteMenuItems()
+        }
+        if items.first(where: { $0.state == .on }) == nil {
+            items.first?.state = .on
+        }
+        
+        if bookmarkArrayController.fetchPredicate == nil {
+            items.forEach {
+                $0.state = .off
+            }
+            items.first?.state = .on
+        }
+    }
+    
+    func initLiveSiteMenuItems() {
+        let menu = siteFilterMenu!
+        let act = #selector(selectLiveSiteItem)
+        
+        menu.removeAllItems()
+        
+        let allItem = ObjMenuItem(title: "All", action: act, keyEquivalent: "")
+        allItem.tag = 1
+        
+        var items = [
+            allItem,
+            .separator()
+        ]
+        
+        let sites = dataManager.requestData().map {
+            $0.url
+        }.compactMap(SupportSites.init(url: ))
+            .filter {
+                $0 != .unsupported
+            }
+        
+        let siteItems = Array(Set(sites))
+            .sorted {
+                $0.siteName > $1.siteName
+            }.map { site -> ObjMenuItem in
+                let i = ObjMenuItem(title: site.siteName, action: act, keyEquivalent: "")
+                i.tag = -99
+                i.item = site
+                return i
+            }
+        items.append(contentsOf: siteItems)
+        
+        menu.items = items
+    }
+    
+    @objc func selectLiveSiteItem(_ menuItem: NSMenuItem) {
+        siteFilterMenu.items.forEach {
+            $0.state = .off
+        }
+        
+        menuItem.state = .on
+        updateFilter()
+    }
+    
+    func updateFilter() {
+        var f = ""
+        if let item = liveStateMenu.items.first(where: { $0.state == .on }),
+           let sItem = LiveStateMenuItems(rawValue: item.tag) {
+            
+            switch sItem {
+            case .all:
+                f = ""
+            case .living:
+                f = "state == 1"
+            case .offline:
+                f = "state == 0"
+            case .other:
+                // Bangumi bilibili -99
+                f = "state == -1"
+            }
+        }
+        
+        var f2 = ""
+        if let item = siteFilterMenu.items.first(where: { $0.state == .on }) as? ObjMenuItem {
+            switch item.tag {
+            case 1:
+                f2 = ""
+            default:
+                if let i = item.item as? SupportSites {
+                    f2 = "url CONTAINS '\(i.rawValue)'"
+                    if i == .bilibili || i == .bangumi {
+                        f = ""
+                    }
+                }
+            }
+        }
+        
+        let format = [f, f2].filter {
+            $0 != ""
+        }.joined(separator: " && ")
+        
+        guard format != "" else {
+            bookmarkArrayController.fetchPredicate = nil
+            Log("Remove Filters")
+            return
+        }
+        
+        Log("New Filters: \(format)")
+        
+        let p = NSPredicate(format: format)
+        bookmarkArrayController.fetchPredicate = p
+    }
+    
     deinit {
         bookmarkArrayCountObserver?.invalidate()
     }
@@ -634,7 +787,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
         switch tableView {
         case bookmarkTableView:
-            return dataManager.requestData().count
+            return bookmarks.count
         case bilibiliTableView:
             return tableView.numberOfRows
         case suggestionsTableView:
@@ -652,8 +805,8 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         switch tableView {
         case bookmarkTableView:
-            let str = dataManager.requestData()[row].url
-            switch LiveSupportList(url: str) {
+            let str = bookmarks[row].url
+            switch SupportSites(url: str) {
             case .unsupported:
                 return 23
             default:
@@ -672,19 +825,26 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         switch tableView {
         case bookmarkTableView:
-            let str = dataManager.requestData()[row].url
-            switch LiveSupportList(url: str) {
+            let data = bookmarks[row]
+            let str = data.url
+            switch SupportSites(url: str) {
             case .unsupported:
-                if let view = tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil) as? NSTableCellView {
-                    view.textField?.stringValue = str
-                    return view
-                }
+                return tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil)
             default:
-                if let view = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                    if let u = URL(string: str) {
-                        view.url = u
-                    }
-                    return view
+                if let v = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
+                    let iv = v.userCoverImageView
+                    iv?.image = nil
+                    var size = iv?.frame.size ?? .zero
+                    size.height *= 2
+                    size.width *= 2
+                    
+                    let transformer = SDImageResizingTransformer(size: size, scaleMode: .aspectFill)
+                    guard let s = data.cover else { return v }
+                    iv?.sd_setImage(
+                        with: .init(string: s),
+                        placeholderImage: nil,
+                        context: [.imageTransformer: transformer])
+                    return v
                 }
             }
         case bilibiliTableView:
@@ -694,8 +854,11 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 view.imageBoxView.pic = nil
                 view.imageBoxView.updatePreview(.stop)
                 
+                var url = bilibiliCards[row].picUrl
+                url.coverUrlFormatter(site: .bilibili)
+                
                 if let imageView = view.imageView {
-                    SDWebImageManager.shared.loadImage(with: .init(string: bilibiliCards[row].picUrl), progress: nil) { img,_,_,_,_,_ in
+                    SDWebImageManager.shared.loadImage(with: .init(string: url), progress: nil) { img,_,_,_,_,_ in
                         view.imageBoxView.pic = img
                         imageView.image = img
                     }
@@ -773,6 +936,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
     
     func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
 
+        guard bookmarkArrayController.fetchPredicate == nil else {
+            return false
+        }
+        
         var oldRows: [Int] = []
         info.enumerateDraggingItems(options: [], for: tableView, classes: [NSPasteboardItem.self], searchOptions: [:]) {
             (draggingItem, idx, stop) in
@@ -799,7 +966,6 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         return true
     }
     
-
 }
 
 extension MainViewController: NSSearchFieldDelegate {
@@ -809,6 +975,19 @@ extension MainViewController: NSSearchFieldDelegate {
     
     func searchFieldDidEndSearching(_ sender: NSSearchField) {
         print(#function, sender.stringValue)
+    }
+}
+
+extension MainViewController: NSMenuDelegate {
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        switch menu {
+        case liveStateMenu:
+            initLiveStateMenu()
+        case siteFilterMenu:
+            initLiveSiteMenu()
+        default:
+            return
+        }
     }
 }
 

@@ -16,11 +16,11 @@ protocol LiveInfo {
     var cover: String { get }
     var isLiving: Bool { get }
     
-    var site: LiveSupportList { get }
+    var site: SupportSites { get }
 }
 
 protocol VideoSelector {
-    var site: LiveSupportList { get }
+    var site: SupportSites { get }
     var index: Int { get }
     var title: String { get }
     var id: Int { get }
@@ -35,7 +35,7 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
     var roomId: Int = -1
     var cover: String = ""
     
-    var site: LiveSupportList = .biliLive
+    var site: SupportSites = .biliLive
     
     init() {
     }
@@ -87,7 +87,7 @@ struct BilibiliInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     var cover: String = ""
     
-    var site: LiveSupportList = .bilibili
+    var site: SupportSites = .bilibili
     
     init() {
     }
@@ -106,7 +106,7 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
     var avatar: String
     var isLiving = false
     var cover: String = ""
-    var site: LiveSupportList = .douyu
+    var site: SupportSites = .douyu
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "room.room_name")
@@ -120,7 +120,7 @@ struct DouyuInfo: Unmarshaling, LiveInfo {
 }
 
 struct DouyuVideoSelector: VideoSelector {
-    let site = LiveSupportList.douyu
+    let site = SupportSites.douyu
     let index: Int
     let title: String
     let id: Int
@@ -168,7 +168,7 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     var rid: Int
     var cover: String = ""
-    var site: LiveSupportList = .huya
+    var site: SupportSites = .huya
     
     var isSeeTogetherRoom = false
     
@@ -258,7 +258,7 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
     var isLiving = false
     var rid: Int
     var cover: String = ""
-    var site: LiveSupportList = .huya
+    var site: SupportSites = .huya
     
     var isSeeTogetherRoom = false
     
@@ -470,7 +470,7 @@ struct QuanMinInfo: Unmarshaling, LiveInfo {
     var isLiving = false
     var cover: String = ""
     
-    var site: LiveSupportList = .quanmin
+    var site: SupportSites = .quanmin
     
     init(object: MarshaledObject) throws {
         title = try object.value(for: "title")
@@ -486,7 +486,7 @@ struct LongZhuInfo: Unmarshaling, LiveInfo {
     var avatar: String
     var isLiving = false
     var cover: String = ""
-    var site: LiveSupportList = .longzhu
+    var site: SupportSites = .longzhu
     
     init(object: MarshaledObject) throws {
         if let title: String = try object.value(for: "live.title") {
@@ -524,7 +524,7 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     var anchorId: Int
     var lastTm = 0
     
-    var site: LiveSupportList = .eGame
+    var site: SupportSites = .eGame
     
     var cover: String = ""
     
@@ -803,12 +803,12 @@ struct LangPlayInfo: Unmarshaling, LiveInfo {
     var liveID: String
     var liveKey: String
     
-    var site: LiveSupportList = .langPlay
+    var site: SupportSites = .langPlay
     
     struct LangPlayVideoSelector: Unmarshaling, VideoSelector {
         let id: Int
         let coverUrl: URL?
-        let site = LiveSupportList.langPlay
+        let site = SupportSites.langPlay
         let index: Int
         let title: String
         let url: String
@@ -849,7 +849,7 @@ struct CC163Info: Unmarshaling, LiveInfo {
     var cover: String
     var isLiving: Bool
     var ccid: String
-    var site: LiveSupportList
+    var site: SupportSites
     
     init(object: MarshaledObject) throws {
         site = .cc163
@@ -877,7 +877,7 @@ struct CC163ZTInfo {
 }
 
 struct CC163VideoSelector: VideoSelector {
-    let site = LiveSupportList.cc163
+    let site = SupportSites.cc163
     let index: Int
     let title: String
     let ccid: String
@@ -893,7 +893,7 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
     var avatar: String
     var cover: String
     var isLiving: Bool
-    var site: LiveSupportList
+    var site: SupportSites
     
     var ccid: Int
 

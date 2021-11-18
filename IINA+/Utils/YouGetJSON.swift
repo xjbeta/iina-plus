@@ -25,7 +25,7 @@ struct YouGetJSON: Unmarshaling, Codable {
         }
     }
     
-    var site: LiveSupportList = .unsupported
+    var site: SupportSites = .unsupported
     
     
     enum CodingKeys: String, CodingKey {

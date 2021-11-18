@@ -15,45 +15,6 @@ import JavaScriptCore
 import WebKit
 import SwiftSoup
 
-enum LiveSupportList: String {
-    case biliLive = "live.bilibili.com"
-    case bilibili = "www.bilibili.com/video"
-    case bangumi = "www.bilibili.com/bangumi"
-    case douyu = "www.douyu.com"
-    case huya = "www.huya.com"
-    case quanmin = "www.quanmin.tv"
-    case longzhu = "star.longzhu.com"
-    case eGame = "egame.qq.com"
-    //    case yizhibo = "www.yizhibo.com"
-    case langPlay = "play.lang.live"
-    case cc163 = "cc.163.com"
-    case unsupported
-    
-    init(url: String) {
-        guard let u = URL(string: url) else {
-            self = .unsupported
-            return
-        }
-        
-        let host = u.host ?? ""
-        if host == "www.bilibili.com", u.pathComponents.count >= 2 {
-            switch u.pathComponents[1] {
-            case "video":
-                self = .bilibili
-            case "bangumi":
-                self = .bangumi
-            default:
-                self = .unsupported
-            }
-        } else if let list = LiveSupportList(rawValue: host) {
-            self = list
-        } else {
-            self = .unsupported
-        }
-    }
-}
-
-
 class VideoGet: NSObject {
     
     let douyuWebview = WKWebView()
@@ -73,7 +34,7 @@ class VideoGet: NSObject {
         guard let url = URL(string: url) else {
             return .init(error: VideoGetError.notSupported)
         }
-        let site = LiveSupportList(url: url.absoluteString)
+        let site = SupportSites(url: url.absoluteString)
         
         yougetJson.site = site
         
@@ -222,7 +183,7 @@ class VideoGet: NSObject {
         guard let url = URL(string: url) else {
             return .init(error: VideoGetError.notSupported)
         }
-        let site = LiveSupportList(url: url.absoluteString)
+        let site = SupportSites(url: url.absoluteString)
         let roomId = Int(url.lastPathComponent) ?? -1
         switch site {
         case .biliLive:
