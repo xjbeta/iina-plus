@@ -37,7 +37,7 @@ public class Bookmark: NSManagedObject {
             }.catch(on: .main) {
                 let s = "Get live status error: \($0) \n - \(self.url)"
                 Log(s)
-                self.liveTitle = $0.localizedDescription
+                self.liveTitle = self.url
                 self.state = -1
                 self.save()
         }

@@ -78,6 +78,7 @@ class MainViewController: NSViewController {
     
     @IBAction func removeFilters(_ sender: NSButton) {
         bookmarkArrayController.fetchPredicate = nil
+        Log("Remove Filters")
     }
     
     @IBAction func decode(_ sender: NSMenuItem) {
@@ -765,12 +766,13 @@ class MainViewController: NSViewController {
             $0 != ""
         }.joined(separator: " && ")
         
-        print(format)
-        
         guard format != "" else {
             bookmarkArrayController.fetchPredicate = nil
+            Log("Remove Filters")
             return
         }
+        
+        Log("New Filters: \(format)")
         
         let p = NSPredicate(format: format)
         bookmarkArrayController.fetchPredicate = p
