@@ -76,6 +76,17 @@ class MainViewController: NSViewController {
         performSegue(withIdentifier: NSStoryboardSegue.Identifier("showAddBookmarkViewController"), sender: nil)
     }
     
+    @IBAction func removeFilters(_ sender: NSButton) {
+        bookmarkArrayController.fetchPredicate = nil
+    }
+    
+    @IBAction func decode(_ sender: NSMenuItem) {
+        let url = bookmarks[bookmarkTableView.clickedRow].url
+        searchField.stringValue = url
+        searchField.becomeFirstResponder()
+        startSearch(self)
+    }
+    
     let dataManager = DataManager()
     required init?(coder: NSCoder) {
         context = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
@@ -117,7 +128,7 @@ class MainViewController: NSViewController {
     }
     
     @IBOutlet weak var suggestionsTableView: NSTableView!
-    @IBOutlet weak var addNoticeStackView: NSStackView!
+    @IBOutlet var noticeTabView: NSTabView!
     
     var bookmarkArrayCountObserver: NSKeyValueObservation?
     
@@ -287,7 +298,11 @@ class MainViewController: NSViewController {
         
         bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { arrayController, _ in
             let c = (arrayController.arrangedObjects as? [Any])?.count
-            self.addNoticeStackView.isHidden = c != 0
+            
+            self.noticeTabView.isHidden = c != 0
+            
+            let i = arrayController.fetchPredicate == nil ? 0 : 1
+            self.noticeTabView.selectTabViewItem(at: i)
         }
     }
     
@@ -631,6 +646,14 @@ class MainViewController: NSViewController {
         if items.first(where: { $0.state == .on }) == nil {
             items.first?.state = .on
         }
+        
+        if bookmarkArrayController.fetchPredicate == nil {
+            items.forEach {
+                $0.state = .off
+            }
+            items.first?.state = .on
+        }
+        
         items.forEach {
             $0.action = #selector(selectLiveStateItem)
         }
@@ -649,6 +672,16 @@ class MainViewController: NSViewController {
         if items.count == 0 {
             initLiveSiteMenuItems()
         }
+        if items.first(where: { $0.state == .on }) == nil {
+            items.first?.state = .on
+        }
+        
+        if bookmarkArrayController.fetchPredicate == nil {
+            items.forEach {
+                $0.state = .off
+            }
+            items.first?.state = .on
+        }
     }
     
     func initLiveSiteMenuItems() {
@@ -659,7 +692,6 @@ class MainViewController: NSViewController {
         
         let allItem = ObjMenuItem(title: "All", action: act, keyEquivalent: "")
         allItem.tag = 1
-        allItem.state = .on
         
         var items = [
             allItem,
