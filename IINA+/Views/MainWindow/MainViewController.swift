@@ -677,7 +677,8 @@ class MainViewController: NSViewController {
             items.first?.state = .on
         }
         
-        if bookmarkArrayController.fetchPredicate == nil {
+        if bookmarkArrayController.fetchPredicate == nil,
+           items.first?.state != .on {
             items.forEach {
                 $0.state = .off
             }
@@ -693,6 +694,7 @@ class MainViewController: NSViewController {
         
         let allItem = ObjMenuItem(title: "All", action: act, keyEquivalent: "")
         allItem.tag = 1
+        allItem.state = .on
         
         var items = [
             allItem,
