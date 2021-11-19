@@ -25,6 +25,26 @@ struct YouGetJSON: Unmarshaling, Codable {
         }
     }
     
+    var m3uContent: String {
+        get {
+            var content = "#EXTM3U"
+            let title = title
+            videos.forEach {
+                let t = title + " - " + $0.key
+                content.append("\n#EXTINF:-1 ,\(t)\n")
+                content.append($0.value.url!)
+                
+                $0.value.src.enumerated().forEach {
+                    let tt = t + " - " + "备用\($0.offset + 1)"
+                    content.append("\n#EXTINF:-1 ,\(tt)\n")
+                    content.append($0.element)
+                }
+            }
+            
+            return content
+        }
+    }
+    
     var site: SupportSites = .unsupported
     
     
