@@ -508,6 +508,8 @@ struct EgameUrl: Unmarshaling {
     var desc: String
     var levelType: Int
     
+    var src = [String]()
+    
     init(object: MarshaledObject) throws {
         playUrl = try object.value(for: "playUrl")
         desc = try object.value(for: "desc")

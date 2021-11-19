@@ -100,6 +100,7 @@ class VideoGet: NSObject {
                 }.enumerated().forEach {
                     var s = Stream(url: $0.element.playUrl)
                     s.quality = $0.element.levelType
+                    s.src = $0.element.src
                     yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
@@ -720,8 +721,20 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
                     let info: EgameInfo = try EgameInfo(object: json)
-                    let urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
-
+                    
+                    var urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
+                    let urlsBak: [EgameUrl] = try json.value(for: "state.live-info.liveBaseInfo.streamInfo.streamInfos")
+                    
+                    urlsBak.forEach { bak in
+                        guard let i = urls.firstIndex(where: {
+                            $0.levelType == bak.levelType
+                            && $0.desc == bak.desc
+                        }) else {
+                            return
+                        }
+                        urls[i].src.append(bak.playUrl)
+                    }
+                    
                     resolver.fulfill((info, urls))
                 } catch let error {
                     resolver.reject(error)
