@@ -461,36 +461,6 @@ extension VideoGet {
             }
         }
     }
-    
-    private func getDouyuDid() -> Promise<(String)> {
-//        10000000000000000000000000001501
-        
-        
-        let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
-        let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
-        srand48(Int(time))
-        let random = "\(drand48())"
-        let parameters = ["client_id": "1",
-                          "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
-        let headers = HTTPHeaders(["Referer": "http://www.douyu.com"])
-        
-        return Promise { resolver in
-            AF.request(douyuCookie, parameters: parameters, headers: headers).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    var str = response.text
-                    str = str?.subString(from: "(", to: ")")
-                    let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
-                    let didStr: String = try json.value(for: "data.did")
-                    resolver.fulfill(didStr)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
 
     
     private func getDouyuSign(_ roomID: Int, didStr: String, time: String) -> Promise<(sign: String, v: String)> {
@@ -542,7 +512,7 @@ extension VideoGet {
                             "sign": signStr,
                             "cdn": "ali-h5",
                             "rate": "\(rate)",
-                            "ver": "Douyu_219111405",
+                            "ver": "Douyu_221111905",
                             "iar": "0",
                             "ive": "0"]
                 AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).response { response in
@@ -576,9 +546,14 @@ extension VideoGet {
     
     
     func getDouyuUrl(_ roomID: Int, rate: Int = 0) -> Promise<[(String, Stream)]> {
-        return getDouyuDid().then {
-            self.getDouyuRtmpUrl(roomID, didStr: $0, rate: rate)
-        }
+        let didStr: String = {
+            let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
+            srand48(Int(time))
+            let random = "\(drand48())"
+            return MD5(random) ?? ""
+        }()
+        
+        return getDouyuRtmpUrl(roomID, didStr: didStr, rate: rate)
     }
     
     // MARK: - Huya
