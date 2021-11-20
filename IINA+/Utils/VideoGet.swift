@@ -142,11 +142,14 @@ class VideoGet: NSObject {
                     $0 as? CC163Info
                 }.then {
                     self.getCC163("\($0.ccid)")
-                }.map {
-                    $0.enumerated().forEach {
-                        var s = Stream(url: $0.element)
-                        s.quality = 999 - $0.offset
-                        yougetJson.streams["线路 \($0.offset + 1)"] = s
+                }.map { urls -> YouGetJSON in
+                    urls.enumerated().forEach { u in
+                        var s = Stream(url: u.element)
+                        s.quality = 999 - u.offset
+                        s.src = urls.filter {
+                            $0 != u.element
+                        }
+                        yougetJson.streams["线路 \(u.offset + 1)"] = s
                     }
                     return yougetJson
                 }
