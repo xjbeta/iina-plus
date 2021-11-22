@@ -838,7 +838,7 @@ extension VideoGet {
     func bilibiliPlayUrl(bvid: String, yougetJson: YouGetJSON) -> Promise<(YouGetJSON)> {
         var yougetJson = yougetJson
         let cid = yougetJson.id
-        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=0&otype=json&bvid=\(bvid)&fnver=0&fnval=976"
+        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=0&otype=json&bvid=\(bvid)&fnver=0&fnval=976&fourk=1"
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
