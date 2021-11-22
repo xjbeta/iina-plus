@@ -100,6 +100,7 @@ class VideoGet: NSObject {
                 }.enumerated().forEach {
                     var s = Stream(url: $0.element.playUrl)
                     s.quality = $0.element.levelType
+                    s.src = $0.element.src
                     yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
@@ -141,11 +142,14 @@ class VideoGet: NSObject {
                     $0 as? CC163Info
                 }.then {
                     self.getCC163("\($0.ccid)")
-                }.map {
-                    $0.enumerated().forEach {
-                        var s = Stream(url: $0.element)
-                        s.quality = 999 - $0.offset
-                        yougetJson.streams["线路 \($0.offset + 1)"] = s
+                }.map { urls -> YouGetJSON in
+                    urls.enumerated().forEach { u in
+                        var s = Stream(url: u.element)
+                        s.quality = 999 - u.offset
+                        s.src = urls.filter {
+                            $0 != u.element
+                        }
+                        yougetJson.streams["线路 \(u.offset + 1)"] = s
                     }
                     return yougetJson
                 }
@@ -460,36 +464,6 @@ extension VideoGet {
             }
         }
     }
-    
-    private func getDouyuDid() -> Promise<(String)> {
-//        10000000000000000000000000001501
-        
-        
-        let douyuCookie = "https://passport.douyu.com/lapi/did/api/get"
-        let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
-        srand48(Int(time))
-        let random = "\(drand48())"
-        let parameters = ["client_id": "1",
-                          "callback": ("jsonp_" + random).replacingOccurrences(of: ".", with: "")]
-        let headers = HTTPHeaders(["Referer": "http://www.douyu.com"])
-        
-        return Promise { resolver in
-            AF.request(douyuCookie, parameters: parameters, headers: headers).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    var str = response.text
-                    str = str?.subString(from: "(", to: ")")
-                    let json = try JSONParser.JSONObjectWithData(str?.data(using: .utf8) ?? Data())
-                    let didStr: String = try json.value(for: "data.did")
-                    resolver.fulfill(didStr)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
 
     
     private func getDouyuSign(_ roomID: Int, didStr: String, time: String) -> Promise<(sign: String, v: String)> {
@@ -541,7 +515,7 @@ extension VideoGet {
                             "sign": signStr,
                             "cdn": "ali-h5",
                             "rate": "\(rate)",
-                            "ver": "Douyu_219111405",
+                            "ver": "Douyu_221111905",
                             "iar": "0",
                             "ive": "0"]
                 AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).response { response in
@@ -575,9 +549,14 @@ extension VideoGet {
     
     
     func getDouyuUrl(_ roomID: Int, rate: Int = 0) -> Promise<[(String, Stream)]> {
-        return getDouyuDid().then {
-            self.getDouyuRtmpUrl(roomID, didStr: $0, rate: rate)
-        }
+        let didStr: String = {
+            let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
+            srand48(Int(time))
+            let random = "\(drand48())"
+            return MD5(random) ?? ""
+        }()
+        
+        return getDouyuRtmpUrl(roomID, didStr: didStr, rate: rate)
     }
     
     // MARK: - Huya
@@ -720,8 +699,20 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
                     let info: EgameInfo = try EgameInfo(object: json)
-                    let urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
-
+                    
+                    var urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
+                    let urlsBak: [EgameUrl] = try json.value(for: "state.live-info.liveBaseInfo.streamInfo.streamInfos")
+                    
+                    urlsBak.forEach { bak in
+                        guard let i = urls.firstIndex(where: {
+                            $0.levelType == bak.levelType
+                            && $0.desc == bak.desc
+                        }) else {
+                            return
+                        }
+                        urls[i].src.append(bak.playUrl)
+                    }
+                    
                     resolver.fulfill((info, urls))
                 } catch let error {
                     resolver.reject(error)
