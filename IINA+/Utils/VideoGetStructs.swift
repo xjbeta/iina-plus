@@ -749,57 +749,6 @@ struct BangumiInfo: Unmarshaling {
     }
 }
 
-
-// MARK: - LangPlay
-
-struct LangPlayInfo: Unmarshaling, LiveInfo {
-    var title: String
-    var name: String
-    var avatar: String
-    var isLiving: Bool
-    var cover: String = ""
-    
-    var roomID: String
-    var liveID: String
-    var liveKey: String
-    
-    var site: SupportSites = .langPlay
-    
-    struct LangPlayVideoSelector: Unmarshaling, VideoSelector {
-        let id: Int
-        let coverUrl: URL?
-        let site = SupportSites.langPlay
-        let index: Int
-        let title: String
-        let url: String
-        init(object: MarshaledObject) throws {
-            title = try object.value(for: "title")
-            index = try object.value(for: "id")
-            url = try object.value(for: "video")
-            id = -1
-            coverUrl = nil
-        }
-    }
-    
-    var streamItems: [LangPlayVideoSelector]
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "data.live_info.room_title")
-        name = try object.value(for: "data.live_info.nickname")
-        avatar = try object.value(for: "data.live_info.avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
-        let liveStatus: Int = try object.value(for: "data.live_info.live_status")
-        isLiving = liveStatus == 1
-        streamItems = try object.value(for: "data.live_info.stream_items")
-        
-        liveID = try object.value(for: "data.live_info.live_id")
-        roomID = try object.value(for: "data.live_info.room_id")
-        liveKey = try object.value(for: "data.live_info.live_key")
-        
-        cover = "https://play-web-assets.lang.live/public/live/screenshot/" + liveID   
-    }
-}
-
 // MARK: - CC163
 
 struct CC163Info: Unmarshaling, LiveInfo {

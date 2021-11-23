@@ -109,15 +109,6 @@ class VideoGet: NSObject {
             return getBilibili(url)
         case .bangumi:
             return getBangumi(url)
-        case .langPlay:
-            let roomId = Int(url.lastPathComponent) ?? -1
-            return getLangPlayInfo(roomId).map {
-                yougetJson.title = $0.title
-                $0.streamItems.forEach {
-                    yougetJson.streams[$0.title] = Stream(url: $0.url)
-                }
-                return yougetJson
-            }
         case .cc163:
             let pcs = url.pathComponents
             
@@ -216,10 +207,6 @@ class VideoGet: NSObject {
         case .eGame:
             return getEgameInfo(url).map {
                 $0.0
-            }
-        case .langPlay:
-            return getLangPlayInfo(roomId).map {
-                $0 as LiveInfo
             }
         case .bilibili:
             return getBilibiliHTMLDatas(url).map {
@@ -1089,25 +1076,6 @@ extension VideoGet {
         }
     }
     
-    
-    // MARK: - LangPlay
-    func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
-        let url = "https://game-api.lang.live/webapi/v1/room/info?room_id=\(roomID)"
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info = try LangPlayInfo(object: json)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
     // MARK: - CC163
     
     func getCC163Info(_ url: URL) -> Promise<LiveInfo> {
