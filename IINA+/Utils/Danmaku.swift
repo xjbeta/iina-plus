@@ -430,6 +430,9 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         }
         delegate?.send(.liveDMServer, text: "error", id: id)
     }
+    
+    func webSocket(_ webSocket: WebSocket, didReceiveMessageWith string: String) {
+    }
 
     func webSocket(_ webSocket: WebSocket, didReceiveMessageWith data: Data) {
         switch liveSite {
