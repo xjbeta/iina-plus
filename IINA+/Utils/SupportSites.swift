@@ -15,7 +15,6 @@ enum SupportSites: String {
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
     case eGame = "egame.qq.com"
-    //    case yizhibo = "www.yizhibo.com"
     case langPlay = "play.lang.live"
     case cc163 = "cc.163.com"
     case unsupported
