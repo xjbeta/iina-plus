@@ -4,21 +4,20 @@
 /* Quit without saves error question message */
 "Could not save changes while quitting. Quit anyway?" = "Could not save changes while quitting. Quit anyway?";
 
+/* All */
+"LiveSite.All" = "All";
+
 /* No comment provided by engineer. */
 "mainMenu.view.reloadBilibiliList" = "Reload Bilibili List";
 
 /* No comment provided by engineer. */
 "mainMenu.view.reloadLiveStatus" = "Reload Live Status";
 
-/* All */
-"LiveSite.All" = "All";
-
 /* Quit anyway button title */
 "Quit anyway" = "Quit anyway";
 
 /* Quit without saves error question info */
 "Quitting now will lose any changes you have made since the last successful save" = "Quitting now will lose any changes you have made since the last successful save";
-
 
 /* Bilibili */
 "SupportSites.Bilibili" = "Bilibili";
@@ -43,3 +42,21 @@
 
 /* Unsupported */
 "SupportSites.Unsupported" = "Unsupported";
+
+/* something went wrong. */
+"VideoGetError.default" = "something went wrong.";
+
+/* invalid url. */
+"VideoGetError.invalidLink" = "invalid url.";
+
+/* the host is not online. */
+"VideoGetError.isNotLiving" = "the host is not online.";
+
+/* need vip. */
+"VideoGetError.needVip" = "need vip.";
+
+/* the website is not supported. */
+"VideoGetError.notSupported" = "the website is not supported.";
+
+/* ಠ_ಠ  oops,  */
+"VideoGetError.oops" = "ಠ_ಠ  oops, ";

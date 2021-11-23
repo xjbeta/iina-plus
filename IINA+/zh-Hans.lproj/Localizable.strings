@@ -4,6 +4,9 @@
 /* Quit without saves error question message */
 "Could not save changes while quitting. Quit anyway?" = "退出时无法保存更改。 确认退出？";
 
+/* All */
+"LiveSite.All" = "全部";
+
 /* No comment provided by engineer. */
 "mainMenu.view.reloadBilibiliList" = "重新加载 Bilibili 列表";
 
@@ -15,9 +18,6 @@
 
 /* Quit without saves error question info */
 "Quitting now will lose any changes you have made since the last successful save" = "现在退出将丢失自上次成功保存以来所做的任何更改";
-
-/* All */
-"LiveSite.All" = "全部";
 
 /* Bilibili */
 "SupportSites.Bilibili" = "Bilibili";
@@ -42,3 +42,21 @@
 
 /* Unsupported */
 "SupportSites.Unsupported" = "不支持";
+
+/* something went wrong. */
+"VideoGetError.default" = "出了些问题.";
+
+/* invalid url. */
+"VideoGetError.invalidLink" = "无效链接.";
+
+/* the host is not online. */
+"VideoGetError.isNotLiving" = "主播不在家.";
+
+/* need vip. */
+"VideoGetError.needVip" = "需要大会员.";
+
+/* the website is not supported. */
+"VideoGetError.notSupported" = "网站不支持或链接格式错误.";
+
+/* ಠ_ಠ  oops,  */
+"VideoGetError.oops" = "ಠ_ಠ  oops, ";

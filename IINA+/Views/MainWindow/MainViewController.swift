@@ -457,20 +457,20 @@ class MainViewController: NSViewController {
         }.done {
             Log("decodeUrl success: \(str)")
         }.catch { error in
-            var s = "ಠ_ಠ  oops, "
+            var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
             switch error {
             case PMKError.cancelled:
                 return
             case VideoGetError.invalidLink:
-                s += "invalid url."
+                s += NSLocalizedString("VideoGetError.invalidLink", comment: "invalid url.")
             case VideoGetError.isNotLiving:
-                s += "the host is not online."
+                s += NSLocalizedString("VideoGetError.isNotLiving", comment: "the host is not online.")
             case VideoGetError.notSupported:
-                s += "the website is not supported."
+                s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
             case VideoGetError.needVip:
-                s += "need vip."
+                s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
             default:
-                s += "something went wrong."
+                s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
             }
             
             Log(error)
