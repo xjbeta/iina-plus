@@ -14,7 +14,6 @@ enum SupportSites: String {
     case bangumi = "www.bilibili.com/bangumi"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
-    case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
     //    case yizhibo = "www.yizhibo.com"
     case langPlay = "play.lang.live"
@@ -33,8 +32,6 @@ enum SupportSites: String {
             return "Douyu"
         case .huya:
             return "Huya"
-        case .longzhu:
-            return "LongZhu"
         case .eGame:
             return "eGame"
         case .langPlay:

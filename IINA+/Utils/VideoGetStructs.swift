@@ -461,29 +461,6 @@ fileprivate func huyaUrlFormatter2(_ u: String) -> String? {
     return uc.url?.absoluteString
 }
 
-struct LongZhuInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var avatar: String
-    var isLiving = false
-    var cover: String = ""
-    var site: SupportSites = .longzhu
-    
-    init(object: MarshaledObject) throws {
-        if let title: String = try object.value(for: "live.title") {
-            self.title = title
-            isLiving = true
-        } else {
-            self.title = try object.value(for: "defaultTitle")
-            isLiving = false
-        }
-        name = try object.value(for: "username")
-        avatar = try object.value(for: "avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
-    }
-}
-
-
 struct EgameUrl: Unmarshaling {
     var playUrl: String
     var desc: String

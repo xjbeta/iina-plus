@@ -213,10 +213,6 @@ class VideoGet: NSObject {
             return getHuyaInfoM(url).map {
                 $0.0
             }
-        case .longzhu:
-            return getLongZhuInfo(url).map {
-                $0 as LiveInfo
-            }
         case .eGame:
             return getEgameInfo(url).map {
                 $0.0
@@ -1093,28 +1089,6 @@ extension VideoGet {
         }
     }
     
-    //MARK: - LongZhu
-    
-    func getLongZhuInfo(_ url: URL) -> Promise<LongZhuInfo> {
-        return Promise { resolver in
-            AF.request(url.absoluteString).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let pageData = response.text?.subString(from: "var pageData = ", to: ";\n").data(using: .utf8) ?? Data()
-                    let profileData = response.text?.subString(from: "var roomHost = ", to: ";\n").data(using: .utf8) ?? Data()
-                    var pageInfo: JSONObject = try JSONParser.JSONObjectWithData(pageData)
-                    let profileInfo: JSONObject = try JSONParser.JSONObjectWithData(profileData)
-                    pageInfo.merge(profileInfo) { (current, _) in current }
-                    let info = try LongZhuInfo(object: pageInfo)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
     
     // MARK: - LangPlay
     func getLangPlayInfo(_ roomID: Int) -> Promise<(LangPlayInfo)> {
