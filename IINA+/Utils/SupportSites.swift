@@ -21,21 +21,21 @@ enum SupportSites: String {
     var siteName: String {
         switch self {
         case .biliLive:
-            return "Bilibili Live"
+            return NSLocalizedString("SupportSites.Bilibili Live", comment: "Bilibili Live")
         case .bilibili:
-            return "Bilibili"
+            return NSLocalizedString("SupportSites.Bilibili", comment: "Bilibili")
         case .bangumi:
-            return "Bilibili Bangumi"
+            return NSLocalizedString("SupportSites.Bilibili Bangumi", comment: "Bilibili Bangumi")
         case .douyu:
-            return "Douyu"
+            return NSLocalizedString("SupportSites.Douyu", comment: "Douyu")
         case .huya:
-            return "Huya"
+            return NSLocalizedString("SupportSites.Huya", comment: "Huya")
         case .eGame:
-            return "eGame"
+            return NSLocalizedString("SupportSites.eGame", comment: "eGame")
         case .cc163:
-            return "CC163"
+            return NSLocalizedString("SupportSites.CC163", comment: "CC163")
         case .unsupported:
-            return "Unsupported"
+            return NSLocalizedString("SupportSites.Unsupported", comment: "Unsupported")
         }
     }
     

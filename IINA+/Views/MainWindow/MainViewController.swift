@@ -706,7 +706,9 @@ class MainViewController: NSViewController {
         
         menu.removeAllItems()
         
-        let allItem = ObjMenuItem(title: "All", action: act, keyEquivalent: "")
+        let all = NSLocalizedString("LiveSite.All", comment: "All")
+        let allItem = ObjMenuItem(title: all, action: act, keyEquivalent: "")
+        
         allItem.tag = 1
         allItem.state = .on
         

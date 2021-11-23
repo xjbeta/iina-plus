@@ -1,4 +1,3 @@
-
 /* Class = "NSMenuItem"; title = "IINA+"; ObjectID = "1Xt-HY-uBw"; */
 "1Xt-HY-uBw.title" = "IINA+";
 
@@ -9,14 +8,13 @@
 "4J7-dP-txa.title" = "进入全屏幕";
 
 /* Class = "NSMenuItem"; title = "Quit IINA+"; ObjectID = "4sb-4s-VLi"; */
-"4sb-4s-VLi.title" = "退出 iina+";
-
+"4sb-4s-VLi.title" = "退出 IINA+";
 
 /* Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T"; */
 "5QF-Oa-p0T.title" = "编辑";
 
 /* Class = "NSMenuItem"; title = "About IINA+"; ObjectID = "5kV-Vb-QxS"; */
-"5kV-Vb-QxS.title" = "关于 iina+";
+"5kV-Vb-QxS.title" = "关于 IINA+";
 
 /* Class = "NSButtonCell"; title = "Top"; ObjectID = "67F-NV-ZST"; */
 "67F-NV-ZST.title" = "顶部";
@@ -353,3 +351,39 @@
 
 /* Class = "NSTextFieldCell"; title = "Modify it when '404 Not Found'"; ObjectID = "z9F-7C-J35"; */
 "z9F-7C-J35.title" = "显示'404 Not Found'时修改端口";
+
+/* Class = "NSMenuItem"; title = "Live State"; ObjectID = "B9R-Sz-22X"; */
+"B9R-Sz-22X.title" = "直播状态";
+
+/* Class = "NSTextFieldCell"; title = "No filtered result."; ObjectID = "Bi7-dn-gbf"; */
+"Bi7-dn-gbf.title" = "没有过滤结果.";
+
+/* Class = "NSButtonCell"; title = "Remove Filters"; ObjectID = "EtM-GP-9PC"; */
+"EtM-GP-9PC.title" = "删除过滤器";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "QDK-X2-jaa"; */
+"QDK-X2-jaa.label" = "Tab";
+
+/* Class = "NSMenu"; title = "Site"; ObjectID = "RiO-4Q-sMG"; */
+"RiO-4Q-sMG.title" = "网站";
+
+/* Class = "NSMenuItem"; title = "Offline"; ObjectID = "Wqt-QF-bme"; */
+"Wqt-QF-bme.title" = "离线";
+
+/* Class = "NSMenuItem"; title = "Living"; ObjectID = "ZFx-32-Quq"; */
+"ZFx-32-Quq.title" = "直播中";
+
+/* Class = "NSMenu"; title = "Live State"; ObjectID = "ep3-bL-1Xz"; */
+"ep3-bL-1Xz.title" = "直播状态";
+
+/* Class = "NSMenuItem"; title = "Site"; ObjectID = "gi0-31-ItH"; */
+"gi0-31-ItH.title" = "网站";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "hrP-sA-Uyu"; */
+"hrP-sA-Uyu.label" = "View";
+
+/* Class = "NSMenuItem"; title = "All"; ObjectID = "tPO-xW-WEU"; */
+"tPO-xW-WEU.title" = "全部";
+
+/* Class = "NSMenuItem"; title = "Other"; ObjectID = "zJw-bL-e86"; */
+"zJw-bL-e86.title" = "其他";

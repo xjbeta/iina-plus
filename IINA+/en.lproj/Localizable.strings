@@ -1,10 +1,45 @@
-/* 
-  Localizable.strings
-  iina+
+/* Cancel button title */
+"Cancel" = "Cancel";
 
-  Created by xjbeta on 2019/6/26.
-  Copyright © 2019 xjbeta. All rights reserved.
-*/
+/* Quit without saves error question message */
+"Could not save changes while quitting. Quit anyway?" = "Could not save changes while quitting. Quit anyway?";
 
-"mainMenu.view.reloadLiveStatus" = "Reload Live Status";
+/* No comment provided by engineer. */
 "mainMenu.view.reloadBilibiliList" = "Reload Bilibili List";
+
+/* No comment provided by engineer. */
+"mainMenu.view.reloadLiveStatus" = "Reload Live Status";
+
+/* All */
+"LiveSite.All" = "All";
+
+/* Quit anyway button title */
+"Quit anyway" = "Quit anyway";
+
+/* Quit without saves error question info */
+"Quitting now will lose any changes you have made since the last successful save" = "Quitting now will lose any changes you have made since the last successful save";
+
+
+/* Bilibili */
+"SupportSites.Bilibili" = "Bilibili";
+
+/* Bilibili Bangumi */
+"SupportSites.Bilibili Bangumi" = "Bilibili Bangumi";
+
+/* Bilibili Live */
+"SupportSites.Bilibili Live" = "Bilibili Live";
+
+/* CC163 */
+"SupportSites.CC163" = "CC163";
+
+/* Douyu */
+"SupportSites.Douyu" = "Douyu";
+
+/* eGame */
+"SupportSites.eGame" = "eGame";
+
+/* Huya */
+"SupportSites.Huya" = "Huya";
+
+/* Unsupported */
+"SupportSites.Unsupported" = "Unsupported";
