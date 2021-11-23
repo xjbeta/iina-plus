@@ -461,25 +461,6 @@ fileprivate func huyaUrlFormatter2(_ u: String) -> String? {
     return uc.url?.absoluteString
 }
 
-
-
-struct QuanMinInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var avatar: String
-    var isLiving = false
-    var cover: String = ""
-    
-    var site: SupportSites = .quanmin
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "title")
-        name = try object.value(for: "nick")
-        avatar = try object.value(for: "avatar")
-        isLiving = "\(try object.any(for: "status"))" == "2"
-    }
-}
-
 struct LongZhuInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""

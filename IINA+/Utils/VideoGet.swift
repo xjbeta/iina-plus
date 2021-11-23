@@ -213,10 +213,6 @@ class VideoGet: NSObject {
             return getHuyaInfoM(url).map {
                 $0.0
             }
-        case .quanmin:
-            return getQuanMinInfo(roomId).map {
-                $0 as LiveInfo
-            }
         case .longzhu:
             return getLongZhuInfo(url).map {
                 $0 as LiveInfo
@@ -1096,25 +1092,6 @@ extension VideoGet {
             }
         }
     }
-    
-    // MARK: - QuanMin
-    func getQuanMinInfo(_ roomID: Int) -> Promise<QuanMinInfo> {
-        return Promise { resolver in
-            AF.request("https://www.quanmin.tv/json/rooms/\(roomID)/noinfo6.json").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let info = try QuanMinInfo(object: json)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
     
     //MARK: - LongZhu
     
