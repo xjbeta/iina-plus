@@ -101,7 +101,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
                 var u = ""
                 switch info.site {
                 case .bilibili:
-                    u = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
+                    u = "https://www.bilibili.com/video/\(videoId)?p=\(info.index)"
                 case .douyu:
                     u = "https://www.douyu.com/\(info.id)"
                 case .bangumi:

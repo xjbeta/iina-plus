@@ -141,7 +141,7 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
     var index: Int
     let part: String
     let duration: TimeInterval
-    let title: String
+    var title: String
     let longTitle: String
     let coverUrl: URL?
     let badge: Badge?
@@ -356,9 +356,9 @@ class Bilibili: NSObject {
             
             var r: DataRequest
             if aid != -1 {
-                r = AF.request("https://api.bilibili.com/x/player/pagelist?aid=\(aid)")
+                r = AF.request("https://api.bilibili.com/x/web-interface/view?aid=\(aid)")
             } else if bvid != "" {
-                r = AF.request("https://api.bilibili.com/x/player/pagelist?bvid=\(bvid)")
+                r = AF.request("https://api.bilibili.com/x/web-interface/view?bvid=\(bvid)")
             } else {
                 resolver.reject(VideoGetError.cantFindIdForDM)
                 return
@@ -370,7 +370,12 @@ class Bilibili: NSObject {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let infos: [BilibiliVideoSelector] = try json.value(for: "data")
+                    var infos: [BilibiliVideoSelector] = try json.value(for: "data.pages")
+                    if aid != -1,
+                        infos.count == 1,
+                        infos.first?.title == "" {
+                        infos[0].title = try json.value(for: "data.title")
+                    }
                     resolver.fulfill(infos)
                 } catch let error {
                     resolver.reject(error)
