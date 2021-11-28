@@ -512,6 +512,7 @@ struct BilibiliPlayInfo: Unmarshaling {
     let duration: Int
     
     struct VideoInfo: Unmarshaling {
+        var index = -1
         let url: String
         let id: Int
         let bandwidth: Int
@@ -557,12 +558,12 @@ struct BilibiliPlayInfo: Unmarshaling {
         
         var newVideos = [VideoInfo]()
         
-        videos.forEach {
-            var video = $0
-            let des = descriptionDic[$0.id] ?? "unkonwn"
-            
-            // ignore low bandwidth video
-            if !newVideos.map({ $0.id }).contains($0.id) {
+        videos.enumerated().forEach {
+            var video = $0.element
+            let des = descriptionDic[video.id] ?? "unkonwn"
+            video.index = $0.offset
+//             ignore low bandwidth video
+            if !newVideos.map({ $0.id }).contains(video.id) {
                 video.description = des
                 newVideos.append(video)
             }
@@ -577,7 +578,8 @@ struct BilibiliPlayInfo: Unmarshaling {
         
         videos.enumerated().forEach {
             var stream = Stream(url: $0.element.url)
-            stream.quality = $0.element.bandwidth
+//            stream.quality = $0.element.bandwidth
+            stream.quality = 999 - $0.element.index
             yougetJson.streams[$0.element.description] = stream
         }
         
