@@ -373,9 +373,7 @@ class Bilibili: NSObject {
                     var infos: [BilibiliVideoSelector] = try json.value(for: "data.pages")
                     let bvid: String = try json.value(for: "data.bvid")
                     
-                    if aid != -1,
-                        infos.count == 1,
-                        infos.first?.title == "" {
+                    if infos.count == 1 {
                         infos[0].title = try json.value(for: "data.title")
                     }
                     infos.enumerated().forEach {
