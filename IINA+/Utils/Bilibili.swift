@@ -371,11 +371,17 @@ class Bilibili: NSObject {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
                     var infos: [BilibiliVideoSelector] = try json.value(for: "data.pages")
+                    let bvid: String = try json.value(for: "data.bvid")
+                    
                     if aid != -1,
                         infos.count == 1,
                         infos.first?.title == "" {
                         infos[0].title = try json.value(for: "data.title")
                     }
+                    infos.enumerated().forEach {
+                        infos[$0.offset].bvid = bvid
+                    }
+                    
                     resolver.fulfill(infos)
                 } catch let error {
                     resolver.reject(error)

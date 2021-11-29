@@ -703,11 +703,42 @@ extension VideoGet {
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
-        return getBilibiliHTMLDatas(url).then {
+        let bilibili = Bilibili()
+        guard let bUrl = BilibiliUrl(url: url.absoluteString) else {
+            return .init(error: VideoGetError.invalidLink)
+        }
+        
+        var ygj = YouGetJSON(url:"")
+        ygj.streams.removeAll()
+        
+        
+        let r1 = bilibili.getVideoList(url).compactMap {
+            $0.first(where: { $0.index == bUrl.p })
+        }.get { s in
+            ygj.id = s.id
+            ygj.title = s.title
+            ygj.duration = Int(s.duration)
+        }.then {
+            self.bilibiliPlayUrl(bvid: $0.bvid, yougetJson: ygj)
+        }
+        
+        let r2 = getBilibiliHTMLDatas(url).then {
             self.decodeBilibiliDatas(
                 url,
                 playInfoData: $0.playInfoData,
                 initialStateData: $0.initialStateData)
+        }
+        
+        return Promise { resolver in
+            r1.done {
+                resolver.fulfill($0)
+            }.catch { error in
+                r2.done {
+                    resolver.fulfill($0)
+                }.catch { _ in
+                    resolver.reject(error)
+                }
+            }
         }
     }
     
@@ -767,19 +798,11 @@ extension VideoGet {
                 yougetJson.title = title
                 yougetJson.duration = try initialStateJson.value(for: "videoData.duration")
 
-                
-                if let code: Int64 = try? playInfoJson.value(for: "code"),
-                    code == -404 {
-                    bilibiliPlayUrl(bvid: bvid, yougetJson: yougetJson).done {
-                        resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                    }
-                } else if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
+                if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
                     yougetJson = playInfo.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
-                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "data"), let url = info.url {
-                    
+                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "data"),
+                          let url = info.url {
                     var stream = Stream(url: url)
                     stream.videoProfile = info.description
                     yougetJson.streams[info.description] = stream
