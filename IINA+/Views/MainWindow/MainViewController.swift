@@ -234,6 +234,8 @@ class MainViewController: NSViewController {
                 processes.openWithPlayer(playUrls, title: title, options: .bililive, uuid: uuid)
             case .unsupported:
                 processes.openWithPlayer(playUrls, title: title, options: .none, uuid: uuid)
+            default:
+                break
             }
 
             }.catch {
@@ -450,8 +452,16 @@ class MainViewController: NSViewController {
         isSearching = true
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
-        let str = searchField.stringValue
-        decodeUrl(url, directly: directly).ensure {
+        var str = url
+        
+        VideoGet().bilibiliUrlFormatter(url).get {
+            if self.searchField.stringValue == str {
+                self.searchField.stringValue = $0
+                str = $0
+            }
+        }.then {
+            self.decodeUrl($0, directly: directly)
+        }.ensure {
             self.isSearching = false
             self.progressStatusChanged(false)
         }.done {

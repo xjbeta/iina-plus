@@ -27,6 +27,28 @@ class VideoGet: NSObject {
         return Session(configuration: configuration)
     }()
     
+    func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
+        let site = SupportSites(url: url)
+        
+        switch site {
+        case .bilibili, .bangumi:
+            return .value(BilibiliUrl(url: url)!.fUrl)
+        case .b23:
+            return Promise { resolver in
+                AF.request(url).response {
+                    guard let url = $0.response?.url?.absoluteString,
+                          let u = BilibiliUrl(url: url)?.fUrl else {
+                        resolver.reject(VideoGetError.invalidLink)
+                        return
+                    }
+                    resolver.fulfill(u)
+                }
+            }
+        default:
+            return .value(url)
+        }
+    }
+    
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
         
         var yougetJson = YouGetJSON(url:"")

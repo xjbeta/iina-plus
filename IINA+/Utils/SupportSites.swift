@@ -9,6 +9,7 @@
 import Cocoa
 
 enum SupportSites: String {
+    case b23 = "b23.tv"
     case biliLive = "live.bilibili.com"
     case bilibili = "www.bilibili.com/video"
     case bangumi = "www.bilibili.com/bangumi"
@@ -18,7 +19,32 @@ enum SupportSites: String {
     case cc163 = "cc.163.com"
     case unsupported
     
+    init(url: String) {
+        guard url != "",
+              let u = URL(string: url) else {
+            self = .unsupported
+            return
+        }
+        
+        let host = u.host ?? ""
+        if let bUrl = BilibiliUrl(url: url) {
+            switch bUrl.urlType {
+            case .video:
+                self = .bilibili
+            case .bangumi:
+                self = .bangumi
+            default:
+                self = .unsupported
+            }
+        } else if let list = SupportSites(rawValue: host) {
+            self = list
+        } else {
+            self = .unsupported
+        }
+    }
+    
     var siteName: String {
+        // Auto-generate with `bartycrouch update`
         switch self {
         case .biliLive:
             return NSLocalizedString("SupportSites.Bilibili Live", comment: "Bilibili Live")
@@ -36,29 +62,8 @@ enum SupportSites: String {
             return NSLocalizedString("SupportSites.CC163", comment: "CC163")
         case .unsupported:
             return NSLocalizedString("SupportSites.Unsupported", comment: "Unsupported")
-        }
-    }
-    
-    init(url: String) {
-        guard let u = URL(string: url) else {
-            self = .unsupported
-            return
-        }
-        
-        let host = u.host ?? ""
-        if host == "www.bilibili.com", u.pathComponents.count >= 2 {
-            switch u.pathComponents[1] {
-            case "video":
-                self = .bilibili
-            case "bangumi":
-                self = .bangumi
-            default:
-                self = .unsupported
-            }
-        } else if let list = SupportSites(rawValue: host) {
-            self = list
-        } else {
-            self = .unsupported
+        case .b23:
+            return ""
         }
     }
 }

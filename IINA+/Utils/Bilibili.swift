@@ -136,6 +136,9 @@ struct BilibiliPvideo: Unmarshaling {
 }
 
 struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
+    
+    var bvid = ""
+    
     // epid
     let id: Int
     var index: Int
@@ -213,6 +216,70 @@ struct BangumiList: Unmarshaling {
     }
 }
 
+struct BilibiliUrl {
+    var p = 1
+    var id = ""
+    var urlType = UrlType.unknown
+    
+    var fUrl: String {
+        get {
+            var u = "https://www.bilibili.com/"
+            
+            switch urlType {
+            case .video:
+                u += "video/\(id)"
+            case .bangumi:
+                u += "bangumi/play/\(id)"
+            default:
+                return ""
+            }
+            
+            if p > 1 {
+                u += "?p=\(p)"
+            }
+            return u
+        }
+    }
+    
+    enum UrlType: String {
+        case video, bangumi, unknown
+    }
+    
+    init?(url: String) {
+        guard url != "",
+              let u = URL(string: url),
+              u.host == "www.bilibili.com" || u.host == "bilibili.com",
+              let uc = URLComponents(string: url) else {
+                  return nil
+              }
+        
+        let pcs = u.pathComponents
+        
+        guard let id = pcs.first(where: {
+            $0.starts(with: "av")
+            || $0.starts(with: "BV")
+            || $0.starts(with: "ep")
+            || $0.starts(with: "ss")
+        }) else {
+            return nil
+        }
+        self.id = id
+        
+        if pcs.contains(UrlType.video.rawValue) {
+            urlType = .video
+        } else if pcs.contains(UrlType.bangumi.rawValue) {
+            urlType = .bangumi
+        } else {
+            urlType = .unknown
+        }
+        
+        let pStr = uc.queryItems?.first {
+            $0.name == "p"
+        }?.value ?? "1"
+        p = Int(pStr) ?? 1
+    }
+    
+}
 
 
 class Bilibili: NSObject {
