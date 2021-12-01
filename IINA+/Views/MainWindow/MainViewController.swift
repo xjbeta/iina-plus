@@ -433,14 +433,17 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: String, infos: [VideoSelector]) {
-        if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
-            DispatchQueue.main.async {
-                self.searchField.stringValue = ""
-                selectVideoViewController.videoInfos = infos
-                selectVideoViewController.videoId = videoId
-                self.selectTabItem(.selectVideos)
-            }
+    func showSelectVideo(_ videoId: String, infos: [VideoSelector], currentItem: Int = 0) {
+        guard let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first else {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.searchField.stringValue = ""
+            selectVideoViewController.videoInfos = infos
+            selectVideoViewController.videoId = videoId
+            selectVideoViewController.currentItem = currentItem
+            self.selectTabItem(.selectVideos)
         }
     }
     
@@ -491,7 +494,6 @@ class MainViewController: NSViewController {
     func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
         
         return Promise { resolver in
-            
             let videoGet = Processes.shared.videoGet
             var str = url
             yougetResult = nil
@@ -518,53 +520,43 @@ class MainViewController: NSViewController {
             
             if directly {
                 decodeUrl()
-            } else if url.host == "www.bilibili.com" {
+            } else if let bUrl = BilibiliUrl(url: str) {
+                let u = URL(string: bUrl.fUrl)!
+                var re: Promise<Void>
                 
-                let pc = url.pathComponents
-                
-                if pc.count >= 3,
-                   pc[1] == "video" {
-//                    ([String]?) $R0 = 3 values {
-//                        [0] = "/"
-//                        [1] = "video"
-//                        [2] = "BV1ft4y1a7Yd"
-//                    }
-                    let vid = pc[2]
-                    bilibili.getVideoList(url).done { infos in
+                switch bUrl.urlType {
+                case .video:
+                    re = bilibili.getVideoList(u).done { infos in
                         if infos.count > 1 {
-                            self.showSelectVideo(vid, infos: infos)
+                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: bUrl.p)
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
                         }
-                    }.catch {
-                        resolver.reject($0)
                     }
-                } else if pc.count >= 4,
-                          pc[1] == "bangumi",
-                          pc[2] == "play" {
-                    
-//                    let vid = pc[3]
-//                    ([String]) $R2 = 4 values {
-//                        [0] = "/"
-//                        [1] = "bangumi"
-//                        [2] = "play"
-//                        [3] = "ep339061" // ss34407
-//                    }
-                    bilibili.getBangumiList(url).done {
+                case .bangumi:
+                    re = bilibili.getBangumiList(u).done {
                         let epVS = $0.epVideoSelectors
-//                        let selectionVS = $0.selectionVideoSelectors
-//                        let c = epVS.count + selectionVS.count
-//                        if c == 1, let vs = epVS.first ?? selectionVS.first {
                         if epVS.count == 1 {
                             decodeUrl()
                         } else {
-                            self.showSelectVideo("", infos: epVS)
+                            var cItem = 0
+                            if bUrl.id.starts(with: "ep"),
+                                let epId = Int(bUrl.id.dropFirst(2)) {
+                                cItem = epVS.firstIndex {
+                                    $0.id == epId
+                                } ?? 0
+                            }
+                            
+                            self.showSelectVideo("", infos: epVS, currentItem: cItem)
                             resolver.fulfill(())
                         }
-                    }.catch {
-                        resolver.reject($0)
                     }
+                default:
+                    return
+                }
+                re.catch {
+                    resolver.reject($0)
                 }
             } else if url.host == "www.douyu.com",
                       url.pathComponents.count > 2,
