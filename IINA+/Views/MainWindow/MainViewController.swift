@@ -572,7 +572,7 @@ class MainViewController: NSViewController {
                                 coverUrl: nil)
                         }
                         
-                        self.showSelectVideo("", infos: infos)
+                        self.showSelectVideo("", infos: infos, currentItem: $0.roomIds.firstIndex(of: $0.roomId) ?? 0)
                         resolver.fulfill(())
                     } else {
                         decodeUrl()
