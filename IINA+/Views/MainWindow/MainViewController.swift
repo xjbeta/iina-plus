@@ -563,19 +563,24 @@ class MainViewController: NSViewController {
                       url.pathComponents[1] == "topic" {
                 
                 videoGet.getDouyuHtml(str).done {
-                    if $0.roomIds.count > 0 {
-                        let infos = $0.roomIds.enumerated().map {
+                    guard $0.roomIds.count > 0 else {
+                        decodeUrl()
+                        return
+                    }
+                    let cid = $0.roomId
+                    videoGet.getDouyuEventRoomNames($0.pageId).done {
+                        let infos = $0.enumerated().map {
                             DouyuVideoSelector(
                                 index: $0.offset,
-                                title: "频道 - \($0.offset + 1) - \($0.element)",
-                                id: Int($0.element) ?? 0,
+                                title: $0.element.text,
+                                id: Int($0.element.onlineRoomId) ?? 0,
                                 coverUrl: nil)
                         }
-                        
-                        self.showSelectVideo("", infos: infos, currentItem: $0.roomIds.firstIndex(of: $0.roomId) ?? 0)
+
+                        self.showSelectVideo("", infos: infos, currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
-                    } else {
-                        decodeUrl()
+                    }.catch {
+                        resolver.reject($0)
                     }
                 }.catch {
                     resolver.reject($0)
