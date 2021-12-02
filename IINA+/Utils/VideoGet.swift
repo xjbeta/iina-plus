@@ -455,13 +455,25 @@ extension VideoGet {
     
     
 //    https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=1149&view=0
-    func getDouyuEventRoomNames(_ pageId: String) -> Promise<()> {
+    func getDouyuEventRoomNames(_ pageId: String) -> Promise<[DouyuEventRoom]> {
         return Promise { resolver in
             AF.request("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0").response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
-                resolver.fulfill(())
+                
+                guard let data = self.douyuRoomJsonFormatter(response.text ?? "")?.data(using: .utf8) else {
+                    resolver.reject(VideoGetError.douyuNotFoundRoomId)
+                    return
+                }
+                
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                    let rooms: [DouyuEventRoom] = try json.value(for: "children")
+                    resolver.fulfill(rooms)
+                } catch let error {
+                    resolver.reject(error)
+                }
             }
         }
     }
@@ -1266,6 +1278,58 @@ extension VideoGet {
         return (0 ..< length).reduce("") {
             $0 + String(format: "%02x", digest[$1])
         }
+    }
+    
+    func douyuRoomJsonFormatter(_ text: String) -> String? {
+        guard let index = text.index(of: #""NewPcBasicSwitchRoomAdvance""#)?.utf16Offset(in: text) else {
+            return nil
+        }
+        
+        let sIndex = text.indexes(of: "{").map({$0.utf16Offset(in: text)})
+        let eIndex = text.indexes(of: "}").map({$0.utf16Offset(in: text)})
+        
+        let indexList = (sIndex.map {
+            ($0, 1)
+        } + eIndex.map {
+            ($0, -1)
+        }).sorted { i1, i2 in
+            i1.0 < i2.0
+        }
+        
+        // Find "{"
+        var c2 = 0
+        guard var i2 = indexList.lastIndex(where: { $0.0 < index }) else {
+            return nil
+        }
+        
+        c2 += indexList[i2].1
+        while c2 != 1 {
+            i2 -= 1
+            guard i2 >= 0 else {
+                return nil
+            }
+            c2 += indexList[i2].1
+        }
+        let startIndex = text.index(text.startIndex, offsetBy: indexList[i2].0)
+        
+        // Find "}"
+        var c1 = 0
+        guard var i1 = indexList.firstIndex(where: { $0.0 > index }) else {
+            return nil
+        }
+        
+        c1 += indexList[i1].1
+        while c1 != -1 {
+            i1 += 1
+            guard indexList.count > i1 else {
+                return nil
+            }
+            c1 += indexList[i1].1
+        }
+        
+        let endIndex = text.index(startIndex, offsetBy: indexList[i1].0 - indexList[i2].0)
+        
+        return String(text[startIndex...endIndex])
     }
 }
 

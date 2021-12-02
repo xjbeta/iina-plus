@@ -127,6 +127,15 @@ struct DouyuVideoSelector: VideoSelector {
     let coverUrl: URL?
 }
 
+struct DouyuEventRoom: Unmarshaling {
+    let onlineRoomId: String
+    let text: String
+    init(object: MarshaledObject) throws {
+        onlineRoomId = try object.value(for: "props.onlineRoomId")
+        text = try object.value(for: "props.text")
+    }
+}
+
 struct DouyuH5Play: Unmarshaling {
     let roomId: Int
     let rtmpUrl: String
