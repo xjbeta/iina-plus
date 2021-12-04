@@ -1697,7 +1697,7 @@ Gw
                                                                                             <constraint firstAttribute="trailing" secondItem="gVj-gu-ivu" secondAttribute="trailing" id="Z4c-FG-bnj"/>
                                                                                             <constraint firstAttribute="bottom" secondItem="gVj-gu-ivu" secondAttribute="bottom" id="cIl-Ht-ZOJ"/>
                                                                                             <constraint firstAttribute="bottom" secondItem="fiY-gH-vb8" secondAttribute="bottom" constant="5" id="jnm-7m-hfP"/>
-                                                                                            <constraint firstAttribute="width" secondItem="A3d-KV-bZ7" secondAttribute="height" multiplier="9:5" id="mOa-rI-h17"/>
+                                                                                            <constraint firstAttribute="width" secondItem="A3d-KV-bZ7" secondAttribute="height" multiplier="16:10" id="mOa-rI-h17"/>
                                                                                             <constraint firstItem="fz7-9I-cWr" firstAttribute="leading" secondItem="A3d-KV-bZ7" secondAttribute="leading" id="uFr-XI-NQE"/>
                                                                                         </constraints>
                                                                                     </customView>
