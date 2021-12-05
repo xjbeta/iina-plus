@@ -548,7 +548,8 @@ struct BilibiliPlayInfo: Unmarshaling {
         let length: Int
         init(object: MarshaledObject) throws {
             url = try object.value(for: "url")
-            backupUrls = try object.value(for: "backup_url")
+            let urls: [String]? = try object.value(for: "backup_url")
+            backupUrls = urls ?? []
             length = try object.value(for: "length")
         }
     }
@@ -603,15 +604,19 @@ struct BilibiliPlayInfo: Unmarshaling {
 
 struct BilibiliSimplePlayInfo: Unmarshaling {
     let url: String?
+    let urls: [String]
     var description: String = ""
-    var duration: Int?
+    var duration: Int
     
     init(object: MarshaledObject) throws {
         let durl: [BilibiliPlayInfo.Durl] = try object.value(for: "durl")
         url = durl.first?.url
+        urls = durl.first?.backupUrls ?? []
         
         if let l = durl.first?.length {
             duration = l / 1000
+        } else {
+            duration = 0
         }
         
         let acceptQuality: [Int] = try object.value(for: "accept_quality")

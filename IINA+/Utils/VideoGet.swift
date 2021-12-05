@@ -745,15 +745,20 @@ extension VideoGet {
         var ygj = YouGetJSON(url:"")
         ygj.streams.removeAll()
         
-        
-        let r1 = bilibili.getVideoList(url).compactMap {
+        let r0 = bilibili.getVideoList(url).compactMap {
             $0.first(where: { $0.index == bUrl.p })
         }.get { s in
             ygj.id = s.id
             ygj.title = s.title
             ygj.duration = Int(s.duration)
-        }.then {
+        }
+        
+        let r1 = r0.then {
             self.bilibiliPlayUrl(bvid: $0.bvid, yougetJson: ygj)
+        }
+        
+        let r1Mp4 = r0.then {
+            self.bilibiliPlayUrlMp4(bvid: $0.bvid, yougetJson: ygj)
         }
         
         let r2 = getBilibiliHTMLDatas(url).then {
@@ -763,14 +768,24 @@ extension VideoGet {
                 initialStateData: $0.initialStateData)
         }
         
+        let isDM = Processes.shared.isDanmakuVersion()
+        
         return Promise { resolver in
-            r1.done {
-                resolver.fulfill($0)
-            }.catch { error in
-                r2.done {
+            if isDM {
+                r1.done {
                     resolver.fulfill($0)
-                }.catch { _ in
-                    resolver.reject(error)
+                }.catch { error in
+                    r2.done {
+                        resolver.fulfill($0)
+                    }.catch { _ in
+                        resolver.reject(error)
+                    }
+                }
+            } else {
+                r1Mp4.done {
+                    resolver.fulfill($0)
+                }.catch {
+                    resolver.reject($0)
                 }
             }
         }
@@ -893,6 +908,47 @@ extension VideoGet {
             }
         }
     }
+    
+    func bilibiliPlayUrlMp4(bvid: String, yougetJson: YouGetJSON) -> Promise<(YouGetJSON)> {
+        // API
+        // https://github.com/SocialSisterYi/bilibili-API-collect/blob/a7a743dffdb0e22ef735a8639dd3c3ead82665e4/video/videostream_url.md#fnval%E8%A7%86%E9%A2%91%E6%B5%81%E6%A0%BC%E5%BC%8F%E6%A0%87%E8%AF%86
+        
+        var yougetJson = yougetJson
+        yougetJson.site = .bilibili
+        let cid = yougetJson.id
+        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=112&otype=json&bvid=\(bvid)&fnver=0&fnval=2&fourk=1"
+        
+        return Promise { resolver in
+            AF.request(u).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                guard let data = response.data else {
+                    resolver.reject(VideoGetError.notFountData)
+                    return
+                }
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                    
+                    let info: BilibiliSimplePlayInfo = try json.value(for: "data")
+                    
+                    guard let url = info.url else {
+                        resolver.reject(VideoGetError.notFountData)
+                        return
+                    }
+                    
+                    var s = Stream(url: url)
+                    s.src = info.urls
+                    yougetJson.streams[info.description] = s
+                    yougetJson.duration = info.duration
+                    
+                    resolver.fulfill(yougetJson)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
 
     // MARK: - Bangumi
     
@@ -975,9 +1031,8 @@ extension VideoGet {
                     yougetJson = playInfo.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
                 } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result"),
-                          let url = info.url,
-                          let duration = info.duration {
-                    yougetJson.duration = duration
+                          let url = info.url {
+                    yougetJson.duration = info.duration
                     
                     var stream = Stream(url: url)
                     stream.videoProfile = info.description
