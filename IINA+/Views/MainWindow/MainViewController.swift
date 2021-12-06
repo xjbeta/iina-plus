@@ -157,6 +157,7 @@ class MainViewController: NSViewController {
         let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
         let processes = Processes.shared
+        let preferences = Preferences.shared
         
         func clear() {
             isSearching = false
@@ -183,37 +184,15 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            
+            let isDM = processes.isDanmakuVersion()
             let key = yougetJSON.videos[row].key
-            guard let stream = yougetJSON.streams[key] else {
-                return
-            }
             
-            
-            let title = yougetJSON.title
             let site = SupportSites(url: self.searchField.stringValue)
             
-            var playUrls: [String] = []
-            
-            func loadUrls() {
-                if let videoUrl = stream.url {
-                    playUrls = [videoUrl]
-                } else {
-                    playUrls = stream.src
-                }
-            }
-            
-            if site == .bilibili || site == .bangumi {
-                loadUrls()
-            } else if let path = self.createM3UFile(uuid, title: title, stream: stream) {
-                playUrls = [path]
-            } else {
-                loadUrls()
-            }
-            
             // init Danmaku
-            if Preferences.shared.enableDanmaku,
-               processes.isDanmakuVersion() {
+            if preferences.enableDanmaku,
+               preferences.livePlayer == .iina,
+               isDM {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya:
                     self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
@@ -222,23 +201,8 @@ class MainViewController: NSViewController {
                 }
             }
             
-            
-            switch site {
-            case .douyu:
-                processes.openWithPlayer(playUrls, title: title, options: .douyu, uuid: uuid)
-            case .huya, .eGame, .cc163:
-                processes.openWithPlayer(playUrls, title: title, options: .withoutYtdl, uuid: uuid)
-            case .bilibili, .bangumi:
-                processes.openWithPlayer(playUrls, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: self.searchField.stringValue)
-            case .biliLive:
-                processes.openWithPlayer(playUrls, title: title, options: .bililive, uuid: uuid)
-            case .unsupported:
-                processes.openWithPlayer(playUrls, title: title, options: .none, uuid: uuid)
-            default:
-                break
-            }
-
-            }.catch {
+            processes.openWithPlayer(yougetJSON, key)
+        }.catch {
                 Log("Prepare DM file error : \($0)")
         }
     }
@@ -801,46 +765,6 @@ class MainViewController: NSViewController {
         
         let p = NSPredicate(format: format)
         bookmarkArrayController.fetchPredicate = p
-    }
-    
-    func createM3UFile(_ id: String, title: String, stream: Stream) -> String? {
-        let fm = FileManager.default
-        var path = NSTemporaryDirectory()
-        path.append("IINA-PLUS")
-        
-        
-        if !fm.fileExists(atPath: path) {
-            try? fm.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        path.append("/\(id).m3u")
-        
-        if fm.fileExists(atPath: path) {
-            try? fm.removeItem(atPath: path)
-        }
-        
-        var content = "#EXTM3U"
-        
-        if let url = stream.url {
-            content.append("\n#EXTINF:-1 ,\(title)\n")
-            content.append(url)
-        } else if stream.src.count == 0 {
-            return nil
-        }
-        
-        stream.src.enumerated().forEach {
-            let t = title + " - " + "bak \($0.offset + 1)"
-            content.append("\n#EXTINF:-1 ,\(t)\n")
-            content.append($0.element)
-        }
-        
-        guard let data = content.data(using: .utf8) else {
-            return nil
-        }
-        
-        fm.createFile(atPath: path, contents: data, attributes: nil)
-        
-        return path
     }
     
     deinit {
