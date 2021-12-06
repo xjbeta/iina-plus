@@ -742,6 +742,8 @@ extension VideoGet {
             return .init(error: VideoGetError.invalidLink)
         }
         
+        let isDM = Processes.shared.isDanmakuVersion()
+        
         var ygj = YouGetJSON(url:"")
         ygj.streams.removeAll()
         
@@ -754,11 +756,7 @@ extension VideoGet {
         }
         
         let r1 = r0.then {
-            self.bilibiliPlayUrl(bvid: $0.bvid, yougetJson: ygj)
-        }
-        
-        let r1Mp4 = r0.then {
-            self.bilibiliPlayUrlMp4(bvid: $0.bvid, yougetJson: ygj)
+            self.bilibiliPlayUrl(bvid: $0.bvid, yougetJson: ygj, isDM)
         }
         
         let r2 = getBilibiliHTMLDatas(url).then {
@@ -768,24 +766,14 @@ extension VideoGet {
                 initialStateData: $0.initialStateData)
         }
         
-        let isDM = Processes.shared.isDanmakuVersion()
-        
         return Promise { resolver in
-            if isDM {
-                r1.done {
+            r1.done {
+                resolver.fulfill($0)
+            }.catch { error in
+                r2.done {
                     resolver.fulfill($0)
-                }.catch { error in
-                    r2.done {
-                        resolver.fulfill($0)
-                    }.catch { _ in
-                        resolver.reject(error)
-                    }
-                }
-            } else {
-                r1Mp4.done {
-                    resolver.fulfill($0)
-                }.catch {
-                    resolver.reject($0)
+                }.catch { _ in
+                    resolver.reject(error)
                 }
             }
         }
@@ -869,7 +857,7 @@ extension VideoGet {
         // https://github.com/xioxin/biliATV/issues/24
         var cookieProperties = [HTTPCookiePropertyKey: String]()
         cookieProperties[HTTPCookiePropertyKey.name] = "CURRENT_QUALITY" as String
-        cookieProperties[HTTPCookiePropertyKey.value] = "112" as String
+        cookieProperties[HTTPCookiePropertyKey.value] = "125" as String
         cookieProperties[HTTPCookiePropertyKey.domain] = ".bilibili.com" as String
         cookieProperties[HTTPCookiePropertyKey.path] = "/" as String
         let cookie = HTTPCookie(properties: cookieProperties)
@@ -877,10 +865,35 @@ extension VideoGet {
         
     }
     
-    func bilibiliPlayUrl(bvid: String, yougetJson: YouGetJSON) -> Promise<(YouGetJSON)> {
+    enum BilibiliFnval: Int {
+        case flv = 0
+        case mp4 = 1
+        case dashH265 = 16
+        case hdr = 64
+        case dash4K = 128
+        case dolbyAudio = 256
+        case dolbyVideo = 512
+        case dash8K = 1024
+    }
+     
+    func bilibiliPlayUrl(bvid: String, yougetJson: YouGetJSON, _ isDM: Bool = true) -> Promise<(YouGetJSON)> {
         var yougetJson = yougetJson
         let cid = yougetJson.id
-        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=0&otype=json&bvid=\(bvid)&fnver=0&fnval=976&fourk=1"
+        
+        
+        var allowFlv = true
+        var dashSymbol = true
+        var inner = true
+        
+        if !isDM {
+            allowFlv = true
+            dashSymbol = false
+            inner = false
+        }
+        
+        let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
+        
+        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=132&otype=json&bvid=\(bvid)&fnver=0&fnval=\(fnval)&fourk=1"
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
@@ -898,51 +911,25 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(data)
                     
-                    let playInfo: BilibiliPlayInfo = try json.value(for: "data")
-                    
-                    yougetJson = playInfo.write(to: yougetJson)
-                    resolver.fulfill(yougetJson)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func bilibiliPlayUrlMp4(bvid: String, yougetJson: YouGetJSON) -> Promise<(YouGetJSON)> {
-        // API
-        // https://github.com/SocialSisterYi/bilibili-API-collect/blob/a7a743dffdb0e22ef735a8639dd3c3ead82665e4/video/videostream_url.md#fnval%E8%A7%86%E9%A2%91%E6%B5%81%E6%A0%BC%E5%BC%8F%E6%A0%87%E8%AF%86
-        
-        var yougetJson = yougetJson
-        yougetJson.site = .bilibili
-        let cid = yougetJson.id
-        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=112&otype=json&bvid=\(bvid)&fnver=0&fnval=2&fourk=1"
-        
-        return Promise { resolver in
-            AF.request(u).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                guard let data = response.data else {
-                    resolver.reject(VideoGetError.notFountData)
-                    return
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-                    
-                    let info: BilibiliSimplePlayInfo = try json.value(for: "data")
-                    
-                    guard let url = info.url else {
-                        resolver.reject(VideoGetError.notFountData)
-                        return
+                    if isDM {
+                        let playInfo: BilibiliPlayInfo = try json.value(for: "data")
+                        yougetJson = playInfo.write(to: yougetJson)
+                        resolver.fulfill(yougetJson)
+                    } else {
+                        let info: BilibiliSimplePlayInfo = try json.value(for: "data")
+                        
+                        guard let url = info.url else {
+                            resolver.reject(VideoGetError.notFountData)
+                            return
+                        }
+                        
+                        var s = Stream(url: url)
+                        s.src = info.urls
+                        yougetJson.streams[info.description] = s
+                        yougetJson.duration = info.duration
+                        
+                        resolver.fulfill(yougetJson)
                     }
-                    
-                    var s = Stream(url: url)
-                    s.src = info.urls
-                    yougetJson.streams[info.description] = s
-                    yougetJson.duration = info.duration
-                    
-                    resolver.fulfill(yougetJson)
                 } catch let error {
                     resolver.reject(error)
                 }
