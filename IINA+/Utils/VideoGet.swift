@@ -878,12 +878,13 @@ extension VideoGet {
      
     func bilibiliPlayUrl(bvid: String, yougetJson: YouGetJSON, _ isDM: Bool = true) -> Promise<(YouGetJSON)> {
         var yougetJson = yougetJson
+        yougetJson.site = .bilibili
         let cid = yougetJson.id
         
         
         var allowFlv = true
         var dashSymbol = true
-        var inner = true
+        var inner = false
         
         if !isDM {
             allowFlv = true
@@ -999,6 +1000,7 @@ extension VideoGet {
         
         
         var yougetJson = YouGetJSON(url:"")
+        yougetJson.site = .bangumi
         yougetJson.streams.removeAll()
         
         yougetJson.id = bangumiInfo.epInfo.cid
@@ -1052,7 +1054,7 @@ extension VideoGet {
                 "fnver": 0,
                 "fourk": 1,
                 "otype": "json",
-                "qn": 80,
+                "qn": 132,
                 //                "session": info.epInfo,
                 "type": ""]
             
