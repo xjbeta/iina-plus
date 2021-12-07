@@ -84,35 +84,37 @@ class HttpServer: NSObject, DanmakuDelegate {
         do {
             guard let dir = httpFilesURL?.path else { return }
             
+            server.POST["/video/danmakuurl"] = { request -> HttpResponse in
+                guard let url = self.requestUrl(request),
+                      let json = self.decode(url),
+                      let key = json.videos.first?.key,
+                      let data = json.danmakuUrl(key)?.data(using: .utf8) else {
+                    return .badRequest(nil)
+                }
+                return HttpResponse.ok(.data(data))
+            }
+            
+            server.POST["/video/iinaurl"] = { request -> HttpResponse in
+                guard let url = self.requestUrl(request),
+                      let json = self.decode(url),
+                      let key = json.videos.first?.key,
+                      let data = json.iinaUrl(key)?.data(using: .utf8) else {
+                    return .badRequest(nil)
+                }
+                return HttpResponse.ok(.data(data))
+            }
+            
             server.POST["/video"] = { request -> HttpResponse in
-                let requestBodys = String(bytes: request.body, encoding: .utf8)?.split(separator: "&") ?? []
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted
                 
-                var parameters = [String: String]()
-                requestBodys.forEach {
-                    let kv = $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
-                    guard kv.count == 2 else { return }
-                    parameters[kv[0]] = kv[1]
+                guard let url = self.requestUrl(request),
+                      let json = self.decode(url),
+                      let data = try? encoder.encode(json) else {
+                    return .badRequest(nil)
                 }
                 
-                guard let url = parameters["url"]?.removingPercentEncoding else {
-                    return HttpResponse.badRequest(nil)
-                }
-                
-                var re = Data()
-                let queue = DispatchGroup()
-                queue.enter()
-                    
-                self.videoGet.decodeUrl(url).done {
-                    let encoder = JSONEncoder()
-                    encoder.outputFormatting = .prettyPrinted
-                    re = try encoder.encode($0)
-                }.ensure {
-                    queue.leave()
-                }.catch {
-                    print($0)
-                }
-                queue.wait()
-                return HttpResponse.ok(.data(re))
+                return HttpResponse.ok(.data(data))
             }
             
             server["/danmaku/:path"] = directoryBrowser(dir)
@@ -253,5 +255,34 @@ class HttpServer: NSObject, DanmakuDelegate {
         if !str.contains("sendDM") {
             Log("WriteText to websocket: \(str)")
         }
+    }
+    
+    
+    private func requestUrl(_ request: HttpRequest) -> String? {
+        let requestBodys = String(bytes: request.body, encoding: .utf8)?.split(separator: "&") ?? []
+        
+        var parameters = [String: String]()
+        requestBodys.forEach {
+            let kv = $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
+            guard kv.count == 2 else { return }
+            parameters[kv[0]] = kv[1]
+        }
+        
+        return parameters["url"]?.removingPercentEncoding
+    }
+    
+    private func decode(_ url: String) -> YouGetJSON? {
+        var re: YouGetJSON?
+        let queue = DispatchGroup()
+        queue.enter()
+        videoGet.decodeUrl(url).done {
+            re = $0
+        }.ensure {
+            queue.leave()
+        }.catch {
+            print($0)
+        }
+        queue.wait()
+        return re
     }
 }
