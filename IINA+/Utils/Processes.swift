@@ -178,7 +178,7 @@ class Processes: NSObject {
         
 
         guard let u = json.videoUrl(key),
-              u != ""
+              u != "",
               let iinaUrl = json.iinaUrl(key, isDV) else {
             Log("Not Found YouGetJSON Url.")
             return

@@ -174,25 +174,19 @@ class VideoGet: NSObject {
     }
     
     func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
-        return Promise { resolver in
-            guard Preferences.shared.enableDanmaku else {
-                resolver.fulfill(())
-                return
-            }
-            
-            if yougetJSON.id != -1 {
-                self.downloadDMFileV2(
-                    cid: yougetJSON.id,
-                    length: yougetJSON.duration,
-                    id: id).done {
-                    resolver.fulfill(())
-                }.catch {
-                    resolver.reject($0)
-                }
-            } else {
-                resolver.fulfill(())
-            }
+        let pref = Preferences.shared
+        
+        guard Processes.shared.isDanmakuVersion(),
+              pref.enableDanmaku,
+              pref.livePlayer == .iina,
+              yougetJSON.id != -1 else {
+                  return .value(())
         }
+        
+        return self.downloadDMFileV2(
+            cid: yougetJSON.id,
+            length: yougetJSON.duration,
+            id: id)
     }
     
     func liveInfo(_ url: String, _ checkSupport: Bool = true) -> Promise<LiveInfo> {
@@ -283,6 +277,16 @@ class VideoGet: NSObject {
         }
         
         switch json.site {
+            
+        case .bilibili:
+            let key = json.videos[row].key
+            guard let stream = json.streams[key],
+                  stream.url == "" else {
+                return .value(json)
+            }
+            let qn = stream.quality
+            
+            return bilibiliPlayUrl(yougetJson: json, false, qn)
         case .biliLive:
             let key = json.videos[row].key
             guard let stream = json.streams[key],
@@ -294,7 +298,7 @@ class VideoGet: NSObject {
             if stream.src.count > 0 {
                 return .value(json)
             } else {
-                return self.getBiliLiveJSON("\(json.id)", qn).map {
+                return getBiliLiveJSON("\(json.id)", qn).map {
                     let urls = $0.durl.map {
                         $0.url
                     }
@@ -746,6 +750,7 @@ extension VideoGet {
         
         var ygj = YouGetJSON(url:"")
         ygj.streams.removeAll()
+        ygj.site = .bilibili
         
         let r0 = bilibili.getVideoList(url).compactMap {
             $0.first(where: { $0.index == bUrl.p })
@@ -755,8 +760,10 @@ extension VideoGet {
             ygj.duration = Int(s.duration)
         }
         
-        let r1 = r0.then {
-            self.bilibiliPlayUrl(bvid: $0.bvid, yougetJson: ygj, isDM)
+        let r1 = r0.get{
+            ygj.bvid = $0.bvid
+        }.then { _ in
+            self.bilibiliPlayUrl(yougetJson: ygj, isDM)
         }
         
         let r2 = getBilibiliHTMLDatas(url).then {
@@ -838,11 +845,8 @@ extension VideoGet {
                 if let playInfo: BilibiliPlayInfo = try? playInfoJson.value(for: "data") {
                     yougetJson = playInfo.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
-                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "data"),
-                          let url = info.url {
-                    var stream = Stream(url: url)
-                    stream.videoProfile = info.description
-                    yougetJson.streams[info.description] = stream
+                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "data") {
+                    yougetJson = info.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
                 } else {
                     resolver.reject(VideoGetError.notFindUrls)
@@ -876,11 +880,11 @@ extension VideoGet {
         case dash8K = 1024
     }
      
-    func bilibiliPlayUrl(bvid: String, yougetJson: YouGetJSON, _ isDM: Bool = true) -> Promise<(YouGetJSON)> {
+    func bilibiliPlayUrl(yougetJson: YouGetJSON,
+                         _ isDM: Bool = true,
+                         _ qn: Int = 132) -> Promise<(YouGetJSON)> {
         var yougetJson = yougetJson
-        yougetJson.site = .bilibili
         let cid = yougetJson.id
-        
         
         var allowFlv = true
         var dashSymbol = true
@@ -894,7 +898,9 @@ extension VideoGet {
         
         let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         
-        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=132&otype=json&bvid=\(bvid)&fnver=0&fnval=\(fnval)&fourk=1"
+        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=\(qn)&otype=json&bvid=\(yougetJson.bvid)&fnver=0&fnval=\(fnval)&fourk=1"
+        
+        print(u)
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
@@ -919,15 +925,17 @@ extension VideoGet {
                     } else {
                         let info: BilibiliSimplePlayInfo = try json.value(for: "data")
                         
-                        guard let url = info.url else {
-                            resolver.reject(VideoGetError.notFountData)
-                            return
+                        yougetJson = info.write(to: yougetJson)
+                        
+                        // Filter unavailable streams
+                        if fnval == BilibiliFnval.flv.rawValue,
+                           info.quality < qn {
+                            yougetJson.streams = yougetJson.streams.filter {
+                                $0.value.quality <= info.quality
+                            }
                         }
                         
-                        var s = Stream(url: url)
-                        s.src = info.urls
-                        yougetJson.streams[info.description] = s
-                        yougetJson.duration = info.duration
+                        print(yougetJson.streams)
                         
                         resolver.fulfill(yougetJson)
                     }
@@ -1019,13 +1027,8 @@ extension VideoGet {
                     
                     yougetJson = playInfo.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
-                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result"),
-                          let url = info.url {
-                    yougetJson.duration = info.duration
-                    
-                    var stream = Stream(url: url)
-                    stream.videoProfile = info.description
-                    yougetJson.streams[info.description] = stream
+                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result") {
+                    yougetJson = info.write(to: yougetJson)
                     resolver.fulfill(yougetJson)
                 } else {
                     resolver.reject(VideoGetError.notFindUrls)

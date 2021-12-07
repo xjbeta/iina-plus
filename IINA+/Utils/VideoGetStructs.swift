@@ -603,22 +603,12 @@ struct BilibiliPlayInfo: Unmarshaling {
 }
 
 struct BilibiliSimplePlayInfo: Unmarshaling {
-    let url: String?
-    let urls: [String]
-    var description: String = ""
-    var duration: Int
+    let duration: Int
+    let descriptions: [Int: String]
+    let quality: Int
+    let durl: [BilibiliPlayInfo.Durl]
     
     init(object: MarshaledObject) throws {
-        let durl: [BilibiliPlayInfo.Durl] = try object.value(for: "durl")
-        url = durl.first?.url
-        urls = durl.first?.backupUrls ?? []
-        
-        if let l = durl.first?.length {
-            duration = l / 1000
-        } else {
-            duration = 0
-        }
-        
         let acceptQuality: [Int] = try object.value(for: "accept_quality")
         let acceptDescription: [String] = try object.value(for: "accept_description")
         
@@ -626,10 +616,29 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
         acceptQuality.enumerated().forEach {
             descriptionDic[$0.element] = acceptDescription[$0.offset]
         }
+        descriptions = descriptionDic
         
-        let quality: Int = try object.value(for: "quality")
+        quality = try object.value(for: "quality")
+        durl = try object.value(for: "durl")
+        duration = try object.value(for: "timelength")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var yougetJson = yougetJson
+        yougetJson.duration = duration
         
-        description = descriptionDic[quality] ?? "unkonwn"
+        descriptions.forEach {
+            var stream = yougetJson.streams[$0.value] ?? Stream(url: "")
+            if $0.key == quality,
+                let durl = durl.first {
+                stream.url = durl.url
+                stream.src = durl.backupUrls
+            }
+            stream.quality = $0.key
+            yougetJson.streams[$0.value] = stream
+        }
+        
+        return yougetJson
     }
 }
 

@@ -11,6 +11,7 @@ import Marshal
 
 struct YouGetJSON: Unmarshaling, Codable {
     let uuid = UUID().uuidString
+    var bvid = ""
     
     var title: String = ""
     var streams: [String: Stream] = [:]
@@ -35,7 +36,7 @@ struct YouGetJSON: Unmarshaling, Codable {
             let t = title.replacingOccurrences(of: "\"", with: "''")
             var args = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(t)"]
             switch site {
-            case .bilibili, .biliLive, .bangumi:
+            case .bilibili, .bangumi:
                 args.append(contentsOf: [
                     "\(MPVOption.ProgramBehavior.ytdl)=no",
                     "\(MPVOption.Network.referrer)=https://www.bilibili.com/"

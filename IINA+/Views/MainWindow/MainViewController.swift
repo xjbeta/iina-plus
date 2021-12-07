@@ -154,7 +154,6 @@ class MainViewController: NSViewController {
     }
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
-        let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
         let processes = Processes.shared
         let preferences = Preferences.shared
@@ -174,8 +173,13 @@ class MainViewController: NSViewController {
             return
         }
         clear()
+        let uuid = yougetJSON.uuid
         
         let videoGet = processes.videoGet
+        
+        let isDM = processes.isDanmakuVersion()
+        let key = yougetJSON.videos[row].key
+        let site = SupportSites(url: self.searchField.stringValue)
         
         videoGet.prepareVideoUrl(yougetJSON, row).get {
             yougetJSON = $0
@@ -184,11 +188,6 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            let isDM = processes.isDanmakuVersion()
-            let key = yougetJSON.videos[row].key
-            
-            let site = SupportSites(url: self.searchField.stringValue)
-            
             // init Danmaku
             if preferences.enableDanmaku,
                preferences.livePlayer == .iina,
@@ -203,7 +202,7 @@ class MainViewController: NSViewController {
             
             processes.openWithPlayer(yougetJSON, key)
         }.catch {
-                Log("Prepare DM file error : \($0)")
+            Log("Prepare DM file error : \($0)")
         }
     }
     
