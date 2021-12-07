@@ -168,10 +168,6 @@ class Processes: NSObject {
         return (promise, cancel)
     }
     
-    enum PlayerOptions {
-        case douyu, bilibili, bililive, withoutYtdl, none
-    }
-    
     func openWithPlayer(_ json: YouGetJSON, _ key: String) {
         let task = Process()
         let pipe = Pipe()
@@ -182,23 +178,26 @@ class Processes: NSObject {
         
 
         guard let u = json.videoUrl(key),
-              let uString = json.iinaUrl(key, isDV),
-              let url = URL(string: uString) else {
+              u != ""
+              let iinaUrl = json.iinaUrl(key, isDV) else {
             Log("Not Found YouGetJSON Url.")
             return
         }
         
-        
         switch Preferences.shared.livePlayer {
         case .iina where isDV && buildVersion >= 15:
 //            IINA-Danmaku 1.1.2 NEW API
-            NSWorkspace.shared.open(url)
+            openWithURLScheme(iinaUrl)
         case .iina where isDV && buildVersion < 15:
             openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
         case .iina where !isDV && buildVersion >= 90:
 //            1.0.0 beta3 build 86  URL Scheme without mpv options
 //            1.0.0 beta4 build 90
-            NSWorkspace.shared.open(url)
+            if [.bilibili, .bangumi].contains(json.site) {
+                openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
+            } else {
+                openWithURLScheme(iinaUrl)
+            }
         case .iina where !isDV && buildVersion >= 56:
 //            iinc-cli build 56
             openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
@@ -254,5 +253,14 @@ class Processes: NSObject {
         Log("Player arguments: \(args)")
         task.arguments = args
         task.launch()
+    }
+    
+    func openWithURLScheme(_ url: String) {
+        guard let u = URL(string: url) else {
+            Log("Invalid url scheme \(url).")
+            return
+        }
+        Log("openWithURLScheme \(url).")
+        NSWorkspace.shared.open(u)
     }
 }
