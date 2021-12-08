@@ -84,8 +84,12 @@ class HttpServer: NSObject, DanmakuDelegate {
         do {
             guard let dir = httpFilesURL?.path else { return }
             
+            // Video API
             server.POST["/video/danmakuurl"] = { request -> HttpResponse in
-                guard let url = self.requestUrl(request),
+                
+                
+                
+                guard let url = request.parameters["url"],
                       let json = self.decode(url),
                       let key = json.videos.first?.key,
                       let data = json.danmakuUrl(key)?.data(using: .utf8) else {
@@ -95,7 +99,7 @@ class HttpServer: NSObject, DanmakuDelegate {
             }
             
             server.POST["/video/iinaurl"] = { request -> HttpResponse in
-                guard let url = self.requestUrl(request),
+                guard let url = request.parameters["url"],
                       let json = self.decode(url),
                       let key = json.videos.first?.key,
                       let data = json.iinaUrl(key)?.data(using: .utf8) else {
@@ -108,7 +112,7 @@ class HttpServer: NSObject, DanmakuDelegate {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
                 
-                guard let url = self.requestUrl(request),
+                guard let url = request.parameters["url"],
                       let json = self.decode(url),
                       let data = try? encoder.encode(json) else {
                     return .badRequest(nil)
@@ -117,6 +121,7 @@ class HttpServer: NSObject, DanmakuDelegate {
                 return HttpResponse.ok(.data(data))
             }
             
+            // Danmaku API
             server["/danmaku/:path"] = directoryBrowser(dir)
             
             server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
@@ -155,6 +160,41 @@ class HttpServer: NSObject, DanmakuDelegate {
                 Log(self?.registeredItems.map({ $0.url }))
             })
             
+            /*
+            server.POST["/danmaku/open"] = { request -> HttpResponse in
+                
+                guard let url = request.parameters["url"],
+                      let uuid = request.parameters["id"] else {
+                    return .badRequest(nil)
+                }
+                
+                let site = SupportSites(url: url)
+                
+                switch site {
+                case .bilibili, .bangumi:
+                    // Return DM File
+                    return .badRequest(nil)
+                case .eGame, .douyu, .huya, .biliLive:
+                    self.register(uuid, site: site, url: url)
+                default:
+                    return .badRequest(nil)
+                }
+                
+                return HttpResponse.ok(.data(data))
+            }
+            
+            server.POST["/danmaku/close"] = { request -> HttpResponse in
+                guard let uuid = request.parameters["uuid"] else {
+                    return .badRequest(nil)
+                }
+                
+                resign
+                
+                
+                return HttpResponse.ok(.data(data))
+            }
+            */
+             
             server.listenAddressIPv4 = "127.0.0.1"
             
             let port = Preferences.shared.dmPort
@@ -258,19 +298,6 @@ class HttpServer: NSObject, DanmakuDelegate {
     }
     
     
-    private func requestUrl(_ request: HttpRequest) -> String? {
-        let requestBodys = String(bytes: request.body, encoding: .utf8)?.split(separator: "&") ?? []
-        
-        var parameters = [String: String]()
-        requestBodys.forEach {
-            let kv = $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
-            guard kv.count == 2 else { return }
-            parameters[kv[0]] = kv[1]
-        }
-        
-        return parameters["url"]?.removingPercentEncoding
-    }
-    
     private func decode(_ url: String) -> YouGetJSON? {
         var re: YouGetJSON?
         let queue = DispatchGroup()
@@ -284,5 +311,21 @@ class HttpServer: NSObject, DanmakuDelegate {
         }
         queue.wait()
         return re
+    }
+}
+
+extension HttpRequest {
+    var parameters: [String: String] {
+        get {
+            let requestBodys = String(bytes: body, encoding: .utf8)?.split(separator: "&") ?? []
+            
+            var parameters = [String: String]()
+            requestBodys.forEach {
+                let kv = $0.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
+                guard kv.count == 2 else { return }
+                parameters[kv[0]] = kv[1]
+            }
+            return parameters
+        }
     }
 }
