@@ -626,8 +626,14 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {
         var yougetJson = yougetJson
         yougetJson.duration = duration
+        var dic = descriptions
+        if yougetJson.streams.count == 0 {
+            dic = dic.filter {
+                $0.key <= quality
+            }
+        }
         
-        descriptions.forEach {
+        dic.forEach {
             var stream = yougetJson.streams[$0.value] ?? Stream(url: "")
             if $0.key == quality,
                 let durl = durl.first {

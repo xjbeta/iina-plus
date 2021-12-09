@@ -179,6 +179,7 @@ class VideoGet: NSObject {
         guard Processes.shared.isDanmakuVersion(),
               pref.enableDanmaku,
               pref.livePlayer == .iina,
+              [.bilibili, .bangumi].contains(yougetJSON.site),
               yougetJSON.id != -1 else {
                   return .value(())
         }
@@ -277,8 +278,7 @@ class VideoGet: NSObject {
         }
         
         switch json.site {
-            
-        case .bilibili:
+        case .bilibili, .bangumi:
             let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.url == "" else {
@@ -286,7 +286,7 @@ class VideoGet: NSObject {
             }
             let qn = stream.quality
             
-            return bilibiliPlayUrl(yougetJson: json, false, qn)
+            return bilibiliPlayUrl(yougetJson: json, false, true, qn)
         case .biliLive:
             let key = json.videos[row].key
             guard let stream = json.streams[key],
@@ -752,16 +752,13 @@ extension VideoGet {
         ygj.streams.removeAll()
         ygj.site = .bilibili
         
-        let r0 = bilibili.getVideoList(url).compactMap {
+        let r1 = bilibili.getVideoList(url).compactMap {
             $0.first(where: { $0.index == bUrl.p })
         }.get { s in
             ygj.id = s.id
+            ygj.bvid = s.bvid
             ygj.title = s.title
             ygj.duration = Int(s.duration)
-        }
-        
-        let r1 = r0.get{
-            ygj.bvid = $0.bvid
         }.then { _ in
             self.bilibiliPlayUrl(yougetJson: ygj, isDM)
         }
@@ -882,6 +879,7 @@ extension VideoGet {
      
     func bilibiliPlayUrl(yougetJson: YouGetJSON,
                          _ isDM: Bool = true,
+                         _ isBangumi: Bool = false,
                          _ qn: Int = 132) -> Promise<(YouGetJSON)> {
         var yougetJson = yougetJson
         let cid = yougetJson.id
@@ -898,9 +896,12 @@ extension VideoGet {
         
         let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         
-        let u = "https://api.bilibili.com/x/player/playurl?cid=\(cid)&qn=\(qn)&otype=json&bvid=\(yougetJson.bvid)&fnver=0&fnval=\(fnval)&fourk=1"
         
-        print(u)
+        var u = isBangumi ?
+        "https://api.bilibili.com/pgc/player/web/playurl?" :
+        "https://api.bilibili.com/x/player/playurl?"
+        
+        u += "cid=\(cid)&qn=\(qn)&otype=json&bvid=\(yougetJson.bvid)&fnver=0&fnval=\(fnval)&fourk=1"
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
@@ -918,25 +919,22 @@ extension VideoGet {
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(data)
                     
+                    let code: Int = try json.value(for: "code")
+                    if code == -10403 {
+                        resolver.reject(VideoGetError.needVip)
+                        return
+                    }
+                    
+                    let key = isBangumi ? "result" : "data"
+                    
                     if isDM {
-                        let playInfo: BilibiliPlayInfo = try json.value(for: "data")
+                        let playInfo: BilibiliPlayInfo = try json.value(for: key)
                         yougetJson = playInfo.write(to: yougetJson)
                         resolver.fulfill(yougetJson)
                     } else {
-                        let info: BilibiliSimplePlayInfo = try json.value(for: "data")
+                        let info: BilibiliSimplePlayInfo = try json.value(for: key)
                         
                         yougetJson = info.write(to: yougetJson)
-                        
-                        // Filter unavailable streams
-                        if fnval == BilibiliFnval.flv.rawValue,
-                           info.quality < qn {
-                            yougetJson.streams = yougetJson.streams.filter {
-                                $0.value.quality <= info.quality
-                            }
-                        }
-                        
-                        print(yougetJson.streams)
-                        
                         resolver.fulfill(yougetJson)
                     }
                 } catch let error {
@@ -950,131 +948,36 @@ extension VideoGet {
     
     func getBangumi(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
-
-        return getBilibiliHTMLDatas(url).then {
-            self.getBangumiVipData(
-                url,
-                bangumiInfo: try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData)),
-                playInfoData: $0.playInfoData)
-        }.then {
-            self.decodeBangumiDatas(
-                url,
-                bangumiInfo: $0.bangumiInfo,
-                playInfoData: $0.playInfoData)
+        let bilibili = Bilibili()
+        guard let bUrl = BilibiliUrl(url: url.absoluteString) else {
+            return .init(error: VideoGetError.invalidLink)
         }
-    }
-    
-    
-    func getBangumiVipData(_ url: URL,
-                           bangumiInfo: BangumiInfo,
-                           playInfoData: Data) -> Promise<((bangumiInfo: BangumiInfo, playInfoData: Data))> {
-        return Promise { resolver in
-            guard url.absoluteString.contains("bangumi") else {
-                resolver.fulfill((bangumiInfo, playInfoData))
-                return
+        
+        let isDM = Processes.shared.isDanmakuVersion()
+        
+        var ygj = YouGetJSON(url:"")
+        ygj.streams.removeAll()
+        ygj.site = .bangumi
+        
+        return bilibili.getBangumiList(url).get {
+            if $0.epList.count == 1 {
+                ygj.title = $0.title
             }
-            
-            getBangumiVideoData(info: bangumiInfo).done {
-                guard let data = $0 else {
-                    resolver.reject(VideoGetError.notFountData)
-                    return
-                }
-                
-                
-                struct Message: Decodable {
-                    let code: Int
-                    let message: String
-                }
-                
-                let message = try JSONDecoder().decode(Message.self, from: data)
-                
-                guard message.code == 0,
-                      message.message == "success" else {
-                    Log((message.code, message.message))
-                    resolver.reject(VideoGetError.needVip)
-                    return
-                }
-                
-                resolver.fulfill((bangumiInfo, data))
-            }.catch {
-                resolver.reject($0)
-            }
+        }.compactMap {
+            $0.epList.first(where: { $0.id == Int(bUrl.id.dropFirst(2)) })
+        }.get { s in
+            ygj.bvid = s.bvid
+            ygj.id = s.cid
+            let title = [ygj.title,
+                         s.title,
+                         s.longTitle].filter {
+                $0 != ""
+            }.joined(separator: " - ")
+            ygj.title = title
+        }.then { _ in
+            self.bilibiliPlayUrl(yougetJson: ygj, isDM, true)
         }
-    }
-    
-    func decodeBangumiDatas(_ url: URL,
-                            bangumiInfo: BangumiInfo,
-                            playInfoData: Data) -> Promise<(YouGetJSON)> {
         
-        
-        var yougetJson = YouGetJSON(url:"")
-        yougetJson.site = .bangumi
-        yougetJson.streams.removeAll()
-        
-        yougetJson.id = bangumiInfo.epInfo.cid
-        
-        return Promise { resolver in
-            do {
-                let titles = [bangumiInfo.title,
-                              bangumiInfo.epInfo.title,
-                              bangumiInfo.epInfo.longTitle]
-                
-                yougetJson.title = titles.joined(separator: " - ")
-                
-                let playInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playInfoData)
-                
-                if let playInfo: BilibiliPlayInfo = (try? playInfoJson.value(for: "result")) ?? (try? playInfoJson.value(for: "data")) {
-                    
-                    yougetJson = playInfo.write(to: yougetJson)
-                    resolver.fulfill(yougetJson)
-                } else if let info: BilibiliSimplePlayInfo = try? playInfoJson.value(for: "result") {
-                    yougetJson = info.write(to: yougetJson)
-                    resolver.fulfill(yougetJson)
-                } else {
-                    resolver.reject(VideoGetError.notFindUrls)
-                }
-            } catch let error {
-                resolver.reject(error)
-            }
-        }
-    }
-    
-    
-    
-    func getBangumiVideoData(info: BangumiInfo) -> Promise<(Data?)> {
-        return Promise { resolver in
-            
-            let header = HTTPHeaders(
-                ["User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.2 Safari/605.1.15",
-                 "origin": "https://www.bilibili.com",
-                 "referer": "https://www.bilibili.com/bangumi/play/ep\(info.epInfo.id)"])
-            
-            let pars: [String: Any] = [
-                "bvid": info.epInfo.bvid,
-                "cid": info.epInfo.cid,
-                "ep_id": info.epInfo.id,
-                "fnval": 80,
-                "fnver": 0,
-                "fourk": 1,
-                "otype": "json",
-                "qn": 132,
-                //                "session": info.epInfo,
-                "type": ""]
-            
-            AF.request("https://api.bilibili.com/pgc/player/web/playurl",
-                       method: .get,
-                       parameters: pars,
-                       headers: header).response { response in
-                        
-                        if let error = response.error {
-                            resolver.reject(error)
-                        }
-                        resolver.fulfill(response.data)
-                       }
-//            https://api.bilibili.com/pgc/player/web/playurl?cid=237945449&qn=80&type=&otype=json&fourk=1&bvid=BV1GA411J7Zh&ep_id=339061&fnver=0&fnval=80&session=e7b6ccb354f010af13a689cb0f057a72
-            
-
-        }
     }
     
     // MARK: - Bilibili Danmaku

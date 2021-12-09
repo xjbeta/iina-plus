@@ -185,6 +185,7 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
 }
 
 struct BangumiList: Unmarshaling {
+    let title: String
     let epList: [BangumiInfo.BangumiEp]
     let sections: [BangumiInfo.BangumiSections]
     
@@ -213,6 +214,7 @@ struct BangumiList: Unmarshaling {
     init(object: MarshaledObject) throws {
         epList = try object.value(for: "epList")
         sections = try object.value(for: "sections")
+        title = try object.value(for: "h1Title")
     }
 }
 
