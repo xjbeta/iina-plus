@@ -620,7 +620,8 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
         
         quality = try object.value(for: "quality")
         durl = try object.value(for: "durl")
-        duration = try object.value(for: "timelength")
+        let timelength: Int = try object.value(for: "timelength")
+        duration = Int(timelength / 1000)
     }
     
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {

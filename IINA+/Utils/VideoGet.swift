@@ -927,16 +927,15 @@ extension VideoGet {
                     
                     let key = isBangumi ? "result" : "data"
                     
-                    if isDM {
-                        let playInfo: BilibiliPlayInfo = try json.value(for: key)
-                        yougetJson = playInfo.write(to: yougetJson)
-                        resolver.fulfill(yougetJson)
+                    
+                    if let info: BilibiliPlayInfo = try? json.value(for: key) {
+                        yougetJson = info.write(to: yougetJson)
                     } else {
                         let info: BilibiliSimplePlayInfo = try json.value(for: key)
-                        
                         yougetJson = info.write(to: yougetJson)
-                        resolver.fulfill(yougetJson)
                     }
+                    
+                    resolver.fulfill(yougetJson)
                 } catch let error {
                     resolver.reject(error)
                 }
