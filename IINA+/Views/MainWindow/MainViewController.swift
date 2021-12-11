@@ -154,9 +154,9 @@ class MainViewController: NSViewController {
     }
     
     @IBAction func openSelectedSuggestion(_ sender: Any) {
-        let uuid = UUID().uuidString
         let row = suggestionsTableView.selectedRow
         let processes = Processes.shared
+        let preferences = Preferences.shared
         
         func clear() {
             isSearching = false
@@ -173,8 +173,13 @@ class MainViewController: NSViewController {
             return
         }
         clear()
+        let uuid = yougetJSON.uuid
         
         let videoGet = processes.videoGet
+        
+        let isDM = processes.isDanmakuVersion()
+        let key = yougetJSON.videos[row].key
+        let site = SupportSites(url: self.searchField.stringValue)
         
         videoGet.prepareVideoUrl(yougetJSON, row).get {
             yougetJSON = $0
@@ -183,47 +188,21 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            
-            let key = yougetJSON.videos[row].key
-            let stream = yougetJSON.streams[key]
-            
-            var urlStr: [String] = []
-            if let videoUrl = stream?.url {
-                urlStr = [videoUrl]
-            } else {
-                urlStr = stream?.src ?? []
-            }
-            var title = yougetJSON.title
-            let site = SupportSites(url: self.searchField.stringValue)
-            
-            
             // init Danmaku
-            if Preferences.shared.enableDanmaku,
-               processes.isDanmakuVersion() {
+            if preferences.enableDanmaku,
+               preferences.livePlayer == .iina,
+               isDM {
                 switch site {
-                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .eGame, .langPlay:
+                case .bilibili, .bangumi, .biliLive, .douyu, .huya:
                     self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
                 }
             }
             
-            
-            switch site {
-            case .douyu:
-                processes.openWithPlayer(urlStr, title: title, options: .douyu, uuid: uuid)
-            case .huya, .longzhu, .quanmin, .eGame, .langPlay, .cc163:
-                processes.openWithPlayer(urlStr, title: title, options: .withoutYtdl, uuid: uuid)
-            case .bilibili, .bangumi:
-                processes.openWithPlayer(urlStr, audioUrl: yougetJSON.audio, title: title, options: .bilibili, uuid: uuid, rawBiliURL: self.searchField.stringValue)
-            case .biliLive:
-                processes.openWithPlayer(urlStr, title: title, options: .bililive, uuid: uuid)
-            case .unsupported:
-                processes.openWithPlayer(urlStr, title: title, options: .none, uuid: uuid)
-            }
-
-            }.catch {
-                Log("Prepare DM file error : \($0)")
+            processes.openWithPlayer(yougetJSON, key)
+        }.catch {
+            Log("Prepare DM file error : \($0)")
         }
     }
     
@@ -417,14 +396,17 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: String, infos: [VideoSelector]) {
-        if let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first {
-            DispatchQueue.main.async {
-                self.searchField.stringValue = ""
-                selectVideoViewController.videoInfos = infos
-                selectVideoViewController.videoId = videoId
-                self.selectTabItem(.selectVideos)
-            }
+    func showSelectVideo(_ videoId: String, infos: [VideoSelector], currentItem: Int = 0) {
+        guard let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first else {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.searchField.stringValue = ""
+            selectVideoViewController.videoInfos = infos
+            selectVideoViewController.videoId = videoId
+            selectVideoViewController.currentItem = currentItem
+            self.selectTabItem(.selectVideos)
         }
     }
     
@@ -436,27 +418,35 @@ class MainViewController: NSViewController {
         isSearching = true
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
-        let str = searchField.stringValue
-        decodeUrl(url, directly: directly).ensure {
+        var str = url
+        
+        VideoGet().bilibiliUrlFormatter(url).get {
+            if self.searchField.stringValue == str {
+                self.searchField.stringValue = $0
+                str = $0
+            }
+        }.then {
+            self.decodeUrl($0, directly: directly)
+        }.ensure {
             self.isSearching = false
             self.progressStatusChanged(false)
         }.done {
             Log("decodeUrl success: \(str)")
         }.catch { error in
-            var s = "ಠ_ಠ  oops, "
+            var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
             switch error {
             case PMKError.cancelled:
                 return
             case VideoGetError.invalidLink:
-                s += "invalid url."
+                s += NSLocalizedString("VideoGetError.invalidLink", comment: "invalid url.")
             case VideoGetError.isNotLiving:
-                s += "the host is not online."
+                s += NSLocalizedString("VideoGetError.isNotLiving", comment: "the host is not online.")
             case VideoGetError.notSupported:
-                s += "the website is not supported."
+                s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
             case VideoGetError.needVip:
-                s += "need vip."
+                s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
             default:
-                s += "something went wrong."
+                s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
             }
             
             Log(error)
@@ -467,7 +457,6 @@ class MainViewController: NSViewController {
     func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
         
         return Promise { resolver in
-            
             let videoGet = Processes.shared.videoGet
             var str = url
             yougetResult = nil
@@ -494,72 +483,67 @@ class MainViewController: NSViewController {
             
             if directly {
                 decodeUrl()
-            } else if url.host == "www.bilibili.com" {
+            } else if let bUrl = BilibiliUrl(url: str) {
+                let u = URL(string: bUrl.fUrl)!
+                var re: Promise<Void>
                 
-                let pc = url.pathComponents
-                
-                if pc.count >= 3,
-                   pc[1] == "video" {
-//                    ([String]?) $R0 = 3 values {
-//                        [0] = "/"
-//                        [1] = "video"
-//                        [2] = "BV1ft4y1a7Yd"
-//                    }
-                    let vid = pc[2]
-                    bilibili.getVideoList(url).done { infos in
+                switch bUrl.urlType {
+                case .video:
+                    re = bilibili.getVideoList(u).done { infos in
                         if infos.count > 1 {
-                            self.showSelectVideo(vid, infos: infos)
+                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: bUrl.p - 1)
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
                         }
-                    }.catch {
-                        resolver.reject($0)
                     }
-                } else if pc.count >= 4,
-                          pc[1] == "bangumi",
-                          pc[2] == "play" {
-                    
-//                    let vid = pc[3]
-//                    ([String]) $R2 = 4 values {
-//                        [0] = "/"
-//                        [1] = "bangumi"
-//                        [2] = "play"
-//                        [3] = "ep339061" // ss34407
-//                    }
-                    bilibili.getBangumiList(url).done {
+                case .bangumi:
+                    re = bilibili.getBangumiList(u).done {
                         let epVS = $0.epVideoSelectors
-//                        let selectionVS = $0.selectionVideoSelectors
-//                        let c = epVS.count + selectionVS.count
-//                        if c == 1, let vs = epVS.first ?? selectionVS.first {
                         if epVS.count == 1 {
                             decodeUrl()
                         } else {
-                            self.showSelectVideo("", infos: epVS)
+                            var cItem = 0
+                            if bUrl.id.starts(with: "ep"),
+                                let epId = Int(bUrl.id.dropFirst(2)) {
+                                cItem = epVS.firstIndex {
+                                    $0.id == epId
+                                } ?? 0
+                            }
+                            
+                            self.showSelectVideo("", infos: epVS, currentItem: cItem)
                             resolver.fulfill(())
                         }
-                    }.catch {
-                        resolver.reject($0)
                     }
+                default:
+                    return
+                }
+                re.catch {
+                    resolver.reject($0)
                 }
             } else if url.host == "www.douyu.com",
                       url.pathComponents.count > 2,
                       url.pathComponents[1] == "topic" {
                 
                 videoGet.getDouyuHtml(str).done {
-                    if $0.roomIds.count > 0 {
-                        let infos = $0.roomIds.enumerated().map {
+                    guard $0.roomIds.count > 0 else {
+                        decodeUrl()
+                        return
+                    }
+                    let cid = $0.roomId
+                    videoGet.getDouyuEventRoomNames($0.pageId).done {
+                        let infos = $0.enumerated().map {
                             DouyuVideoSelector(
                                 index: $0.offset,
-                                title: "频道 - \($0.offset + 1) - \($0.element)",
-                                id: Int($0.element) ?? 0,
+                                title: $0.element.text,
+                                id: Int($0.element.onlineRoomId) ?? 0,
                                 coverUrl: nil)
                         }
-                        
-                        self.showSelectVideo("", infos: infos)
+
+                        self.showSelectVideo("", infos: infos, currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
-                    } else {
-                        decodeUrl()
+                    }.catch {
+                        resolver.reject($0)
                     }
                 }.catch {
                     resolver.reject($0)
@@ -677,7 +661,8 @@ class MainViewController: NSViewController {
             items.first?.state = .on
         }
         
-        if bookmarkArrayController.fetchPredicate == nil {
+        if bookmarkArrayController.fetchPredicate == nil,
+           items.first?.state != .on {
             items.forEach {
                 $0.state = .off
             }
@@ -691,8 +676,11 @@ class MainViewController: NSViewController {
         
         menu.removeAllItems()
         
-        let allItem = ObjMenuItem(title: "All", action: act, keyEquivalent: "")
+        let all = NSLocalizedString("LiveSite.All", comment: "All")
+        let allItem = ObjMenuItem(title: all, action: act, keyEquivalent: "")
+        
         allItem.tag = 1
+        allItem.state = .on
         
         var items = [
             allItem,

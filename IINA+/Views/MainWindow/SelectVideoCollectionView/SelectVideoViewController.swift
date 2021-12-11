@@ -11,6 +11,7 @@ import Cocoa
 class SelectVideoViewController: NSViewController {
 
     @IBOutlet weak var collectionView: NSCollectionView!
+    var currentItem = 0
     
     var videoInfos: [VideoSelector] = [] {
         didSet {
@@ -29,6 +30,7 @@ class SelectVideoViewController: NSViewController {
                 if let size = size {
                     let layout = NSCollectionViewFlowLayout()
                     layout.itemSize = size
+                    layout.sectionInset.bottom = 20
                     collectionView.collectionViewLayout = layout
                 }
             }
@@ -42,20 +44,48 @@ class SelectVideoViewController: NSViewController {
         super.viewDidLoad()
     }
     
+    func videoInfo(at indexPath: IndexPath) -> VideoSelector? {
+        switch indexPath.section {
+        case 0 where currentItem > 0:
+            return videoInfos[currentItem]
+        case 0:
+            return videoInfos[indexPath.item]
+        case 1 where currentItem > 0:
+            return videoInfos[indexPath.item]
+        default:
+            return nil
+        }
+    }
+    
 }
 
 extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionViewDelegate {
+    
+    func numberOfSections(in collectionView: NSCollectionView) -> Int {
+        currentItem > 0 ? 2 : 1
+    }
+    
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        return videoInfos.count
+        let c = videoInfos.count
+        
+        switch section {
+        case 0:
+            return currentItem > 0 ? 1 : c
+        case 1:
+            return c
+        default:
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "SelectVideoCollectionViewItem"), for: indexPath)
-        guard let selectVideoItem = item as? SelectVideoCollectionViewItem else {
+        guard let selectVideoItem = item as? SelectVideoCollectionViewItem,
+              let info = videoInfo(at: indexPath) else {
             return item
         }
-        let info = videoInfos[indexPath.item]
         
+
         var s = ""
         switch info.site {
         case .bilibili:
@@ -83,46 +113,48 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
     }
     
     func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
-        if let item = indexPaths.first?.item {
-            if let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
-                view.isSelected = false
-            }
+        guard let indexPath = indexPaths.first,
+              let view = collectionView.item(at: indexPath)?.view as? SelectVideoCollectionViewItemView else {
+            return
         }
+        view.isSelected = false
     }
     
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-        if let item = indexPaths.first?.item,
-            let view = collectionView.item(at: item)?.view as? SelectVideoCollectionViewItemView {
-            view.isSelected = true
-            if let main = self.parent as? MainViewController {
-                main.selectTabItem(.search)
-                let info = videoInfos[item]
-                
-                var u = ""
-                switch info.site {
-                case .bilibili:
-                    u = "https://www.bilibili.com/video/\(videoId)/?p=\(info.index)"
-                case .douyu:
-                    u = "https://www.douyu.com/\(info.id)"
-                case .bangumi:
-                    u = "https://www.bilibili.com/bangumi/play/ep\(info.id)"
-                case .cc163:
-                    let i = info as! CC163VideoSelector
-                    u = i.url
-                    
-                    main.searchField.stringValue = u
-                    main.searchField.becomeFirstResponder()
-                    main.startSearchingUrl(u, directly: false)
-                    view.isSelected = false
-                    return
-                default:
-                    break
-                }
-                main.searchField.stringValue = u
-                main.searchField.becomeFirstResponder()
-                main.startSearchingUrl(u, directly: true)
-                view.isSelected = false
-            }
+        guard let indexPath = indexPaths.first,
+              let view = collectionView.item(at: indexPath)?.view as? SelectVideoCollectionViewItemView,
+              let main = self.parent as? MainViewController,
+              let info = videoInfo(at: indexPath) else {
+            return
         }
+        
+        view.isSelected = true
+        
+        main.selectTabItem(.search)
+        
+        var u = ""
+        switch info.site {
+        case .bilibili:
+            u = "https://www.bilibili.com/video/\(videoId)?p=\(info.index)"
+        case .douyu:
+            u = "https://www.douyu.com/\(info.id)"
+        case .bangumi:
+            u = "https://www.bilibili.com/bangumi/play/ep\(info.id)"
+        case .cc163:
+            let i = info as! CC163VideoSelector
+            u = i.url
+            
+            main.searchField.stringValue = u
+            main.searchField.becomeFirstResponder()
+            main.startSearchingUrl(u, directly: false)
+            view.isSelected = false
+            return
+        default:
+            break
+        }
+        main.searchField.stringValue = u
+        main.searchField.becomeFirstResponder()
+        main.startSearchingUrl(u, directly: true)
+        view.isSelected = false
     }
 }

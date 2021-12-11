@@ -168,11 +168,7 @@ class Processes: NSObject {
         return (promise, cancel)
     }
     
-    enum PlayerOptions {
-        case douyu, bilibili, bililive, withoutYtdl, none
-    }
-    
-    func openWithPlayer(_ urls: [String], audioUrl: String = "", title: String, options: PlayerOptions, uuid: String, rawBiliURL: String = "") {
+    func openWithPlayer(_ json: YouGetJSON, _ key: String) {
         let task = Process()
         let pipe = Pipe()
         task.standardInput = pipe
@@ -180,60 +176,33 @@ class Processes: NSObject {
         let isDV = isDanmakuVersion()
         let buildVersion = iinaBuildVersion()
         
-        // Fix title
-        let t = title.replacingOccurrences(of: "\"", with: "''")
-        var mpvArgs = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(t)"]
-        
-        switch options {
-        case .douyu:
-            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
-            
-        case .bilibili where Preferences.shared.livePlayer == .iina
-                && !isDV
-                && (rawBiliURL.contains("?p=1") || !rawBiliURL.contains("?p=")):
-            openWithYtdl(rawBiliURL)
-            return
-        case .bilibili:
-            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
-            if audioUrl != "" {
-                mpvArgs.append("\(MPVOption.Audio.audioFile)=\(audioUrl)")
-            }
-        case .bililive:
-            mpvArgs.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no",
-                "\(MPVOption.Network.referrer)=https://www.bilibili.com/"])
-        case .withoutYtdl:
-            mpvArgs.append("\(MPVOption.ProgramBehavior.ytdl)=no")
-        case .none: break
-        }
 
-        var u = ""
-        if urls.count == 1 || !isDV {
-            u = urls.first ?? ""
-        } else if urls.count > 1 {
-            let edlString = urls.reduce(String()) { result, url in
-                var re = result
-                re += "%\(url.count)%\(url);"
-                return re
-            }
-            u = "edl://" + edlString
+        guard let u = json.videoUrl(key),
+              u != "",
+              let iinaUrl = json.iinaUrl(key, isDV) else {
+            Log("Not Found YouGetJSON Url.")
+            return
         }
         
         switch Preferences.shared.livePlayer {
         case .iina where isDV && buildVersion >= 15:
 //            IINA-Danmaku 1.1.2 NEW API
-            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
+            openWithURLScheme(iinaUrl)
         case .iina where isDV && buildVersion < 15:
-            openWithProcess(u, args: mpvArgs, uuid: uuid)
+            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
         case .iina where !isDV && buildVersion >= 90:
 //            1.0.0 beta3 build 86  URL Scheme without mpv options
 //            1.0.0 beta4 build 90
-            openWithIINAUrlScheme(u, args: mpvArgs, uuid: uuid)
+            if [.bilibili, .bangumi].contains(json.site) {
+                openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
+            } else {
+                openWithURLScheme(iinaUrl)
+            }
         case .iina where !isDV && buildVersion >= 56:
 //            iinc-cli build 56
-            openWithProcess(u, args: mpvArgs, uuid: uuid)
+            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
         case .mpv:
-            openWithProcess(u, args: mpvArgs, uuid: uuid)
+            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
         default:
             break
         }
@@ -286,66 +255,12 @@ class Processes: NSObject {
         task.launch()
     }
     
-    
-    func openWithIINAUrlScheme(_ url: String, args: [String], uuid: String) {
-        let isDV = isDanmakuVersion()
-        
-        var u = ""
-        
-//        1.0.0 beta3 build 86  iina://weblink
-        
-        u += isDV ? "iina://iina-plus.base64?" : "iina://open?"
-        
-        var args = args.map {
-            "mpv_" + $0
+    func openWithURLScheme(_ url: String) {
+        guard let u = URL(string: url) else {
+            Log("Invalid url scheme \(url).")
+            return
         }
-        
-        if isDV {
-            args.insert("url=\(url)", at: 0)
-            if Preferences.shared.enableDanmaku {
-                args.append("danmaku")
-                args.append("uuid=\(uuid)")
-            }
-            if iinaBuildVersion() > 16 {
-                args.append("dmPort=\(Preferences.shared.dmPort)")
-            }
-            args.append("directly")
-        } else {
-            args.insert("url=\(url)", at: 0)
-            
-            args = args.compactMap { kvs -> String? in
-                let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
-                guard kv.count == 2 else {
-                    return kvs
-                }
-                
-                guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return nil }
-                let k = kv[0]
-                return "\(k)=\(v)"
-            }
-            
-        }
-        
-        var argsStr = ""
-        
-        if isDV {
-            let str = args.joined(separator: "👻")
-            Log("Open IINA args:  \(str)")
-            guard let base64Str = str.data(using: .utf8)?.base64EncodedString() else {
-                return
-            }
-            argsStr = base64Str
-        } else {
-            argsStr = args.joined(separator: "&")
-        }
-        
-        u += argsStr
-        
-        guard let uu = URL(string: u) else { return }
-        
-        Log("Open IINA URL:  \(u)")
-        NSWorkspace.shared.open(uu)
-        
+        Log("openWithURLScheme \(url).")
+        NSWorkspace.shared.open(u)
     }
-    
 }

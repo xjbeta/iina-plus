@@ -136,12 +136,15 @@ struct BilibiliPvideo: Unmarshaling {
 }
 
 struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
+    
+    var bvid = ""
+    
     // epid
     let id: Int
     var index: Int
     let part: String
     let duration: TimeInterval
-    let title: String
+    var title: String
     let longTitle: String
     let coverUrl: URL?
     let badge: Badge?
@@ -182,6 +185,7 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
 }
 
 struct BangumiList: Unmarshaling {
+    let title: String
     let epList: [BangumiInfo.BangumiEp]
     let sections: [BangumiInfo.BangumiSections]
     
@@ -210,9 +214,74 @@ struct BangumiList: Unmarshaling {
     init(object: MarshaledObject) throws {
         epList = try object.value(for: "epList")
         sections = try object.value(for: "sections")
+        title = try object.value(for: "h1Title")
     }
 }
 
+struct BilibiliUrl {
+    var p = 1
+    var id = ""
+    var urlType = UrlType.unknown
+    
+    var fUrl: String {
+        get {
+            var u = "https://www.bilibili.com/"
+            
+            switch urlType {
+            case .video:
+                u += "video/\(id)"
+            case .bangumi:
+                u += "bangumi/play/\(id)"
+            default:
+                return ""
+            }
+            
+            if p > 1 {
+                u += "?p=\(p)"
+            }
+            return u
+        }
+    }
+    
+    enum UrlType: String {
+        case video, bangumi, unknown
+    }
+    
+    init?(url: String) {
+        guard url != "",
+              let u = URL(string: url),
+              u.host == "www.bilibili.com" || u.host == "bilibili.com",
+              let uc = URLComponents(string: url) else {
+                  return nil
+              }
+        
+        let pcs = u.pathComponents
+        
+        guard let id = pcs.first(where: {
+            $0.starts(with: "av")
+            || $0.starts(with: "BV")
+            || $0.starts(with: "ep")
+            || $0.starts(with: "ss")
+        }) else {
+            return nil
+        }
+        self.id = id
+        
+        if pcs.contains(UrlType.video.rawValue) {
+            urlType = .video
+        } else if pcs.contains(UrlType.bangumi.rawValue) {
+            urlType = .bangumi
+        } else {
+            urlType = .unknown
+        }
+        
+        let pStr = uc.queryItems?.first {
+            $0.name == "p"
+        }?.value ?? "1"
+        p = Int(pStr) ?? 1
+    }
+    
+}
 
 
 class Bilibili: NSObject {
@@ -356,9 +425,9 @@ class Bilibili: NSObject {
             
             var r: DataRequest
             if aid != -1 {
-                r = AF.request("https://api.bilibili.com/x/player/pagelist?aid=\(aid)")
+                r = AF.request("https://api.bilibili.com/x/web-interface/view?aid=\(aid)")
             } else if bvid != "" {
-                r = AF.request("https://api.bilibili.com/x/player/pagelist?bvid=\(bvid)")
+                r = AF.request("https://api.bilibili.com/x/web-interface/view?bvid=\(bvid)")
             } else {
                 resolver.reject(VideoGetError.cantFindIdForDM)
                 return
@@ -370,7 +439,16 @@ class Bilibili: NSObject {
                 }
                 do {
                     let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let infos: [BilibiliVideoSelector] = try json.value(for: "data")
+                    var infos: [BilibiliVideoSelector] = try json.value(for: "data.pages")
+                    let bvid: String = try json.value(for: "data.bvid")
+                    
+                    if infos.count == 1 {
+                        infos[0].title = try json.value(for: "data.title")
+                    }
+                    infos.enumerated().forEach {
+                        infos[$0.offset].bvid = bvid
+                    }
+                    
                     resolver.fulfill(infos)
                 } catch let error {
                     resolver.reject(error)

@@ -9,58 +9,29 @@
 import Cocoa
 
 enum SupportSites: String {
+    case b23 = "b23.tv"
     case biliLive = "live.bilibili.com"
     case bilibili = "www.bilibili.com/video"
     case bangumi = "www.bilibili.com/bangumi"
     case douyu = "www.douyu.com"
     case huya = "www.huya.com"
-    case quanmin = "www.quanmin.tv"
-    case longzhu = "star.longzhu.com"
     case eGame = "egame.qq.com"
-    //    case yizhibo = "www.yizhibo.com"
-    case langPlay = "play.lang.live"
     case cc163 = "cc.163.com"
     case unsupported
     
-    var siteName: String {
-        switch self {
-        case .biliLive:
-            return "Bilibili Live"
-        case .bilibili:
-            return "Bilibili"
-        case .bangumi:
-            return "Bilibili Bangumi"
-        case .douyu:
-            return "Douyu"
-        case .huya:
-            return "Huya"
-        case .quanmin:
-            return "QuanMin"
-        case .longzhu:
-            return "LongZhu"
-        case .eGame:
-            return "eGame"
-        case .langPlay:
-            return "LangPlay"
-        case .cc163:
-            return "CC163"
-        case .unsupported:
-            return "Unsupported"
-        }
-    }
-    
     init(url: String) {
-        guard let u = URL(string: url) else {
+        guard url != "",
+              let u = URL(string: url) else {
             self = .unsupported
             return
         }
         
         let host = u.host ?? ""
-        if host == "www.bilibili.com", u.pathComponents.count >= 2 {
-            switch u.pathComponents[1] {
-            case "video":
+        if let bUrl = BilibiliUrl(url: url) {
+            switch bUrl.urlType {
+            case .video:
                 self = .bilibili
-            case "bangumi":
+            case .bangumi:
                 self = .bangumi
             default:
                 self = .unsupported
@@ -69,6 +40,30 @@ enum SupportSites: String {
             self = list
         } else {
             self = .unsupported
+        }
+    }
+    
+    var siteName: String {
+        // Auto-generate with `bartycrouch update`
+        switch self {
+        case .biliLive:
+            return NSLocalizedString("SupportSites.Bilibili Live", comment: "Bilibili Live")
+        case .bilibili:
+            return NSLocalizedString("SupportSites.Bilibili", comment: "Bilibili")
+        case .bangumi:
+            return NSLocalizedString("SupportSites.Bilibili Bangumi", comment: "Bilibili Bangumi")
+        case .douyu:
+            return NSLocalizedString("SupportSites.Douyu", comment: "Douyu")
+        case .huya:
+            return NSLocalizedString("SupportSites.Huya", comment: "Huya")
+        case .eGame:
+            return NSLocalizedString("SupportSites.eGame", comment: "eGame")
+        case .cc163:
+            return NSLocalizedString("SupportSites.CC163", comment: "CC163")
+        case .unsupported:
+            return NSLocalizedString("SupportSites.Unsupported", comment: "Unsupported")
+        case .b23:
+            return ""
         }
     }
 }

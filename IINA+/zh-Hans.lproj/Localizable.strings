@@ -1,10 +1,62 @@
-/* 
-  Localizable.strings
-  iina+
+/* Cancel button title */
+"Cancel" = "退出";
 
-  Created by xjbeta on 2019/6/26.
-  Copyright © 2019 xjbeta. All rights reserved.
-*/
+/* Quit without saves error question message */
+"Could not save changes while quitting. Quit anyway?" = "退出时无法保存更改。 确认退出？";
 
-"mainMenu.view.reloadLiveStatus" = "重新加载直播状态";
+/* All */
+"LiveSite.All" = "全部";
+
+/* No comment provided by engineer. */
 "mainMenu.view.reloadBilibiliList" = "重新加载 Bilibili 列表";
+
+/* No comment provided by engineer. */
+"mainMenu.view.reloadLiveStatus" = "重新加载直播状态";
+
+/* Quit anyway button title */
+"Quit anyway" = "确认退出";
+
+/* Quit without saves error question info */
+"Quitting now will lose any changes you have made since the last successful save" = "现在退出将丢失自上次成功保存以来所做的任何更改";
+
+/* Bilibili */
+"SupportSites.Bilibili" = "Bilibili";
+
+/* Bilibili Bangumi */
+"SupportSites.Bilibili Bangumi" = "Bilibili 番剧";
+
+/* Bilibili Live */
+"SupportSites.Bilibili Live" = "Bilibili 直播";
+
+/* CC163 */
+"SupportSites.CC163" = "网易CC";
+
+/* Douyu */
+"SupportSites.Douyu" = "斗鱼";
+
+/* eGame */
+"SupportSites.eGame" = "企鹅电竞";
+
+/* Huya */
+"SupportSites.Huya" = "虎牙";
+
+/* Unsupported */
+"SupportSites.Unsupported" = "不支持";
+
+/* something went wrong. */
+"VideoGetError.default" = "出了些问题.";
+
+/* invalid url. */
+"VideoGetError.invalidLink" = "无效链接.";
+
+/* the host is not online. */
+"VideoGetError.isNotLiving" = "主播不在家.";
+
+/* need vip. */
+"VideoGetError.needVip" = "需要大会员.";
+
+/* the website is not supported. */
+"VideoGetError.notSupported" = "网站不支持或链接格式错误.";
+
+/* ಠ_ಠ  oops,  */
+"VideoGetError.oops" = "ಠ_ಠ  oops, ";

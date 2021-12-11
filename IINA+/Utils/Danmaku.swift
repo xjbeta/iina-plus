@@ -53,9 +53,7 @@ class Danmaku: NSObject {
     var egameInfo: EgameInfo?
     private var egameTimer: DispatchSourceTimer?
     
-    let langPlayServer = URL(string: "wss://cht-web.lv-show.com/chat_nsp/?EIO=3&transport=websocket")
-    var langPlayUserInfo: (liveID: String, pfid: String, accessToken: String) = ("", "", "")
-    
+
     let cc163Server = URL(string: "wss://weblink.cc.163.com")
     
     
@@ -159,34 +157,6 @@ class Danmaku: NSObject {
                 }.catch {
                     Log("Get Egame Info for DM error: \($0)")
             }
-        case .langPlay:
-            guard let id = Int(roomID) else { return }
-            videoGet.getLangPlayInfo(id).done {
-                
-//                https://sgkoi.dev/2019/01/24/kingkong-live-danmaku-2/
-                
-                let pfid = UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
-                let s1 = #"{"alg":"HS256","typ":"JWT"}"#.kkBase64()
-                
-                let s2 = """
-{"live_id":"\($0.liveID)","pfid":"\(pfid)","name":"訪客\(pfid.dropFirst(pfid.count-5))","access_token":null,"lv":1,"from":1,"from_seq":1,"client_type":"web"}
-""".kkBase64()
-                
-                let ss = s1 + "." + s2
-                var encStr = try HMAC(key: $0.liveKey, variant: .sha256).authenticate(ss.bytes).toBase64()
-                
-                encStr = encStr.kkFormatterBase64()
-                
-                let s3 = encStr
-                let token = ss + "." + s3
-                self.langPlayUserInfo = ($0.liveID, $0.roomID, token)
-                
-                self.socket = .init(request: .init(url: self.langPlayServer!))
-                self.socket?.delegate = self
-                self.socket?.connect()
-            }.catch {
-                Log("Get LangPlay Info for DM error: \($0)")
-            }
         default:
             break
         }
@@ -232,8 +202,6 @@ class Danmaku: NSObject {
                     self.socket?.write(data: self.douyuSocketFormatter(keeplive))
                 case .huya:
                     self.socket?.write(ping: Data())
-                case .langPlay:
-                    self.socket?.write(string: "2")
                 default:
                     break
                 }
@@ -446,9 +414,6 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             webSocket.write(data: douyuSocketFormatter(loginreq))
             webSocket.write(data: douyuSocketFormatter(joingroup))
             startTimer()
-
-        case .langPlay:
-            startTimer()
         default:
             break
         }
@@ -467,35 +432,6 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
     }
     
     func webSocket(_ webSocket: WebSocket, didReceiveMessageWith string: String) {
-        switch liveSite {
-        case .langPlay:
-            if !string.starts(with: #"42/chat_nsp,["join""#) {
-                print(string)
-            }
-            
-            
-//            0{"sid":"dyeL2p6yeiDpBiTaA0r2","upgrades":[],"pingInterval":50000,"pingTimeout":60000}
-            if string.starts(with: #"42/chat_nsp,["msg""#) {
-                let str = string.subString(from: #""msg":""#, to: #"",""#)
-                sendDM(str)
-            } else if string.starts(with: #"0{"sid""#) {
-                webSocket.write(string: "40/chat_nsp,")
-            } else if string == "40/chat_nsp" {
-                let info = langPlayUserInfo
-                let str = """
-42/chat_nsp,["authentication",{"live_id":"\(info.liveID)","anchor_pfid":"\(info.pfid)","access_token":"\(info.accessToken)","token":"\(info.accessToken)","from":"LANG_WEB","client_type":"LANG_WEB","r":0}]
-"""
-                webSocket.write(string: str)
-            } else if string == #"42/chat_nsp,["authenticated",true]"# {
-                Log("LangPlay authenticated.")
-            } else if string.starts(with: #"42/chat_nsp,["join""#) {
-                return
-            } else {
-//                print(string)
-            }
-        default:
-            break
-        }
     }
 
     func webSocket(_ webSocket: WebSocket, didReceiveMessageWith data: Data) {

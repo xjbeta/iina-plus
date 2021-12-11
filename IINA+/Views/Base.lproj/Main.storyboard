@@ -73,7 +73,6 @@
                                         <menuItem title="Open…" keyEquivalent="o" id="dGS-Io-0JC">
                                             <connections>
                                                 <action selector="openDocument:" target="Ady-hI-5gd" id="FIU-33-nwN"/>
-                                                <segue destination="o1P-az-5tB" kind="show" id="D1D-Bd-khg"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open Recent" id="Afb-Oy-yWe">
@@ -250,14 +249,6 @@
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1722" y="-287"/>
-        </scene>
-        <!--OpenFilesWindow-->
-        <scene sceneID="lig-b8-RvN">
-            <objects>
-                <controllerPlaceholder storyboardName="OpenFilesWindow" id="o1P-az-5tB" sceneMemberID="viewController"/>
-                <customObject id="wDy-dC-3Z6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2140" y="-100"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="DW8-hW-84a">
@@ -1697,7 +1688,7 @@ Gw
                                                                                             <constraint firstAttribute="trailing" secondItem="gVj-gu-ivu" secondAttribute="trailing" id="Z4c-FG-bnj"/>
                                                                                             <constraint firstAttribute="bottom" secondItem="gVj-gu-ivu" secondAttribute="bottom" id="cIl-Ht-ZOJ"/>
                                                                                             <constraint firstAttribute="bottom" secondItem="fiY-gH-vb8" secondAttribute="bottom" constant="5" id="jnm-7m-hfP"/>
-                                                                                            <constraint firstAttribute="width" secondItem="A3d-KV-bZ7" secondAttribute="height" multiplier="9:5" id="mOa-rI-h17"/>
+                                                                                            <constraint firstAttribute="width" secondItem="A3d-KV-bZ7" secondAttribute="height" multiplier="16:10" id="mOa-rI-h17"/>
                                                                                             <constraint firstItem="fz7-9I-cWr" firstAttribute="leading" secondItem="A3d-KV-bZ7" secondAttribute="leading" id="uFr-XI-NQE"/>
                                                                                         </constraints>
                                                                                     </customView>

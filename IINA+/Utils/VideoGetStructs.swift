@@ -127,6 +127,15 @@ struct DouyuVideoSelector: VideoSelector {
     let coverUrl: URL?
 }
 
+struct DouyuEventRoom: Unmarshaling {
+    let onlineRoomId: String
+    let text: String
+    init(object: MarshaledObject) throws {
+        onlineRoomId = try object.value(for: "props.onlineRoomId")
+        text = try object.value(for: "props.text")
+    }
+}
+
 struct DouyuH5Play: Unmarshaling {
     let roomId: Int
     let rtmpUrl: String
@@ -461,52 +470,12 @@ fileprivate func huyaUrlFormatter2(_ u: String) -> String? {
     return uc.url?.absoluteString
 }
 
-
-
-struct QuanMinInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var avatar: String
-    var isLiving = false
-    var cover: String = ""
-    
-    var site: SupportSites = .quanmin
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "title")
-        name = try object.value(for: "nick")
-        avatar = try object.value(for: "avatar")
-        isLiving = "\(try object.any(for: "status"))" == "2"
-    }
-}
-
-struct LongZhuInfo: Unmarshaling, LiveInfo {
-    var title: String = ""
-    var name: String = ""
-    var avatar: String
-    var isLiving = false
-    var cover: String = ""
-    var site: SupportSites = .longzhu
-    
-    init(object: MarshaledObject) throws {
-        if let title: String = try object.value(for: "live.title") {
-            self.title = title
-            isLiving = true
-        } else {
-            self.title = try object.value(for: "defaultTitle")
-            isLiving = false
-        }
-        name = try object.value(for: "username")
-        avatar = try object.value(for: "avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
-    }
-}
-
-
 struct EgameUrl: Unmarshaling {
     var playUrl: String
     var desc: String
     var levelType: Int
+    
+    var src = [String]()
     
     init(object: MarshaledObject) throws {
         playUrl = try object.value(for: "playUrl")
@@ -552,6 +521,7 @@ struct BilibiliPlayInfo: Unmarshaling {
     let duration: Int
     
     struct VideoInfo: Unmarshaling {
+        var index = -1
         let url: String
         let id: Int
         let bandwidth: Int
@@ -578,7 +548,8 @@ struct BilibiliPlayInfo: Unmarshaling {
         let length: Int
         init(object: MarshaledObject) throws {
             url = try object.value(for: "url")
-            backupUrls = try object.value(for: "backup_url")
+            let urls: [String]? = try object.value(for: "backup_url")
+            backupUrls = urls ?? []
             length = try object.value(for: "length")
         }
     }
@@ -597,12 +568,12 @@ struct BilibiliPlayInfo: Unmarshaling {
         
         var newVideos = [VideoInfo]()
         
-        videos.forEach {
-            var video = $0
-            let des = descriptionDic[$0.id] ?? "unkonwn"
-            
-            // ignore low bandwidth video
-            if !newVideos.map({ $0.id }).contains($0.id) {
+        videos.enumerated().forEach {
+            var video = $0.element
+            let des = descriptionDic[video.id] ?? "unkonwn"
+            video.index = $0.offset
+//             ignore low bandwidth video
+            if !newVideos.map({ $0.id }).contains(video.id) {
                 video.description = des
                 newVideos.append(video)
             }
@@ -617,7 +588,8 @@ struct BilibiliPlayInfo: Unmarshaling {
         
         videos.enumerated().forEach {
             var stream = Stream(url: $0.element.url)
-            stream.quality = $0.element.bandwidth
+//            stream.quality = $0.element.bandwidth
+            stream.quality = 999 - $0.element.index
             yougetJson.streams[$0.element.description] = stream
         }
         
@@ -631,18 +603,12 @@ struct BilibiliPlayInfo: Unmarshaling {
 }
 
 struct BilibiliSimplePlayInfo: Unmarshaling {
-    let url: String?
-    var description: String = ""
-    var duration: Int?
+    let duration: Int
+    let descriptions: [Int: String]
+    let quality: Int
+    let durl: [BilibiliPlayInfo.Durl]
     
     init(object: MarshaledObject) throws {
-        let durl: [BilibiliPlayInfo.Durl] = try object.value(for: "durl")
-        url = durl.first?.url
-        
-        if let l = durl.first?.length {
-            duration = l / 1000
-        }
-        
         let acceptQuality: [Int] = try object.value(for: "accept_quality")
         let acceptDescription: [String] = try object.value(for: "accept_description")
         
@@ -650,10 +616,36 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
         acceptQuality.enumerated().forEach {
             descriptionDic[$0.element] = acceptDescription[$0.offset]
         }
+        descriptions = descriptionDic
         
-        let quality: Int = try object.value(for: "quality")
+        quality = try object.value(for: "quality")
+        durl = try object.value(for: "durl")
+        let timelength: Int = try object.value(for: "timelength")
+        duration = Int(timelength / 1000)
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var yougetJson = yougetJson
+        yougetJson.duration = duration
+        var dic = descriptions
+        if yougetJson.streams.count == 0 {
+            dic = dic.filter {
+                $0.key <= quality
+            }
+        }
         
-        description = descriptionDic[quality] ?? "unkonwn"
+        dic.forEach {
+            var stream = yougetJson.streams[$0.value] ?? Stream(url: "")
+            if $0.key == quality,
+                let durl = durl.first {
+                stream.url = durl.url
+                stream.src = durl.backupUrls
+            }
+            stream.quality = $0.key
+            yougetJson.streams[$0.value] = stream
+        }
+        
+        return yougetJson
     }
 }
 
@@ -786,57 +778,6 @@ struct BangumiInfo: Unmarshaling {
             let u: String = try object.value(for: "cover")
             cover = "https:" + u
         }
-    }
-}
-
-
-// MARK: - LangPlay
-
-struct LangPlayInfo: Unmarshaling, LiveInfo {
-    var title: String
-    var name: String
-    var avatar: String
-    var isLiving: Bool
-    var cover: String = ""
-    
-    var roomID: String
-    var liveID: String
-    var liveKey: String
-    
-    var site: SupportSites = .langPlay
-    
-    struct LangPlayVideoSelector: Unmarshaling, VideoSelector {
-        let id: Int
-        let coverUrl: URL?
-        let site = SupportSites.langPlay
-        let index: Int
-        let title: String
-        let url: String
-        init(object: MarshaledObject) throws {
-            title = try object.value(for: "title")
-            index = try object.value(for: "id")
-            url = try object.value(for: "video")
-            id = -1
-            coverUrl = nil
-        }
-    }
-    
-    var streamItems: [LangPlayVideoSelector]
-    
-    init(object: MarshaledObject) throws {
-        title = try object.value(for: "data.live_info.room_title")
-        name = try object.value(for: "data.live_info.nickname")
-        avatar = try object.value(for: "data.live_info.avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
-        let liveStatus: Int = try object.value(for: "data.live_info.live_status")
-        isLiving = liveStatus == 1
-        streamItems = try object.value(for: "data.live_info.stream_items")
-        
-        liveID = try object.value(for: "data.live_info.live_id")
-        roomID = try object.value(for: "data.live_info.room_id")
-        liveKey = try object.value(for: "data.live_info.live_key")
-        
-        cover = "https://play-web-assets.lang.live/public/live/screenshot/" + liveID   
     }
 }
 
