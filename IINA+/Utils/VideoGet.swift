@@ -179,8 +179,9 @@ class VideoGet: NSObject {
         guard Processes.shared.isDanmakuVersion(),
               pref.enableDanmaku,
               pref.livePlayer == .iina,
-              [.bilibili, .bangumi].contains(yougetJSON.site),
+              [.bilibili, .bangumi, .local].contains(yougetJSON.site),
               yougetJSON.id != -1 else {
+                  Log("Ignore Danmaku download.")
                   return .value(())
         }
         
@@ -741,26 +742,11 @@ extension VideoGet {
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
-        let bilibili = Bilibili()
-        guard let bUrl = BilibiliUrl(url: url.absoluteString) else {
-            return .init(error: VideoGetError.invalidLink)
-        }
         
         let isDM = Processes.shared.isDanmakuVersion()
         
-        var ygj = YouGetJSON(url:"")
-        ygj.streams.removeAll()
-        ygj.site = .bilibili
-        
-        let r1 = bilibili.getVideoList(url).compactMap {
-            $0.first(where: { $0.index == bUrl.p })
-        }.get { s in
-            ygj.id = s.id
-            ygj.bvid = s.bvid
-            ygj.title = s.title
-            ygj.duration = Int(s.duration)
-        }.then { _ in
-            self.bilibiliPlayUrl(yougetJson: ygj, isDM)
+        let r1 = bilibiliPrepareID(url).then {
+            self.bilibiliPlayUrl(yougetJson: $0, isDM)
         }
         
         let r2 = getBilibiliHTMLDatas(url).then {
@@ -947,37 +933,71 @@ extension VideoGet {
     
     func getBangumi(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
+        
+        let isDM = Processes.shared.isDanmakuVersion()
+        return bilibiliPrepareID(url).then {
+            self.bilibiliPlayUrl(yougetJson: $0, isDM, true)
+        }
+        
+    }
+    
+    func bilibiliPrepareID(_ url: URL) -> Promise<(YouGetJSON)> {
         let bilibili = Bilibili()
         guard let bUrl = BilibiliUrl(url: url.absoluteString) else {
             return .init(error: VideoGetError.invalidLink)
         }
+        var json = YouGetJSON(url:"")
+        json.streams.removeAll()
         
-        let isDM = Processes.shared.isDanmakuVersion()
-        
-        var ygj = YouGetJSON(url:"")
-        ygj.streams.removeAll()
-        ygj.site = .bangumi
-        
-        return bilibili.getBangumiList(url).get {
-            if $0.epList.count == 1 {
-                ygj.title = $0.title
+        switch bUrl.urlType {
+        case .video:
+            json.site = .bilibili
+            return bilibili.getVideoList(url).compactMap { list -> YouGetJSON? in
+                guard let s = list.first(where: { $0.index == bUrl.p }) else {
+                    return nil
+                }
+                json.id = s.id
+                json.bvid = s.bvid
+                json.title = s.title
+                json.duration = Int(s.duration)
+                return json
             }
-        }.compactMap {
-            $0.epList.first(where: { $0.id == Int(bUrl.id.dropFirst(2)) })
-        }.get { s in
-            ygj.bvid = s.bvid
-            ygj.id = s.cid
-            let title = [ygj.title,
-                         s.title,
-                         s.longTitle].filter {
-                $0 != ""
-            }.joined(separator: " - ")
-            ygj.title = title
-        }.then { _ in
-            self.bilibiliPlayUrl(yougetJson: ygj, isDM, true)
+        case .bangumi:
+            json.site = .bangumi
+            return bilibili.getBangumiList(url).compactMap { list -> YouGetJSON? in
+                
+                var ep: BangumiInfo.BangumiEp? {
+                    if bUrl.id.prefix(2) == "ss" {
+                        return list.epList.first
+                    } else {
+                        return list.epList.first(where: { $0.id == Int(bUrl.id.dropFirst(2)) })
+                    }
+                }
+                
+                guard let s = ep else {
+                    return nil
+                }
+                json.bvid = s.bvid
+                json.id = s.cid
+                if list.epList.count == 1 {
+                    json.title = list.title
+                } else {
+                    let title = [json.title,
+                                 s.title,
+                                 s.longTitle].filter {
+                        $0 != ""
+                    }.joined(separator: " - ")
+                    json.title = title
+                }
+                
+                json.duration = s.duration
+                return json
+            }
+        default:
+            return .init(error: VideoGetError.invalidLink)
         }
-        
     }
+    
     
     // MARK: - Bilibili Danmaku
     func downloadDMFile(_ cid: Int, id: String) -> Promise<()> {
@@ -999,6 +1019,12 @@ extension VideoGet {
         
         let c = Int(ceil(Double(length) / 360))
         let s = c > 1 ? Array(1...c) : [1]
+        
+        print("downloadDMFileV2", c)
+        
+        guard c < 1500 else {
+            return .value(())
+        }
         
         return when(fulfilled: s.map {
             getDanmakuContent(cid: cid, index: $0)
