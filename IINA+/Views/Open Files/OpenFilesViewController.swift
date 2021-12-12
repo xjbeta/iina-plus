@@ -44,9 +44,16 @@ class OpenFilesViewController: NSViewController {
         getVideo().then {
             self.getDanmaku($0)
         }.done {
+            guard let key = $0.videos.max (by: {
+                $0.value.quality < $1.value.quality
+            })?.key else {
+                return
+            }
+            
             let id = $0.uuid
             NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
-            Processes.shared.openWithPlayer($0, id)
+
+            Processes.shared.openWithPlayer($0, key)
             self.view.window?.close()
         }.catch {
             Log($0)
@@ -126,6 +133,10 @@ class OpenFilesViewController: NSViewController {
         }
         
         let s = danmakuTextField.stringValue
+        
+        if s == "" {
+            return .value(json)
+        }
         
         guard let bUrl = formatBiliUrl(s),
               let url = URL(string: bUrl.fUrl) else {
