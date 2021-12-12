@@ -41,25 +41,12 @@ class OpenFilesViewController: NSViewController {
     }
     
     @IBAction func open(_ sender: NSButton) {
-        var yougetJSON: YouGetJSON?
-        let id = UUID().uuidString
-        getVideo().get {
-            yougetJSON = $0
-        }.then { _ in
-            self.getDanmaku(id)
+        getVideo().then {
+            self.getDanmaku($0)
         }.done {
-            guard let stream = yougetJSON?.videos.first?.value,
-                let urlStr = stream.url else {
-                return
-            }
+            let id = $0.uuid
             NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
-            
-            if self.isBilibiliVideo() {
-                Processes.shared.openWithPlayer([urlStr], audioUrl: yougetJSON?.audio ?? "", title: yougetJSON?.title ?? "", options: .bilibili, uuid: id)
-            } else {
-                Processes.shared.openWithPlayer([urlStr], title: yougetJSON?.title ?? "", options: .withoutYtdl, uuid: id)
-            }
-            
+            Processes.shared.openWithPlayer($0, id)
             self.view.window?.close()
         }.catch {
             Log($0)
@@ -68,6 +55,13 @@ class OpenFilesViewController: NSViewController {
     
     var videoURL: URL?
     var danmakuURL: URL?
+    
+    enum BilibiliIdType: String {
+        case ep
+        case ss
+        case bv = "BV"
+        case av
+    }
     
     lazy var panel: NSOpenPanel = {
         let p = NSOpenPanel()
@@ -82,117 +76,71 @@ class OpenFilesViewController: NSViewController {
         
     }
     
-    func isBilibiliVideo() -> Bool {
-        if videoURL == nil {
-            let videoStr = videoTextField.stringValue
-            return videoStr.starts(with: "av") || videoStr.starts(with: "https://www.bilibili.com/video/av") ||
-                videoStr.starts(with: "BV") || videoStr.starts(with: "https://www.bilibili.com/video/BV")
-        } else {
-            return false
+    func formatBiliUrl(_ string: String) -> BilibiliUrl? {
+        var string = string
+        
+        guard string.count > 2 else {
+            return nil
         }
+        
+        if let type = BilibiliIdType(rawValue: String(string.prefix(2))) {
+            switch type {
+            case .av, .bv:
+                string = "https://www.bilibili.com/video/" + string
+            case .ep, .ss:
+                string = "https://www.bilibili.com/bangumi/play/" + string
+            }
+        }
+        
+        return BilibiliUrl(url: string)
     }
     
     func getVideo() -> Promise<(YouGetJSON)> {
-        return Promise { resolver in
-            guard videoURL == nil else {
-                if let path = videoURL?.path {
-                    resolver.fulfill(YouGetJSON(url: path))
-                } else {
-                    resolver.reject(OpenFilesError.invalidVideoUrl)
-                }
-                return
-            }
-            
-            let videoStr = videoTextField.stringValue
-            
-            var url = ""
-            
-            if videoStr.starts(with: "av") ||
-                videoStr.starts(with: "BV") {
-                url = "https://www.bilibili.com/video/" + videoStr
-
-            } else if videoStr.starts(with: "https://www.bilibili.com/video/av") ||
-                        videoStr.starts(with: "https://www.bilibili.com/video/BV") {
-                url = videoStr
-            } else {
-                resolver.fulfill(YouGetJSON(url: videoStr))
-                return
-            }
-            
-            Processes.shared.videoGet.decodeUrl(url).done {
-                resolver.fulfill($0)
-                }.catch {
-                    resolver.reject($0)
-            }
-        }
-    }
-    
-    func getDanmaku(_ id: String, yougetJSON: YouGetJSON? = nil) -> Promise<()> {
-        let videoGet = Processes.shared.videoGet
-        return Promise { resolver in
-            guard danmakuURL == nil else {
-                let url = danmakuURL!
-                let data = FileManager.default.contents(atPath: url.path)
-                videoGet.saveDMFile(data, with: id)
-                resolver.fulfill(())
-                return
-            }
-            
-            
-            var url = ""
-            
-            let s = danmakuTextField.stringValue
-            
-
-            if s.starts(with: "https://www.bilibili.com") {
-                url = s
-            } else {
-                guard s.count > 2 else {
-                    resolver.reject(OpenFilesError.invalidDanmakuString)
-                    return
-                }
-                
-                let i2 = s.index(s.startIndex, offsetBy: 2)
-                let head = s[i2...]
-                let v = s[s.startIndex..<i2]
-
-                if let type = BilibiliIdType(rawValue: String(head)),
-                   type != .ss,
-                   let _ = Int(v) {
-                    url = type.url() + s
-                } else {
-                    resolver.reject(OpenFilesError.unsupported)
-                }
-            }
-            
-            guard let u = URL(string: url) else {
-                resolver.reject(OpenFilesError.unsupported)
-                return
-            }
-            
-            videoGet.decodeUrl(url).then {
-                videoGet.prepareDanmakuFile(yougetJSON: $0, id: id)
-            }.done {
-                resolver.fulfill(())
-            }.catch {
-                resolver.reject($0)
-            }
-        }
-    }
-    
-    enum BilibiliIdType: String {
-        case ep
-        case ss
-        case bv = "BV"
-        case av
+        let string = videoTextField.stringValue
         
-        func url() -> String {
-            switch self {
-            case .av, .bv:
-                return "https://www.bilibili.com/video/"
-            case .ss, .ep:
-                return "https://www.bilibili.com/bangumi/play/"
+        guard videoURL == nil else {
+            if let path = videoURL?.absoluteString, path != "" {
+                var json = YouGetJSON(url: path)
+                json.site = .local
+                return .value(json)
+            } else {
+                return .init(error: OpenFilesError.invalidVideoUrl)
             }
+        }
+        
+        guard let bUrl = formatBiliUrl(string) else {
+            return .init(error: OpenFilesError.invalidVideoUrl)
+        }
+        
+        return Processes.shared.videoGet.decodeUrl(bUrl.fUrl)
+    }
+    
+    func getDanmaku(_ yougetJSON: YouGetJSON) -> Promise<(YouGetJSON)> {
+        let videoGet = Processes.shared.videoGet
+        var json = yougetJSON
+        guard danmakuURL == nil else {
+            let url = danmakuURL!
+            let data = FileManager.default.contents(atPath: url.path)
+            videoGet.saveDMFile(data, with: json.uuid)
+            return .value(json)
+        }
+        
+        let s = danmakuTextField.stringValue
+        
+        guard let bUrl = formatBiliUrl(s),
+              let url = URL(string: bUrl.fUrl) else {
+            return .init(error: OpenFilesError.invalidDanmakuUrl)
+        }
+        
+        return videoGet.bilibiliPrepareID(url).map {
+            json.id = $0.id
+            json.bvid = $0.bvid
+            json.duration = $0.duration
+            return json
+        }.then {
+            videoGet.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
+        }.map {
+            json
         }
     }
     
