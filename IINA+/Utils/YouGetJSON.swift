@@ -119,6 +119,8 @@ struct YouGetJSON: Unmarshaling, Codable {
         switch site {
         case .bilibili, .bangumi:
             return streams[key]?.url
+        case .local:
+            return streams.first?.value.url
         default:
             if let content = m3uContent(key: key) {
                 return saveToTemp(content, name: "\(uuid).m3u")
