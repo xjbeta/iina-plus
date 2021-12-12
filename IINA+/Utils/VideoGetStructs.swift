@@ -763,6 +763,7 @@ struct BangumiInfo: Unmarshaling {
         let title: String
         let longTitle: String
         let cover: String
+        let duration: Int
         
         init(object: MarshaledObject) throws {
             id = try object.value(for: "id")
@@ -777,6 +778,7 @@ struct BangumiInfo: Unmarshaling {
             longTitle = try object.value(for: "longTitle")
             let u: String = try object.value(for: "cover")
             cover = "https:" + u
+            duration = try object.value(for: "duration") / 1000
         }
     }
 }
