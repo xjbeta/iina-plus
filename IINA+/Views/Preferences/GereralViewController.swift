@@ -32,7 +32,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         initMenu(for: decoderPopUpButton)
         
         portTextField.isEnabled = Preferences.shared.enableDanmaku
-            && Processes.shared.isDanmakuVersion()
+            && Processes.shared.iinaArchiveType() != .normal
             && Processes.shared.iinaBuildVersion() > 16
     }
     

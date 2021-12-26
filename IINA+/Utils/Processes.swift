@@ -52,15 +52,20 @@ class Processes: NSObject {
     }
 
     func iinaBuildVersion() -> Int {
-        let b = Bundle.init(path: "/Applications/IINA.app")
+        let b = Bundle(path: "/Applications/IINA.app")
         let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
         return Int(build) ?? 0
     }
     
-    func isDanmakuVersion() -> Bool {
-        let b = Bundle.init(path: "/Applications/IINA.app")
+    func iinaArchiveType() -> IINAUrlType {
+        let b = Bundle(path: "/Applications/IINA.app")
         let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-        return version.contains("Danmaku")
+        if version.contains("Danmaku") {
+            return .danmaku
+        } else if version.contains("plugin") {
+            return .plugin
+        }
+        return .normal
     }
     
     
@@ -173,24 +178,26 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardInput = pipe
         
-        let isDV = isDanmakuVersion()
+        let type = iinaArchiveType()
         let buildVersion = iinaBuildVersion()
         
 
         guard let u = json.videoUrl(key),
               u != "",
-              let iinaUrl = json.iinaUrl(key, isDV) else {
+              let iinaUrl = json.iinaUrl(key, type: type) else {
             Log("Not Found YouGetJSON Url.")
             return
         }
         
         switch Preferences.shared.livePlayer {
-        case .iina where isDV && buildVersion >= 15:
+        case .iina where type == .plugin:
+            openWithURLScheme(iinaUrl)
+        case .iina where type == .danmaku && buildVersion >= 15:
 //            IINA-Danmaku 1.1.2 NEW API
             openWithURLScheme(iinaUrl)
-        case .iina where isDV && buildVersion < 15:
+        case .iina where type == .danmaku && buildVersion < 15:
             openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
-        case .iina where !isDV && buildVersion >= 90:
+        case .iina where type == .normal && buildVersion >= 90:
 //            1.0.0 beta3 build 86  URL Scheme without mpv options
 //            1.0.0 beta4 build 90
             if [.bilibili, .bangumi].contains(json.site) {
@@ -198,7 +205,7 @@ class Processes: NSObject {
             } else {
                 openWithURLScheme(iinaUrl)
             }
-        case .iina where !isDV && buildVersion >= 56:
+        case .iina where type == .normal && buildVersion >= 56:
 //            iinc-cli build 56
             openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
         case .mpv:
@@ -232,11 +239,11 @@ class Processes: NSObject {
         task.standardInput = pipe
         task.launchPath = isIINA ? livePlayer.rawValue : self.which(livePlayer.rawValue).first ?? ""
         if isIINA {
-            let isDV = isDanmakuVersion()
+            let type = iinaArchiveType()
             args = args.map {
                 "--mpv-" + $0
             }
-            if isDV {
+            if type == .danmaku {
                 if Preferences.shared.enableDanmaku {
                     args.append("--danmaku")
                     args.append("--uuid=\(uuid)")

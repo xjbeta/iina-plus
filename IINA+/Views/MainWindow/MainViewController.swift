@@ -177,7 +177,6 @@ class MainViewController: NSViewController {
         
         let videoGet = processes.videoGet
         
-        let isDM = processes.isDanmakuVersion()
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
         
@@ -191,7 +190,7 @@ class MainViewController: NSViewController {
             // init Danmaku
             if preferences.enableDanmaku,
                preferences.livePlayer == .iina,
-               isDM {
+               processes.iinaArchiveType() != .normal {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya:
                     self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
