@@ -1065,10 +1065,16 @@ extension VideoGet {
     }
     
     func saveDMFile(_ data: Data?, with id: String) {
-        
+        guard let path = dmPath(id) else { return }
+
+        FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
+        Log("Saved DM in \(path)")
+    }
+    
+    func dmPath(_ id: String) -> String? {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier,
             var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
-            return
+            return nil
         }
         let folderName = "danmaku"
         
@@ -1077,10 +1083,7 @@ extension VideoGet {
         let fileName = "danmaku" + "-" + id + ".xml"
         
         filesURL.appendPathComponent(fileName)
-        let path = filesURL.path
-        
-        FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
-        Log("Saved DM in \(path)")
+        return filesURL.path
     }
     
     func getDanmakuContent(cid: Int, index: Int) -> Promise<([DanmakuElem])> {
