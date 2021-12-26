@@ -176,7 +176,7 @@ class VideoGet: NSObject {
     func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         let pref = Preferences.shared
         
-        guard Processes.shared.isDanmakuVersion(),
+        guard Processes.shared.iinaArchiveType() != .normal,
               pref.enableDanmaku,
               pref.livePlayer == .iina,
               [.bilibili, .bangumi, .local].contains(yougetJSON.site),
@@ -743,7 +743,7 @@ extension VideoGet {
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
         
-        let isDM = Processes.shared.isDanmakuVersion()
+        let isDM = Processes.shared.iinaArchiveType() != .normal
         
         let r1 = bilibiliPrepareID(url).then {
             self.bilibiliPlayUrl(yougetJson: $0, isDM)
@@ -934,7 +934,7 @@ extension VideoGet {
     func getBangumi(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
         
-        let isDM = Processes.shared.isDanmakuVersion()
+        let isDM = Processes.shared.iinaArchiveType() != .normal
         return bilibiliPrepareID(url).then {
             self.bilibiliPlayUrl(yougetJson: $0, isDM, true)
         }
@@ -1065,10 +1065,16 @@ extension VideoGet {
     }
     
     func saveDMFile(_ data: Data?, with id: String) {
-        
+        guard let path = dmPath(id) else { return }
+
+        FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
+        Log("Saved DM in \(path)")
+    }
+    
+    func dmPath(_ id: String) -> String? {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier,
             var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
-            return
+            return nil
         }
         let folderName = "danmaku"
         
@@ -1077,10 +1083,7 @@ extension VideoGet {
         let fileName = "danmaku" + "-" + id + ".xml"
         
         filesURL.appendPathComponent(fileName)
-        let path = filesURL.path
-        
-        FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
-        Log("Saved DM in \(path)")
+        return filesURL.path
     }
     
     func getDanmakuContent(cid: Int, index: Int) -> Promise<([DanmakuElem])> {

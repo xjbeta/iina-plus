@@ -125,6 +125,10 @@ extension String {
         }
         self = u
     }
+    
+    func toHexString() -> String {
+        self.data(using: .utf8)?.toHexString() ?? ""
+    }
 }
 
 

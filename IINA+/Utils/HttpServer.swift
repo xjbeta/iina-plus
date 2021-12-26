@@ -99,10 +99,17 @@ class HttpServer: NSObject, DanmakuDelegate {
             }
             
             server.POST["/video/iinaurl"] = { request -> HttpResponse in
+                
+                var type = IINAUrlType.normal
+                if let tStr = request.parameters["type"],
+                   let t = IINAUrlType(rawValue: tStr) {
+                    type = t
+                }
+                
                 guard let url = request.parameters["url"],
                       let json = self.decode(url),
                       let key = json.videos.first?.key,
-                      let data = json.iinaUrl(key)?.data(using: .utf8) else {
+                      let data = json.iinaUrl(key, type: type)?.data(using: .utf8) else {
                     return .badRequest(nil)
                 }
                 return HttpResponse.ok(.data(data))
