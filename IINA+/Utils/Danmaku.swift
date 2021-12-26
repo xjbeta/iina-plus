@@ -41,11 +41,26 @@ class Danmaku: NSObject {
         var info: [ResultObj]
     }
     
+    let douyuBlockList = [
+        "#挑战666#",
+        "#签到",
+        "#超管来了#",
+        "#让火箭飞#",
+        "#消消乐#"
+    ]
     
     let douyuServer = URL(string: "wss://danmuproxy.douyu.com:8506")
     var douyuRoomID = ""
     var douyuSavedData = Data()
     
+    let huyaBlockList = [
+        "分享了直播间，房间号",
+        "录制并分享了小视频",
+        "进入直播间",
+        "刚刚在打赏君活动中",
+        "竟然抽出了",
+        "车队"
+    ]
     let huyaServer = URL(string: "wss://wsapi.huya.com")
     var huyaAnchorUid = -1
     let huyaJSContext = JSContext()
@@ -509,7 +524,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 return
             }
             
-            guard !str.contains("分享了直播间，房间号"), !str.contains("录制并分享了小视频"), !str.contains("进入直播间"), !str.contains("刚刚在打赏君活动中") else { return }
+            guard !huyaBlockList.contains(where: str.contains) else { return }
             
             sendDM(str)
             
@@ -624,7 +639,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }.forEach {
                     if $0.starts(with: "type@=chatmsg") {
                         let dm = $0.subString(from: "txt@=", to: "/cid@=")
-                        guard !dm.contains("#挑战666#") else {
+                        guard !douyuBlockList.contains(where: dm.contains) else {
                             return
                         }
                         DispatchQueue.main.async {
