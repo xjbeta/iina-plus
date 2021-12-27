@@ -184,6 +184,9 @@ class VideoGet: NSObject {
                   Log("Ignore Danmaku download.")
                   return .value(())
         }
+  
+//        return self.downloadDMFile(yougetJSON.id, id: id)
+        
         
         return self.downloadDMFileV2(
             cid: yougetJSON.id,
@@ -1050,6 +1053,8 @@ extension VideoGet {
                 s2 = s2.replacingOccurrences(of: "&", with: "&amp;")
                 s2 = s2.replacingOccurrences(of: "'", with: "&apos;")
                 s2 = s2.replacingOccurrences(of: "\"", with: "&quot;")
+                
+                s2 = s2.replacingOccurrences(of: "`", with: "&apos;")
                 
                 return "<d p=\"\(s1)\">\(s2)</d>"
             }.forEach {
