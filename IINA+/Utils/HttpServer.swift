@@ -144,15 +144,18 @@ class HttpServer: NSObject, DanmakuDelegate {
                 self?.registeredItems[i].session = session
                 Log(self?.registeredItems.map({ $0.url }))
                 
-                self?.loadCustomFont(text)
-                self?.customDMSpeed(text)
-                self?.customDMOpdacity(text)
-                if let site = self?.registeredItems[i].site,
-                    site == .bilibili {
-                    self?.loadFilters(text)
+                if Processes.shared.iinaArchiveType() == .danmaku {
+                    if let site = self?.registeredItems[i].site,
+                        site == .bilibili {
+                        self?.loadFilters(text)
+                    }
+                    
+                    self?.loadCustomFont(text)
+                    self?.customDMSpeed(text)
+                    self?.customDMOpdacity(text)
                 }
-                
                 self?.registeredItems[i].danmaku.loadDM()
+                
             }, connected: { [weak self] session in
                 Log("Websocket client connected.")
                 self?.unknownSessions.append(session)
