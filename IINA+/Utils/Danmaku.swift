@@ -59,11 +59,21 @@ class Danmaku: NSObject {
         "进入直播间",
         "刚刚在打赏君活动中",
         "竟然抽出了",
-        "车队"
+        "车队召集令在此",
+        "微信公众号“虎牙志愿者”",
     ]
     let huyaServer = URL(string: "wss://wsapi.huya.com")
     var huyaAnchorUid = -1
     let huyaJSContext = JSContext()
+    
+    struct HuYaDanmuMsg: Decodable {
+        let ePushType: Int
+        let iUri: Int
+        let sMsg: String
+        let iProtocolType: Int
+        let sGroupId: String
+        let lMsgId: String
+    }
     
     var egameInfo: EgameInfo?
     private var egameTimer: DispatchSourceTimer?
@@ -524,9 +534,21 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 return
             }
             
-            guard !huyaBlockList.contains(where: str.contains) else { return }
             
-            sendDM(str)
+            guard let data = str.data(using: .utf8),
+                  let msg = try? JSONDecoder().decode(HuYaDanmuMsg.self, from: data) else {
+                      Log("huya msg unknown \(str)")
+                      return
+                  }
+            
+            if msg.ePushType == 5,
+               msg.iUri == 1400,
+               msg.iProtocolType == 2,
+               !huyaBlockList.contains(where: msg.sMsg.contains) {
+               
+                sendDM(msg.sMsg)
+            }
+            
             
             
             //            "/{dx" = "[大笑]",  😆
