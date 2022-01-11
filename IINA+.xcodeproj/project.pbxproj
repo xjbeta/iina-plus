@@ -64,8 +64,6 @@
 		014F541426D9184100B9E82A /* CryptoSwift.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540026D9183F00B9E82A /* CryptoSwift.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; };
 		014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540226D9184000B9E82A /* Sparkle.xcframework */; };
-		014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540226D9184000B9E82A /* Sparkle.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
@@ -89,6 +87,7 @@
 		01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8BD20EE108B001406E8 /* Processes.swift */; };
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
+		01B62C92278D978900EB39FB /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01B62C91278D978900EB39FB /* Sparkle */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
@@ -127,7 +126,6 @@
 				014F540C26D9184000B9E82A /* SwiftProtobuf.xcframework in Embed Frameworks */,
 				014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */,
 				01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */,
-				014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */,
 				014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */,
 				014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */,
 				014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */,
@@ -240,10 +238,10 @@
 				014F540B26D9184000B9E82A /* SwiftProtobuf.xcframework in Frameworks */,
 				014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */,
 				01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */,
-				014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */,
 				014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */,
 				014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */,
 				014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */,
+				01B62C92278D978900EB39FB /* Sparkle in Frameworks */,
 				014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */,
 				014F541326D9184000B9E82A /* CryptoSwift.xcframework in Frameworks */,
 			);
@@ -490,6 +488,7 @@
 			);
 			name = "IINA+";
 			packageProductDependencies = (
+				01B62C91278D978900EB39FB /* Sparkle */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -533,6 +532,7 @@
 			);
 			mainGroup = 01AEC89E20EDFD01001406E8;
 			packageReferences = (
+				01B62C90278D978900EB39FB /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -857,6 +857,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		01B62C90278D978900EB39FB /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		01B62C91278D978900EB39FB /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01B62C90278D978900EB39FB /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */ = {
