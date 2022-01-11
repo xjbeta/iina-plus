@@ -9,7 +9,7 @@
 import Cocoa
 import Alamofire
 import Marshal
-import Starscream
+import SocketRocket
 import Gzip
 import JavaScriptCore
 import CryptoSwift
@@ -21,7 +21,7 @@ protocol DanmakuDelegate {
 }
 
 class Danmaku: NSObject {
-    var socket: WebSocket? = nil
+    var socket: SRWebSocket? = nil
     var liveSite: SupportSites = .unsupported
     var url = ""
     var id = ""
@@ -98,7 +98,7 @@ class Danmaku: NSObject {
     }
     
     func stop() {
-        socket?.disconnect()
+        socket?.close()
         socket = nil
         timer?.cancel()
         egameTimer?.cancel()
@@ -134,7 +134,7 @@ class Danmaku: NSObject {
         case .bilibili, .bangumi:
             delegate?.send(.loadDM, text: "", id: id)
         case .biliLive:
-            socket = .init(request: .init(url: biliLiveServer!))
+            socket = .init(url: biliLiveServer!)
             socket?.delegate = self
             
             bililiveRid(roomID).get {
@@ -144,7 +144,7 @@ class Danmaku: NSObject {
             }.get {
                 self.biliLiveIDs.token = $0
             }.done { _ in
-                self.socket?.connect()
+                self.socket?.open()
             }.catch {
                 Log("can't find bilibili ids \($0).")
             }
@@ -171,9 +171,9 @@ class Danmaku: NSObject {
                 
                 self.huyaAnchorUid = id
                 
-                self.socket = .init(request: .init(url: self.huyaServer!))
+                self.socket = .init(url: self.huyaServer!)
                 self.socket?.delegate = self
-                self.socket?.connect()
+                self.socket?.open()
             }
         case .eGame:
             videoGet.getEgameInfo(url).done {
@@ -194,9 +194,9 @@ class Danmaku: NSObject {
     private func initDouYuSocket(_ roomID: String) {
         Log("initDouYuSocket")
         douyuRoomID = roomID
-        socket = .init(request: .init(url: self.douyuServer!))
+        socket = .init(url: self.douyuServer!)
         socket?.delegate = self
-        socket?.connect()
+        socket?.open()
     }
     
     private func douyuSocketFormatter(_ str: String) -> Data {
@@ -220,13 +220,13 @@ class Danmaku: NSObject {
             timer.setEventHandler {
                 switch self.liveSite {
                 case .biliLive:
-                    self.socket?.write(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                    try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
                 case .douyu:
                     //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                     let keeplive = "type@=mrkl/"
-                    self.socket?.write(data: self.douyuSocketFormatter(keeplive))
+                    try? self.socket?.send(data: self.douyuSocketFormatter(keeplive))
                 case .huya:
-                    self.socket?.write(ping: Data())
+                    try? self.socket?.sendPing(Data())
                 default:
                     break
                 }
@@ -393,23 +393,8 @@ class Danmaku: NSObject {
 }
 
 
-extension Danmaku: WebSocketDelegate {
-    func didReceive(event: WebSocketEvent, client: WebSocket) {
-        switch event {
-        case .connected:
-            webSocketDidOpen(client)
-        case .disconnected(let reason, let code):
-            webSocket(client, didCloseWithCode: Int(code), reason: reason)
-        case .text(let string):
-            webSocket(client, didReceiveMessageWith: string)
-        case .binary(let data):
-            webSocket(client, didReceiveMessageWith: data)
-        default:
-            break
-        }
-    }
-    
-    func webSocketDidOpen(_ webSocket: WebSocket) {
+extension Danmaku: SRWebSocketDelegate {
+    func webSocketDidOpen(_ webSocket: SRWebSocket) {
         Log("webSocketDidOpen")
 
         switch liveSite {
@@ -420,7 +405,7 @@ extension Danmaku: WebSocketDelegate {
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
             data.append(json.data(using: .utf8)!)
-            webSocket.write(data: data as Data)
+            try? webSocket.send(data: data as Data)
             startTimer()
         case .huya:
             let id = huyaAnchorUid
@@ -429,22 +414,22 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
 """)
 
             let data = Data(result?.toArray() as? [UInt8] ?? [])
-            webSocket.write(data: data)
+            try? webSocket.send(data: data)
             startTimer()
         case .douyu:
             let loginreq = "type@=loginreq/roomid@=\(douyuRoomID)/"
             let joingroup = "type@=joingroup/rid@=\(douyuRoomID)/gid@=-9999/"
 
 
-            webSocket.write(data: douyuSocketFormatter(loginreq))
-            webSocket.write(data: douyuSocketFormatter(joingroup))
+            try? webSocket.send(data: douyuSocketFormatter(loginreq))
+            try? webSocket.send(data: douyuSocketFormatter(joingroup))
             startTimer()
         default:
             break
         }
     }
     
-    func webSocket(_ webSocket: WebSocket, didCloseWithCode code: Int, reason: String?) {
+    func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
         Log("webSocketdidClose \(reason ?? "")")
         switch liveSite {
         case .biliLive:
@@ -456,10 +441,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         delegate?.send(.liveDMServer, text: "error", id: id)
     }
     
-    func webSocket(_ webSocket: WebSocket, didReceiveMessageWith string: String) {
-    }
-
-    func webSocket(_ webSocket: WebSocket, didReceiveMessageWith data: Data) {
+    func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
         switch liveSite {
         case .biliLive:
             //            0000 0234
@@ -468,7 +450,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 Log("received heartbeat")
                 return
             } else if data.count == 26 {
-                Log("connect success")
+                Log("bililive connect success")
                 return
             }
             
@@ -527,7 +509,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             }
             
             if str == "EWebSocketCommandType.EWSCmdS2C_RegisterGroupRsp" {
-                Log("huya websocket inited \(str)")
+                Log("huya connect success")
                 return
             } else if str.starts(with: "EWebSocketCommandType") {
                 Log("huya websocket info \(str)")
@@ -659,6 +641,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             msgDatas.compactMap {
                 String(data: $0, encoding: .utf8)
                 }.forEach {
+                    print($0)
+                    
                     if $0.starts(with: "type@=chatmsg") {
                         let dm = $0.subString(from: "txt@=", to: "/cid@=")
                         guard !douyuBlockList.contains(where: dm.contains) else {
@@ -670,7 +654,9 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                     } else if $0.starts(with: "type@=error") {
                         Log("douyu socket disconnected: \($0)")
                         self.delegate?.send(.liveDMServer, text: "error", id: id)
-                        socket?.disconnect()
+                        socket?.close()
+                    } else if $0.starts(with: "type@=loginres") {
+                        Log("douyu content success")
                     }
             }
         default:

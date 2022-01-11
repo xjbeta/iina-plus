@@ -7,6 +7,6 @@ github "mxcl/PromiseKit"
 github "1024jp/GzipSwift"
 # github "sparkle-project/Sparkle"
 github "apple/swift-protobuf"
-github "daltoniam/Starscream"
+github "facebookincubator/SocketRocket"
 github "SDWebImage/SDWebImage"
 

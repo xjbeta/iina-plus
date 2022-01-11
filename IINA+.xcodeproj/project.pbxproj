@@ -62,8 +62,6 @@
 		014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		014F541326D9184000B9E82A /* CryptoSwift.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540026D9183F00B9E82A /* CryptoSwift.xcframework */; };
 		014F541426D9184100B9E82A /* CryptoSwift.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540026D9183F00B9E82A /* CryptoSwift.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; };
-		014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 014F540126D9184000B9E82A /* Starscream.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
@@ -88,6 +86,8 @@
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
 		01B62C92278D978900EB39FB /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01B62C91278D978900EB39FB /* Sparkle */; };
+		01B62C94278DA95F00EB39FB /* SocketRocket.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; };
+		01B62C95278DA95F00EB39FB /* SocketRocket.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
@@ -121,12 +121,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				01B62C95278DA95F00EB39FB /* SocketRocket.xcframework in Embed Frameworks */,
 				014F540E26D9184000B9E82A /* Swifter.xcframework in Embed Frameworks */,
 				014F540A26D9184000B9E82A /* Alamofire.xcframework in Embed Frameworks */,
 				014F540C26D9184000B9E82A /* SwiftProtobuf.xcframework in Embed Frameworks */,
 				014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */,
 				01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */,
-				014F541626D9184100B9E82A /* Starscream.xcframework in Embed Frameworks */,
 				014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */,
 				014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */,
 				014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */,
@@ -209,6 +209,7 @@
 		01AEC8BD20EE108B001406E8 /* Processes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processes.swift; sourceTree = "<group>"; };
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
+		01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SocketRocket.xcframework; path = Carthage/Build/SocketRocket.xcframework; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
@@ -235,10 +236,10 @@
 			files = (
 				014F540D26D9184000B9E82A /* Swifter.xcframework in Frameworks */,
 				014F540926D9184000B9E82A /* Alamofire.xcframework in Frameworks */,
+				01B62C94278DA95F00EB39FB /* SocketRocket.xcframework in Frameworks */,
 				014F540B26D9184000B9E82A /* SwiftProtobuf.xcframework in Frameworks */,
 				014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */,
 				01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */,
-				014F541526D9184100B9E82A /* Starscream.xcframework in Frameworks */,
 				014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */,
 				014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */,
 				01B62C92278D978900EB39FB /* Sparkle in Frameworks */,
@@ -352,6 +353,7 @@
 		014F53F726D9183F00B9E82A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */,
 				01176CAC2713223200BB7E10 /* SDWebImage.xcframework */,
 				014F53FB26D9183F00B9E82A /* Alamofire.xcframework */,
 				014F540026D9183F00B9E82A /* CryptoSwift.xcframework */,
