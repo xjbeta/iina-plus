@@ -187,6 +187,14 @@ class Danmaku: NSObject {
         }
     }
     
+    func sendMsg(_ data: Data) {
+        do {
+            try socket?.send(data: data)
+        } catch let error {
+            Log("sendMsg error \(error)")
+        }
+    }
+    
     private func sendDM(_ str: String) {
         delegate?.send(.sendDM, text: str, id: id)
     }
@@ -220,11 +228,11 @@ class Danmaku: NSObject {
             timer.setEventHandler {
                 switch self.liveSite {
                 case .biliLive:
-                    try? self.socket?.send(data: self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
+                    self.sendMsg(self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
                 case .douyu:
                     //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
                     let keeplive = "type@=mrkl/"
-                    try? self.socket?.send(data: self.douyuSocketFormatter(keeplive))
+                    self.sendMsg(self.douyuSocketFormatter(keeplive))
                 case .huya:
                     try? self.socket?.sendPing(Data())
                 default:
@@ -405,7 +413,7 @@ extension Danmaku: SRWebSocketDelegate {
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
             data.append(json.data(using: .utf8)!)
-            try? webSocket.send(data: data as Data)
+            sendMsg(data as Data)
             startTimer()
         case .huya:
             let id = huyaAnchorUid
@@ -414,15 +422,15 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
 """)
 
             let data = Data(result?.toArray() as? [UInt8] ?? [])
-            try? webSocket.send(data: data)
+            sendMsg(data)
             startTimer()
         case .douyu:
             let loginreq = "type@=loginreq/roomid@=\(douyuRoomID)/"
             let joingroup = "type@=joingroup/rid@=\(douyuRoomID)/gid@=-9999/"
 
 
-            try? webSocket.send(data: douyuSocketFormatter(loginreq))
-            try? webSocket.send(data: douyuSocketFormatter(joingroup))
+            sendMsg(douyuSocketFormatter(loginreq))
+            sendMsg(douyuSocketFormatter(joingroup))
             startTimer()
         default:
             break
@@ -641,8 +649,6 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             msgDatas.compactMap {
                 String(data: $0, encoding: .utf8)
                 }.forEach {
-                    print($0)
-                    
                     if $0.starts(with: "type@=chatmsg") {
                         let dm = $0.subString(from: "txt@=", to: "/cid@=")
                         guard !douyuBlockList.contains(where: dm.contains) else {
