@@ -5,7 +5,7 @@ github "krzyzanowskim/CryptoSwift"
 github "utahiosmac/Marshal"
 github "mxcl/PromiseKit"
 github "1024jp/GzipSwift"
-# github "sparkle-project/Sparkle"
+github "sparkle-project/Sparkle" == 1.27.1
 github "apple/swift-protobuf"
 github "facebookincubator/SocketRocket"
 github "SDWebImage/SDWebImage"
