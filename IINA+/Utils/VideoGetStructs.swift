@@ -526,19 +526,25 @@ struct BilibiliPlayInfo: Unmarshaling {
         let id: Int
         let bandwidth: Int
         var description: String = ""
+        let backupUrl: [String]
+        
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             id = try object.value(for: "id")
             bandwidth = try object.value(for: "bandwidth")
+            backupUrl = (try? object.value(for: "backupUrl")) ?? []
         }
     }
     
     struct AudioInfo: Unmarshaling {
         let url: String
         let bandwidth: Int
+        let backupUrl: [String]
+        
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             bandwidth = try object.value(for: "bandwidth")
+            backupUrl = (try? object.value(for: "backupUrl")) ?? []
         }
     }
     
@@ -590,6 +596,7 @@ struct BilibiliPlayInfo: Unmarshaling {
             var stream = Stream(url: $0.element.url)
 //            stream.quality = $0.element.bandwidth
             stream.quality = 999 - $0.element.index
+            stream.src = $0.element.backupUrl
             yougetJson.streams[$0.element.description] = stream
         }
         
