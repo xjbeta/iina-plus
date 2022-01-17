@@ -9,4 +9,5 @@ github "sparkle-project/Sparkle" == 1.27.1
 github "apple/swift-protobuf"
 github "facebookincubator/SocketRocket"
 github "SDWebImage/SDWebImage"
+github "SDWebImage/SDWebImageSwiftUI"
 

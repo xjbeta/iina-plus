@@ -76,6 +76,8 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
+		0178575227958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; };
+		0178575327958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
@@ -87,7 +89,6 @@
 		01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8BD20EE108B001406E8 /* Processes.swift */; };
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
-		01B62C92278D978900EB39FB /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01B62C91278D978900EB39FB /* Sparkle */; };
 		01B62C94278DA95F00EB39FB /* SocketRocket.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; };
 		01B62C95278DA95F00EB39FB /* SocketRocket.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
@@ -130,6 +131,7 @@
 				014F541026D9184000B9E82A /* SwiftSoup.xcframework in Embed Frameworks */,
 				01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */,
 				014F541826D9184100B9E82A /* Sparkle.xcframework in Embed Frameworks */,
+				0178575327958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Embed Frameworks */,
 				014F541226D9184000B9E82A /* PromiseKit.xcframework in Embed Frameworks */,
 				014F540426D9184000B9E82A /* Gzip.xcframework in Embed Frameworks */,
 				014F540826D9184000B9E82A /* Marshal.xcframework in Embed Frameworks */,
@@ -182,7 +184,6 @@
 		014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSoup.xcframework; path = Carthage/Build/SwiftSoup.xcframework; sourceTree = "<group>"; };
 		014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PromiseKit.xcframework; path = Carthage/Build/PromiseKit.xcframework; sourceTree = "<group>"; };
 		014F540026D9183F00B9E82A /* CryptoSwift.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = CryptoSwift.xcframework; path = Carthage/Build/CryptoSwift.xcframework; sourceTree = "<group>"; };
-		014F540126D9184000B9E82A /* Starscream.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Starscream.xcframework; path = Carthage/Build/Starscream.xcframework; sourceTree = "<group>"; };
 		014F540226D9184000B9E82A /* Sparkle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Sparkle.xcframework; path = Carthage/Build/Sparkle.xcframework; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
 		015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGetStructs.swift; sourceTree = "<group>"; };
@@ -198,6 +199,7 @@
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImageSwiftUI.xcframework; path = Carthage/Build/SDWebImageSwiftUI.xcframework; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				014F540F26D9184000B9E82A /* SwiftSoup.xcframework in Frameworks */,
 				01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */,
 				014F541726D9184100B9E82A /* Sparkle.xcframework in Frameworks */,
+				0178575227958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Frameworks */,
 				014F541126D9184000B9E82A /* PromiseKit.xcframework in Frameworks */,
 				014F540326D9184000B9E82A /* Gzip.xcframework in Frameworks */,
 				014F540726D9184000B9E82A /* Marshal.xcframework in Frameworks */,
@@ -356,6 +359,7 @@
 		014F53F726D9183F00B9E82A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */,
 				01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */,
 				01176CAC2713223200BB7E10 /* SDWebImage.xcframework */,
 				014F53FB26D9183F00B9E82A /* Alamofire.xcframework */,
@@ -364,7 +368,6 @@
 				014F53FA26D9183F00B9E82A /* Marshal.xcframework */,
 				014F53FF26D9183F00B9E82A /* PromiseKit.xcframework */,
 				014F540226D9184000B9E82A /* Sparkle.xcframework */,
-				014F540126D9184000B9E82A /* Starscream.xcframework */,
 				014F53FD26D9183F00B9E82A /* Swifter.xcframework */,
 				014F53FC26D9183F00B9E82A /* SwiftProtobuf.xcframework */,
 				014F53FE26D9183F00B9E82A /* SwiftSoup.xcframework */,
