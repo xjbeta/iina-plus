@@ -868,11 +868,12 @@
 		010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				01785756279720BB006E2E01 /* Bookmark v0.4.xcdatamodel */,
 				019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */,
 				014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */,
 				010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */,
 			);
-			currentVersion = 019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */;
+			currentVersion = 01785756279720BB006E2E01 /* Bookmark v0.4.xcdatamodel */;
 			path = DataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

@@ -25,4 +25,6 @@ extension Bookmark {
     @NSManaged public var liveName: String
     @NSManaged public var updateDate: Date?
     @NSManaged public var cover: String?
+    @NSManaged public var avatar: String?
+    @NSManaged public var uuid: String
 }
