@@ -76,6 +76,7 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
+		0178574927953590006E2E01 /* IINA+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574827953590006E2E01 /* IINA+App.swift */; };
 		0178575227958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; };
 		0178575327958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
@@ -94,6 +95,7 @@
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
+		01E0FC832798227800A0B6F8 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0FC822798227800A0B6F8 /* PersistenceController.swift */; };
 		01E40FE022C06BDC00864118 /* DataResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
@@ -199,7 +201,9 @@
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		0178574827953590006E2E01 /* IINA+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IINA+App.swift"; sourceTree = "<group>"; };
 		0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImageSwiftUI.xcframework; path = Carthage/Build/SDWebImageSwiftUI.xcframework; sourceTree = "<group>"; };
+		01785756279720BB006E2E01 /* Bookmark v0.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.4.xcdatamodel"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
@@ -218,6 +222,7 @@
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
+		01E0FC822798227800A0B6F8 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataResponseExtension.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -305,6 +310,7 @@
 				014B447B210069FF00E7AA6A /* Bookmark.swift */,
 				014B447C210069FF00E7AA6A /* BookmarkExtension.swift */,
 				01479CD2210AF5F40046AAAD /* DataManager.swift */,
+				01E0FC822798227800A0B6F8 /* PersistenceController.swift */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";
@@ -417,6 +423,7 @@
 		01AEC8A920EDFD01001406E8 /* IINA+ */ = {
 			isa = PBXGroup;
 			children = (
+				0178574827953590006E2E01 /* IINA+App.swift */,
 				01C373582429F2C2006778D1 /* README.md */,
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
 				014F53F526D8F2EB00B9E82A /* Cartfile */,
@@ -622,10 +629,12 @@
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
+				0178574927953590006E2E01 /* IINA+App.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				011E4D3321E99CA400997633 /* Log.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,
+				01E0FC832798227800A0B6F8 /* PersistenceController.swift in Sources */,
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
