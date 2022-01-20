@@ -236,7 +236,7 @@ class VideoGet: NSObject {
                 var info = BilibiliInfo()
                 info.title = try initialStateJson.value(for: "videoData.title")
                 info.cover = try initialStateJson.value(for: "videoData.pic")
-                info.cover = info.cover.replacingOccurrences(of: "http://", with: "https://")
+                info.cover.https()
                 info.name = try initialStateJson.value(for: "videoData.owner.name")
                 info.isLiving = true
                 return info

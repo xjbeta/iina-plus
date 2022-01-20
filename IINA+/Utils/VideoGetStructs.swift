@@ -185,10 +185,10 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "introduction")
         name = try object.value(for: "nick")
         avatar = try object.value(for: "avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        avatar.https()
         isLiving = "\(try object.any(for: "isOn"))" == "1"
         cover = try object.value(for: "screenshot")
-        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        cover.https()
         
         let str: String = try object.value(for: "profileRoom")
         rid = Int(str) ?? -1
@@ -237,17 +237,18 @@ struct HuyaStream: Unmarshaling {
             
             
             urls = streamInfos.compactMap { i -> String? in
-                let u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
+                var u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.newCFlvAntiCode + "&ratio=0"
+                u.https()
                 return u
                     .replacingOccurrences(of: "&amp;", with: "&")
-                    .replacingOccurrences(of: "http://", with: "https://")
                     .replacingOccurrences(of: "https://tx.flv.huya.com/huyalive/", with: "https://tx.flv.huya.com/src/")
             }
             
             
             urlsBak = streamInfos.compactMap { i -> String? in
-                let u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.sFlvAntiCode
-                return huyaUrlFormatter(u.replacingOccurrences(of: "&amp;", with: "&"))?.replacingOccurrences(of: "http://", with: "https://")
+                var u = i.sFlvUrl + "/" + i.sStreamName + ".flv?" + i.sFlvAntiCode
+                u.https()
+                return huyaUrlFormatter(u.replacingOccurrences(of: "&amp;", with: "&"))
             }
         }
     }
@@ -328,8 +329,8 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         name = try object.value(for: "roomInfo.tProfileInfo.sNick")
         
-        let ava: String = try object.value(for: "roomInfo.tProfileInfo.sAvatar180")
-        avatar = ava.replacingOccurrences(of: "http://", with: "https://")
+        avatar = try object.value(for: "roomInfo.tProfileInfo.sAvatar180")
+        avatar.https()
         
         let state: Int = try object.value(for: "roomInfo.eLiveStatus")
         isLiving = state == 2
@@ -350,7 +351,7 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
         
         rid = try object.value(for: "roomInfo.tProfileInfo.lProfileRoom")
         cover = try object.value(for: "roomInfo.tLiveInfo.sScreenshot")
-        
+        cover.https()
         
         let defaultCDN: String = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.sDefaultLiveStreamLine")
         
@@ -419,9 +420,9 @@ fileprivate func huyaUrlFormatter(_ u: String) -> String? {
             $0.contains("sphd=")
     }.joined(separator: "&")
     
-    let url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv="
+    var url = "\(i)?wsSecret=\(m)&wsTime=\(l)&seqid=\(n)&\(y)&ratio=0&u=0&t=100&sv="
         
-        .replacingOccurrences(of: "http://", with: "https://")
+    url.https()
     return url
 }
 
@@ -501,13 +502,13 @@ struct EgameInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "state.live-info.liveInfo.videoInfo.title")
         name = try object.value(for: "state.live-info.liveInfo.profileInfo.nickName")
         avatar = try object.value(for: "state.live-info.liveInfo.profileInfo.faceUrl")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        avatar.https()
         let liveStatus: Int = try object.value(for: "state.live-info.liveInfo.profileInfo.isLive")
         isLiving = liveStatus == 1
         pid = try object.value(for: "state.live-info.liveInfo.videoInfo.pid")
         anchorId = try object.value(for: "state.live-info.liveInfo.videoInfo.anchorId")
         cover = try object.value(for: "state.live-info.liveBaseInfo.programInfo.highCoverUrl")
-        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        cover.https()
     }
 }
 
@@ -806,7 +807,7 @@ struct CC163Info: Unmarshaling, LiveInfo {
         title = try object.value(for: "props.pageProps.roomInfoInitData.live.title")
         name = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.nickname")
         avatar = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.purl")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        avatar.https()
         cover = avatar
         let living: Bool? = try? object.value(for: "props.pageProps.roomInfoInitData.is_show_live_rcm")
         
@@ -852,7 +853,7 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "title")
         name = try object.value(for: "nickname")
         cover = try object.value(for: "cover")
-        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        cover.https()
         
         if let nolive: Int = try? object.value(for: "nolive"),
            nolive == 1 {
@@ -862,7 +863,7 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
         } else {
             ccid = try object.value(for: "ccid")
             avatar = try object.value(for: "purl")
-            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+            avatar.https()
             isLiving = true
         }
     }

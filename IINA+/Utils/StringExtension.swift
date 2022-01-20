@@ -129,6 +129,10 @@ extension String {
     func toHexString() -> String {
         self.data(using: .utf8)?.toHexString() ?? ""
     }
+    
+    mutating func https() {
+        self = replacingOccurrences(of: "http://", with: "https://")
+    }
 }
 
 
