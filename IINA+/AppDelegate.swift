@@ -9,7 +9,7 @@
 import Cocoa
 import SDWebImage
 
-@NSApplicationMain
+//@NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     lazy var logUrl: URL? = {
