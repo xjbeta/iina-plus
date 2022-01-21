@@ -149,7 +149,7 @@ class OpenFilesViewController: NSViewController {
             json.duration = $0.duration
             return json
         }.then {
-            videoGet.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
+            videoGet.prepareDanmakuFile($0)
         }.map {
             json
         }

@@ -109,6 +109,7 @@ extension String {
     mutating func coverUrlFormatter(
         site: SupportSites,
         maxH: Int = 200) {
+        guard self != "" else { return }
             
         var u = self
         switch site {

@@ -62,8 +62,6 @@
 	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2018 xjbeta. All rights reserved.</string>
-	<key>NSMainStoryboardFile</key>
-	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>

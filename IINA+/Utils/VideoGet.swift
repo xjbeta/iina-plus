@@ -173,7 +173,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
+    func prepareDanmakuFile(_ yougetJSON: YouGetJSON) -> Promise<()> {
         let pref = Preferences.shared
         
         guard Processes.shared.iinaArchiveType() != .normal,
@@ -191,7 +191,7 @@ class VideoGet: NSObject {
         return self.downloadDMFileV2(
             cid: yougetJSON.id,
             length: yougetJSON.duration,
-            id: id)
+            id: yougetJSON.uuid)
     }
     
     func liveInfo(_ url: String, _ checkSupport: Bool = true) -> Promise<LiveInfo> {
@@ -275,7 +275,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
+    func prepareVideoUrl(_ json: YouGetJSON, _ key: String) -> Promise<YouGetJSON> {
         
         guard json.id != -1 else {
             return .value(json)
@@ -283,7 +283,6 @@ class VideoGet: NSObject {
         
         switch json.site {
         case .bilibili, .bangumi:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.url == "" else {
                 return .value(json)
@@ -292,7 +291,6 @@ class VideoGet: NSObject {
             
             return bilibiliPlayUrl(yougetJson: json, false, true, qn)
         case .biliLive:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.quality != -1 else {
                 return .init(error: VideoGetError.notFountData)
@@ -313,7 +311,6 @@ class VideoGet: NSObject {
                 }
             }
         case .douyu:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.quality != -1 else {
                 return .init(error: VideoGetError.notFountData)

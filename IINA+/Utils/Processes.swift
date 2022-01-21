@@ -15,6 +15,8 @@ class Processes: NSObject {
     
     static let shared = Processes()
     let videoGet = VideoGet()
+    let httpServer = HttpServer()
+    
     var decodeTask: Process?
     var videoGetTasks: [(Promise<YouGetJSON>, cancel: () -> Void)] = []
     

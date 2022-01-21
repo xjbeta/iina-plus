@@ -173,19 +173,15 @@ class MainViewController: NSViewController {
             return
         }
         clear()
-        let uuid = yougetJSON.uuid
-        
         let videoGet = processes.videoGet
         
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
         
-        videoGet.prepareVideoUrl(yougetJSON, row).get {
+        videoGet.prepareVideoUrl(yougetJSON, key).get {
             yougetJSON = $0
         }.then { _ in
-            videoGet.prepareDanmakuFile(
-                yougetJSON: yougetJSON,
-                id: uuid)
+            videoGet.prepareDanmakuFile(yougetJSON)
         }.done {
             // init Danmaku
             if preferences.enableDanmaku,
@@ -193,7 +189,7 @@ class MainViewController: NSViewController {
                processes.iinaArchiveType() != .normal {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya:
-                    self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
+                    processes.httpServer.register(yougetJSON.uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
                 }
@@ -206,14 +202,14 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    let httpServer = HttpServer()
     
     let iinaProxyAF = Alamofire.Session()
     
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        httpServer.start()
+        let processes = Processes.shared
+        processes.httpServer.start()
         
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
@@ -243,7 +239,7 @@ class MainViewController: NSViewController {
             guard let dic = $0.userInfo as? [String: String],
                 let id = dic["id"] else { return }
             
-            self.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
+            processes.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
         }
         
         // esc key down event
