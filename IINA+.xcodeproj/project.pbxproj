@@ -77,6 +77,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		0178574927953590006E2E01 /* IINA+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574827953590006E2E01 /* IINA+App.swift */; };
+		0178574E27953636006E2E01 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574D27953636006E2E01 /* MainContentView.swift */; };
 		0178575227958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; };
 		0178575327958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
@@ -202,6 +203,7 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0178574827953590006E2E01 /* IINA+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IINA+App.swift"; sourceTree = "<group>"; };
+		0178574D27953636006E2E01 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImageSwiftUI.xcframework; path = Carthage/Build/SDWebImageSwiftUI.xcframework; sourceTree = "<group>"; };
 		01785756279720BB006E2E01 /* Bookmark v0.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.4.xcdatamodel"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
@@ -392,6 +394,14 @@
 			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
 		};
+		0178574A27953609006E2E01 /* NewViews */ = {
+			isa = PBXGroup;
+			children = (
+				0178574D27953636006E2E01 /* MainContentView.swift */,
+			);
+			path = NewViews;
+			sourceTree = "<group>";
+		};
 		019EB39D21453A97000FD123 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -424,6 +434,7 @@
 			isa = PBXGroup;
 			children = (
 				0178574827953590006E2E01 /* IINA+App.swift */,
+				0178574A27953609006E2E01 /* NewViews */,
 				01C373582429F2C2006778D1 /* README.md */,
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
 				014F53F526D8F2EB00B9E82A /* Cartfile */,
@@ -628,6 +639,7 @@
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
+				0178574E27953636006E2E01 /* MainContentView.swift in Sources */,
 				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
 				0178574927953590006E2E01 /* IINA+App.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
