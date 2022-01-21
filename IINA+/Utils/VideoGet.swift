@@ -249,7 +249,7 @@ class VideoGet: NSObject {
                 var info = BilibiliInfo()
                 info.site = .bangumi
                 info.title = $0.mediaInfo.title
-                info.cover = $0.mediaInfo.squareCover
+                info.cover = $0.epInfo.cover
                 info.isLiving = true
                 return info
             }
