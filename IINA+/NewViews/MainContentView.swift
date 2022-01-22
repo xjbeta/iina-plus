@@ -110,6 +110,12 @@ struct MainContentView: View {
             liveStatePicker
             sitePicker
         }
+        .sheet(isPresented: $isDecoding) {
+            print("Stop Decoding")
+        } content: {
+            DecodeSheetView(isVisible: $isDecoding,
+                            url: $bookmarkUrl)
+        }
     }
     
     func updateFilter() {
