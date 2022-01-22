@@ -237,6 +237,7 @@ class VideoGet: NSObject {
                 info.title = try initialStateJson.value(for: "videoData.title")
                 info.cover = try initialStateJson.value(for: "videoData.pic")
                 info.cover.https()
+                info.avatar = info.cover + "@200w_200h_1c.jpg"
                 info.name = try initialStateJson.value(for: "videoData.owner.name")
                 info.isLiving = true
                 return info
@@ -250,6 +251,7 @@ class VideoGet: NSObject {
                 info.site = .bangumi
                 info.title = $0.mediaInfo.title
                 info.cover = $0.epInfo.cover
+                info.avatar = $0.mediaInfo.squareCover
                 info.isLiving = true
                 return info
             }

@@ -49,8 +49,8 @@ public class Bookmark: NSManagedObject {
         
         let isLiveSite = site != .bangumi && site != .bilibili
         
-        cover = isLiveSite ? info.avatar : info.cover
-        cover?.coverUrlFormatter(site: site)
+        cover = info.cover
+        avatar = info.avatar
         
         if info.site == .bangumi {
             liveName = "Bangumi"

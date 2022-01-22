@@ -837,8 +837,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 view.imageBoxView.pic = nil
                 view.imageBoxView.updatePreview(.stop)
                 
-                var url = bilibiliCards[row].picUrl
-                url.coverUrlFormatter(site: .bilibili)
+                let url = bilibiliCards[row].picUrl
                 
                 if let imageView = view.imageView {
                     SDWebImageManager.shared.loadImage(with: .init(string: url), progress: nil) { img,_,_,_,_,_ in

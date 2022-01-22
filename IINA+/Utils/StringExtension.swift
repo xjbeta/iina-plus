@@ -106,27 +106,6 @@ extension String {
         }
     }
     
-    mutating func coverUrlFormatter(
-        site: SupportSites,
-        maxH: Int = 200) {
-        guard self != "" else { return }
-            
-        var u = self
-        switch site {
-        case .biliLive, .bilibili, .bangumi:
-            u += "@\(maxH)h"
-        case .huya, .eGame:
-//            default 140x140
-            break
-        case .douyu, .cc163:
-//            default 200x200
-            break
-        default:
-            break
-        }
-        self = u
-    }
-    
     func toHexString() -> String {
         self.data(using: .utf8)?.toHexString() ?? ""
     }
