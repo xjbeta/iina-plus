@@ -16,15 +16,22 @@ struct MainContentView: View {
     ) var bookmarks: FetchedResults<Bookmark>
     
     var bookmarksView: some View {
-        LazyVGrid(columns: gridItemLayout, spacing: 20) {
+        LazyVGrid(columns: gridItemLayout, spacing: 5) {
             ForEach(bookmarks, id: \.uuid) { bookmark in
+                LivingItemView(bookmark: bookmark)
+                    .onTapGesture(count: 2) {
+                        print(bookmark.url)
+                        bookmarkUrl = bookmark.url
+                        isDecoding = true
+                    }
             }
         }
     }
     
     
     private var gridItemLayout = [
-        GridItem(.adaptive(minimum: 160))
+//        GridItem(.adaptive(minimum: 160))
+        GridItem()
     ]
     
     @State private var isDecoding = false
