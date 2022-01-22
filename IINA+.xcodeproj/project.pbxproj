@@ -98,6 +98,7 @@
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
 		01E0FC832798227800A0B6F8 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0FC822798227800A0B6F8 /* PersistenceController.swift */; };
+		01E0FC8527985A2800A0B6F8 /* DecodeSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E0FC8427985A2800A0B6F8 /* DecodeSheetView.swift */; };
 		01E40FE022C06BDC00864118 /* DataResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
@@ -227,6 +228,7 @@
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
 		01E0FC822798227800A0B6F8 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		01E0FC8427985A2800A0B6F8 /* DecodeSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeSheetView.swift; sourceTree = "<group>"; };
 		01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataResponseExtension.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -401,6 +403,7 @@
 			children = (
 				0178574D27953636006E2E01 /* MainContentView.swift */,
 				0178574F27954BCA006E2E01 /* LivingItemView.swift */,
+				01E0FC8427985A2800A0B6F8 /* DecodeSheetView.swift */,
 			);
 			path = NewViews;
 			sourceTree = "<group>";
@@ -641,6 +644,7 @@
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
+				01E0FC8527985A2800A0B6F8 /* DecodeSheetView.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				0178574E27953636006E2E01 /* MainContentView.swift in Sources */,
