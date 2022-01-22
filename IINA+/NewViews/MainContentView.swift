@@ -16,14 +16,8 @@ struct MainContentView: View {
                   animation: Animation.default
     ) var allBookmarks: FetchedResults<Bookmark>
     
-    @FetchRequest(entity: Bookmark.entity(),
-                  sortDescriptors: [NSSortDescriptor(key: #keyPath(Bookmark.order), ascending: true)],
-                  predicate: nil,
-                  animation: Animation.default
-    ) var bookmarks: FetchedResults<Bookmark>
     
-    
-    
+    @State private var bookmarksListPredicate = ""
     
     let liveState = MainViewController.LiveStateMenuItems.self
     @State private var liveStateSelection: Int = 2
@@ -74,29 +68,15 @@ struct MainContentView: View {
         }
     }
     
-    
-    
-
-    
     var bookmarksView: some View {
-        LazyVGrid(columns: gridItemLayout, spacing: 5) {
-            ForEach(bookmarks, id: \.uuid) { bookmark in
-                LivingItemView(bookmark: bookmark)
-                    .onTapGesture(count: 2) {
-                        print(bookmark.url)
-                        bookmarkUrl = bookmark.url
-                        isDecoding = true
-                    }
-            }
+        BookmarksListView(predicate: bookmarksListPredicate) {
+            bookmarkUrl = $0.url
+            isDecoding = true
         }
     }
     
     
-    private var gridItemLayout = [
-//        GridItem(.adaptive(minimum: 160))
-        GridItem()
-    ]
-    
+
     @State private var isDecoding = false
     @State private var bookmarkUrl = ""
     
@@ -156,19 +136,17 @@ struct MainContentView: View {
         }.joined(separator: " && ")
         
         guard format != "" else {
-            bookmarks.nsPredicate = nil
+            bookmarksListPredicate = ""
             Log("Remove Filters")
             return
         }
 
-        if let oldF = bookmarks.nsPredicate?.predicateFormat,
-            oldF == format {
+        if bookmarksListPredicate == format {
             return
         }
         
         Log("New Filters: \(format)")
-        let p = NSPredicate(format: format)
-        bookmarks.nsPredicate = p
+        bookmarksListPredicate = format
     }
 }
 

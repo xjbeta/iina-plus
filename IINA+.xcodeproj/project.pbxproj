@@ -20,6 +20,7 @@
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
 		01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; };
 		01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		011CBA86279C34F600AE2589 /* BookmarksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011CBA85279C34F600AE2589 /* BookmarksListView.swift */; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
@@ -160,6 +161,7 @@
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
 		01176CAC2713223200BB7E10 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
+		011CBA85279C34F600AE2589 /* BookmarksListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksListView.swift; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 			isa = PBXGroup;
 			children = (
 				0178574D27953636006E2E01 /* MainContentView.swift */,
+				011CBA85279C34F600AE2589 /* BookmarksListView.swift */,
 				0178574F27954BCA006E2E01 /* LivingItemView.swift */,
 				01E0FC8427985A2800A0B6F8 /* DecodeSheetView.swift */,
 			);
@@ -645,6 +648,7 @@
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01E0FC8527985A2800A0B6F8 /* DecodeSheetView.swift in Sources */,
+				011CBA86279C34F600AE2589 /* BookmarksListView.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				0178574E27953636006E2E01 /* MainContentView.swift in Sources */,
