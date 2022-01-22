@@ -14,6 +14,9 @@ struct IINA_App: App {
     @Environment(\.scenePhase) var scenePhase
     let persistenceController = PersistenceController.shared
     
+    init() {
+        Processes.shared.httpServer.start()
+    }
     
     var body: some Scene {
         WindowGroup {
