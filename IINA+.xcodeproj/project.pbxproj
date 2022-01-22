@@ -78,6 +78,7 @@
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		0178574927953590006E2E01 /* IINA+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574827953590006E2E01 /* IINA+App.swift */; };
 		0178574E27953636006E2E01 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574D27953636006E2E01 /* MainContentView.swift */; };
+		0178575027954BCA006E2E01 /* LivingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0178574F27954BCA006E2E01 /* LivingItemView.swift */; };
 		0178575227958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; };
 		0178575327958DAF006E2E01 /* SDWebImageSwiftUI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
@@ -204,6 +205,7 @@
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0178574827953590006E2E01 /* IINA+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IINA+App.swift"; sourceTree = "<group>"; };
 		0178574D27953636006E2E01 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
+		0178574F27954BCA006E2E01 /* LivingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivingItemView.swift; sourceTree = "<group>"; };
 		0178575127958DAF006E2E01 /* SDWebImageSwiftUI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImageSwiftUI.xcframework; path = Carthage/Build/SDWebImageSwiftUI.xcframework; sourceTree = "<group>"; };
 		01785756279720BB006E2E01 /* Bookmark v0.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.4.xcdatamodel"; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 			isa = PBXGroup;
 			children = (
 				0178574D27953636006E2E01 /* MainContentView.swift */,
+				0178574F27954BCA006E2E01 /* LivingItemView.swift */,
 			);
 			path = NewViews;
 			sourceTree = "<group>";
@@ -633,6 +636,7 @@
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
+				0178575027954BCA006E2E01 /* LivingItemView.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
