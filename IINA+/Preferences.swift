@@ -133,6 +133,42 @@ class Preferences: NSObject {
         }
     }
 
+    @objc dynamic var stateLiving: NSColor {
+        get {
+            return defaults(.stateLiving) as? NSColor ?? .systemGreen
+        }
+        set {
+            defaultsSet(newValue, forKey: .stateLiving)
+        }
+    }
+    
+    @objc dynamic var stateOffline: NSColor {
+        get {
+            return defaults(.stateOffline) as? NSColor ?? .systemRed
+        }
+        set {
+            defaultsSet(newValue, forKey: .stateOffline)
+        }
+    }
+    
+    @objc dynamic var stateReplay: NSColor {
+        get {
+            return defaults(.stateReplay) as? NSColor ?? .systemBlue
+        }
+        set {
+            defaultsSet(newValue, forKey: .stateReplay)
+        }
+    }
+    
+    @objc dynamic var stateUnknown: NSColor {
+        get {
+            return defaults(.stateUnknown) as? NSColor ?? .systemGray
+        }
+        set {
+            defaultsSet(newValue, forKey: .stateUnknown)
+        }
+    }
+    
 }
 
 private extension Preferences {
@@ -158,4 +194,9 @@ enum PreferenceKeys: String {
     case dmBlockType
     case dmBlockList
     case dmPort
+    
+    case stateLiving
+    case stateOffline
+    case stateReplay
+    case stateUnknown
 }
