@@ -18,6 +18,11 @@ class PreferencesTabViewController: NSTabViewController {
     }
     
     override func tabView(_ tabView: NSTabView, willSelect tabViewItem: NSTabViewItem?) {
+        if let item = tabView.selectedTabViewItem,
+           tabView.indexOfTabViewItem(item) == 0 {
+            NSColorPanel.shared.close()
+        }
+        
         super.tabView(tabView, willSelect: tabViewItem)
         autoResizeWindow(tabViewItem, animate: true)
     }
