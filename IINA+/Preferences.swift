@@ -135,40 +135,55 @@ class Preferences: NSObject {
 
     @objc dynamic var stateLiving: NSColor {
         get {
-            return defaults(.stateLiving) as? NSColor ?? .systemGreen
+            return colorDecode(defaults(.stateLiving)) ?? .systemGreen
         }
         set {
-            defaultsSet(newValue, forKey: .stateLiving)
+            defaultsSet(colorEncode(newValue), forKey: .stateLiving)
         }
     }
     
     @objc dynamic var stateOffline: NSColor {
         get {
-            return defaults(.stateOffline) as? NSColor ?? .systemRed
+            
+            return colorDecode(defaults(.stateOffline)) ?? .systemRed
         }
         set {
-            defaultsSet(newValue, forKey: .stateOffline)
+            defaultsSet(colorEncode(newValue), forKey: .stateOffline)
         }
     }
     
     @objc dynamic var stateReplay: NSColor {
         get {
-            return defaults(.stateReplay) as? NSColor ?? .systemBlue
+            return colorDecode(defaults(.stateReplay)) ?? .systemBlue
         }
         set {
-            defaultsSet(newValue, forKey: .stateReplay)
+            defaultsSet(colorEncode(newValue), forKey: .stateReplay)
         }
     }
     
     @objc dynamic var stateUnknown: NSColor {
         get {
-            return defaults(.stateUnknown) as? NSColor ?? .systemGray
+            return colorDecode(defaults(.stateUnknown)) ?? .systemGray
         }
         set {
-            defaultsSet(newValue, forKey: .stateUnknown)
+            defaultsSet(colorEncode(newValue), forKey: .stateUnknown)
         }
     }
     
+    private func colorEncode(_ color: NSColor) -> [CGFloat] {
+        return [
+            color.redComponent,
+            color.greenComponent,
+            color.blueComponent,
+            color.alphaComponent
+        ]
+    }
+    
+    private func colorDecode(_ value: Any?) -> NSColor? {
+        guard let rgba = value as? [CGFloat],
+              rgba.count == 4 else { return nil }
+        return NSColor(red: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
+    }
 }
 
 private extension Preferences {
