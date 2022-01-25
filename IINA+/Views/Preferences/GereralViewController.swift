@@ -18,12 +18,35 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     @IBOutlet var portTestButton: NSButton!
     
     @IBAction func testInBrowser(_ sender: NSButton) {
-        let port = Preferences.shared.dmPort
+        let port = pref.dmPort
         let u = "http://127.0.0.1:\(port)/danmaku/index.htm"
         guard let url = URL(string: u) else { return }
         
         NSWorkspace.shared.open(url)
     }
+    
+// MARK: - Live State Color
+    @IBOutlet var livingColorPick: ColorPickButton!
+    @IBOutlet var offlineColorPick: ColorPickButton!
+    @IBOutlet var replayColorPick: ColorPickButton!
+    @IBOutlet var unknownColorPick: ColorPickButton!
+    
+    
+    var colorPanelCloseNotification: NSObjectProtocol?
+    var currentPicker: ColorPickButton?
+    
+    @IBAction func pickColor(_ sender: ColorPickButton) {
+        currentPicker = sender
+        
+        let colorPanel = NSColorPanel.shared
+        colorPanel.color = sender.color
+        colorPanel.setTarget(self)
+        colorPanel.setAction(#selector(colorDidChange))
+        colorPanel.makeKeyAndOrderFront(self)
+        colorPanel.isContinuous = true
+    }
+    
+    let pref = Preferences.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,17 +54,27 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         initMenu(for: playerPopUpButton)
         initMenu(for: decoderPopUpButton)
         
-        portTextField.isEnabled = Preferences.shared.enableDanmaku
+        portTextField.isEnabled = pref.enableDanmaku
             && Processes.shared.iinaArchiveType() != .normal
             && Processes.shared.iinaBuildVersion() > 16
+        
+        
+        colorPanelCloseNotification = NotificationCenter.default.addObserver(forName: NSColorPanel.willCloseNotification, object: nil, queue: .main) { _ in
+            self.currentPicker = nil
+        }
+        
+        livingColorPick.color = pref.stateLiving
+        offlineColorPick.color = pref.stateOffline
+        replayColorPick.color = pref.stateReplay
+        unknownColorPick.color = pref.stateUnknown
     }
     
     func menuDidClose(_ menu: NSMenu) {
         switch menu {
         case playerPopUpButton.menu:
-            Preferences.shared.livePlayer = LivePlayer(index: playerPopUpButton.indexOfSelectedItem)
+            pref.livePlayer = LivePlayer(index: playerPopUpButton.indexOfSelectedItem)
         case decoderPopUpButton.menu:
-            Preferences.shared.liveDecoder = LiveDecoder(index: decoderPopUpButton.indexOfSelectedItem)
+            pref.liveDecoder = LiveDecoder(index: decoderPopUpButton.indexOfSelectedItem)
         default:
             break
         }
@@ -50,17 +83,16 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     func initMenu(for popUpButton: NSPopUpButton) {
         switch popUpButton {
         case playerPopUpButton:
-            popUpButton.selectItem(at: Preferences.shared.livePlayer.index())
+            popUpButton.selectItem(at: pref.livePlayer.index())
         case decoderPopUpButton:
             popUpButton.autoenablesItems = false
-            popUpButton.selectItem(at: Preferences.shared.liveDecoder.index())
+            popUpButton.selectItem(at: pref.liveDecoder.index())
         default:
             break
         }
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        let pref = Preferences.shared
         guard let vc = segue.destinationController as? FontSelectorViewController else { return }
         checkFontWeight()
         
@@ -88,7 +120,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     func initFontSelector() {
         checkFontWeight()
         
-        let pref = Preferences.shared
         let name = pref.danmukuFontFamilyName
         let weight = pref.danmukuFontWeight
         
@@ -98,13 +129,39 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     }
     
     func checkFontWeight() {
-        let pref = Preferences.shared
+        
         let name = pref.danmukuFontFamilyName
         let weight = pref.danmukuFontWeight
         let weights = fontWeights(ofFontFamily: name)
         if !weights.contains(weight),
            let w = weights.first {
             pref.danmukuFontWeight = w
+        }
+    }
+    
+    @objc func colorDidChange(sender: NSColorPanel) {
+        let colorPanel = sender
+        guard let picker = currentPicker else { return }
+        
+        picker.color = colorPanel.color
+        
+        switch picker {
+        case livingColorPick:
+            pref.stateLiving = colorPanel.color
+        case offlineColorPick:
+            pref.stateOffline = colorPanel.color
+        case replayColorPick:
+            pref.stateReplay = colorPanel.color
+        case unknownColorPick:
+            pref.stateUnknown = colorPanel.color
+        default:
+            break
+        }
+    }
+    
+    deinit {
+        if let n = colorPanelCloseNotification {
+            NotificationCenter.default.removeObserver(n)
         }
     }
 }
