@@ -12,10 +12,9 @@ import SDWebImage
 class LiveStatusTableCellView: NSTableCellView {
 
     @IBOutlet weak var userCoverImageView: NSImageView!
-    @IBOutlet weak var liveStatusImageView: NSImageView!
+    
     @IBOutlet weak var titleTextField: NSTextField!
     @IBOutlet weak var nameTextField: NSTextField!
-    
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -28,7 +27,6 @@ class LiveStatusTableCellView: NSTableCellView {
             self.userCoverImageView.image = nil
             self.nameTextField.stringValue = ""
         }
-        self.liveStatusImageView.image = NSImage(named: "NSStatusNone")
     }
     
     
