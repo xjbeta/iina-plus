@@ -170,19 +170,14 @@ class Preferences: NSObject {
         }
     }
     
-    private func colorEncode(_ color: NSColor) -> [CGFloat] {
-        return [
-            color.redComponent,
-            color.greenComponent,
-            color.blueComponent,
-            color.alphaComponent
-        ]
+    private func colorEncode(_ color: NSColor) -> Data {
+        (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
     }
     
     private func colorDecode(_ value: Any?) -> NSColor? {
-        guard let rgba = value as? [CGFloat],
-              rgba.count == 4 else { return nil }
-        return NSColor(red: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
+        guard let data = value as? Data,
+              let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) else { return nil }
+        return color
     }
 }
 
