@@ -511,6 +511,45 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct EgameMInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var avatar: String
+    var isLiving = false
+    var pid = ""
+    var anchorId: Int
+    var lastTm = 0
+    var streamInfos: [StreamInfo]
+    
+    var site: SupportSites = .eGame
+    
+    var cover: String = ""
+    
+    struct StreamInfo: Unmarshaling {
+        let playUrl: String
+        let desc: String
+        init(object: MarshaledObject) throws {
+            let u: String = try object.value(for: "playUrl")
+            playUrl = u.replacingOccurrences(of: "&amp;", with: "&")
+            desc = try object.value(for: "desc")
+        }
+    }
+    
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "liveInfo.data.videoInfo.title")
+        name = try object.value(for: "liveInfo.data.profileInfo.nickName")
+        avatar = try object.value(for: "liveInfo.data.profileInfo.faceUrl")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        let liveStatus: Int = try object.value(for: "liveInfo.data.profileInfo.isLive")
+        isLiving = liveStatus == 1
+        pid = try object.value(for: "liveInfo.data.videoInfo.pid")
+        anchorId = try object.value(for: "liveInfo.data.videoInfo.anchorId")
+        
+        streamInfos = try object.value(for: "liveInfo.data.videoInfo.streamInfos")
+    }
+}
+
 
 
 // MARK: - Bilibili
