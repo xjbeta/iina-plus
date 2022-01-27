@@ -84,11 +84,11 @@ class Danmaku: NSObject {
     
     
     
-    init(_ site: SupportSites, url: String) {
-        liveSite = site
+    init(_ url: String) {
+        liveSite = .init(url: url)
         self.url = url
         
-        if site == .huya {
+        if liveSite == .huya {
             if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
                 huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
             } else {

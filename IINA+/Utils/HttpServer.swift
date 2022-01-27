@@ -55,7 +55,7 @@ class HttpServer: NSObject, DanmakuDelegate {
     func register(_ id: String,
                   site: SupportSites,
                   url: String) {
-        let d = Danmaku(site, url: url)
+        let d = Danmaku(url)
         d.id = id
         d.delegate = self
         if site == .bilibili {
