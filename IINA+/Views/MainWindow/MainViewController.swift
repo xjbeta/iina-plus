@@ -193,7 +193,7 @@ class MainViewController: NSViewController {
                processes.iinaArchiveType() != .normal {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya:
-                    self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
+                    processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
                 }
@@ -206,14 +206,13 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    let httpServer = HttpServer()
     
     let iinaProxyAF = Alamofire.Session()
     
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        httpServer.start()
+        let proc = Processes.shared
         
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
@@ -243,7 +242,7 @@ class MainViewController: NSViewController {
             guard let dic = $0.userInfo as? [String: String],
                 let id = dic["id"] else { return }
             
-            self.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
+            proc.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
         }
         
         // esc key down event
