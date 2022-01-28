@@ -21,6 +21,18 @@
 		01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; };
 		01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
+		0120932B27A3B441002C7FD3 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* default.css */; };
+		0120932C27A3B441002C7FD3 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
+		0120932D27A3B441002C7FD3 /* index.htm in Resources */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
+		0120933627A3B589002C7FD3 /* CommentCoreLibrary.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */; };
+		0120933827A3B592002C7FD3 /* style.min.css in Resources */ = {isa = PBXBuildFile; fileRef = 0120933727A3B592002C7FD3 /* style.min.css */; };
+		0120933A27A3B59D002C7FD3 /* flv.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120933927A3B59C002C7FD3 /* flv.min.js */; };
+		0120933B27A3B5B6002C7FD3 /* flv.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933927A3B59C002C7FD3 /* flv.min.js */; };
+		0120933C27A3B5B6002C7FD3 /* style.min.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933727A3B592002C7FD3 /* style.min.css */; };
+		0120933D27A3B5B6002C7FD3 /* CommentCoreLibrary.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */; };
+		0120933E27A3B5B6002C7FD3 /* default.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* default.css */; };
+		0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
+		0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
 		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
@@ -31,11 +43,6 @@
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
 		013CE8E021854813000271FB /* VideoGet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoGet.swift */; };
-		013CE8F02185D0EA000271FB /* default.css in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC4213D236E00C4939B /* default.css */; };
-		013CE8F12185D0EA000271FB /* index.htm in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC5213D236E00C4939B /* index.htm */; };
-		013CE8F22185D0EA000271FB /* main.js in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CAC6213D236E00C4939B /* main.js */; };
-		013CE8F32185D0EA000271FB /* CommentCoreLibrary.js in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACA213D263000C4939B /* CommentCoreLibrary.js */; };
-		013CE8F42185D0EA000271FB /* style.css in Copy Danamaku Files */ = {isa = PBXBuildFile; fileRef = 01E8CACC213D263800C4939B /* style.css */; };
 		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
 		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
 		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
@@ -104,19 +111,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		013CE8EF2185D09F000271FB /* Copy Danamaku Files */ = {
+		013CE8EF2185D09F000271FB /* Copy Web Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = danmaku;
+			dstPath = WebPlayer;
 			dstSubfolderSpec = 7;
 			files = (
-				013CE8F02185D0EA000271FB /* default.css in Copy Danamaku Files */,
-				013CE8F12185D0EA000271FB /* index.htm in Copy Danamaku Files */,
-				013CE8F22185D0EA000271FB /* main.js in Copy Danamaku Files */,
-				013CE8F32185D0EA000271FB /* CommentCoreLibrary.js in Copy Danamaku Files */,
-				013CE8F42185D0EA000271FB /* style.css in Copy Danamaku Files */,
+				0120933B27A3B5B6002C7FD3 /* flv.min.js in Copy Web Files */,
+				0120933C27A3B5B6002C7FD3 /* style.min.css in Copy Web Files */,
+				0120933D27A3B5B6002C7FD3 /* CommentCoreLibrary.min.js in Copy Web Files */,
+				0120933E27A3B5B6002C7FD3 /* default.css in Copy Web Files */,
+				0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */,
+				0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */,
 			);
-			name = "Copy Danamaku Files";
+			name = "Copy Web Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		014F541926D9184100B9E82A /* Embed Frameworks */ = {
@@ -156,6 +164,12 @@
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
 		01176CAC2713223200BB7E10 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		0120932827A3B441002C7FD3 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
+		0120932927A3B441002C7FD3 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
+		0120932A27A3B441002C7FD3 /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
+		0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
+		0120933727A3B592002C7FD3 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
+		0120933927A3B59C002C7FD3 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebPlayer/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
 		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
@@ -225,11 +239,6 @@
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		01E40FF922C39E7700864118 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
-		01E8CAC4213D236E00C4939B /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
-		01E8CAC5213D236E00C4939B /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
-		01E8CAC6213D236E00C4939B /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
-		01E8CACA213D263000C4939B /* CommentCoreLibrary.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CommentCoreLibrary.js; sourceTree = "<group>"; };
-		01E8CACC213D263800C4939B /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -309,6 +318,27 @@
 				01479CD2210AF5F40046AAAD /* DataManager.swift */,
 			);
 			path = "Core Data";
+			sourceTree = "<group>";
+		};
+		0120932727A3B350002C7FD3 /* WebPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				0120933427A3B576002C7FD3 /* Deps */,
+				0120932827A3B441002C7FD3 /* default.css */,
+				0120932A27A3B441002C7FD3 /* index.htm */,
+				0120932927A3B441002C7FD3 /* main.js */,
+			);
+			path = WebPlayer;
+			sourceTree = "<group>";
+		};
+		0120933427A3B576002C7FD3 /* Deps */ = {
+			isa = PBXGroup;
+			children = (
+				0120933927A3B59C002C7FD3 /* flv.min.js */,
+				0120933727A3B592002C7FD3 /* style.min.css */,
+				0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */,
+			);
+			path = Deps;
 			sourceTree = "<group>";
 		};
 		012601722119BA6D00C9C639 /* Utils */ = {
@@ -421,8 +451,8 @@
 				01C373582429F2C2006778D1 /* README.md */,
 				01F46CDC2108C55C00FE9DAD /* iina+.entitlements */,
 				014F53F526D8F2EB00B9E82A /* Cartfile */,
+				0120932727A3B350002C7FD3 /* WebPlayer */,
 				019EB39D21453A97000FD123 /* Resources */,
-				01E8CAC3213D235A00C4939B /* DanmakuWeb */,
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
 				010F0F2E20FF414E00F33553 /* Core Data */,
 				012601722119BA6D00C9C639 /* Utils */,
@@ -441,26 +471,6 @@
 				01AEC8AE20EDFD02001406E8 /* Assets.xcassets */,
 			);
 			path = Assets;
-			sourceTree = "<group>";
-		};
-		01E8CAC3213D235A00C4939B /* DanmakuWeb */ = {
-			isa = PBXGroup;
-			children = (
-				01E8CAC4213D236E00C4939B /* default.css */,
-				01E8CAC5213D236E00C4939B /* index.htm */,
-				01E8CAC6213D236E00C4939B /* main.js */,
-				01E8CACE213D264300C4939B /* CommentCoreLibrary */,
-			);
-			path = DanmakuWeb;
-			sourceTree = "<group>";
-		};
-		01E8CACE213D264300C4939B /* CommentCoreLibrary */ = {
-			isa = PBXGroup;
-			children = (
-				01E8CACA213D263000C4939B /* CommentCoreLibrary.js */,
-				01E8CACC213D263800C4939B /* style.css */,
-			);
-			path = CommentCoreLibrary;
 			sourceTree = "<group>";
 		};
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
@@ -490,7 +500,7 @@
 				01AEC8A420EDFD01001406E8 /* Frameworks */,
 				01AEC8A520EDFD01001406E8 /* Resources */,
 				019BFF5D212485B900E715CC /* ShellScript */,
-				013CE8EF2185D09F000271FB /* Copy Danamaku Files */,
+				013CE8EF2185D09F000271FB /* Copy Web Files */,
 				014F541926D9184100B9E82A /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -558,16 +568,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				014F53F626D8F2EB00B9E82A /* Cartfile in Resources */,
+				0120933A27A3B59D002C7FD3 /* flv.min.js in Resources */,
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
+				0120933627A3B589002C7FD3 /* CommentCoreLibrary.min.js in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
+				0120932B27A3B441002C7FD3 /* default.css in Resources */,
+				0120932C27A3B441002C7FD3 /* main.js in Resources */,
 				0189533D279E9AA40011BAAC /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
+				0120932D27A3B441002C7FD3 /* index.htm in Resources */,
+				0120933827A3B592002C7FD3 /* style.min.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

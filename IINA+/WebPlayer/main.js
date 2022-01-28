@@ -5,6 +5,119 @@ var isLiving = true;
 var defWidth = 680;
 var uuid = '';
 
+window.openUrl = function(url) {
+    if (flvjs.isSupported()) {
+        var videoElement = document.getElementById('videoElement');
+
+        var mediaDataSource = {
+            type: 'flv',
+            hasAudio: true,
+            hasVideo: true,
+            isLive: true,
+            withCredentials: false,
+            url: url
+        };
+
+        var flvPlayer = flvjs.createPlayer(mediaDataSource, {
+            enableWorker: false,
+            lazyLoadMaxDuration: 3 * 60,
+            seekType: 'range',
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.play();
+    }
+};
+
+window.dmMessage = function(event) {    
+    if (event.method != 'sendDM') {
+        console.log(event.method, event.text);
+    }
+    
+    switch(event.method) {
+    case 'start':
+        window.cm.start();
+        break;
+    case 'stop':
+        window.cm.stop();
+        break;
+    case 'initDM':
+        window.initDM();
+        break;
+    case 'resize':
+        window.resize();
+        break;
+    case 'customFont':
+        window.customFont(event.text);
+        break;
+    case 'loadDM':
+        if (event.text == 'acfun') {
+            loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
+        } else {
+            loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
+            
+            console.log('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
+        }
+        isLiving = false;
+        break;
+    case 'sendDM':
+        if (document.visibilityState == 'visible') {
+            var comment = {
+                'text': event.text,
+                'stime': 0,
+                'mode': 1,
+                'color': 0xffffff,
+                'border': false
+            };
+            window.cm.send(comment);
+        }
+        break
+    case 'liveDMServer':
+        updateStatus(event.text);
+        break
+    case 'dmSpeed':
+        defWidth = event.text;
+        window.resize();
+        break
+    case 'dmOpacity':
+        window.cm.options.global.opacity = event.text;
+        break
+    case 'dmFontSize':
+        // updateStatus(event.text);
+        break
+    case 'dmBlockList':
+        let t = event.text;
+        if (t.includes('List')) {
+            window.loadFilter('/danmaku/iina-plus-blockList.xml');
+        }
+        if (t.includes('Top')) {
+            cm.filter.allowTypes[5] = false;
+        }
+        if (t.includes('Bottom')) {
+            cm.filter.allowTypes[4] = false;
+        }
+        if (t.includes('Scroll')) {
+            cm.filter.allowTypes[1] = false;
+            cm.filter.allowTypes[2] = false;
+        }
+        if (t.includes('Color')) {
+            cm.filter.addRule({
+                subject: 'color',
+                op: '=',
+                value: 16777215,
+                mode: 'accept'
+            });
+        }
+        if (t.includes('Advanced')) {
+            cm.filter.allowTypes[7] = false;
+            cm.filter.allowTypes[8] = false;
+        }
+        break
+    default:
+        break;
+    };
+};
+
 function bind() {
     window.cm = new CommentManager($('commentCanvas'));
     cm.init();
@@ -24,6 +137,7 @@ function bind() {
             cm.stop();
             cm.clear();
         };
+        resize();
     });
 
     window.initDM = function() {
@@ -139,94 +253,7 @@ function start(websocketServerLocation){
     };
     ws.onmessage = function(evt) { 
         var event = JSON.parse(evt.data);
-        
-        if (event.method != 'sendDM') {
-            console.log(event.method, event.text);
-        }
-        
-        switch(event.method) {
-        case 'start':
-            window.cm.start();
-            break;
-        case 'stop':
-            window.cm.stop();
-            break;
-        case 'initDM':
-            window.initDM();
-            break;
-        case 'resize':
-            window.resize();
-            break;
-        case 'customFont':
-            window.customFont(event.text);
-            break;
-        case 'loadDM':
-            if (event.text == 'acfun') {
-                loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
-            } else {
-                loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
-                
-                console.log('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
-            }
-            isLiving = false;
-            break;
-        case 'sendDM':
-            if (document.visibilityState == 'visible') {
-                var comment = {
-                    'text': event.text,
-                    'stime': 0,
-                    'mode': 1,
-                    'color': 0xffffff,
-                    'border': false
-                };
-                window.cm.send(comment);
-            }
-            break
-        case 'liveDMServer':
-            updateStatus(event.text);
-            break
-        case 'dmSpeed':
-            defWidth = event.text;
-            window.resize();
-            break
-        case 'dmOpacity':
-            window.cm.options.global.opacity = event.text;
-            break
-        case 'dmFontSize':
-            // updateStatus(event.text);
-            break
-        case 'dmBlockList':
-            let t = event.text;
-            if (t.includes('List')) {
-                window.loadFilter('/danmaku/iina-plus-blockList.xml');
-            }
-            if (t.includes('Top')) {
-                cm.filter.allowTypes[5] = false;
-            }
-            if (t.includes('Bottom')) {
-                cm.filter.allowTypes[4] = false;
-            }
-            if (t.includes('Scroll')) {
-                cm.filter.allowTypes[1] = false;
-                cm.filter.allowTypes[2] = false;
-            }
-            if (t.includes('Color')) {
-                cm.filter.addRule({
-                    subject: 'color',
-                    op: '=',
-                    value: 16777215,
-                    mode: 'accept'
-                });
-            }
-            if (t.includes('Advanced')) {
-                cm.filter.allowTypes[7] = false;
-                cm.filter.allowTypes[8] = false;
-            }
-            break
-        default:
-            break;
-        }
-
+        window.dmMessage(event);
     };
     ws.onclose = function(){
         if (isLiving) {
