@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19529"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Window Controller-->
+        <scene sceneID="k2J-oq-hbI">
+            <objects>
+                <windowController id="GVV-O1-4pZ" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="KNO-9C-XR9">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="196" y="239" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
+                        <view key="contentView" id="lnq-x6-rHl">
+                            <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="GVV-O1-4pZ" id="bGZ-ge-Rf5"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="bU7-R8-ocO" kind="relationship" relationship="window.shadowedContentViewController" id="R63-NS-E89"/>
+                    </connections>
+                </windowController>
+                <customObject id="7H6-0f-xwx" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="24" y="-217"/>
+        </scene>
+        <!--Player View Controller-->
+        <scene sceneID="PEd-7d-5j0">
+            <objects>
+                <viewController id="bU7-R8-ocO" customClass="JSPlayerViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="tOy-S4-hL0">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="253"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QBH-lg-R4B">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="253"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="QBH-lg-R4B" secondAttribute="height" multiplier="16:9" id="XYb-9g-YIs"/>
+                                </constraints>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="QBH-lg-R4B" secondAttribute="bottom" id="1ch-fr-N79"/>
+                            <constraint firstAttribute="trailing" secondItem="QBH-lg-R4B" secondAttribute="trailing" id="36g-Gy-zPb"/>
+                            <constraint firstItem="QBH-lg-R4B" firstAttribute="top" secondItem="tOy-S4-hL0" secondAttribute="top" id="eyN-98-j2y"/>
+                            <constraint firstItem="QBH-lg-R4B" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" id="vSA-ON-YkQ"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="ratioConstraint" destination="XYb-9g-YIs" id="5QW-nO-f1Y"/>
+                        <outlet property="webView" destination="QBH-lg-R4B" id="Pqv-me-EwD"/>
+                    </connections>
+                </viewController>
+                <customObject id="9uD-mB-xHs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="24" y="172"/>
+        </scene>
+    </scenes>
+</document>

@@ -33,6 +33,8 @@
 		0120933E27A3B5B6002C7FD3 /* default.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* default.css */; };
 		0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
 		0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
+		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
+		0120934627A4F8E6002C7FD3 /* JSPlayerControllersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
 		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
@@ -86,6 +88,8 @@
 		0189533D279E9AA40011BAAC /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0189533C279E9AA40011BAAC /* Preferences.storyboard */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
+		0189534D27A1381C0011BAAC /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0189534C27A1381C0011BAAC /* JSPlayer.storyboard */; };
+		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
@@ -170,6 +174,8 @@
 		0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
 		0120933727A3B592002C7FD3 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		0120933927A3B59C002C7FD3 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebPlayer/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
+		0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerWindowController.swift; sourceTree = "<group>"; };
+		0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerControllersView.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
 		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
@@ -216,6 +222,8 @@
 		0189533C279E9AA40011BAAC /* Preferences.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Preferences.storyboard; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
 		0189534727A0F5A90011BAAC /* LiveStateTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateTextField.swift; sourceTree = "<group>"; };
+		0189534C27A1381C0011BAAC /* JSPlayer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = JSPlayer.storyboard; sourceTree = "<group>"; };
+		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
@@ -298,6 +306,7 @@
 		010F0EF320F8930500F33553 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0189534B27A138040011BAAC /* JSPlayer */,
 				0101012C211DCE22002F0F7F /* Siderbar */,
 				01F46C9F2102EEFB00FE9DAD /* Preferences */,
 				01479CD8210B35D80046AAAD /* MainWindow */,
@@ -415,6 +424,17 @@
 				016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */,
 			);
 			path = SelectVideoCollectionView;
+			sourceTree = "<group>";
+		};
+		0189534B27A138040011BAAC /* JSPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				0189534C27A1381C0011BAAC /* JSPlayer.storyboard */,
+				0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */,
+				0189534E27A138310011BAAC /* JSPlayerViewController.swift */,
+				0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */,
+			);
+			path = JSPlayer;
 			sourceTree = "<group>";
 		};
 		019EB39D21453A97000FD123 /* Resources */ = {
@@ -572,6 +592,7 @@
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
+				0189534D27A1381C0011BAAC /* JSPlayer.storyboard in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
 				0120933627A3B589002C7FD3 /* CommentCoreLibrary.min.js in Resources */,
@@ -617,6 +638,7 @@
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
 				01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */,
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
+				0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */,
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
@@ -629,9 +651,11 @@
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
+				0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
+				0120934627A4F8E6002C7FD3 /* JSPlayerControllersView.swift in Sources */,
 				0199489E2742852E00C71708 /* SupportSites.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
