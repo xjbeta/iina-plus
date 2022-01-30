@@ -10,6 +10,10 @@ import Cocoa
 
 class JSPlayerWindowController: NSWindowController {
     
+    var playerVC: JSPlayerViewController? {
+        window?.contentViewController as? JSPlayerViewController
+    }
+    
     override func windowDidLoad() {
         super.windowDidLoad()
     
@@ -20,5 +24,6 @@ class JSPlayerWindowController: NSWindowController {
 
 extension JSPlayerWindowController: NSWindowDelegate {
     func windowDidResize(_ notification: Notification) {
+        playerVC?.resize()
     }
 }

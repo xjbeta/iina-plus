@@ -5,6 +5,12 @@ var isLiving = true;
 var defWidth = 680;
 var uuid = '';
 
+var flvPlayer;
+
+function print(text) {
+    window.webkit.messageHandlers.print.postMessage(text);
+};
+
 window.openUrl = function(url) {
     if (flvjs.isSupported()) {
         var videoElement = document.getElementById('videoElement');
@@ -18,21 +24,34 @@ window.openUrl = function(url) {
             url: url
         };
 
-        var flvPlayer = flvjs.createPlayer(mediaDataSource, {
+        flvPlayer = flvjs.createPlayer(mediaDataSource, {
             enableWorker: false,
             lazyLoadMaxDuration: 3 * 60,
             seekType: 'range',
         });
+
+        flvjs.LoggingControl.addLogListener(function(type, str) {
+            print(str);
+        });
+
         flvPlayer.attachMediaElement(videoElement);
+
         flvPlayer.load();
         flvPlayer.play();
+
+        flvPlayer.on("media_info", function(info) {
+            print(info);
+            window.webkit.messageHandlers.size.postMessage([flvPlayer.mediaInfo.width, flvPlayer.mediaInfo.height]);
+        });
+
+
     }
 };
 
 window.dmMessage = function(event) {    
     if (event.method != 'sendDM') {
         console.log(event.method, event.text);
-    }
+    };
     
     switch(event.method) {
     case 'start':
