@@ -906,3 +906,43 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
         }
     }
 }
+
+
+struct CC163NewVideos: Unmarshaling {
+    let title: String
+    let videos: [String: VideoItem]
+    
+    struct VideoItem: Unmarshaling {
+        let vbr: Int
+        let urls: [String]
+        
+        init(object: MarshaledObject) throws {
+            vbr = try object.value(for: "vbr")
+            let cdnItems: [String: Any] = try object.value(for: "cdn")
+            
+            urls = Array(cdnItems.compactMapValues({ $0 as? String }).values)
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        videos = try object.value(for: "quickplay.resolution")
+        title = try object.value(for: "title")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        json.title = title
+        
+        videos.filter {
+            $0.value.urls.count > 0
+        }.forEach {
+            let video = $0.value
+            var stream = Stream(url: video.urls.first!)
+            stream.quality = video.vbr
+            stream.src = Array(video.urls.dropFirst())
+            json.streams[$0.key] = stream
+        }
+        
+        return json
+    }
+}
