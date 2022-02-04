@@ -19,14 +19,19 @@ protocol JSPlayerDelegate {
 class JSPlayerViewController: NSViewController {
     @IBOutlet var ratioConstraint: NSLayoutConstraint!
     @IBOutlet var webView: WKWebView!
-    
 
+    
     
     var delegate: JSPlayerDelegate?
     var danmaku: Danmaku?
     
     enum ScriptMessageKeys: String, CaseIterable {
-        case print, size
+        case print,
+             size,
+             
+             error,
+             loadingComplete,
+             recoveredEarlyEof
     }
     
     override func viewDidLoad() {
@@ -109,6 +114,12 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             print(size)
             ratioConstraint.animator().constant = w / h
             resize()
+        case .loadingComplete:
+            break
+        case .recoveredEarlyEof:
+            break
+        case .error:
+            break
         }
     }
 }
