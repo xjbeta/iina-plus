@@ -34,6 +34,7 @@
 		0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
 		0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
 		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
+		0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */; };
 		0120934627A4F8E6002C7FD3 /* JSPlayerControllersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
@@ -175,6 +176,7 @@
 		0120933727A3B592002C7FD3 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		0120933927A3B59C002C7FD3 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebPlayer/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
 		0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerWindowController.swift; sourceTree = "<group>"; };
+		0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerWebView.swift; sourceTree = "<group>"; };
 		0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerControllersView.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				0189534C27A1381C0011BAAC /* JSPlayer.storyboard */,
 				0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */,
 				0189534E27A138310011BAAC /* JSPlayerViewController.swift */,
+				0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */,
 				0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */,
 			);
 			path = JSPlayer;
@@ -674,6 +677,7 @@
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
+				0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
 				0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */,
 				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,

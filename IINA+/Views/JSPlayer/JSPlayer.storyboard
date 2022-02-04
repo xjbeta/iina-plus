@@ -10,9 +10,9 @@
         <!--Window Controller-->
         <scene sceneID="k2J-oq-hbI">
             <objects>
-                <windowController id="GVV-O1-4pZ" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="KNO-9C-XR9">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                <windowController id="GVV-O1-4pZ" customClass="JSPlayerWindowController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="239" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
