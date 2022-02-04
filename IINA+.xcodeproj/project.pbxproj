@@ -15,6 +15,7 @@
 		01010132211E987D002F0F7F /* WaitingTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010130211E987D002F0F7F /* WaitingTableCellView.swift */; };
 		01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010136211EFA75002F0F7F /* SuggestionsTableView.swift */; };
 		0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */; };
+		0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
@@ -164,6 +165,7 @@
 		01010130211E987D002F0F7F /* WaitingTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitingTableCellView.swift; sourceTree = "<group>"; };
 		01010136211EFA75002F0F7F /* SuggestionsTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsTableView.swift; sourceTree = "<group>"; };
 		0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveUrlTableCellView.swift; sourceTree = "<group>"; };
+		0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllersVisualEffectView.swift; sourceTree = "<group>"; };
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
@@ -434,6 +436,7 @@
 				0189534C27A1381C0011BAAC /* JSPlayer.storyboard */,
 				0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */,
 				0189534E27A138310011BAAC /* JSPlayerViewController.swift */,
+				0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */,
 				0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */,
 				0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */,
 			);
@@ -692,6 +695,7 @@
 				013CE8E021854813000271FB /* VideoGet.swift in Sources */,
 				01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
+				0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */,
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
 				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
