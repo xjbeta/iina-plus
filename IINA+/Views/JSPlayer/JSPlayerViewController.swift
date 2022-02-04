@@ -9,13 +9,20 @@
 import Cocoa
 import WebKit
 
+protocol JSPlayerDelegate {
+    func jsPlayer(_ viewController: JSPlayerViewController, didFinish webview: WKWebView)
+    
+    
+}
+
+
 class JSPlayerViewController: NSViewController {
     @IBOutlet var ratioConstraint: NSLayoutConstraint!
     @IBOutlet var webView: WKWebView!
     
-    let siteUrl =
-"https://live.bilibili.com/3"
 
+    
+    var delegate: JSPlayerDelegate?
     var danmaku: Danmaku?
     
     enum ScriptMessageKeys: String, CaseIterable {
@@ -55,14 +62,28 @@ class JSPlayerViewController: NSViewController {
         webView.load(request)
     }
     
+    func open(_ url: String) {
+        webView.evaluateJavaScript("window.openUrl('\(url)');")
+        webView.evaluateJavaScript("initContent('\(UUID().uuidString)', \(Preferences.shared.dmPort));")
+    }
+    
     func resize() {
         webView.evaluateJavaScript("window.resize();")
     }
+    
+    func startDM(_ url: String) {
+        self.danmaku = Danmaku(url)
+        self.danmaku?.loadDM()
+        self.danmaku?.delegate = self
+    }
+    
 }
 
 extension JSPlayerViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         Log("Finish")
+        
+        delegate?.jsPlayer(self, didFinish: webView)
         
     }
 }

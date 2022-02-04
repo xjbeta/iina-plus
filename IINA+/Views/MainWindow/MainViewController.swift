@@ -473,6 +473,7 @@ class MainViewController: NSViewController {
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     self.yougetResult = $0
+                    self.yougetResult?.rawUrl = str
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
                     resolver.reject($0)
