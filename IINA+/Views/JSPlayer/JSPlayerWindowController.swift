@@ -35,6 +35,7 @@ class JSPlayerWindowController: NSWindowController {
 extension JSPlayerWindowController: NSWindowDelegate {
     func windowDidResize(_ notification: Notification) {
         playerVC?.resize()
+        window?.isMovableByWindowBackground = true
     }
     
     func windowWillClose(_ notification: Notification) {

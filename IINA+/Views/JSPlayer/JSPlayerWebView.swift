@@ -24,9 +24,13 @@ class JSPlayerWebView: WKWebView {
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
         false
     }
-    
+
     override func hitTest(_ point: NSPoint) -> NSView? {
         nil
+    }
+    
+    override var mouseDownCanMoveWindow: Bool {
+        true
     }
     
 }
