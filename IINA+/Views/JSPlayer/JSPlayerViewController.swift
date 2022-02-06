@@ -7,22 +7,65 @@
 //
 
 import Cocoa
+import PromiseKit
 import WebKit
 
-protocol JSPlayerDelegate {
-    func jsPlayer(_ viewController: JSPlayerViewController, didFinish webview: WKWebView)
-    
-    
-}
-
-
 class JSPlayerViewController: NSViewController {
+    
+// MARK: - WebView
     @IBOutlet var ratioConstraint: NSLayoutConstraint!
     @IBOutlet var webView: WKWebView!
 
+// MARK: - Player Controllers
+    
+    @IBOutlet var loadingProgressIndicator: NSProgressIndicator!
     
     
-    var delegate: JSPlayerDelegate?
+    @IBOutlet var reloadButton: NSButton!
+    @IBAction func reloadVideo(_ sender: NSButton) {
+        
+    }
+    
+    @IBOutlet var volumeButton: NSButton!
+    @IBAction func mute(_ sender: NSButton) {
+        
+    }
+    
+    @IBOutlet var volumeSlider: NSSlider!
+    @IBAction func volumeChanged(_ sender: NSSlider) {
+        
+    }
+    
+    
+    @IBOutlet var linesPopUpButton: NSPopUpButton!
+    @IBAction func lineChanged(_ sender: NSPopUpButton) {
+        
+    }
+    
+    @IBOutlet var quailtyButton: NSButton!
+    @IBOutlet var quailtyHeightLayoutConstraint: NSLayoutConstraint!
+    @IBOutlet var quailtyTableView: NSTableView!
+    @IBAction func quailtyChanged(_ sender: NSTableView) {
+        
+        let i = quailtyTableView.selectedRow
+        guard let re = result,
+              re.videos.count > i else { return }
+
+        let kv = re.videos[i]
+        key = kv.key
+        
+        openResult()
+    }
+    
+    
+    var url = ""
+    
+    var webViewFinishLoaded = false
+    
+    var windowWillClose = false
+    var key: String?
+    var result: YouGetJSON?
+    
     var danmaku: Danmaku?
     
     enum ScriptMessageKeys: String, CaseIterable {
@@ -36,19 +79,100 @@ class JSPlayerViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        startLoading()
         initWebView()
         loadWebView()
     }
     
+    func startLoading(stop: Bool = false) {
+        reloadButton.isHidden = !stop
+        loadingProgressIndicator.isHidden = stop
+        
+        if stop {
+            loadingProgressIndicator.stopAnimation(nil)
+        } else {
+            loadingProgressIndicator.startAnimation(nil)
+        }
+    }
+    
+    func decodeUrl() {
+        let proc = Processes.shared
+        proc.stopDecodeURL()
+        proc.videoGet.liveInfo(url, false).get {
+            if !$0.isLiving {
+                throw VideoGetError.isNotLiving
+            }
+        }.then { _ in
+            proc.decodeURL(self.url)
+        }.done(on: .main) {
+            var re = $0
+            re.rawUrl = self.url
+            self.result = re
+            if self.key == nil {
+                self.key = re.videos.first?.key
+            }
+            
+            self.initControllers()
+            self.openResult()
+        }.catch(on: .main, policy: .allErrors) {
+            print($0)
+        }
+    }
+    
+    
+    func initControllers() {
+        linesPopUpButton.removeAllItems()
+        view.window?.title = result?.title ?? ""
+        
+        guard let re = result,
+              let key = key,
+              let s = re.streams[key]
+        else { return }
+        
+        
+        let titles = (1..<(s.src.count + 2)).map {
+            "Line \($0)"
+        }
+        
+        linesPopUpButton.addItems(withTitles: titles)
+        
+        quailtyButton.title = key
+        quailtyTableView.reloadData()
+        let index = re.videos.firstIndex {
+            $0.key == key
+        } ?? 0
+        
+        quailtyTableView.selectRowIndexes(IndexSet.init(integer: index), byExtendingSelection: true)
+        
+    }
+    
+    func openResult() {
+        guard !windowWillClose,
+              let re = result,
+              let key = key,
+              let url = re.streams[key]?.url
+        else {
+            return
+        }
+        
+        webView.evaluateJavaScript("window.openUrl('\(url)');")
+        webView.evaluateJavaScript("initContent('\(UUID().uuidString)', \(Preferences.shared.dmPort));")
+        
+        switch re.site {
+        case .douyu, .eGame, .biliLive, .huya:
+            startDM(re.rawUrl)
+        case .bilibili, .bangumi:
+            break
+        default:
+            break
+        }
+    }
+    
     func initWebView() {
         // Background Color
-        view.wantsLayer = true
-        view.layer?.backgroundColor = .black
-        webView.setValue(false, forKey: "drawsBackground")
-        
-
-        
+//        view.wantsLayer = true
+//        view.layer?.backgroundColor = .white
+//        webView.setValue(false, forKey: "drawsBackground")
     }
     
     func loadWebView() {
@@ -67,29 +191,46 @@ class JSPlayerViewController: NSViewController {
         webView.load(request)
     }
     
-    func open(_ url: String) {
-        webView.evaluateJavaScript("window.openUrl('\(url)');")
-        webView.evaluateJavaScript("initContent('\(UUID().uuidString)', \(Preferences.shared.dmPort));")
-    }
-    
     func resize() {
         webView.evaluateJavaScript("window.resize();")
     }
     
     func startDM(_ url: String) {
-        self.danmaku = Danmaku(url)
-        self.danmaku?.loadDM()
-        self.danmaku?.delegate = self
+        if let d = danmaku {
+            d.stop()
+            danmaku = nil
+        }
+        
+        danmaku = Danmaku(url)
+        danmaku?.loadDM()
+        danmaku?.delegate = self
     }
+    
+    
     
 }
 
 extension JSPlayerViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         Log("Finish")
+        webViewFinishLoaded = true
+        guard url != "", result == nil else { return }
         
-        delegate?.jsPlayer(self, didFinish: webView)
-        
+        decodeUrl()
+    }
+}
+
+extension JSPlayerViewController: NSWindowDelegate {
+    func windowDidResize(_ notification: Notification) {
+        resize()
+    }
+    
+    func windowWillClose(_ notification: Notification) {
+        Log("windowWillClose")
+        windowWillClose = true
+        danmaku?.stop()
+        danmaku = nil
+        webView.load(URLRequest(url: URL(string:"about:blank")!))
     }
 }
 
@@ -111,9 +252,12 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             let w = wh[0]
             let h = wh[1]
             let size = CGSize(width: w, height: h)
-            print(size)
-            ratioConstraint.animator().constant = w / h
+            view.window?.aspectRatio = size
             resize()
+//            view.window?.setFrame(<#T##frameRect: NSRect##NSRect#>, display: <#T##Bool#>, animate: <#T##Bool#>)
+            
+            self.startLoading(stop: true)
+            
         case .loadingComplete:
             break
         case .recoveredEarlyEof:
@@ -137,5 +281,16 @@ extension JSPlayerViewController: DanmakuDelegate {
             print(str)
         }
         webView.evaluateJavaScript("window.dmMessage(\(str));")
+    }
+}
+
+
+extension JSPlayerViewController: NSTableViewDataSource, NSTableViewDelegate {
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        result?.videos.count ?? 0
+    }
+    
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+        result?.videos[row].key
     }
 }
