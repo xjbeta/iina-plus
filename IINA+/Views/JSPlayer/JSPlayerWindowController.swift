@@ -19,5 +19,25 @@ class JSPlayerWindowController: NSWindowController {
         super.windowDidLoad()
         window?.isMovableByWindowBackground = true
         window?.delegate = contentVC
+        
+        initTitlebar()
+    }
+    
+    func initTitlebar() {
+        guard let titleView = window?.titleView() else { return }
+
+        titleView.wantsLayer = true
+        titleView.layer?.backgroundColor = NSColor(red: 0.16, green: 0.16, blue: 0.16, alpha: 1).cgColor
+    }
+}
+
+
+extension NSWindow {
+    func hideTitlebar(_ hide: Bool) {
+        titleView()?.isHidden = hide
+    }
+    
+    func titleView() -> NSView? {
+        return standardWindowButton(.closeButton)?.superview?.superview
     }
 }
