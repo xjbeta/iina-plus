@@ -13,11 +13,15 @@ import WebKit
 class JSPlayerViewController: NSViewController {
     
 // MARK: - WebView
-    @IBOutlet var ratioConstraint: NSLayoutConstraint!
     @IBOutlet var webView: WKWebView!
 
 // MARK: - Player Controllers
+    enum PlayerController: Int {
+        case titlebar, mainControllers, volume, qlSelector, danmakuPref
+    }
     
+    
+    @IBOutlet var controllersView: ControllersVisualEffectView!
     @IBOutlet var loadingProgressIndicator: NSProgressIndicator!
     
     
@@ -26,6 +30,7 @@ class JSPlayerViewController: NSViewController {
         
     }
     
+    @IBOutlet var volumeBox: NSBox!
     @IBOutlet var volumeButton: NSButton!
     @IBAction func mute(_ sender: NSButton) {
         
@@ -37,12 +42,18 @@ class JSPlayerViewController: NSViewController {
     }
     
     
+    @IBOutlet var danmakuPrefButton: NSButton!
+    
+    
+    
+    @IBOutlet var qlButton: NSButton!
+    @IBOutlet var qlBox: NSBox!
+    
     @IBOutlet var linesPopUpButton: NSPopUpButton!
     @IBAction func lineChanged(_ sender: NSPopUpButton) {
         
     }
-    
-    @IBOutlet var quailtyButton: NSButton!
+
     @IBOutlet var quailtyHeightLayoutConstraint: NSLayoutConstraint!
     @IBOutlet var quailtyTableView: NSTableView!
     @IBAction func quailtyChanged(_ sender: NSTableView) {
@@ -52,12 +63,54 @@ class JSPlayerViewController: NSViewController {
               re.videos.count > i else { return }
 
         let kv = re.videos[i]
-        key = kv.key
         
-        openResult()
+        if key != kv.key {
+            key = kv.key
+            openResult()
+        }
     }
     
+
+// MARK: - Mouse State
+    var mouseInWindow = false {
+        willSet {
+            guard newValue != mouseInWindow else { return }
+            updateAllControllers(hide: !newValue)
+        }
+    }
     
+    var mouseInControlls = false
+    var mouseInQLBox = false
+    var mouseInVolumeBox = false
+    
+    var mouseInVolume = false {
+        willSet {
+            guard newValue != mouseInVolume else { return }
+            volumeBox.isHidden = !newValue
+        }
+    }
+    var mouseInQL = false {
+        willSet {
+            guard newValue != mouseInQL else { return }
+            qlBox.isHidden = !newValue
+        }
+    }
+    
+    var mouseInDanmaku = false {
+        willSet {
+            guard newValue != mouseInDanmaku else { return }
+            if newValue {
+                print("mouseInDanmaku")
+            } else {
+                print("hide Danmaku")
+            }
+        }
+    }
+    
+    var hideOSCTimer: WaitTimer?
+    
+    
+// MARK: - Other Value
     var url = ""
     
     var webViewFinishLoaded = false
@@ -79,10 +132,62 @@ class JSPlayerViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        qlBox.isHidden = true
+        volumeBox.isHidden = true
+        
+        initTrackingAreas()
+        
         startLoading()
         initWebView()
         loadWebView()
     }
+    
+    func initTrackingAreas() {
+        startTrackingAreas(view)
+        startTrackingAreas(controllersView)
+        startTrackingAreas(qlBox)
+        startTrackingAreas(volumeBox)
+        
+        hideOSCTimer?.stop()
+        hideOSCTimer = nil
+        hideOSCTimer = WaitTimer(timeOut: .seconds(3), queue: .main) {
+            self.updateAllControllers(hide: true)
+            NSCursor.setHiddenUntilMouseMoves(true)
+        }
+    }
+    
+    func startTrackingAreas(_ view: NSView) {
+        var userInfo = [AnyHashable: PlayerController]()
+        
+        switch view {
+        case self.view:
+            userInfo["id"] = .titlebar
+        case controllersView:
+            userInfo["id"] = .mainControllers
+        case qlBox:
+            userInfo["id"] = .qlSelector
+        case volumeBox:
+            userInfo["id"] = .volume
+        default:
+            break
+        }
+        
+        view.trackingAreas.forEach {
+            view.removeTrackingArea($0)
+        }
+        view.addTrackingArea(
+            NSTrackingArea(rect: view.frame,
+                           options: [
+                            .activeInKeyWindow,
+                            .mouseMoved,
+                            .mouseEnteredAndExited,
+                            .assumeInside,
+                            .inVisibleRect
+                           ],
+                           owner: view,
+                           userInfo: userInfo))
+    }
+    
     
     func startLoading(stop: Bool = false) {
         reloadButton.isHidden = !stop
@@ -136,7 +241,7 @@ class JSPlayerViewController: NSViewController {
         
         linesPopUpButton.addItems(withTitles: titles)
         
-        quailtyButton.title = key
+        qlButton.title = key
         quailtyTableView.reloadData()
         let index = re.videos.firstIndex {
             $0.key == key
@@ -206,8 +311,120 @@ class JSPlayerViewController: NSViewController {
         danmaku?.delegate = self
     }
     
+    override func mouseEntered(with event: NSEvent) {
+        switch getEventId(event) {
+        case .titlebar:
+            mouseInWindow = true
+        case .mainControllers:
+            mouseInControlls = true
+        case .qlSelector:
+            mouseInQLBox = true
+        case .volume:
+            mouseInVolumeBox = true
+        case .danmakuPref:
+            break
+        case .none:
+            break
+        }
+    }
     
+    override func mouseExited(with event: NSEvent) {
+        switch getEventId(event) {
+        case .titlebar:
+            mouseInWindow = false
+        case .mainControllers:
+            mouseInControlls = false
+        case .qlSelector:
+            mouseInQLBox = false
+        case .volume:
+            mouseInVolumeBox = false
+        case .danmakuPref:
+            break
+        case .none:
+            break
+        }
+    }
     
+    override func mouseMoved(with event: NSEvent) {
+        if mouseInWindow,
+            !mouseInControlls,
+            !mouseInQLBox,
+            !mouseInVolumeBox {
+//            if titlebarVEView.isHidden {
+                updateAllControllers(hide: false)
+//            }
+            hideOSCTimer?.run()
+        } else {
+            hideOSCTimer?.stop()
+        }
+        
+        guard mouseInControlls,
+              let v0 = reloadButton.isHidden ? loadingProgressIndicator : reloadButton
+        else {
+            if !mouseInQLBox {
+                mouseInQL = false
+            }
+            mouseInDanmaku = false
+            if !mouseInVolumeBox {
+                mouseInVolume = false
+            }
+            return
+        }
+        
+        let x = controllersView.convert(event.locationInWindow, from: nil).x
+        
+        let f0 = controllersView.convert(v0.frame, to: nil)
+        let f1 = controllersView.convert(volumeButton.frame, to: nil)
+        let f2 = controllersView.convert(danmakuPrefButton.frame, to: nil)
+        let f3 = controllersView.convert(qlButton.frame, to: nil)
+
+        func centerX(_ frame1: NSRect, _ frame2: NSRect) -> CGFloat {
+            var e = frame1.origin.x + frame1.width
+            e += (frame2.origin.x - e) / 2
+            return e
+        }
+        
+        let x05 = centerX(f0, f1)
+        let x15 = centerX(f1, f2)
+        let x25 = centerX(f2, f3)
+        
+        switch x {
+//        case 0..<x05:
+//            print("reload")
+        case x05..<x15:
+            mouseInVolume = true
+            mouseInDanmaku = false
+            mouseInQL = false
+        case x15..<x25:
+            mouseInDanmaku = true
+            mouseInVolume = false
+            mouseInQL = false
+        case x25...controllersView.frame.width:
+            mouseInQL = true
+            mouseInDanmaku = false
+            mouseInVolume = false
+        default:
+            mouseInQL = false
+            mouseInDanmaku = false
+            mouseInVolume = false
+        }
+    }
+
+    func getEventId(_ event: NSEvent) -> PlayerController? {
+        event.trackingArea?.userInfo?["id"] as? PlayerController
+    }
+    
+    func updateAllControllers(hide: Bool) {
+//        titlebarVEView.isHidden = hide
+        view.window?.hideTitlebar(hide)
+        controllersView.isHidden = hide
+        
+        if hide {
+            mouseInQL = false
+            mouseInDanmaku = false
+            mouseInVolume = false
+        }
+    }
 }
 
 extension JSPlayerViewController: WKNavigationDelegate {

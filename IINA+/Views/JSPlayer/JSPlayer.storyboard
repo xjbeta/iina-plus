@@ -11,7 +11,7 @@
         <scene sceneID="k2J-oq-hbI">
             <objects>
                 <windowController id="GVV-O1-4pZ" customClass="JSPlayerWindowController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Loading..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" id="KNO-9C-XR9">
+                    <window key="window" title="Loading..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="KNO-9C-XR9">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
                         <rect key="contentRect" x="196" y="239" width="640" height="360"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
@@ -32,7 +32,7 @@
         <scene sceneID="PEd-7d-5j0">
             <objects>
                 <viewController id="bU7-R8-ocO" customClass="JSPlayerViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="tOy-S4-hL0">
+                    <view key="view" wantsLayer="YES" id="tOy-S4-hL0">
                         <rect key="frame" x="0.0" y="0.0" width="860" height="484"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -150,28 +150,28 @@
                                     </constraints>
                                 </view>
                             </box>
-                            <box misplaced="YES" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJd-y3-Ngp">
-                                <rect key="frame" x="150" y="211" width="130" height="220"/>
+                            <box title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJd-y3-Ngp">
+                                <rect key="frame" x="109" y="39" width="136" height="195"/>
                                 <view key="contentView" id="pct-FF-tdN">
-                                    <rect key="frame" x="3" y="3" width="124" height="214"/>
+                                    <rect key="frame" x="3" y="3" width="130" height="189"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="3qo-tP-DFx" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="15" width="130" height="174"/>
+                                            <rect key="frame" x="0.0" y="15" width="95" height="174"/>
                                             <subviews>
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSe-yc-qYo">
-                                                    <rect key="frame" x="8" y="2" width="114" height="140"/>
+                                                    <rect key="frame" x="8" y="2" width="79" height="140"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="7k4-lH-8k6">
-                                                        <rect key="frame" x="0.0" y="0.0" width="114" height="140"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="79" height="140"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" viewBased="YES" id="6So-Mt-rQe">
-                                                                <rect key="frame" x="0.0" y="0.0" width="126" height="140"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="112" height="140"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="backgroundColor" name="_sourceListBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                 <tableColumns>
-                                                                    <tableColumn width="94" minWidth="80" maxWidth="1000" id="hAp-ie-Pzg">
+                                                                    <tableColumn width="80" minWidth="80" maxWidth="1000" id="hAp-ie-Pzg">
                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -184,11 +184,11 @@
                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                         <prototypeCellViews>
                                                                             <tableCellView id="KJd-wV-Kym">
-                                                                                <rect key="frame" x="10" y="0.0" width="106" height="24"/>
+                                                                                <rect key="frame" x="10" y="0.0" width="92" height="24"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
                                                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BoA-Ug-ZQm">
-                                                                                        <rect key="frame" x="0.0" y="4" width="106" height="16"/>
+                                                                                        <rect key="frame" x="0.0" y="4" width="92" height="16"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="Lz2-R0-mki">
                                                                                             <font key="font" usesAppearanceFont="YES"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -225,7 +225,7 @@
                                                         <constraint firstAttribute="height" constant="140" id="qJM-NN-NcQ"/>
                                                     </constraints>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="vld-IN-y1M">
-                                                        <rect key="frame" x="0.0" y="124" width="114" height="16"/>
+                                                        <rect key="frame" x="0.0" y="124" width="79" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="fE8-rq-u4e">
@@ -234,7 +234,7 @@
                                                     </scroller>
                                                 </scrollView>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="G4f-6J-d9g">
-                                                    <rect key="frame" x="9" y="138" width="113" height="25"/>
+                                                    <rect key="frame" x="9" y="138" width="78" height="25"/>
                                                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="03k-iW-imw" id="Cda-il-UrZ">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="menu"/>
@@ -288,12 +288,16 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="controllersView" destination="Q3d-da-hps" id="2JF-LD-RTu"/>
+                        <outlet property="danmakuPrefButton" destination="Cg1-Ai-cln" id="jAp-DJ-qB4"/>
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
-                        <outlet property="quailtyButton" destination="Awz-S7-3hO" id="eYx-ma-xfH"/>
+                        <outlet property="qlBox" destination="LJd-y3-Ngp" id="FOk-Qa-LhP"/>
+                        <outlet property="qlButton" destination="Awz-S7-3hO" id="eYx-ma-xfH"/>
                         <outlet property="quailtyHeightLayoutConstraint" destination="qJM-NN-NcQ" id="1ZI-cc-0g6"/>
                         <outlet property="quailtyTableView" destination="6So-Mt-rQe" id="P0h-iG-4vQ"/>
                         <outlet property="reloadButton" destination="dqz-eP-LFr" id="Vz4-ZH-WMa"/>
+                        <outlet property="volumeBox" destination="58q-ki-cTb" id="TfG-jz-NWL"/>
                         <outlet property="volumeButton" destination="dOA-Qd-GsD" id="iae-EF-tDE"/>
                         <outlet property="volumeSlider" destination="nUX-RS-Z83" id="CB2-cE-iLp"/>
                         <outlet property="webView" destination="QBH-lg-R4B" id="Pqv-me-EwD"/>
