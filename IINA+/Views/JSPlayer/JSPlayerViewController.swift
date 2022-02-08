@@ -51,7 +51,9 @@ class JSPlayerViewController: NSViewController {
     
     @IBOutlet var linesPopUpButton: NSPopUpButton!
     @IBAction func lineChanged(_ sender: NSPopUpButton) {
-        
+        guard let title = sender.selectedItem?.title else { return }
+        line = sender.indexOfItem(withTitle: title)
+        openResult()
     }
 
     @IBOutlet var quailtyHeightLayoutConstraint: NSLayoutConstraint!
@@ -89,11 +91,14 @@ class JSPlayerViewController: NSViewController {
     
 // MARK: - Other Value
     var url = ""
+    var result: YouGetJSON?
+    var key: String?
+    var line = 0
+    
     var webViewFinishLoaded = false
     
     var windowWillClose = false
-    var key: String?
-    var result: YouGetJSON?
+    
     
     var danmaku: Danmaku?
     
@@ -234,12 +239,16 @@ class JSPlayerViewController: NSViewController {
         guard !windowWillClose,
               let re = result,
               let key = key,
-              let url = re.streams[key]?.url
+              let s = re.streams[key],
+              (line - 1) < s.src.count,
+              let vUrl = line == 0 ? s.url : s.src[line - 1]
         else {
             return
         }
         
-        webView.evaluateJavaScript("window.openUrl('\(url)');")
+        
+        
+        webView.evaluateJavaScript("window.openUrl('\(vUrl)');")
         webView.evaluateJavaScript("initContent('\(UUID().uuidString)', \(Preferences.shared.dmPort));")
         
         switch re.site {
