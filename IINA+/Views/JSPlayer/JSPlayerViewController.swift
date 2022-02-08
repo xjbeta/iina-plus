@@ -72,47 +72,23 @@ class JSPlayerViewController: NSViewController {
     
 
 // MARK: - Mouse State
-    var mouseInWindow = false {
-        willSet {
-            guard newValue != mouseInWindow else { return }
-            updateAllControllers(hide: !newValue)
-        }
-    }
-    
+    var mouseInWindow = false
     var mouseInControlls = false
+    var mouseInWindowTimeOut = false
+    
+    var mouseInQL = false
     var mouseInQLBox = false
+    
+    var mouseInVolume = false
     var mouseInVolumeBox = false
     
-    var mouseInVolume = false {
-        willSet {
-            guard newValue != mouseInVolume else { return }
-            volumeBox.isHidden = !newValue
-        }
-    }
-    var mouseInQL = false {
-        willSet {
-            guard newValue != mouseInQL else { return }
-            qlBox.isHidden = !newValue
-        }
-    }
-    
-    var mouseInDanmaku = false {
-        willSet {
-            guard newValue != mouseInDanmaku else { return }
-            if newValue {
-                print("mouseInDanmaku")
-            } else {
-                print("hide Danmaku")
-            }
-        }
-    }
+    var mouseInDanmaku = false
     
     var hideOSCTimer: WaitTimer?
     
     
 // MARK: - Other Value
     var url = ""
-    
     var webViewFinishLoaded = false
     
     var windowWillClose = false
@@ -151,7 +127,8 @@ class JSPlayerViewController: NSViewController {
         hideOSCTimer?.stop()
         hideOSCTimer = nil
         hideOSCTimer = WaitTimer(timeOut: .seconds(3), queue: .main) {
-            self.updateAllControllers(hide: true)
+            self.mouseInWindowTimeOut = true
+            self.updateControllersState()
             NSCursor.setHiddenUntilMouseMoves(true)
         }
     }
@@ -198,6 +175,8 @@ class JSPlayerViewController: NSViewController {
         } else {
             loadingProgressIndicator.startAnimation(nil)
         }
+        
+        updateControllersState()
     }
     
     func decodeUrl() {
@@ -311,6 +290,8 @@ class JSPlayerViewController: NSViewController {
         danmaku?.delegate = self
     }
     
+    
+    
     override func mouseEntered(with event: NSEvent) {
         switch getEventId(event) {
         case .titlebar:
@@ -326,6 +307,8 @@ class JSPlayerViewController: NSViewController {
         case .none:
             break
         }
+        
+        updateControllersState()
     }
     
     override func mouseExited(with event: NSEvent) {
@@ -343,16 +326,15 @@ class JSPlayerViewController: NSViewController {
         case .none:
             break
         }
+        updateControllersState()
     }
     
     override func mouseMoved(with event: NSEvent) {
+        mouseInWindowTimeOut = false
         if mouseInWindow,
             !mouseInControlls,
             !mouseInQLBox,
             !mouseInVolumeBox {
-//            if titlebarVEView.isHidden {
-                updateAllControllers(hide: false)
-//            }
             hideOSCTimer?.run()
         } else {
             hideOSCTimer?.stop()
@@ -368,6 +350,7 @@ class JSPlayerViewController: NSViewController {
             if !mouseInVolumeBox {
                 mouseInVolume = false
             }
+            updateControllersState()
             return
         }
         
@@ -408,23 +391,36 @@ class JSPlayerViewController: NSViewController {
             mouseInDanmaku = false
             mouseInVolume = false
         }
+        
+        updateControllersState()
     }
 
     func getEventId(_ event: NSEvent) -> PlayerController? {
         event.trackingArea?.userInfo?["id"] as? PlayerController
     }
     
-    func updateAllControllers(hide: Bool) {
-//        titlebarVEView.isHidden = hide
-        view.window?.hideTitlebar(hide)
-        controllersView.isHidden = hide
-        
-        if hide {
-            mouseInQL = false
-            mouseInDanmaku = false
-            mouseInVolume = false
+    
+    func updateControllersState() {
+        let isLoading = !loadingProgressIndicator.isHidden
+        if isLoading,
+           !mouseInWindow {
+            view.window?.hideTitlebar(false)
+            controllersView.isHidden = false
+        } else if mouseInWindow {
+            view.window?.hideTitlebar(mouseInWindowTimeOut)
+            controllersView.isHidden = mouseInWindowTimeOut
+            
+            volumeBox.isHidden = !(mouseInVolume || mouseInVolumeBox)
+            qlBox.isHidden = !(mouseInQL || mouseInQLBox)
+        } else {
+            view.window?.hideTitlebar(true)
+            controllersView.isHidden = true
+            volumeBox.isHidden = true
+            qlBox.isHidden = true
+//            danmakuBox.isHidden = true
         }
     }
+    
 }
 
 extension JSPlayerViewController: WKNavigationDelegate {
