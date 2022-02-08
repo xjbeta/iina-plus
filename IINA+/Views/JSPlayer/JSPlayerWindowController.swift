@@ -34,7 +34,7 @@ class JSPlayerWindowController: NSWindowController {
 
 extension NSWindow {
     func hideTitlebar(_ hide: Bool) {
-        titleView()?.isHidden = hide
+        titleView()?.isHidden = styleMask.contains(.fullScreen) ? false : hide
     }
     
     func titleView() -> NSView? {

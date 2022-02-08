@@ -445,6 +445,14 @@ extension JSPlayerViewController: NSWindowDelegate {
         danmaku = nil
         webView.load(URLRequest(url: URL(string:"about:blank")!))
     }
+    
+    func windowWillEnterFullScreen(_ notification: Notification) {
+        view.window?.hideTitlebar(false)
+    }
+    
+    func windowWillExitFullScreen(_ notification: Notification) {
+        updateControllersState()
+    }
 }
 
 extension JSPlayerViewController: WKScriptMessageHandler {
