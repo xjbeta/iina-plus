@@ -155,7 +155,7 @@ class JSPlayerViewController: NSViewController {
         view.addTrackingArea(
             NSTrackingArea(rect: view.frame,
                            options: [
-                            .activeInKeyWindow,
+                            .activeAlways,
                             .mouseMoved,
                             .mouseEnteredAndExited,
                             .assumeInside,
