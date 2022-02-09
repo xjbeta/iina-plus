@@ -495,9 +495,14 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             view.window?.aspectRatio = size
             
             if let frame = NSScreen.main?.frame {
-                view.window?.setFrame(frame, display: true, animate: true)
+                NSAnimationContext.runAnimationGroup { context in
+                    context.duration = 0.25
+                    view.window?.animator().setFrame(frame, display: true)
+                } completionHandler: {
+                    self.resize()
+                }
             }
-            resize()
+            
             self.startLoading(stop: true)
         case .loadingComplete:
             break
