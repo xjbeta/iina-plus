@@ -62,13 +62,16 @@ class JSPlayerViewController: NSViewController {
         
         let i = quailtyTableView.selectedRow
         guard let re = result,
-              re.videos.count > i else { return }
-
-        let kv = re.videos[i]
-        
-        if key != kv.key {
-            key = kv.key
-            openResult()
+              re.videos.count > i,
+              key != re.videos[i].key else { return }
+        key = re.videos[i].key
+        Processes.shared.videoGet.prepareVideoUrl(re, i).done {
+            self.result = $0
+            self.line = 0
+            self.initControllers()
+            self.openResult()
+        }.catch {
+            print($0)
         }
     }
     
@@ -92,7 +95,11 @@ class JSPlayerViewController: NSViewController {
 // MARK: - Other Value
     var url = ""
     var result: YouGetJSON?
-    var key: String?
+    var key: String? {
+        didSet {
+            qlButton.title = key ?? ""
+        }
+    }
     var line = 0
     
     var webViewFinishLoaded = false
@@ -225,13 +232,13 @@ class JSPlayerViewController: NSViewController {
         
         linesPopUpButton.addItems(withTitles: titles)
         
-        qlButton.title = key
         quailtyTableView.reloadData()
         let index = re.videos.firstIndex {
             $0.key == key
         } ?? 0
         
-        quailtyTableView.selectRowIndexes(IndexSet.init(integer: index), byExtendingSelection: true)
+        
+        quailtyTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
         
     }
     
