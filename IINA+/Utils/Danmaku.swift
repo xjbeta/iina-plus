@@ -455,7 +455,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             //            0000 0234
             //            0-4 json length + head
             if data.count == 20 {
-                Log("received heartbeat")
+//                Log("received heartbeat")
                 return
             } else if data.count == 26 {
                 Log("bililive connect success")
