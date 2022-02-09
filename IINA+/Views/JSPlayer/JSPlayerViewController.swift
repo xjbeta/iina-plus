@@ -270,9 +270,9 @@ class JSPlayerViewController: NSViewController {
     
     func initWebView() {
         // Background Color
-//        view.wantsLayer = true
-//        view.layer?.backgroundColor = .white
-//        webView.setValue(false, forKey: "drawsBackground")
+        view.wantsLayer = true
+        view.layer?.backgroundColor = .black
+        webView.setValue(false, forKey: "drawsBackground")
     }
     
     func loadWebView() {
