@@ -27,7 +27,11 @@ class JSPlayerViewController: NSViewController {
     
     @IBOutlet var reloadButton: NSButton!
     @IBAction func reloadVideo(_ sender: NSButton) {
-        
+        startLoading()
+        line = 0
+        webView.evaluateJavaScript("flv_destroy();")
+        danmaku?.stop()
+        decodeUrl()
     }
     
     @IBOutlet var volumeBox: NSBox!
@@ -65,7 +69,7 @@ class JSPlayerViewController: NSViewController {
               re.videos.count > i,
               key != re.videos[i].key else { return }
         key = re.videos[i].key
-        Processes.shared.videoGet.prepareVideoUrl(re, i).done {
+        proc.videoGet.prepareVideoUrl(re, i).done {
             self.result = $0
             self.line = 0
             self.initControllers()
@@ -106,8 +110,8 @@ class JSPlayerViewController: NSViewController {
     
     var windowWillClose = false
     
-    
     var danmaku: Danmaku?
+    let proc = Processes.shared
     
     enum ScriptMessageKeys: String, CaseIterable {
         case print,
@@ -192,14 +196,13 @@ class JSPlayerViewController: NSViewController {
     }
     
     func decodeUrl() {
-        let proc = Processes.shared
         proc.stopDecodeURL()
         proc.videoGet.liveInfo(url, false).get {
             if !$0.isLiving {
                 throw VideoGetError.isNotLiving
             }
         }.then { _ in
-            proc.decodeURL(self.url)
+            self.proc.decodeURL(self.url)
         }.done(on: .main) {
             var re = $0
             re.rawUrl = self.url

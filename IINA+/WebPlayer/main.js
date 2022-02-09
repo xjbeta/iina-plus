@@ -11,7 +11,19 @@ function print(text) {
     window.webkit.messageHandlers.print.postMessage(text);
 };
 
+function flv_destroy() {
+    flvPlayer.pause();
+    flvPlayer.unload();
+    flvPlayer.detachMediaElement();
+    flvPlayer.destroy();
+    flvPlayer = null;
+};
+
 window.openUrl = function(url) {
+    if (flvPlayer != null) {
+        flv_destroy();
+    };
+
     if (flvjs.isSupported()) {
         var videoElement = document.getElementById('videoElement');
 
