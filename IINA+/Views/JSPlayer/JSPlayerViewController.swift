@@ -493,11 +493,12 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             let h = wh[1]
             let size = CGSize(width: w, height: h)
             view.window?.aspectRatio = size
+            
+            if let frame = NSScreen.main?.frame {
+                view.window?.setFrame(frame, display: true, animate: true)
+            }
             resize()
-//            view.window?.setFrame(<#T##frameRect: NSRect##NSRect#>, display: <#T##Bool#>, animate: <#T##Bool#>)
-            
             self.startLoading(stop: true)
-            
         case .loadingComplete:
             break
         case .recoveredEarlyEof:
