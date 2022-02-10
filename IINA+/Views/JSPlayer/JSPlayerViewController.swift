@@ -530,8 +530,8 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             
             var newFrame = NSRect(origin: .zero, size: size)
             
-            if !windowSizeInited, var frame = NSScreen.main?.frame {
-                windowSizeInited = true
+            if !windowSizeInited,
+                var frame = NSScreen.main?.frame {
                 let newH = frame.width / size.width * size.height
                 frame.origin.y = frame.height - newH
                 frame.size.height = newH
@@ -547,6 +547,7 @@ extension JSPlayerViewController: WKScriptMessageHandler {
                 window.animator().setFrame(newFrame, display: true)
             } completionHandler: {
                 self.resize()
+                self.windowSizeInited = true
             }
             self.startLoading(stop: true)
         case .loadingComplete:
