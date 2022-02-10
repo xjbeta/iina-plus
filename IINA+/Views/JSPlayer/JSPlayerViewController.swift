@@ -112,7 +112,7 @@ class JSPlayerViewController: NSViewController {
     var webViewFinishLoaded = false
     
     var windowWillClose = false
-    
+    var windowSizeInited = false
     var danmaku: Danmaku?
     let proc = Processes.shared
     
@@ -528,19 +528,26 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             let size = CGSize(width: w, height: h)
             window.aspectRatio = size
             
-            if var frame = NSScreen.main?.frame {
+            var newFrame = NSRect(origin: .zero, size: size)
+            
+            if !windowSizeInited, var frame = NSScreen.main?.frame {
+                windowSizeInited = true
                 let newH = frame.width / size.width * size.height
                 frame.origin.y = frame.height - newH
                 frame.size.height = newH
                 
-                NSAnimationContext.runAnimationGroup { context in
-                    context.duration = 0.25
-                    window.animator().setFrame(frame, display: true)
-                } completionHandler: {
-                    self.resize()
-                }
+                newFrame = frame
+            } else {
+                var f = window.frame
+                f.size.height = f.width / size.width * size.height
+                newFrame = f
             }
-            
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.25
+                window.animator().setFrame(newFrame, display: true)
+            } completionHandler: {
+                self.resize()
+            }
             self.startLoading(stop: true)
         case .loadingComplete:
             break
