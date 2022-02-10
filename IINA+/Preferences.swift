@@ -26,12 +26,12 @@ class Preferences: NSObject {
         }
     }
     
-    var liveDecoder: LiveDecoder {
+    @objc var enableFlvjs: Bool {
         get {
-            return LiveDecoder(raw: defaults(.liveDecoder) as? String ?? "")
+            return defaults(.enableFlvjs) as? Bool ?? false
         }
         set {
-            defaultsSet(newValue.rawValue, forKey: .liveDecoder)
+            defaultsSet(newValue, forKey: .enableFlvjs)
         }
     }
     
@@ -194,7 +194,7 @@ private extension Preferences {
 
 enum PreferenceKeys: String {
     case livePlayer
-    case liveDecoder
+    case enableFlvjs
     case enableDanmaku
     case danmukuFontFamilyName
     case danmukuFontWeight
