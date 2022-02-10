@@ -37,12 +37,15 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var volumeBox: NSBox!
     @IBOutlet var volumeButton: NSButton!
     @IBAction func mute(_ sender: NSButton) {
-        
+        webView.evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
+        playerMuted = !playerMuted
+        initVolumeButton()
     }
     
     @IBOutlet var volumeSlider: NSSlider!
     @IBAction func volumeChanged(_ sender: NSSlider) {
-        
+        webView.evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
+        initVolumeButton()
     }
     
     
@@ -113,6 +116,8 @@ class JSPlayerViewController: NSViewController {
     var danmaku: Danmaku?
     let proc = Processes.shared
     
+    var playerMuted = false
+    
     enum ScriptMessageKeys: String, CaseIterable {
         case print,
              size,
@@ -126,7 +131,7 @@ class JSPlayerViewController: NSViewController {
         super.viewDidLoad()
         qlBox.isHidden = true
         volumeBox.isHidden = true
-        
+        initVolumeButton()
         initTrackingAreas()
         
         startLoading()
@@ -243,6 +248,26 @@ class JSPlayerViewController: NSViewController {
         
         quailtyTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
         
+    }
+    
+    func initVolumeButton() {
+        var name = ""
+        if playerMuted {
+            name = "NSAudioOutputMuteTemplate"
+        } else {
+            switch volumeSlider.doubleValue {
+            case 0:
+                name = "NSAudioOutputVolumeOffTemplate"
+            case 0..<0.33:
+                name = "NSAudioOutputVolumeLowTemplate"
+            case 0.33..<0.66:
+                name = "NSAudioOutputVolumeMedTemplate"
+            default:
+                name = "NSAudioOutputVolumeHighTemplate"
+            }
+        }
+        
+        volumeButton.image = .init(named: .init(name))
     }
     
     func openResult() {

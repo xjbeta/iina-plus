@@ -44,10 +44,10 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q3d-da-hps" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
-                                <rect key="frame" x="12" y="12" width="198" height="31"/>
+                                <rect key="frame" x="12" y="12" width="195" height="31"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="15" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DFX-1F-IKO">
-                                        <rect key="frame" x="12" y="2" width="174" height="27"/>
+                                        <rect key="frame" x="12" y="2" width="171" height="27"/>
                                         <subviews>
                                             <progressIndicator wantsLayer="YES" maxValue="100" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="oXz-0Y-eDT">
                                                 <rect key="frame" x="0.0" y="6" width="16" height="16"/>
@@ -63,8 +63,11 @@
                                                 </connections>
                                             </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="dOA-Qd-GsD">
-                                                <rect key="frame" x="60" y="6.5" width="22.5" height="15"/>
-                                                <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="volume.3.fill" catalog="system" imagePosition="only" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="RQ6-L4-9qZ">
+                                                <rect key="frame" x="60" y="0.0" width="19" height="27"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="19" id="76O-MD-FQZ"/>
+                                                </constraints>
+                                                <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSAudioOutputVolumeHighTemplate" imagePosition="only" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="RQ6-L4-9qZ">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
@@ -73,14 +76,14 @@
                                                 </connections>
                                             </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="Cg1-Ai-cln">
-                                                <rect key="frame" x="97" y="8" width="19" height="12"/>
+                                                <rect key="frame" x="94" y="8" width="19" height="12"/>
                                                 <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSPathTemplate" imagePosition="only" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="TcL-Ve-QUH">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                             </button>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Awz-S7-3hO">
-                                                <rect key="frame" x="131" y="6" width="43" height="16"/>
+                                                <rect key="frame" x="128" y="6" width="43" height="16"/>
                                                 <buttonCell key="cell" type="roundTextured" title="1080P" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" imageScaling="proportionallyDown" inset="2" id="V1i-DZ-62a">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -114,7 +117,7 @@
                                 </constraints>
                             </visualEffectView>
                             <box borderType="line" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="58q-ki-cTb">
-                                <rect key="frame" x="76" y="39" width="38" height="141"/>
+                                <rect key="frame" x="75" y="39" width="38" height="141"/>
                                 <view key="contentView" id="d5n-A7-Za6">
                                     <rect key="frame" x="3" y="3" width="32" height="135"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -127,7 +130,7 @@
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="100" id="oCn-3x-9nL"/>
                                                     </constraints>
-                                                    <sliderCell key="cell" refusesFirstResponder="YES" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="right" sliderType="linear" id="PMw-OY-Eoa"/>
+                                                    <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="right" sliderType="linear" id="PMw-OY-Eoa"/>
                                                     <connections>
                                                         <action selector="volumeChanged:" target="bU7-R8-ocO" id="CxQ-BT-yX7"/>
                                                     </connections>
@@ -151,7 +154,7 @@
                                 </view>
                             </box>
                             <box title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJd-y3-Ngp">
-                                <rect key="frame" x="109" y="39" width="136" height="195"/>
+                                <rect key="frame" x="106" y="39" width="136" height="195"/>
                                 <view key="contentView" id="pct-FF-tdN">
                                     <rect key="frame" x="3" y="3" width="130" height="189"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -309,8 +312,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="NSAudioOutputVolumeHighTemplate" width="128" height="128"/>
         <image name="NSPathTemplate" width="19" height="12"/>
         <image name="NSRefreshTemplate" width="14" height="16"/>
-        <image name="volume.3.fill" catalog="system" width="22" height="15"/>
     </resources>
 </document>
