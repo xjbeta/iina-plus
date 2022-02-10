@@ -35,12 +35,10 @@ class MainViewController: NSViewController {
     }
     @objc var context: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
-        if bookmarkTableView.selectedRow != -1 {
-            let url = bookmarks[bookmarkTableView.selectedRow].url
-            searchField.stringValue = url
-            searchField.becomeFirstResponder()
-            startSearch(self)
-        }
+        guard bookmarkTableView.selectedRow != -1 else { return }
+        let url = bookmarks[bookmarkTableView.selectedRow].url
+        searchField.stringValue = url
+        startSearchingUrl(url)
     }
     
     // MARK: - Menu
@@ -408,11 +406,30 @@ class MainViewController: NSViewController {
         }
     }
     
+    
+    func openWithJSPlayer(_ url: String) {
+        guard let playerWC = NSStoryboard(name: .player, bundle: nil).instantiateInitialController() as? JSPlayerWindowController else {
+                    return
+                }
+        
+        playerWC.window?.makeKeyAndOrderFront(nil)
+        playerWC.contentVC?.url = url
+    }
+    
+    
     func startSearchingUrl(_ url: String, directly: Bool = false) {
         guard url != "" else { return }
-        
         Processes.shared.stopDecodeURL()
         waitingErrorMessage = nil
+        yougetResult = nil
+        
+        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame].contains(SupportSites(url: url))
+        
+        if Preferences.shared.enableFlvjs, jspSupported {
+            openWithJSPlayer(url)
+            return
+        }
+        
         isSearching = true
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
