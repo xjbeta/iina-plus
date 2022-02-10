@@ -208,14 +208,22 @@ class JSPlayerViewController: NSViewController {
             }
         }.then { _ in
             self.proc.decodeURL(self.url)
+        }.then { re in
+            self.proc.videoGet.prepareVideoUrl(re, {
+                let videoKeys = re.videos.map {
+                    $0.key
+                }
+                
+                if self.key == nil || !videoKeys.contains(self.key!) {
+                    self.key = re.videos.first?.key
+                }
+                
+                return videoKeys.firstIndex(of: self.key ?? "😶‍🌫️") ?? 0
+            }())
         }.done(on: .main) {
             var re = $0
             re.rawUrl = self.url
             self.result = re
-            if self.key == nil {
-                self.key = re.videos.first?.key
-            }
-            
             self.initControllers()
             self.openResult()
         }.catch(on: .main, policy: .allErrors) {
