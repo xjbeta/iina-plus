@@ -519,18 +519,23 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             print("Player, ", message.body)
         case .size:
             guard let wh = message.body as? [CGFloat],
-                    wh.count == 2 else {
+                  wh.count == 2,
+                  let window = view.window else {
                 return
             }
             let w = wh[0]
             let h = wh[1]
             let size = CGSize(width: w, height: h)
-            view.window?.aspectRatio = size
+            window.aspectRatio = size
             
-            if let frame = NSScreen.main?.frame {
+            if var frame = NSScreen.main?.frame {
+                let newH = frame.width / size.width * size.height
+                frame.origin.y = frame.height - newH
+                frame.size.height = newH
+                
                 NSAnimationContext.runAnimationGroup { context in
                     context.duration = 0.25
-                    view.window?.animator().setFrame(frame, display: true)
+                    window.animator().setFrame(frame, display: true)
                 } completionHandler: {
                     self.resize()
                 }
