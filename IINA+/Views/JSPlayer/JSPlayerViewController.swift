@@ -111,7 +111,6 @@ class JSPlayerViewController: NSViewController {
     
     var webViewFinishLoaded = false
     
-    var windowWillClose = false
     var windowSizeInited = false
     var danmaku: Danmaku?
     let proc = Processes.shared
@@ -136,7 +135,6 @@ class JSPlayerViewController: NSViewController {
         
         startLoading()
         initWebView()
-        loadWebView()
     }
     
     func initTrackingAreas() {
@@ -279,8 +277,7 @@ class JSPlayerViewController: NSViewController {
     }
     
     func openResult() {
-        guard !windowWillClose,
-              let re = result,
+        guard let re = result,
               let key = key,
               let s = re.streams[key],
               (line - 1) < s.src.count,
@@ -309,9 +306,8 @@ class JSPlayerViewController: NSViewController {
         view.wantsLayer = true
         view.layer?.backgroundColor = .black
         webView.setValue(false, forKey: "drawsBackground")
-    }
-    
-    func loadWebView() {
+
+        
         let port = Preferences.shared.dmPort
         webView.navigationDelegate = self
         ScriptMessageKeys.allCases.forEach {
@@ -325,6 +321,18 @@ class JSPlayerViewController: NSViewController {
         }
         let request = URLRequest(url: url)
         webView.load(request)
+    }
+    
+    func deinitWebView() {
+        webView.stopLoading()
+        ScriptMessageKeys.allCases.forEach {
+            webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
+        }
+        
+        webView.navigationDelegate = nil
+        webView.uiDelegate = nil
+        webView.removeFromSuperview()
+        webView = nil
     }
     
     func resize() {
@@ -492,10 +500,9 @@ extension JSPlayerViewController: NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         Log("windowWillClose")
-        windowWillClose = true
         danmaku?.stop()
         danmaku = nil
-        webView.load(URLRequest(url: URL(string:"about:blank")!))
+        deinitWebView()
     }
     
     func windowWillEnterFullScreen(_ notification: Notification) {
