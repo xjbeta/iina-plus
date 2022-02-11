@@ -84,11 +84,11 @@ class Danmaku: NSObject {
     
     
     
-    init(_ site: SupportSites, url: String) {
-        liveSite = site
+    init(_ url: String) {
+        liveSite = .init(url: url)
         self.url = url
         
-        if site == .huya {
+        if liveSite == .huya {
             if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
                 huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
             } else {
@@ -455,7 +455,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             //            0000 0234
             //            0-4 json length + head
             if data.count == 20 {
-                Log("received heartbeat")
+//                Log("received heartbeat")
                 return
             } else if data.count == 26 {
                 Log("bililive connect success")

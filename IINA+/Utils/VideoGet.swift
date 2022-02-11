@@ -115,14 +115,11 @@ class VideoGet: NSObject {
                 return yougetJson
             }
         case .eGame:
-            return getEgameInfo(url).map {
-                yougetJson.title = $0.0.title
-                $0.1.sorted {
-                    $0.levelType > $1.levelType
-                }.enumerated().forEach {
+            return getEgameMInfo(url).map {
+                yougetJson.title = $0.title
+                $0.streamInfos.enumerated().forEach {
                     var s = Stream(url: $0.element.playUrl)
-                    s.quality = $0.element.levelType
-                    s.src = $0.element.src
+                    s.quality = 999 - $0.offset
                     yougetJson.streams[$0.element.desc] = s
                 }
                 return yougetJson
@@ -132,41 +129,14 @@ class VideoGet: NSObject {
         case .bangumi:
             return getBangumi(url)
         case .cc163:
-            let pcs = url.pathComponents
-            
-            if pcs.count == 4,
-               pcs[1] == "ccid" {
-                let ccid = pcs[2]
-                yougetJson.title = String(data: Data(base64Encoded: pcs[3]) ?? Data(), encoding: .utf8) ?? ""
-                
-                return getCC163(ccid).map {
-                    $0.enumerated().forEach {
-                        var s = Stream(url: $0.element)
-                        s.quality = 999 - $0.offset
-                        yougetJson.streams["线路 \($0.offset + 1)"] = s
-                    }
-                    return yougetJson
-                }
-                
-            } else {
-                return getCC163Info(url).get {
-                    yougetJson.title = $0.title
-                }.compactMap {
-                    $0 as? CC163Info
-                }.then {
-                    self.getCC163("\($0.ccid)")
-                }.map { urls -> YouGetJSON in
-                    urls.enumerated().forEach { u in
-                        var s = Stream(url: u.element)
-                        s.quality = 999 - u.offset
-                        s.src = urls.filter {
-                            $0 != u.element
-                        }
-                        yougetJson.streams["线路 \(u.offset + 1)"] = s
-                    }
-                    return yougetJson
-                }
-                
+            return getCC163Ccid(url).then {
+                self.getCC163ChannelID($0)
+            }.then {
+                self.getCC163Videos($0)
+            }.compactMap {
+                $0.first
+            }.map {
+                $0.write(to: yougetJson)
             }
         default:
             return .init(error: VideoGetError.notSupported)
@@ -226,8 +196,8 @@ class VideoGet: NSObject {
                 $0.0
             }
         case .eGame:
-            return getEgameInfo(url).map {
-                $0.0
+            return getEgameMInfo(url).map {
+                $0 as LiveInfo
             }
         case .bilibili:
             return getBilibiliHTMLDatas(url).map {
@@ -742,6 +712,38 @@ extension VideoGet {
         }
     }
     
+    func getEgameMInfo(_ url: URL) -> Promise<(EgameMInfo)> {
+        let pcs = url.pathComponents
+        guard pcs.count > 1,
+              let rid = Int(pcs[1]) else {
+                  return .init(error: VideoGetError.invalidLink)
+              }
+        let u = "https://m.egame.qq.com/live?anchorid=\(rid)"
+        
+        return Promise { resolver in
+            AF.request(u).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                
+                guard let str = response.text?.subString(from: "try {            window.serverData = ", to: ";\r\n"),
+                      let data = str.data(using: .utf8)
+                else {
+                    resolver.reject(VideoGetError.egameFunctionNotFound)
+                    return
+                }
+                
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                    let info = try EgameMInfo(object: json)
+                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
@@ -1237,6 +1239,61 @@ extension VideoGet {
                     re.append(try jsonObj.value(for: "bakvideourl"))
                     
                     resolver.fulfill(re)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163Ccid(_ url: URL) -> Promise<(String)> {
+        let pcs = url.pathComponents
+        if pcs.count == 4,
+           pcs[1] == "ccid" {
+            return .value((pcs[2]))
+        } else {
+            return getCC163Info(url).compactMap {
+                $0 as? CC163Info
+            }.map {
+                $0.ccid
+            }
+        }
+    }
+    
+    func getCC163ChannelID(_ ccid: String) -> Promise<(Int)> {
+        let url = "https://api.cc.163.com/v1/activitylives/anchor/lives?anchor_ccid=\(ccid)"
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let jsonData = response.data ?? Data()
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    let id: Int = try jsonObj.value(for: "data.\(ccid).channel_id")
+                    
+                    resolver.fulfill(id)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getCC163Videos(_ channelID: Int) -> Promise<[CC163NewVideos]> {
+        let url = "https://cc.163.com/live/channel/?channelids=\(channelID)"
+        
+        return Promise { resolver in
+            AF.request(url).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                do {
+                    let jsonData = response.data ?? Data()
+                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+                    let videos: [CC163NewVideos] = try jsonObj.value(for: "data")
+                
+                    resolver.fulfill(videos)
                 } catch let error {
                     resolver.reject(error)
                 }

@@ -40,26 +40,27 @@
             <objects>
                 <viewController id="4vc-uy-6qh" customClass="GereralViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="mvY-0b-Eqj">
-                        <rect key="frame" x="0.0" y="0.0" width="342" height="396"/>
+                        <rect key="frame" x="0.0" y="0.0" width="327" height="396"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xtH-35-ue2">
-                                <rect key="frame" x="20" y="20" width="302" height="356"/>
+                                <rect key="frame" x="20" y="20" width="287" height="352"/>
                                 <subviews>
                                     <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="Sys-Jt-8Kk">
-                                        <rect key="frame" x="0.0" y="310" width="202" height="46"/>
+                                        <rect key="frame" x="0.0" y="310" width="281" height="42"/>
                                         <rows>
                                             <gridRow id="ULk-Ft-H8w"/>
                                             <gridRow id="mpv-pb-Byx"/>
                                         </rows>
                                         <columns>
                                             <gridColumn width="70" id="dpZ-hD-uEl"/>
-                                            <gridColumn width="120" leadingPadding="6" id="TXg-MB-HUG"/>
+                                            <gridColumn width="93" leadingPadding="6" id="TXg-MB-HUG"/>
+                                            <gridColumn width="100" id="LSf-yt-bmm"/>
                                         </columns>
                                         <gridCells>
                                             <gridCell row="ULk-Ft-H8w" column="dpZ-hD-uEl" xPlacement="trailing" yPlacement="center" id="tE4-rB-tJC">
                                                 <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mhN-bY-Krv">
-                                                    <rect key="frame" x="27" y="28" width="45" height="16"/>
+                                                    <rect key="frame" x="27" y="24" width="45" height="16"/>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Player:" id="RGN-E6-zAU">
                                                         <font key="font" usesAppearanceFont="YES"/>
                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -69,7 +70,7 @@
                                             </gridCell>
                                             <gridCell row="ULk-Ft-H8w" column="TXg-MB-HUG" id="XdW-ct-eqV">
                                                 <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k92-oP-2xr">
-                                                    <rect key="frame" x="79" y="22" width="77" height="25"/>
+                                                    <rect key="frame" x="79" y="18" width="77" height="25"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="70" id="wmX-gH-C5b"/>
                                                     </constraints>
@@ -90,40 +91,30 @@
                                                     </popUpButtonCell>
                                                 </popUpButton>
                                             </gridCell>
-                                            <gridCell row="mpv-pb-Byx" column="dpZ-hD-uEl" xPlacement="trailing" yPlacement="center" id="ZNE-yK-Bry">
-                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fNl-i7-oD5">
-                                                    <rect key="frame" x="12" y="2" width="60" height="16"/>
-                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Decoder:" id="taW-Dl-jDA">
-                                                        <font key="font" usesAppearanceFont="YES"/>
-                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <gridCell row="ULk-Ft-H8w" column="LSf-yt-bmm" yPlacement="center" id="DP0-MU-WYs">
+                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xfr-ty-8p1">
+                                                    <rect key="frame" x="179" y="25" width="24" height="14"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="tips" id="O4b-8P-C13">
+                                                        <font key="font" metaFont="system" size="11"/>
+                                                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                 </textField>
                                             </gridCell>
-                                            <gridCell row="mpv-pb-Byx" column="TXg-MB-HUG" id="4Vf-ep-tqw">
-                                                <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="byS-sq-DHV">
-                                                    <rect key="frame" x="79" y="-4" width="117" height="25"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Rws-NI-Zjr"/>
-                                                    </constraints>
-                                                    <popUpButtonCell key="cell" type="push" title="internal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="VQR-9Z-1u4" id="yTe-Pm-Vec">
-                                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="menu"/>
-                                                        <menu key="menu" id="iJA-nb-RTf">
-                                                            <items>
-                                                                <menuItem title="internal" state="on" id="VQR-9Z-1u4">
-                                                                    <modifierMask key="keyEquivalentModifierMask"/>
-                                                                </menuItem>
-                                                                <menuItem title="ykdl" id="3a1-2M-dcN"/>
-                                                                <menuItem title="you-get" id="aQ9-Og-Ajg"/>
-                                                            </items>
-                                                            <connections>
-                                                                <outlet property="delegate" destination="4vc-uy-6qh" id="hEg-nV-CJw"/>
-                                                            </connections>
-                                                        </menu>
-                                                    </popUpButtonCell>
-                                                </popUpButton>
+                                            <gridCell row="mpv-pb-Byx" column="dpZ-hD-uEl" xPlacement="trailing" yPlacement="center" id="ZNE-yK-Bry"/>
+                                            <gridCell row="mpv-pb-Byx" column="TXg-MB-HUG" headOfMergedCell="4Vf-ep-tqw" id="4Vf-ep-tqw">
+                                                <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9LG-op-Zah">
+                                                    <rect key="frame" x="80" y="-1" width="185" height="18"/>
+                                                    <buttonCell key="cell" type="check" title="Play live with internal flv.js" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="nYK-y9-7tF">
+                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <binding destination="TML-sv-8uG" name="value" keyPath="self.enableFlvjs" id="DMb-jr-oi3"/>
+                                                    </connections>
+                                                </button>
                                             </gridCell>
+                                            <gridCell row="mpv-pb-Byx" column="LSf-yt-bmm" headOfMergedCell="4Vf-ep-tqw" id="TCr-YW-8TO"/>
                                         </gridCells>
                                     </gridView>
                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="aqZ-2B-z8K">
@@ -523,12 +514,12 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="decoderPopUpButton" destination="byS-sq-DHV" id="NMA-c5-4vZ"/>
                         <outlet property="fontPicker" destination="Lbi-Sg-mh3" id="jdu-Zu-K4t"/>
                         <outlet property="fontSelectorButton" destination="WTj-XT-rbC" id="xcf-Cb-seU"/>
                         <outlet property="livingColorPick" destination="yne-Kl-5BO" id="4BG-qj-mcg"/>
                         <outlet property="offlineColorPick" destination="zus-yM-ZkW" id="1zC-lc-b1j"/>
                         <outlet property="playerPopUpButton" destination="k92-oP-2xr" id="1kt-mh-FHS"/>
+                        <outlet property="playerTextField" destination="xfr-ty-8p1" id="bWU-Kg-8H0"/>
                         <outlet property="portTestButton" destination="3mG-e6-C13" id="WyN-bm-4pL"/>
                         <outlet property="portTextField" destination="N6n-Zn-Cjd" id="WgD-a1-iaF"/>
                         <outlet property="replayColorPick" destination="GJ0-0i-txa" id="lnD-DJ-Pk6"/>
@@ -539,7 +530,7 @@
                 <customObject id="vHA-uD-7ZB" customClass="NSFontManager"/>
                 <customObject id="TML-sv-8uG" customClass="Preferences" customModule="IINA_" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="1607" y="1031"/>
+            <point key="canvasLocation" x="1559" y="1031"/>
         </scene>
         <!--Bilibili View Controller-->
         <scene sceneID="fNX-ng-6U0">

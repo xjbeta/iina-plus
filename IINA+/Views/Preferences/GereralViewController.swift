@@ -12,7 +12,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     
     @IBOutlet var fontSelectorButton: NSButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
-    @IBOutlet weak var decoderPopUpButton: NSPopUpButton!
+    @IBOutlet var playerTextField: NSTextField!
     
     @IBOutlet var portTextField: NSTextField!
     @IBOutlet var portTestButton: NSButton!
@@ -52,7 +52,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         super.viewDidLoad()
         initFontSelector()
         initMenu(for: playerPopUpButton)
-        initMenu(for: decoderPopUpButton)
         
         portTextField.isEnabled = pref.enableDanmaku
             && Processes.shared.iinaArchiveType() != .normal
@@ -73,8 +72,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         switch menu {
         case playerPopUpButton.menu:
             pref.livePlayer = LivePlayer(index: playerPopUpButton.indexOfSelectedItem)
-        case decoderPopUpButton.menu:
-            pref.liveDecoder = LiveDecoder(index: decoderPopUpButton.indexOfSelectedItem)
+            initPlayerVersion()
         default:
             break
         }
@@ -84,12 +82,29 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         switch popUpButton {
         case playerPopUpButton:
             popUpButton.selectItem(at: pref.livePlayer.index())
-        case decoderPopUpButton:
-            popUpButton.autoenablesItems = false
-            popUpButton.selectItem(at: pref.liveDecoder.index())
+            initPlayerVersion()
         default:
             break
         }
+    }
+    
+    func initPlayerVersion() {
+        let proc = Processes.shared
+        var s = ""
+        switch pref.livePlayer {
+        case .iina:
+            switch proc.iinaArchiveType() {
+            case .danmaku:
+                s = "danmaku"
+            case .plugin:
+                s = "plugin"
+            case .normal:
+                s = "official"
+            }
+        case .mpv:
+            s = proc.mpvVersion()
+        }
+        playerTextField.stringValue = s
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -200,42 +215,6 @@ enum LivePlayer: String {
             return 0
         case .mpv:
             return 1
-        }
-    }
-}
-
-enum LiveDecoder: String {
-    case internal😀
-    case ykdl
-    case youget = "you-get"
-    
-    init(raw: String) {
-        if let decoder = LiveDecoder(rawValue: raw) {
-            self = decoder
-        } else {
-            self = .internal😀
-        }
-    }
-    
-    init(index: Int) {
-        switch index {
-        case 1:
-            self = .ykdl
-        case 2:
-            self = .youget
-        default:
-            self = .internal😀
-        }
-    }
-    
-    func index() -> Int {
-        switch self {
-        case .internal😀:
-            return 0
-        case .ykdl:
-            return 1
-        case .youget:
-            return 2
         }
     }
 }

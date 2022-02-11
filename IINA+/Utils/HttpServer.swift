@@ -55,7 +55,7 @@ class HttpServer: NSObject, DanmakuDelegate {
     func register(_ id: String,
                   site: SupportSites,
                   url: String) {
-        let d = Danmaku(site, url: url)
+        let d = Danmaku(url)
         d.id = id
         d.delegate = self
         if site == .bilibili {
@@ -227,7 +227,7 @@ class HttpServer: NSObject, DanmakuDelegate {
         do {
             guard var resourceURL = Bundle.main.resourceURL,
                 let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
-            let folderName = "danmaku"
+            let folderName = "WebPlayer"
             resourceURL.appendPathComponent(folderName)
             
             var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -241,6 +241,9 @@ class HttpServer: NSObject, DanmakuDelegate {
             }
             
             try FileManager.default.copyItem(at: resourceURL, to: filesURL)
+            Log(resourceURL.path)
+            Log(filesURL.path)
+            
         } catch let error {
             Log(error)
         }

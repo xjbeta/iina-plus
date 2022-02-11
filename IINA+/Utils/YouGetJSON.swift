@@ -28,6 +28,9 @@ enum IINAUrlType: String {
 }
 
 struct YouGetJSON: Unmarshaling, Codable {
+    var rawUrl: String = ""
+    
+    
     let uuid = UUID().uuidString
     var bvid = ""
     

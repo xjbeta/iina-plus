@@ -12,6 +12,7 @@ import Cocoa
 
 extension NSStoryboard.Name {
     static let main = "Main"
+    static let player = "JSPlayer"
 }
 
 extension NSStoryboard.SceneIdentifier {

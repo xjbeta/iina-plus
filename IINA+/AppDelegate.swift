@@ -40,6 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Log("macOS " + ProcessInfo().operatingSystemVersionString)
 
         initImageCache()
+        
+        Processes.shared.httpServer.start()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
