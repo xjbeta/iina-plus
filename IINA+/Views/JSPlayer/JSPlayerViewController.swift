@@ -302,25 +302,24 @@ class JSPlayerViewController: NSViewController {
     }
     
     func initWebView() {
+        guard let playerUrl = Bundle.main.url(
+            forResource: "flvplayer",
+            withExtension: "htm",
+            subdirectory: "WebPlayer") else { return }
+        
         // Background Color
         view.wantsLayer = true
         view.layer?.backgroundColor = .black
         webView.setValue(false, forKey: "drawsBackground")
 
-        
-        let port = Preferences.shared.dmPort
         webView.navigationDelegate = self
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.add(self, name: $0.rawValue)
         }
         
+        webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         
-        let u = "http://127.0.0.1:\(port)/danmaku/index.htm"
-        guard let url = URL(string: u) else {
-            return
-        }
-        let request = URLRequest(url: url)
-        webView.load(request)
+        webView.loadFileURL(playerUrl, allowingReadAccessTo: playerUrl.deletingLastPathComponent())
     }
     
     func deinitWebView() {

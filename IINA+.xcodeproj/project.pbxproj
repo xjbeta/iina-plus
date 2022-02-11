@@ -22,18 +22,18 @@
 		01176CAD2713223200BB7E10 /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; };
 		01176CAE2713223200BB7E10 /* SDWebImage.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01176CAC2713223200BB7E10 /* SDWebImage.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
-		0120932B27A3B441002C7FD3 /* default.css in Resources */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* default.css */; };
-		0120932C27A3B441002C7FD3 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
-		0120932D27A3B441002C7FD3 /* index.htm in Resources */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
+		0120932B27A3B441002C7FD3 /* flvplayer.css in Resources */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* flvplayer.css */; };
+		0120932C27A3B441002C7FD3 /* flvplayer.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
+		0120932D27A3B441002C7FD3 /* flvplayer.htm in Resources */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* flvplayer.htm */; };
 		0120933627A3B589002C7FD3 /* CommentCoreLibrary.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */; };
 		0120933827A3B592002C7FD3 /* style.min.css in Resources */ = {isa = PBXBuildFile; fileRef = 0120933727A3B592002C7FD3 /* style.min.css */; };
 		0120933A27A3B59D002C7FD3 /* flv.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 0120933927A3B59C002C7FD3 /* flv.min.js */; };
 		0120933B27A3B5B6002C7FD3 /* flv.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933927A3B59C002C7FD3 /* flv.min.js */; };
 		0120933C27A3B5B6002C7FD3 /* style.min.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933727A3B592002C7FD3 /* style.min.css */; };
 		0120933D27A3B5B6002C7FD3 /* CommentCoreLibrary.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */; };
-		0120933E27A3B5B6002C7FD3 /* default.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* default.css */; };
-		0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* index.htm */; };
-		0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* main.js */; };
+		0120933E27A3B5B6002C7FD3 /* flvplayer.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* flvplayer.css */; };
+		0120933F27A3B5B7002C7FD3 /* flvplayer.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* flvplayer.htm */; };
+		0120934027A3B5B7002C7FD3 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
 		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
 		0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */; };
 		0120934627A4F8E6002C7FD3 /* JSPlayerControllersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */; };
@@ -127,9 +127,9 @@
 				0120933B27A3B5B6002C7FD3 /* flv.min.js in Copy Web Files */,
 				0120933C27A3B5B6002C7FD3 /* style.min.css in Copy Web Files */,
 				0120933D27A3B5B6002C7FD3 /* CommentCoreLibrary.min.js in Copy Web Files */,
-				0120933E27A3B5B6002C7FD3 /* default.css in Copy Web Files */,
-				0120933F27A3B5B7002C7FD3 /* index.htm in Copy Web Files */,
-				0120934027A3B5B7002C7FD3 /* main.js in Copy Web Files */,
+				0120933E27A3B5B6002C7FD3 /* flvplayer.css in Copy Web Files */,
+				0120933F27A3B5B7002C7FD3 /* flvplayer.htm in Copy Web Files */,
+				0120934027A3B5B7002C7FD3 /* flvplayer.js in Copy Web Files */,
 			);
 			name = "Copy Web Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,9 +172,9 @@
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
 		01176CAC2713223200BB7E10 /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
-		0120932827A3B441002C7FD3 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
-		0120932927A3B441002C7FD3 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
-		0120932A27A3B441002C7FD3 /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
+		0120932827A3B441002C7FD3 /* flvplayer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = flvplayer.css; sourceTree = "<group>"; };
+		0120932927A3B441002C7FD3 /* flvplayer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = flvplayer.js; sourceTree = "<group>"; };
+		0120932A27A3B441002C7FD3 /* flvplayer.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = flvplayer.htm; sourceTree = "<group>"; };
 		0120933527A3B589002C7FD3 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
 		0120933727A3B592002C7FD3 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebPlayer/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		0120933927A3B59C002C7FD3 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebPlayer/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
@@ -339,9 +339,9 @@
 			isa = PBXGroup;
 			children = (
 				0120933427A3B576002C7FD3 /* Deps */,
-				0120932827A3B441002C7FD3 /* default.css */,
-				0120932A27A3B441002C7FD3 /* index.htm */,
-				0120932927A3B441002C7FD3 /* main.js */,
+				0120932827A3B441002C7FD3 /* flvplayer.css */,
+				0120932A27A3B441002C7FD3 /* flvplayer.htm */,
+				0120932927A3B441002C7FD3 /* flvplayer.js */,
 			);
 			path = WebPlayer;
 			sourceTree = "<group>";
@@ -608,11 +608,11 @@
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
-				0120932B27A3B441002C7FD3 /* default.css in Resources */,
-				0120932C27A3B441002C7FD3 /* main.js in Resources */,
+				0120932B27A3B441002C7FD3 /* flvplayer.css in Resources */,
+				0120932C27A3B441002C7FD3 /* flvplayer.js in Resources */,
 				0189533D279E9AA40011BAAC /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
-				0120932D27A3B441002C7FD3 /* index.htm in Resources */,
+				0120932D27A3B441002C7FD3 /* flvplayer.htm in Resources */,
 				0120933827A3B592002C7FD3 /* style.min.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
