@@ -287,35 +287,10 @@ function updateStatus(status){
     }
 }
 
-function start(websocketServerLocation){
-    ws = new WebSocket(websocketServerLocation);
-    updateStatus('warning');
-    ws.onopen = function(evt) { 
-        updateStatus();
-        ws.send(uuid);
-    };
-    ws.onmessage = function(evt) { 
-        var event = JSON.parse(evt.data);
-        window.dmMessage(event);
-    };
-    ws.onclose = function(){
-        if (isLiving) {
-            updateStatus('warning');
-            // Try to reconnect in 1 seconds
-            setTimeout(function(){start(websocketServerLocation)}, 1000);
-        }
-    };
-}
-
-function initContent(id, port){
+function initContent(){
     bind();
     initDM();
     resize();
-    uuid = id;
-    if (port === undefined){
-        port = 19080;
-    }
-    start('ws://127.0.0.1:' + port + '/danmaku-websocket');
     // Block unknown types.
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;

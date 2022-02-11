@@ -287,9 +287,8 @@ class JSPlayerViewController: NSViewController {
         }
         
         
-        
+        webView.evaluateJavaScript("initContent();")
         webView.evaluateJavaScript("window.openUrl('\(vUrl)');")
-        webView.evaluateJavaScript("initContent('\(UUID().uuidString)', \(Preferences.shared.dmPort));")
         
         switch re.site {
         case .douyu, .eGame, .biliLive, .huya:
