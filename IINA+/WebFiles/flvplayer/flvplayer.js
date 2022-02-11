@@ -46,28 +46,26 @@ window.openUrl = function(url) {
             print(str);
         });
 
+        videoElement.addEventListener("loadeddata", function(e) {
+            print("loadeddata");
+        });
+        videoElement.addEventListener("loadedmetadata", function(e) {
+            print("loadedmetadata");
+        });
+        videoElement.addEventListener("ended", function(e) {
+            print("ended");
+        });
+        videoElement.addEventListener("error", function(e) {
+            print("error");
+        });
+        videoElement.addEventListener("resize", function(e) {
+            window.webkit.messageHandlers.size.postMessage([videoElement.videoWidth, videoElement.videoHeight]);
+        });
+
         flvPlayer.attachMediaElement(videoElement);
 
         flvPlayer.load();
         flvPlayer.play();
-
-        flvPlayer.on("media_info", function(info) {
-            print(info);
-            window.webkit.messageHandlers.size.postMessage([flvPlayer.mediaInfo.width, flvPlayer.mediaInfo.height]);
-        });
-
-        flvPlayer.on("error", function(info) {
-            print("error");
-            print(info);
-        });
-        flvPlayer.on("loading_complete", function(info) {
-            print("loading_complete");
-            print(info);
-        });
-        flvPlayer.on("recovered_early_eof", function(info) {
-            print("recovered_early_eof");
-            print(info);
-        });
 
     }
 };
