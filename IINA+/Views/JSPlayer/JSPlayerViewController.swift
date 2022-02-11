@@ -305,7 +305,7 @@ class JSPlayerViewController: NSViewController {
         guard let playerUrl = Bundle.main.url(
             forResource: "flvplayer",
             withExtension: "htm",
-            subdirectory: "WebPlayer") else { return }
+            subdirectory: "WebFiles") else { return }
         
         // Background Color
         view.wantsLayer = true

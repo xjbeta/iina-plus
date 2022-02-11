@@ -68,4 +68,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 
-IINA+/WebPlayer/node_modules
+IINA+/WebFiles/node_modules

@@ -227,7 +227,7 @@ class HttpServer: NSObject, DanmakuDelegate {
         do {
             guard var resourceURL = Bundle.main.resourceURL,
                 let bundleIdentifier = Bundle.main.bundleIdentifier else { return }
-            let folderName = "WebPlayer"
+            let folderName = "WebFiles"
             resourceURL.appendPathComponent(folderName)
             
             var filesURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
