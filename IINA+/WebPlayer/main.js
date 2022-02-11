@@ -56,6 +56,18 @@ window.openUrl = function(url) {
             window.webkit.messageHandlers.size.postMessage([flvPlayer.mediaInfo.width, flvPlayer.mediaInfo.height]);
         });
 
+        flvPlayer.on("error", function(info) {
+            print("error");
+            print(info);
+        });
+        flvPlayer.on("loading_complete", function(info) {
+            print("loading_complete");
+            print(info);
+        });
+        flvPlayer.on("recovered_early_eof", function(info) {
+            print("recovered_early_eof");
+            print(info);
+        });
 
     }
 };
