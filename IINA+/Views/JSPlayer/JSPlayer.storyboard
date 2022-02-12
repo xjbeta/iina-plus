@@ -44,10 +44,10 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q3d-da-hps" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
-                                <rect key="frame" x="12" y="12" width="195" height="31"/>
+                                <rect key="frame" x="12" y="12" width="251" height="31"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="15" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DFX-1F-IKO">
-                                        <rect key="frame" x="12" y="2" width="171" height="27"/>
+                                        <rect key="frame" x="12" y="2" width="227" height="27"/>
                                         <subviews>
                                             <progressIndicator wantsLayer="YES" maxValue="100" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="oXz-0Y-eDT">
                                                 <rect key="frame" x="0.0" y="6" width="16" height="16"/>
@@ -62,8 +62,15 @@
                                                     <action selector="reloadVideo:" target="bU7-R8-ocO" id="lsj-3Y-mvj"/>
                                                 </connections>
                                             </button>
+                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RmU-8V-9Io">
+                                                <rect key="frame" x="60" y="6" width="41" height="16"/>
+                                                <buttonCell key="cell" type="squareTextured" title="00:00" bezelStyle="texturedSquare" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="ne7-fA-9VC">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                            </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="dOA-Qd-GsD">
-                                                <rect key="frame" x="60" y="0.0" width="19" height="27"/>
+                                                <rect key="frame" x="116" y="6" width="19" height="16"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="19" id="76O-MD-FQZ"/>
                                                 </constraints>
@@ -76,14 +83,14 @@
                                                 </connections>
                                             </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="Cg1-Ai-cln">
-                                                <rect key="frame" x="94" y="8" width="19" height="12"/>
+                                                <rect key="frame" x="150" y="8" width="19" height="12"/>
                                                 <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSPathTemplate" imagePosition="only" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="TcL-Ve-QUH">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                             </button>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Awz-S7-3hO">
-                                                <rect key="frame" x="128" y="6" width="43" height="16"/>
+                                                <rect key="frame" x="184" y="6" width="43" height="16"/>
                                                 <buttonCell key="cell" type="roundTextured" title="1080P" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" imageScaling="proportionallyDown" inset="2" id="V1i-DZ-62a">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -99,8 +106,10 @@
                                             <integer value="1000"/>
                                             <integer value="1000"/>
                                             <integer value="1000"/>
+                                            <integer value="1000"/>
                                         </visibilityPriorities>
                                         <customSpacing>
+                                            <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
                                             <real value="3.4028234663852886e+38"/>
@@ -117,7 +126,7 @@
                                 </constraints>
                             </visualEffectView>
                             <box borderType="line" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="58q-ki-cTb">
-                                <rect key="frame" x="75" y="39" width="38" height="141"/>
+                                <rect key="frame" x="131" y="39" width="38" height="141"/>
                                 <view key="contentView" id="d5n-A7-Za6">
                                     <rect key="frame" x="3" y="3" width="32" height="135"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -154,7 +163,7 @@
                                 </view>
                             </box>
                             <box title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJd-y3-Ngp">
-                                <rect key="frame" x="106" y="39" width="136" height="195"/>
+                                <rect key="frame" x="162" y="39" width="136" height="195"/>
                                 <view key="contentView" id="pct-FF-tdN">
                                     <rect key="frame" x="3" y="3" width="130" height="189"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -293,6 +302,7 @@
                     <connections>
                         <outlet property="controllersView" destination="Q3d-da-hps" id="2JF-LD-RTu"/>
                         <outlet property="danmakuPrefButton" destination="Cg1-Ai-cln" id="jAp-DJ-qB4"/>
+                        <outlet property="durationButton" destination="RmU-8V-9Io" id="dIj-Qg-KEZ"/>
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
                         <outlet property="qlBox" destination="LJd-y3-Ngp" id="FOk-Qa-LhP"/>
@@ -312,7 +322,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NSAudioOutputVolumeHighTemplate" width="128" height="128"/>
+        <image name="NSAudioOutputVolumeHighTemplate" width="21" height="16"/>
         <image name="NSPathTemplate" width="19" height="12"/>
         <image name="NSRefreshTemplate" width="14" height="16"/>
     </resources>

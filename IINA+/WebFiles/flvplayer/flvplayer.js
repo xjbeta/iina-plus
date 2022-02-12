@@ -6,6 +6,8 @@ var defWidth = 680;
 var uuid = '';
 
 var flvPlayer;
+var videoDuration;
+
 
 function print(text) {
     window.webkit.messageHandlers.print.postMessage(text);
@@ -60,6 +62,14 @@ window.openUrl = function(url) {
         });
         videoElement.addEventListener("resize", function(e) {
             window.webkit.messageHandlers.size.postMessage([videoElement.videoWidth, videoElement.videoHeight]);
+        });
+
+        videoElement.addEventListener("durationchange", function(e) {
+            var d = parseInt(videoElement.duration, 10);
+            if (videoDuration != d) {
+                videoDuration = d;
+                window.webkit.messageHandlers.duration.postMessage(d);
+            };
         });
 
         flvPlayer.attachMediaElement(videoElement);

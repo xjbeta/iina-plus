@@ -47,6 +47,8 @@ class JSPlayerViewController: NSViewController {
         webView.evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
         initVolumeButton()
     }
+     
+    @IBOutlet var durationButton: NSButton!
     
     
     @IBOutlet var danmakuPrefButton: NSButton!
@@ -117,9 +119,18 @@ class JSPlayerViewController: NSViewController {
     
     var playerMuted = false
     
+    private var durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .positional
+        formatter.allowedUnits = [.minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+    
     enum ScriptMessageKeys: String, CaseIterable {
         case print,
              size,
+             duration,
              
              error,
              loadingComplete,
@@ -527,6 +538,9 @@ extension JSPlayerViewController: WKScriptMessageHandler {
         switch key {
         case .print:
             print("Player, ", message.body)
+        case .duration:
+            let d = message.body as? Int ?? 0
+            durationButton.title = durationFormatter.string(from: .init(d)) ?? "00:00"
         case .size:
             guard let wh = message.body as? [CGFloat],
                   wh.count == 2,
