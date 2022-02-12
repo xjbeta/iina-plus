@@ -542,6 +542,17 @@ extension JSPlayerViewController: WKScriptMessageHandler {
         switch key {
         case .print:
             print("Player, ", message.body)
+            if let msg = message.body as? String,
+               msg.contains("Playback seems stuck") {
+                
+                print("==========================================")
+                print("==========================================")
+                print("===========Playback seems stuck===========")
+                print("==========================================")
+                print("==========================================")
+                
+                openResult()
+            }
         case .duration:
             let d = message.body as? Int ?? 0
             durationButton.title = durationFormatter.string(from: .init(d)) ?? "00:00"
