@@ -338,6 +338,9 @@ class JSPlayerViewController: NSViewController {
     }
     
     func startDM(_ url: String) {
+        let pref = Preferences.shared
+        guard pref.enableDanmaku else { return }
+        
         if let d = danmaku {
             d.stop()
             danmaku = nil
@@ -346,9 +349,11 @@ class JSPlayerViewController: NSViewController {
         danmaku = Danmaku(url)
         danmaku?.loadDM()
         danmaku?.delegate = self
+        
+        danmaku?.loadCustomFont()
+        danmaku?.customDMSpeed()
+        danmaku?.customDMOpdacity()
     }
-    
-    
     
     override func mouseEntered(with event: NSEvent) {
         switch getEventId(event) {

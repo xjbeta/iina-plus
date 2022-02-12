@@ -1083,7 +1083,7 @@ extension VideoGet {
             var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
             return nil
         }
-        let folderName = "danmaku"
+        let folderName = "WebFiles"
         
         filesURL.appendPathComponent(bundleIdentifier)
         filesURL.appendPathComponent(folderName)

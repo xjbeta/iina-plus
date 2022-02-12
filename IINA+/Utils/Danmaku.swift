@@ -199,6 +199,44 @@ class Danmaku: NSObject {
         delegate?.send(.sendDM, text: str, id: id)
     }
     
+    func loadCustomFont(_ id: String = "rua-uuid~~~") {
+        return
+        
+        let pref = Preferences.shared
+        let font = pref.danmukuFontFamilyName
+        let size = pref.danmukuFontSize
+        let weight = pref.danmukuFontWeight
+        
+        var text = ".customFont {"
+        text += "color: #fff;"
+        text += "font-family: '\(font) \(weight)', SimHei, SimSun, Heiti, 'MS Mincho', 'Meiryo', 'Microsoft YaHei', monospace;"
+        text += "font-size: \(size)px;"
+        
+        
+        text += "letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}"
+        
+        Log("Danmaku font \(font) \(weight), \(size)px.")
+        
+        delegate?.send(.customFont, text: text, id: id)
+    }
+
+    func customDMSpeed(_ id: String = "rua-uuid~~~") {
+        let dmSpeed = Int(Preferences.shared.dmSpeed)
+        delegate?.send(.dmSpeed, text: "\(dmSpeed)", id: id)
+    }
+
+    func customDMOpdacity(_ id: String = "rua-uuid~~~") {
+        delegate?.send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)", id: id)
+    }
+    
+    func loadFilters(_ id: String = "rua-uuid~~~") {
+        var types = Preferences.shared.dmBlockType
+        if Preferences.shared.dmBlockList.type != .none {
+            types.append("List")
+        }
+        delegate?.send(.dmBlockList, text: types.joined(separator: ", "), id: id)
+    }
+    
     private func initDouYuSocket(_ roomID: String) {
         Log("initDouYuSocket")
         douyuRoomID = roomID

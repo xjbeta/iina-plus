@@ -72,13 +72,19 @@ class HttpServer: NSObject, DanmakuDelegate {
         prepareWebSiteFiles()
         
         danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
-            self.loadCustomFont()
+            self.registeredItems.forEach {
+                $0.danmaku.loadCustomFont()
+            }
         }))
         danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
-            self.customDMSpeed()
+            self.registeredItems.forEach {
+                $0.danmaku.customDMSpeed()
+            }
         }))
         danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
-            self.customDMOpdacity()
+            self.registeredItems.forEach {
+                $0.danmaku.customDMOpdacity()
+            }
         }))
         
         do {
@@ -147,12 +153,12 @@ class HttpServer: NSObject, DanmakuDelegate {
                 if Processes.shared.iinaArchiveType() == .danmaku {
                     if let site = self?.registeredItems[i].site,
                         site == .bilibili {
-                        self?.loadFilters(text)
+                        self?.registeredItems[i].danmaku.loadFilters(text)
                     }
                     
-                    self?.loadCustomFont(text)
-                    self?.customDMSpeed(text)
-                    self?.customDMOpdacity(text)
+                    self?.registeredItems[i].danmaku.loadCustomFont(text)
+                    self?.registeredItems[i].danmaku.customDMSpeed(text)
+                    self?.registeredItems[i].danmaku.customDMOpdacity(text)
                 }
                 self?.registeredItems[i].danmaku.loadDM()
                 
@@ -253,43 +259,6 @@ class HttpServer: NSObject, DanmakuDelegate {
         var method: String
         var text: String
     }
-    
-    private func loadCustomFont(_ id: String = "rua-uuid~~~") {
-        let pref = Preferences.shared
-        let font = pref.danmukuFontFamilyName
-        let size = pref.danmukuFontSize
-        let weight = pref.danmukuFontWeight
-        
-        var text = ".customFont {"
-        text += "color: #fff;"
-        text += "font-family: '\(font) \(weight)', SimHei, SimSun, Heiti, 'MS Mincho', 'Meiryo', 'Microsoft YaHei', monospace;"
-        text += "font-size: \(size)px;"
-        
-        
-        text += "letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}"
-        
-        Log("Danmaku font \(font) \(weight), \(size)px.")
-        
-        send(.customFont, text: text, id: id)
-    }
-
-    private func customDMSpeed(_ id: String = "rua-uuid~~~") {
-        let dmSpeed = Int(Preferences.shared.dmSpeed)
-        send(.dmSpeed, text: "\(dmSpeed)", id: id)
-    }
-
-    private func customDMOpdacity(_ id: String = "rua-uuid~~~") {
-        send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)", id: id)
-    }
-    
-    private func loadFilters(_ id: String = "rua-uuid~~~") {
-        var types = Preferences.shared.dmBlockType
-        if Preferences.shared.dmBlockList.type != .none {
-            types.append("List")
-        }
-        send(.dmBlockList, text: types.joined(separator: ", "), id: id)
-    }
-
     
     func send(_ method: DanamkuMethod, text: String = "", id: String) {
         guard let data = try? JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text)),
