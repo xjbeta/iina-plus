@@ -554,6 +554,9 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             let w = wh[0]
             let h = wh[1]
             let size = CGSize(width: w, height: h)
+            
+            guard size != .zero else { return }
+            
             window.aspectRatio = size
             
             var newFrame = NSRect(origin: .zero, size: size)

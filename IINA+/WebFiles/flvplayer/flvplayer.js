@@ -13,12 +13,19 @@ function print(text) {
     window.webkit.messageHandlers.print.postMessage(text);
 };
 
+var flvjsLog = function(type, str) {
+    print(str);
+};
+
 function flv_destroy() {
     flvPlayer.pause();
     flvPlayer.unload();
     flvPlayer.detachMediaElement();
     flvPlayer.destroy();
     flvPlayer = null;
+    flvjs.LoggingControl.removeLogListener(flvjsLog);
+
+    document.getElementById('videoElement').replaceWith(document.getElementById('videoElement').cloneNode());
 };
 
 window.openUrl = function(url) {
@@ -44,12 +51,11 @@ window.openUrl = function(url) {
             seekType: 'range',
         });
 
-        flvjs.LoggingControl.addLogListener(function(type, str) {
-            print(str);
-        });
+        flvjs.LoggingControl.addLogListener(flvjsLog);
 
         videoElement.addEventListener("loadeddata", function(e) {
             print("loadeddata");
+            window.webkit.messageHandlers.size.postMessage([videoElement.videoWidth, videoElement.videoHeight]);
         });
         videoElement.addEventListener("loadedmetadata", function(e) {
             print("loadedmetadata");
