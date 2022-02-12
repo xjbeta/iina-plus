@@ -514,6 +514,10 @@ extension JSPlayerViewController: NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         Log("windowWillClose")
+        result = nil
+        key = nil
+        line = 0
+        
         danmaku?.stop()
         danmaku = nil
         deinitWebView()
