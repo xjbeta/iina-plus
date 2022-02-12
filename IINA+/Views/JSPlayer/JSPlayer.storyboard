@@ -66,7 +66,7 @@
                                                 <rect key="frame" x="60" y="6" width="41" height="16"/>
                                                 <buttonCell key="cell" type="squareTextured" title="00:00" bezelStyle="texturedSquare" alignment="center" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="ne7-fA-9VC">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                    <font key="font" metaFont="system"/>
+                                                    <font key="font" size="12" name="Monaco"/>
                                                 </buttonCell>
                                             </button>
                                             <button translatesAutoresizingMaskIntoConstraints="NO" id="dOA-Qd-GsD">
