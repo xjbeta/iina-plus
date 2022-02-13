@@ -139,7 +139,7 @@
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="100" id="oCn-3x-9nL"/>
                                                     </constraints>
-                                                    <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="right" sliderType="linear" id="PMw-OY-Eoa"/>
+                                                    <sliderCell key="cell" controlSize="small" continuous="YES" refusesFirstResponder="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="right" sliderType="linear" id="PMw-OY-Eoa"/>
                                                     <connections>
                                                         <action selector="volumeChanged:" target="bU7-R8-ocO" id="CxQ-BT-yX7"/>
                                                     </connections>
