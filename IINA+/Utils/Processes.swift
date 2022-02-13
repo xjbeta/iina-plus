@@ -15,6 +15,8 @@ class Processes: NSObject {
     
     static let shared = Processes()
     let videoGet = VideoGet()
+    let httpServer = HttpServer()
+    
     var decodeTask: Process?
     var videoGetTasks: [(Promise<YouGetJSON>, cancel: () -> Void)] = []
     
@@ -51,6 +53,28 @@ class Processes: NSObject {
         return []
     }
 
+    func mpvVersion() -> String {
+        let task = Process()
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.launchPath = "/bin/bash"
+        task.arguments  = ["-l", "-c", "mpv -V"]
+        
+        task.launch()
+        task.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        if let output = String(data: data, encoding: .utf8) {
+            let str = output.components(separatedBy: "\n").filter {
+                $0 != ""
+                && $0.starts(with: "mpv")
+                && $0.contains("Copyright")
+            }.first ?? ""
+            
+            return str.subString(from: "mpv", to: "Copyright").replacingOccurrences(of: " ", with: "")
+        }
+        return ""   
+    }
+    
     func iinaBuildVersion() -> Int {
         let b = Bundle(path: "/Applications/IINA.app")
         let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
@@ -71,66 +95,16 @@ class Processes: NSObject {
     
     func decodeURL(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in
-            switch Preferences.shared.liveDecoder {
-            case .ykdl, .youget:
-                guard let decoder = which(Preferences.shared.liveDecoder.rawValue).first else {
-                    resolver.reject(DecodeUrlError.notFoundDecoder)
-                    return
-                }
-                
-                decodeTask = Process()
-                let pipe = Pipe()
-                let errorPipe = Pipe()
-                decodeTask?.standardError = errorPipe
-                decodeTask?.standardOutput = pipe
-                
-                decodeTask?.launchPath = decoder
-                decodeTask?.arguments  = ["--json", url]
-                Log(url)
-                
-                decodeTask?.terminationHandler = { _ in
-                    guard self.decodeTask?.terminationReason != .uncaughtSignal else {
-                        resolver.reject(DecodeUrlError.normalExit)
-                        return
+            videoGetTasks.append(decodeUrlWithVideoGet(url))
+            videoGetTasks.last?.0.done {
+                resolver.fulfill($0)
+                }.catch(policy: .allErrors) {
+                    switch $0 {
+                    case PMKError.cancelled:
+                        resolver.reject(PMKError.cancelled)
+                    default:
+                        resolver.reject($0)
                     }
-                    
-                    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                    
-                    do {
-                        let json = try JSONParser.JSONObjectWithData(data)
-                        let re = try YouGetJSON(object: json)
-                        resolver.fulfill(re)
-                    } catch let er {
-                        Log("JSON decode error: \(er)")
-                        if let str = String(data: data, encoding: .utf8) {
-                            Log("JSON string: \(str)")
-                            if str.contains("Real URL") {
-                                let url = str.subString(from: "['", to: "']")
-                                let re = YouGetJSON(url: url)
-                                resolver.fulfill(re)
-                            }
-                        }
-                        resolver.reject(er)
-                    }
-                    
-                    let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-                    if let str = String(data: errorData, encoding: .utf8), str != "" {
-                        Log("Decode url error info: \(str)")
-                    }
-                }
-                decodeTask?.launch()
-            case .internal😀:
-                videoGetTasks.append(decodeUrlWithVideoGet(url))
-                videoGetTasks.last?.0.done {
-                    resolver.fulfill($0)
-                    }.catch(policy: .allErrors) {
-                        switch $0 {
-                        case PMKError.cancelled:
-                            resolver.reject(PMKError.cancelled)
-                        default:
-                            resolver.reject($0)
-                        }
-                }
             }
         }
     }

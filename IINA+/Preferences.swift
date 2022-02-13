@@ -26,12 +26,12 @@ class Preferences: NSObject {
         }
     }
     
-    var liveDecoder: LiveDecoder {
+    @objc var enableFlvjs: Bool {
         get {
-            return LiveDecoder(raw: defaults(.liveDecoder) as? String ?? "")
+            return defaults(.enableFlvjs) as? Bool ?? false
         }
         set {
-            defaultsSet(newValue.rawValue, forKey: .liveDecoder)
+            defaultsSet(newValue, forKey: .enableFlvjs)
         }
     }
     
@@ -133,6 +133,52 @@ class Preferences: NSObject {
         }
     }
 
+    @objc dynamic var stateLiving: NSColor {
+        get {
+            return colorDecode(defaults(.stateLiving)) ?? .systemGreen
+        }
+        set {
+            defaultsSet(colorEncode(newValue), forKey: .stateLiving)
+        }
+    }
+    
+    @objc dynamic var stateOffline: NSColor {
+        get {
+            
+            return colorDecode(defaults(.stateOffline)) ?? .systemRed
+        }
+        set {
+            defaultsSet(colorEncode(newValue), forKey: .stateOffline)
+        }
+    }
+    
+    @objc dynamic var stateReplay: NSColor {
+        get {
+            return colorDecode(defaults(.stateReplay)) ?? .systemBlue
+        }
+        set {
+            defaultsSet(colorEncode(newValue), forKey: .stateReplay)
+        }
+    }
+    
+    @objc dynamic var stateUnknown: NSColor {
+        get {
+            return colorDecode(defaults(.stateUnknown)) ?? .systemGray
+        }
+        set {
+            defaultsSet(colorEncode(newValue), forKey: .stateUnknown)
+        }
+    }
+    
+    private func colorEncode(_ color: NSColor) -> Data {
+        (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
+    }
+    
+    private func colorDecode(_ value: Any?) -> NSColor? {
+        guard let data = value as? Data,
+              let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) else { return nil }
+        return color
+    }
 }
 
 private extension Preferences {
@@ -148,7 +194,7 @@ private extension Preferences {
 
 enum PreferenceKeys: String {
     case livePlayer
-    case liveDecoder
+    case enableFlvjs
     case enableDanmaku
     case danmukuFontFamilyName
     case danmukuFontWeight
@@ -158,4 +204,9 @@ enum PreferenceKeys: String {
     case dmBlockType
     case dmBlockList
     case dmPort
+    
+    case stateLiving
+    case stateOffline
+    case stateReplay
+    case stateUnknown
 }

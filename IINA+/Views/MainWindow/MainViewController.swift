@@ -35,12 +35,10 @@ class MainViewController: NSViewController {
     }
     @objc var context: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
-        if bookmarkTableView.selectedRow != -1 {
-            let url = bookmarks[bookmarkTableView.selectedRow].url
-            searchField.stringValue = url
-            searchField.becomeFirstResponder()
-            startSearch(self)
-        }
+        guard bookmarkTableView.selectedRow != -1 else { return }
+        let url = bookmarks[bookmarkTableView.selectedRow].url
+        searchField.stringValue = url
+        startSearchingUrl(url)
     }
     
     // MARK: - Menu
@@ -193,7 +191,7 @@ class MainViewController: NSViewController {
                processes.iinaArchiveType() != .normal {
                 switch site {
                 case .bilibili, .bangumi, .biliLive, .douyu, .huya:
-                    self.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
+                    processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
                 }
@@ -206,14 +204,13 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Danmaku
-    let httpServer = HttpServer()
     
     let iinaProxyAF = Alamofire.Session()
     
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        httpServer.start()
+        let proc = Processes.shared
         
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
@@ -243,7 +240,7 @@ class MainViewController: NSViewController {
             guard let dic = $0.userInfo as? [String: String],
                 let id = dic["id"] else { return }
             
-            self.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
+            proc.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
         }
         
         // esc key down event
@@ -409,11 +406,30 @@ class MainViewController: NSViewController {
         }
     }
     
+    
+    func openWithJSPlayer(_ url: String) {
+        guard let playerWC = NSStoryboard(name: .player, bundle: nil).instantiateInitialController() as? JSPlayerWindowController else {
+                    return
+                }
+        
+        playerWC.window?.makeKeyAndOrderFront(nil)
+        playerWC.contentVC?.url = url
+    }
+    
+    
     func startSearchingUrl(_ url: String, directly: Bool = false) {
         guard url != "" else { return }
-        
         Processes.shared.stopDecodeURL()
         waitingErrorMessage = nil
+        yougetResult = nil
+        
+        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame].contains(SupportSites(url: url))
+        
+        if Preferences.shared.enableFlvjs, jspSupported {
+            openWithJSPlayer(url)
+            return
+        }
+        
         isSearching = true
         progressStatusChanged(true)
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
@@ -474,6 +490,7 @@ class MainViewController: NSViewController {
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     self.yougetResult = $0
+                    self.yougetResult?.rawUrl = str
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
                     resolver.reject($0)

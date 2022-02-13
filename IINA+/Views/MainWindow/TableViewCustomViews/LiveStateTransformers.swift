@@ -11,19 +11,12 @@ import Cocoa
 @objc(LiveStateTransformer)
 class LiveStateTransformer: ValueTransformer {
     override func transformedValue(_ value: Any?) -> Any? {
-        guard let i = value as? Int else {
+        guard let i = value as? Int,
+                let state = LiveState(rawValue: i) else {
             return nil
         }
-        var name = ""
-        switch i {
-        case 0:
-            name = "NSStatusUnavailable"
-        case 1:
-            name = "NSStatusAvailable"
-        default:
-            name = "NSStatusNone"
-        }
-        return NSImage(named: .init(name))
+        
+        return state.color
     }
 }
 

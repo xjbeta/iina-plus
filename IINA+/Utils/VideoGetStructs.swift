@@ -511,6 +511,45 @@ struct EgameInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct EgameMInfo: Unmarshaling, LiveInfo {
+    var title: String = ""
+    var name: String = ""
+    var avatar: String
+    var isLiving = false
+    var pid = ""
+    var anchorId: Int
+    var lastTm = 0
+    var streamInfos: [StreamInfo]
+    
+    var site: SupportSites = .eGame
+    
+    var cover: String = ""
+    
+    struct StreamInfo: Unmarshaling {
+        let playUrl: String
+        let desc: String
+        init(object: MarshaledObject) throws {
+            let u: String = try object.value(for: "playUrl")
+            playUrl = u.replacingOccurrences(of: "&amp;", with: "&")
+            desc = try object.value(for: "desc")
+        }
+    }
+    
+    
+    init(object: MarshaledObject) throws {
+        title = try object.value(for: "liveInfo.data.videoInfo.title")
+        name = try object.value(for: "liveInfo.data.profileInfo.nickName")
+        avatar = try object.value(for: "liveInfo.data.profileInfo.faceUrl")
+        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        let liveStatus: Int = try object.value(for: "liveInfo.data.profileInfo.isLive")
+        isLiving = liveStatus == 1
+        pid = try object.value(for: "liveInfo.data.videoInfo.pid")
+        anchorId = try object.value(for: "liveInfo.data.videoInfo.anchorId")
+        
+        streamInfos = try object.value(for: "liveInfo.data.videoInfo.streamInfos")
+    }
+}
+
 
 
 // MARK: - Bilibili
@@ -526,19 +565,25 @@ struct BilibiliPlayInfo: Unmarshaling {
         let id: Int
         let bandwidth: Int
         var description: String = ""
+        let backupUrl: [String]
+        
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             id = try object.value(for: "id")
             bandwidth = try object.value(for: "bandwidth")
+            backupUrl = (try? object.value(for: "backupUrl")) ?? []
         }
     }
     
     struct AudioInfo: Unmarshaling {
         let url: String
         let bandwidth: Int
+        let backupUrl: [String]
+        
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             bandwidth = try object.value(for: "bandwidth")
+            backupUrl = (try? object.value(for: "backupUrl")) ?? []
         }
     }
     
@@ -590,6 +635,7 @@ struct BilibiliPlayInfo: Unmarshaling {
             var stream = Stream(url: $0.element.url)
 //            stream.quality = $0.element.bandwidth
             stream.quality = 999 - $0.element.index
+            stream.src = $0.element.backupUrl
             yougetJson.streams[$0.element.description] = stream
         }
         
@@ -858,5 +904,45 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
             avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
             isLiving = true
         }
+    }
+}
+
+
+struct CC163NewVideos: Unmarshaling {
+    let title: String
+    let videos: [String: VideoItem]
+    
+    struct VideoItem: Unmarshaling {
+        let vbr: Int
+        let urls: [String]
+        
+        init(object: MarshaledObject) throws {
+            vbr = try object.value(for: "vbr")
+            let cdnItems: [String: Any] = try object.value(for: "cdn")
+            
+            urls = Array(cdnItems.compactMapValues({ $0 as? String }).values)
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        videos = try object.value(for: "quickplay.resolution")
+        title = try object.value(for: "title")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        json.title = title
+        
+        videos.filter {
+            $0.value.urls.count > 0
+        }.forEach {
+            let video = $0.value
+            var stream = Stream(url: video.urls.first!)
+            stream.quality = video.vbr
+            stream.src = Array(video.urls.dropFirst())
+            json.streams[$0.key] = stream
+        }
+        
+        return json
     }
 }

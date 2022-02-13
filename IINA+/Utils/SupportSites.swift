@@ -68,3 +68,36 @@ enum SupportSites: String {
         }
     }
 }
+
+
+enum LiveState: Int {
+    case living = 1
+    case offline = 0
+    case video = -99
+    case replay = 2
+    case `none` = -1
+    
+    var raw: Int16 {
+        get {
+            return Int16(rawValue)
+        }
+    }
+    
+    var color: NSColor {
+        get {
+            let pref = Preferences.shared
+            switch self {
+            case .living:
+                return pref.stateLiving
+            case .offline:
+                return pref.stateOffline
+            case .video:
+                return .clear
+            case .replay:
+                return pref.stateReplay
+            case .none:
+                return pref.stateUnknown
+            }
+        }
+    }
+}

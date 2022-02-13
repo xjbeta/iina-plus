@@ -15,10 +15,18 @@ class PreferencesWindowController: NSWindowController {
         window?.isMovableByWindowBackground = true
         window?.titlebarAppearsTransparent = true
         window?.titleVisibility = .hidden
+        window?.delegate = self
+        
         
         if let preferencesTabViewController = contentViewController as? PreferencesTabViewController {
             preferencesTabViewController.autoResizeWindow(preferencesTabViewController.tabView.selectedTabViewItem, animate: false)
         }
     }
 
+}
+
+extension PreferencesWindowController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        NSColorPanel.shared.close()
+    }
 }

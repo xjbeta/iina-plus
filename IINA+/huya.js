@@ -52,21 +52,15 @@ function test(t) {
         case HUYA.EWebSocketCommandType.EWSCmdS2C_MsgPushReq:
             i = new Taf.JceInputStream(n.vData.buffer),
             (U = new HUYA.WSPushMessage).readFrom(i);
-            var R = U.iUri,
-                b = U.lMsgId;
-            
-            
-            if (R !== 1400)
-                return;
-            
-            i = new Taf.JceInputStream(U.sMsg.buffer);
 
             
+            i = new Taf.JceInputStream(U.sMsg.buffer);
             var messageNotice = new DM.MessageNotice();
-            
             messageNotice.readFrom(i);
             
-            return messageNotice.sContent;
+            U.sMsg = messageNotice.sContent
+            
+            return JSON.stringify(U);
         case HUYA.EWebSocketCommandType.EWSCmdS2C_HeartBeatAck:
             return 'EWebSocketCommandType.EWSCmdS2C_HeartBeatAck';
         case HUYA.EWebSocketCommandType.EWSCmdS2C_VerifyCookieRsp:

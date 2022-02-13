@@ -20,7 +20,7 @@ public class Bookmark: NSManagedObject {
     
     func updateState() {
         if site == .unsupported {
-            self.state = -1
+            self.state = LiveState.none.raw
             self.save()
             return
         }
@@ -38,7 +38,7 @@ public class Bookmark: NSManagedObject {
                 let s = "Get live status error: \($0) \n - \(self.url)"
                 Log(s)
                 self.liveTitle = self.url
-                self.state = -1
+                self.state = LiveState.none.raw
                 self.save()
         }
     }
@@ -57,11 +57,11 @@ public class Bookmark: NSManagedObject {
         }
         
         if isLiveSite {
-            state = info.isLiving ? 1 : 0
+            state = (info.isLiving ? LiveState.living : LiveState.offline).raw
         } else if info.site == .bangumi || info.site == .bilibili {
-            state = -99
+            state = LiveState.offline.raw
         } else {
-            state = -1
+            state = LiveState.none.raw
         }
         
         updateDate = Date()
