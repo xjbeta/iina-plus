@@ -131,6 +131,7 @@ class JSPlayerViewController: NSViewController {
         case print,
              size,
              duration,
+             end,
              
              error,
              loadingComplete,
@@ -592,6 +593,11 @@ extension JSPlayerViewController: WKScriptMessageHandler {
                 self.windowSizeInited = true
             }
             self.startLoading(stop: true)
+            
+        case .end:
+            print("==========================================")
+            print("==================Ended===================")
+            print("==========================================")
         case .loadingComplete:
             break
         case .recoveredEarlyEof:

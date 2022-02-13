@@ -61,7 +61,7 @@ window.openUrl = function(url) {
             print("loadedmetadata");
         });
         videoElement.addEventListener("ended", function(e) {
-            print("ended");
+            window.webkit.messageHandlers.end.postMessage();
         });
         videoElement.addEventListener("error", function(e) {
             print("error");
