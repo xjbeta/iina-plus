@@ -24,7 +24,7 @@ struct DanmakuPluginOptions: Encodable {
 }
 
 enum IINAUrlType: String {
-    case normal, danmaku, plugin
+    case normal, danmaku, plugin, none
 }
 
 struct YouGetJSON: Unmarshaling, Codable {
@@ -88,6 +88,8 @@ struct YouGetJSON: Unmarshaling, Codable {
     
     func iinaUrl(_ key: String, type: IINAUrlType) -> String? {
         switch type {
+        case .none:
+            return nil
         case .normal:
             return iinaDefaultUrl(key)
         case .danmaku:

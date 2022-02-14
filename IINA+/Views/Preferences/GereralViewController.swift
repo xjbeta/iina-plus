@@ -100,6 +100,8 @@ class GereralViewController: NSViewController, NSMenuDelegate {
                 s = "plugin"
             case .normal:
                 s = "official"
+            case .none:
+                s = "not found"
             }
         case .mpv:
             s = proc.mpvVersion()
