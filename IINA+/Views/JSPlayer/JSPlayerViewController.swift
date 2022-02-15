@@ -29,7 +29,7 @@ class JSPlayerViewController: NSViewController {
     @IBAction func reloadVideo(_ sender: NSButton) {
         startLoading()
         line = 0
-        webView.evaluateJavaScript("flv_destroy();")
+        evaluateJavaScript("flv_destroy();")
         danmaku?.stop()
         decodeUrl()
     }
@@ -37,14 +37,14 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var volumeBox: NSBox!
     @IBOutlet var volumeButton: NSButton!
     @IBAction func mute(_ sender: NSButton) {
-        webView.evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
+        evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
         playerMuted = !playerMuted
         initVolumeButton()
     }
     
     @IBOutlet var volumeSlider: NSSlider!
     @IBAction func volumeChanged(_ sender: NSSlider) {
-        webView.evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
+        evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
         initVolumeButton()
     }
      
@@ -299,8 +299,8 @@ class JSPlayerViewController: NSViewController {
         }
         
         
-        webView.evaluateJavaScript("initContent();")
-        webView.evaluateJavaScript("window.openUrl('\(vUrl)');")
+        evaluateJavaScript("initContent();")
+        evaluateJavaScript("window.openUrl('\(vUrl)');")
         
         switch re.site {
         case .douyu, .eGame, .biliLive, .huya:
@@ -345,8 +345,14 @@ class JSPlayerViewController: NSViewController {
         webView = nil
     }
     
+    func evaluateJavaScript(_ str: String) {
+        guard webView != nil else { return }
+        webView.evaluateJavaScript(str)
+    }
+    
+    
     func resize() {
-        webView.evaluateJavaScript("window.resize();")
+        evaluateJavaScript("window.resize();")
     }
     
     func startDM(_ url: String) {
@@ -620,7 +626,7 @@ extension JSPlayerViewController: DanmakuDelegate {
         if method != .sendDM {
             print(str)
         }
-        webView.evaluateJavaScript("window.dmMessage(\(str));")
+        evaluateJavaScript("window.dmMessage(\(str));")
     }
 }
 
