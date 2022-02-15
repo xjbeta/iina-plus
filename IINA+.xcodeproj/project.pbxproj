@@ -76,10 +76,8 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
-		0189533D279E9AA40011BAAC /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0189533C279E9AA40011BAAC /* Preferences.storyboard */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
-		0189534D27A1381C0011BAAC /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0189534C27A1381C0011BAAC /* JSPlayer.storyboard */; };
 		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
@@ -103,6 +101,8 @@
 		01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
 		01B62C94278DA95F00EB39FB /* SocketRocket.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; };
 		01B62C95278DA95F00EB39FB /* SocketRocket.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */; };
+		01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807727BB5CFD00E87A8C /* Preferences.storyboard */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
@@ -222,10 +222,8 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
-		0189533C279E9AA40011BAAC /* Preferences.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Preferences.storyboard; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
 		0189534727A0F5A90011BAAC /* LiveStateTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateTextField.swift; sourceTree = "<group>"; };
-		0189534C27A1381C0011BAAC /* JSPlayer.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = JSPlayer.storyboard; sourceTree = "<group>"; };
 		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
@@ -248,6 +246,10 @@
 		01B53B5A27B64F370051F7B4 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
 		01B53B5C27B64F420051F7B4 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		01B62C93278DA95F00EB39FB /* SocketRocket.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SocketRocket.xcframework; path = Carthage/Build/SocketRocket.xcframework; sourceTree = "<group>"; };
+		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
+		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
+		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
+		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
@@ -438,7 +440,7 @@
 		0189534B27A138040011BAAC /* JSPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				0189534C27A1381C0011BAAC /* JSPlayer.storyboard */,
+				01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */,
 				0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */,
 				0189534E27A138310011BAAC /* JSPlayerViewController.swift */,
 				0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */,
@@ -527,7 +529,7 @@
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				0189533C279E9AA40011BAAC /* Preferences.storyboard */,
+				01C0807727BB5CFD00E87A8C /* Preferences.storyboard */,
 				0196CB6321214B4200BCD29E /* AdvancedViewController.swift */,
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				01683DDD211924160016A886 /* BilibiliViewController.swift */,
@@ -622,13 +624,13 @@
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
-				0189534D27A1381C0011BAAC /* JSPlayer.storyboard in Resources */,
+				01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
-				0189533D279E9AA40011BAAC /* Preferences.storyboard in Resources */,
+				01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -735,6 +737,24 @@
 				016E07C326BB8FDF000AB100 /* zh-Hans */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				01C0807127BB5CF300E87A8C /* Base */,
+				01C0807427BB5CF500E87A8C /* zh-Hans */,
+			);
+			name = JSPlayer.storyboard;
+			sourceTree = "<group>";
+		};
+		01C0807727BB5CFD00E87A8C /* Preferences.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				01C0807627BB5CFD00E87A8C /* Base */,
+				01C0807927BB5CFF00E87A8C /* zh-Hans */,
+			);
+			name = Preferences.storyboard;
 			sourceTree = "<group>";
 		};
 		01E40FF822C39E7100864118 /* Localizable.strings */ = {

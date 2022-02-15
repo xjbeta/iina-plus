@@ -1,0 +1,29 @@
+/* Class = "NSMenuItem"; title = "Item 1"; ObjectID = "03k-iW-imw"; */
+"03k-iW-imw.title" = "Item 1";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "58q-ki-cTb"; */
+"58q-ki-cTb.title" = "Box";
+
+/* Class = "NSWindow"; title = "Loading..."; ObjectID = "KNO-9C-XR9"; */
+"KNO-9C-XR9.title" = "加载中...";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "LJd-y3-Ngp"; */
+"LJd-y3-Ngp.title" = "Box";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Lz2-R0-mki"; */
+"Lz2-R0-mki.title" = "Table View Cell";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "NVV-xJ-ece"; */
+"NVV-xJ-ece.title" = "Text Cell";
+
+/* Class = "NSButtonCell"; title = "1080P"; ObjectID = "V1i-DZ-62a"; */
+"V1i-DZ-62a.title" = "1080P";
+
+/* Class = "NSMenuItem"; title = "Item 3"; ObjectID = "h3R-Bz-Wpa"; */
+"h3R-Bz-Wpa.title" = "Item 3";
+
+/* Class = "NSButtonCell"; title = "00:00"; ObjectID = "ne7-fA-9VC"; */
+"ne7-fA-9VC.title" = "00:00";
+
+/* Class = "NSMenuItem"; title = "Item 2"; ObjectID = "zlW-lq-SDz"; */
+"zlW-lq-SDz.title" = "Item 2";
