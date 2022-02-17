@@ -423,7 +423,7 @@ class MainViewController: NSViewController {
         waitingErrorMessage = nil
         yougetResult = nil
         
-        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame].contains(SupportSites(url: url))
+        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame, .douyin].contains(SupportSites(url: url))
         
         if Preferences.shared.enableFlvjs, jspSupported {
             openWithJSPlayer(url)
