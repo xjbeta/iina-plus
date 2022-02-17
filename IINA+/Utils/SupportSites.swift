@@ -17,6 +17,7 @@ enum SupportSites: String {
     case huya = "www.huya.com"
     case eGame = "egame.qq.com"
     case cc163 = "cc.163.com"
+    case douyin = "live.douyin.com"
     case local
     case unsupported
     
@@ -61,6 +62,8 @@ enum SupportSites: String {
             return NSLocalizedString("SupportSites.eGame", comment: "eGame")
         case .cc163:
             return NSLocalizedString("SupportSites.CC163", comment: "CC163")
+        case .douyin:
+            return NSLocalizedString("SupportSites.DouYin", comment: "DouYin")
         case .unsupported:
             return NSLocalizedString("SupportSites.Unsupported", comment: "Unsupported")
         case .b23, .local:
