@@ -969,17 +969,18 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
         let status: Int = try object.value(for: "initialState.roomStore.roomInfo.room.status")
         isLiving = status == 2
         
-        
-        urls = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.flv_pull_url")
+        let flvUrls: [String: String]? = try? object.value(for: "initialState.roomStore.roomInfo.room.stream_url.flv_pull_url")
+        urls = flvUrls ?? [:]
         
         /*
         let hlsUrls: [String: String] = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.hls_pull_url_map")
          */
+        //        name = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.live_core_sdk_data.anchor.nickname")
         
         name = try object.value(for: "initialState.roomStore.roomInfo.anchor.nickname")
         
-        let covers: [String] = try object.value(for: "initialState.roomStore.roomInfo.room.cover.url_list")
-        cover = covers.first ?? ""
+        let covers: [String]? = try object.value(for: "initialState.roomStore.roomInfo.room.cover.url_list")
+        cover = covers?.first ?? ""
         
         let avatars: [String] = try object.value(for: "initialState.roomStore.roomInfo.anchor.avatar_thumb.url_list")
         avatar = avatars.first ?? ""
