@@ -946,3 +946,60 @@ struct CC163NewVideos: Unmarshaling {
         return json
     }
 }
+
+// MARK: - DouYin
+struct DouYinInfo: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var site = SupportSites.douyin
+    
+    var roomId: String
+    var webRid: String
+    var urls = [String: String]()
+    
+    
+    init(object: MarshaledObject) throws {
+        roomId = try object.value(for: "initialState.roomStore.roomInfo.roomId")
+        webRid = try object.value(for: "initialState.roomStore.roomInfo.web_rid")
+        
+        title = try object.value(for: "initialState.roomStore.roomInfo.room.title")
+        let status: Int = try object.value(for: "initialState.roomStore.roomInfo.room.status")
+        isLiving = status == 2
+        
+        
+        urls = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.flv_pull_url")
+        
+        /*
+        let hlsUrls: [String: String] = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.hls_pull_url_map")
+         */
+        
+        name = try object.value(for: "initialState.roomStore.roomInfo.anchor.nickname")
+        
+        let covers: [String] = try object.value(for: "initialState.roomStore.roomInfo.room.cover.url_list")
+        cover = covers.first ?? ""
+        
+        let avatars: [String] = try object.value(for: "initialState.roomStore.roomInfo.anchor.avatar_thumb.url_list")
+        avatar = avatars.first ?? ""
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        json.title = title
+        
+        
+        urls.map {
+            ($0.key, $0.value.replacingOccurrences(of: "http://", with: "https://"))
+        }.sorted { v0, v1 in
+            v0.0 < v1.0
+        }.enumerated().forEach {
+            var stream = Stream(url: $0.element.1)
+            stream.quality = 999 - $0.offset
+            json.streams[$0.element.0] = stream
+        }
+        
+        return json
+    }
+}
