@@ -20,18 +20,16 @@ class VideoGet: NSObject {
     let douyuWebview = WKWebView()
     var douyuWebviewObserver: NSKeyValueObservation?
     
-    let douyinWebview = WKWebView()
-    var douyinPrepareTask: Promise<()>?
-    var douyinCookiesObsStarted = false
-    var douyinCNObserver: NSObjectProtocol?
-    var douyinSession: Session?
+    let douyin = DouYin()
     
+
     lazy var pSession: Session = {
         let configuration = URLSessionConfiguration.af.default
         let ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
         configuration.headers.add(.userAgent(ua))
         return Session(configuration: configuration)
     }()
+    
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
         let site = SupportSites(url: url)
@@ -145,7 +143,7 @@ class VideoGet: NSObject {
                 $0.write(to: yougetJson)
             }
         case .douyin:
-            return getDouYinInfo(url).compactMap {
+            return douyin.getInfo(url).compactMap {
                 ($0 as? DouYinInfo)?.write(to: yougetJson)
             }
         default:
@@ -244,7 +242,7 @@ class VideoGet: NSObject {
                 return getCC163Info(url)
             }
         case .douyin:
-            return getDouYinInfo(url)
+            return douyin.getInfo(url)
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)
@@ -318,25 +316,9 @@ class VideoGet: NSObject {
         }
     }
     
-    func startDouYinCookieStoreObserver(_ start: Bool = true) {
-        let httpCookieStore = WKWebsiteDataStore.default().httpCookieStore
-        if start, !douyinCookiesObsStarted {
-            douyinCookiesObsStarted = true
-            httpCookieStore.add(self)
-        } else if !start, douyinCookiesObsStarted {
-            douyinCookiesObsStarted = false
-            httpCookieStore.remove(self)
-        }
-    }
-    
     deinit {
         douyuWebview.stopLoading()
         douyuWebviewObserver?.invalidate()
-        
-        douyinWebview.stopLoading()
-        douyinPrepareTask = nil
-        douyinSession = nil
-        startDouYinCookieStoreObserver(false)
     }
 }
 
@@ -1329,76 +1311,6 @@ extension VideoGet {
         }
     }
     
-    // MARK: - DouYin
-    
-    func getDouYinInfo(_ url: URL) -> Promise<LiveInfo> {
-        if douyinSession == nil {
-            if douyinPrepareTask == nil {
-                douyinPrepareTask = prepareDouYinArgs()
-            }
-            return douyinPrepareTask!.then {
-                self.getDouYinContent(url)
-            }
-        } else {
-            return self.getDouYinContent(url)
-        }
-    }
-    
-    
-    func getDouYinContent(_ url: URL) -> Promise<LiveInfo> {
-        return Promise { resolver in
-            douyinSession?.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                guard let text = response.text,
-                      let json = self.getDouYinJSON(text) else {
-                    resolver.reject(VideoGetError.notFountData)
-                    return
-                }
-                
-                do {
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
-                    let info = try DouYinInfo(object: jsonObj)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getDouYinJSON(_ text: String) -> Data? {
-        try? SwiftSoup
-            .parse(text)
-            .getElementById("RENDER_DATA")?
-            .data()
-            .removingPercentEncoding?
-            .data(using: .utf8)
-    }
-    
-    func prepareDouYinArgs() -> Promise<()> {
-        guard douyinSession == nil else {
-            return .value(())
-        }
-        
-        return Promise { resolver in
-            douyinWebview.stopLoading()
-            douyinCNObserver = NotificationCenter.default.addObserver(forName: .init("test123"), object: nil, queue: .main) { _ in
-                if let n = self.douyinCNObserver {
-                    NotificationCenter.default.removeObserver(n)
-                }
-                self.startDouYinCookieStoreObserver(false)
-                self.douyinWebview.stopLoading()
-                resolver.fulfill(())
-            }
-            startDouYinCookieStoreObserver()
-            
-            douyinWebview.load(.init(url: URL(string: "https://live.douyin.com/1145141919810")!))
-        }
-    }
-    
-    
     // MARK: - MD5
     // https://stackoverflow.com/a/53044349
     func MD5(_ string: String) -> String? {
@@ -1469,27 +1381,6 @@ extension VideoGet {
         return String(text[startIndex...endIndex])
     }
 }
-
-extension VideoGet: WKHTTPCookieStoreObserver {
-    func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
-        cookieStore.getAllCookies { cookies in
-            guard let a0 = cookies.first(where: { $0.name == "__ac_nonce" })?.value,
-                  let a1 = cookies.first(where: { $0.name == "__ac_signature" })?.value
-            else { return }
-            
-            let configuration = URLSessionConfiguration.af.default
-            let ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15"
-            configuration.headers.add(.userAgent(ua))
-            configuration.headers.add(name: "referer", value: "https://live.douyin.com")
-            configuration.headers.add(name: "Cookie", value: "__ac_nonce=\(a0); __ac_signature=\(a1)")
-            
-            self.douyinSession = Session(configuration: configuration)
-            
-            NotificationCenter.default.post(name: .init("test123"), object: nil)
-        }
-    }
-}
-
 
 enum VideoGetError: Error {
     case invalidLink
