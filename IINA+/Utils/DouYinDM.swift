@@ -44,9 +44,10 @@ class DouYinDM: NSObject {
         
         let path = Bundle.main.url(forResource: "douyin", withExtension: "html")!
         
-        webview?.navigationDelegate = self
-        
-        webview?.loadFileURL(path, allowingReadAccessTo: path.deletingLastPathComponent())
+        DispatchQueue.main.async {
+            self.webview?.navigationDelegate = self
+            self.webview?.loadFileURL(path, allowingReadAccessTo: path.deletingLastPathComponent())
+        }
     }
     
     
@@ -165,8 +166,10 @@ class DouYinDM: NSObject {
     func stop() {
         requestTimer?.invalidate()
         requestTimer = nil
-        webview?.stopLoading()
-        webview = nil
+        DispatchQueue.main.async {
+            self.webview?.stopLoading()
+            self.webview = nil
+        }
     }
     
     enum DouYinDMError: Error {
