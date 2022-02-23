@@ -56,6 +56,7 @@
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
+		01892C8327C27FAB00494AFD /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01892C8127C27FAB00494AFD /* douyin.html */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
 		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
@@ -190,6 +191,7 @@
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
+		01892C8127C27FAB00494AFD /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
 		0189534727A0F5A90011BAAC /* LiveStateTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateTextField.swift; sourceTree = "<group>"; };
 		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 		0120932727A3B350002C7FD3 /* WebFiles */ = {
 			isa = PBXGroup;
 			children = (
+				01892C7B27C27F8100494AFD /* DouYin */,
 				0120933427A3B576002C7FD3 /* Deps */,
 				01B53B5127B64E0B0051F7B4 /* Danmaku */,
 				01B53B5027B64DFD0051F7B4 /* flvplayer */,
@@ -392,6 +395,14 @@
 				016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */,
 			);
 			path = SelectVideoCollectionView;
+			sourceTree = "<group>";
+		};
+		01892C7B27C27F8100494AFD /* DouYin */ = {
+			isa = PBXGroup;
+			children = (
+				01892C8127C27FAB00494AFD /* douyin.html */,
+			);
+			path = DouYin;
 			sourceTree = "<group>";
 		};
 		0189534B27A138040011BAAC /* JSPlayer */ = {
@@ -606,6 +617,7 @@
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
+				01892C8327C27FAB00494AFD /* douyin.html in Resources */,
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
 				01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
