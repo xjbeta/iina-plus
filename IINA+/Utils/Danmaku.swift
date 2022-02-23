@@ -82,18 +82,24 @@ class Danmaku: NSObject {
     let cc163Server = URL(string: "wss://weblink.cc.163.com")
     
     
+    var douyinDM: DouYinDM?
     
     
     init(_ url: String) {
         liveSite = .init(url: url)
         self.url = url
         
-        if liveSite == .huya {
+        switch liveSite {
+        case .huya:
             if let huyaFilePath = Bundle.main.path(forResource: "huya", ofType: "js") {
                 huyaJSContext?.evaluateScript(try? String(contentsOfFile: huyaFilePath))
             } else {
                 Log("Not found huya.js.")
             }
+        case .douyin:
+            douyinDM = .init()
+        default:
+            break
         }
     }
     
@@ -103,6 +109,9 @@ class Danmaku: NSObject {
         timer?.cancel()
         egameTimer?.cancel()
         douyuSavedData = Data()
+        
+        douyinDM?.stop()
+        douyinDM = nil
     }
     
     func prepareBlockList() throws {
@@ -182,6 +191,9 @@ class Danmaku: NSObject {
                 }.catch {
                     Log("Get Egame Info for DM error: \($0)")
             }
+        case .douyin:
+            douyinDM?.start(self.url)
+            douyinDM?.delegate = self
         default:
             break
         }
@@ -732,6 +744,12 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             }
         }
         return data
+    }
+}
+
+extension Danmaku: DanmakuDelegate {
+    func send(_ method: DanamkuMethod, text: String, id: String) {
+        sendDM(text)
     }
 }
 

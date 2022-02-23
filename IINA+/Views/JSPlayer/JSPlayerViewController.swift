@@ -303,7 +303,7 @@ class JSPlayerViewController: NSViewController {
         evaluateJavaScript("window.openUrl('\(vUrl)');")
         
         switch re.site {
-        case .douyu, .eGame, .biliLive, .huya:
+        case .douyu, .eGame, .biliLive, .huya, .douyin:
             startDM(re.rawUrl)
         case .bilibili, .bangumi:
             break

@@ -190,7 +190,7 @@ class MainViewController: NSViewController {
                preferences.livePlayer == .iina,
                processes.iinaArchiveType() != .normal {
                 switch site {
-                case .bilibili, .bangumi, .biliLive, .douyu, .huya:
+                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .douyin:
                     processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
