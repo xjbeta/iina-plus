@@ -32,6 +32,7 @@ class DataManager: NSObject {
             newBookmark.order = 0
         }
         try? context.save()
+        newBookmark.updateState()
     }
     
     func deleteBookmark(_ index: Int) {
