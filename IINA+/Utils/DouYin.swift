@@ -14,7 +14,7 @@ import Alamofire
 import Marshal
 
 class DouYin: NSObject {
-    let webview = WKWebView()
+    var webview: WKWebView?
     var prepareTask: Promise<()>?
     var douyinCNObserver: NSObjectProtocol?
     let douyinCookiesNotification = NSNotification.Name("DouyinCookiesNotification")
@@ -93,10 +93,11 @@ class DouYin: NSObject {
         deleteDouYinCookies()
 
         return Promise { resolver in
-            webview.stopLoading()
+            webview?.stopLoading()
+            webview = WKWebView()
             startDouYinCookieStoreObserver()
             
-            loadingObserver = webview.observe(\.isLoading) { webView, _ in
+            loadingObserver = webview?.observe(\.isLoading) { webView, _ in
                 guard !webView.isLoading else { return }
                 Log("Load Douyin webview finished.")
                 
@@ -108,7 +109,7 @@ class DouYin: NSObject {
                         self.loadingObserver = nil
                     } else if s.contains("验证") {
                         self.deleteCookies().done {
-                            self.webview.load(.init(url: self.douyinEmptyURL))
+                            self.webview?.load(.init(url: self.douyinEmptyURL))
                         }.catch({ _ in })
                     }
                 }
@@ -121,7 +122,7 @@ class DouYin: NSObject {
                 resolver.fulfill(())
             }
             
-            webview.load(.init(url: douyinEmptyURL))
+            webview?.load(.init(url: douyinEmptyURL))
         }
     }
     
@@ -168,7 +169,8 @@ class DouYin: NSObject {
     }
 
     deinit {
-        webview.stopLoading()
+        webview?.stopLoading()
+        webview = nil
         prepareTask = nil
         session = nil
         startDouYinCookieStoreObserver(false)
@@ -212,7 +214,7 @@ class DouYin: NSObject {
             configuration.headers.add(name: "Cookie", value: cookieStr)
             
             self.session = Session(configuration: configuration)
-            self.webview.stopLoading()
+            self.webview?.stopLoading()
             
             resolver.fulfill_()
         }
@@ -225,10 +227,12 @@ class DouYin: NSObject {
 
 extension DouYin: WKHTTPCookieStoreObserver {
     func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
+        guard let webview = self.webview else { return }
+        
         cookieStore.getAllCookies().then {
             self.checkDouYinCookies($0)
         }.then {
-            self.webview.evaluateJavaScript("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
+            webview.evaluateJavaScript("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
         }.compactMap { re -> [String: String]? in
             guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
             return [
@@ -237,6 +241,7 @@ extension DouYin: WKHTTPCookieStoreObserver {
             ]
         }.done {
             self.storageDic = $0
+            self.webview = nil
             NotificationCenter.default.post(name: self.douyinCookiesNotification, object: nil)
         }.catch {
             switch $0 {
