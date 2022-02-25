@@ -835,21 +835,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             case .unsupported:
                 return tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil)
             default:
-                if let v = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                    let iv = v.userCoverImageView
-                    iv?.image = nil
-                    var size = iv?.frame.size ?? .zero
-                    size.height *= 2
-                    size.width *= 2
-                    
-                    let transformer = SDImageResizingTransformer(size: size, scaleMode: .aspectFill)
-                    guard let s = data.cover else { return v }
-                    iv?.sd_setImage(
-                        with: .init(string: s),
-                        placeholderImage: nil,
-                        context: [.imageTransformer: transformer])
-                    return v
-                }
+                return tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView
             }
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {

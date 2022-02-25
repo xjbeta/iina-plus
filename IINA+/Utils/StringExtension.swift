@@ -112,8 +112,10 @@ extension String {
             
         var u = self
         switch site {
-        case .biliLive, .bilibili, .bangumi:
-            u += "@\(maxH)h"
+        case .bilibili, .bangumi:
+            u += "@\(maxH)h.jpg"
+        case .biliLive:
+            u += "@\(maxH)w_\(maxH)h_1c.jpg"
         case .huya, .eGame:
 //            default 140x140
             break

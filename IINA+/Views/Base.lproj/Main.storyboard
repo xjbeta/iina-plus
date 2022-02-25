@@ -323,19 +323,19 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="dDP-PF-C0a">
-                                <rect key="frame" x="0.0" y="0.0" width="68" height="472"/>
+                                <rect key="frame" x="0.0" y="0.0" width="68" height="470"/>
                                 <subviews>
                                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="JWL-uO-Ceb">
                                         <rect key="frame" x="26" y="20" width="16" height="16"/>
                                     </progressIndicator>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="61" width="68" height="371"/>
+                                        <rect key="frame" x="0.0" y="61" width="68" height="369"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="371"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="369"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="IINA_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="371"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="369"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -433,12 +433,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="P2p-GB-s4i">
-                                <rect key="frame" x="0.0" y="0.0" width="382" height="649"/>
+                                <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="bookmarks" identifier="bookmarks" id="fmm-kw-xbx" userLabel="Bookmarks">
                                         <view key="view" id="qi8-ue-hZX">
-                                            <rect key="frame" x="0.0" y="0.0" width="382" height="649"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="57" horizontalPageScroll="10" verticalLineScroll="57" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="txu-4A-pVl">
@@ -508,6 +508,13 @@
                                                                                                     <constraint firstAttribute="width" secondItem="kWK-JR-5PF" secondAttribute="height" multiplier="1:1" id="klM-5V-rE8"/>
                                                                                                 </constraints>
                                                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="S5V-PO-wAR"/>
+                                                                                                <connections>
+                                                                                                    <binding destination="OMv-zq-neh" name="value" keyPath="objectValue.image" id="J8e-CJ-J74">
+                                                                                                        <dictionary key="options">
+                                                                                                            <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                                                                                        </dictionary>
+                                                                                                    </binding>
+                                                                                                </connections>
                                                                                             </imageView>
                                                                                             <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="7YV-l3-b6e">
                                                                                                 <rect key="frame" x="46" y="13" width="343" height="16"/>
@@ -579,10 +586,8 @@
                                                                                     <constraint firstAttribute="bottom" secondItem="zBU-wQ-RCc" secondAttribute="bottom" id="xF0-tR-oht"/>
                                                                                 </constraints>
                                                                                 <connections>
-                                                                                    <outlet property="imageView" destination="kWK-JR-5PF" id="Os6-Du-Khj"/>
                                                                                     <outlet property="nameTextField" destination="0cQ-KL-PmZ" id="eXQ-Up-cc9"/>
                                                                                     <outlet property="titleTextField" destination="7YV-l3-b6e" id="v64-rI-kFq"/>
-                                                                                    <outlet property="userCoverImageView" destination="kWK-JR-5PF" id="KY3-OS-1tv"/>
                                                                                 </connections>
                                                                             </tableCellView>
                                                                             <customView identifier="MainWindowTableRowView" id="Pw9-d9-Yo4" customClass="MainWindowTableRowView" customModule="IINA_" customModuleProvider="target">
@@ -617,16 +622,16 @@
                                                     </scroller>
                                                 </scrollView>
                                                 <tabView hidden="YES" type="noTabsNoBorder" initialItem="QDK-X2-jaa" translatesAutoresizingMaskIntoConstraints="NO" id="ukG-4m-rfU">
-                                                    <rect key="frame" x="0.0" y="0.0" width="382" height="649"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                                                     <font key="font" metaFont="system"/>
                                                     <tabViewItems>
                                                         <tabViewItem label="Tab" identifier="1" id="QDK-X2-jaa">
                                                             <view key="view" id="PzX-1s-oDn">
-                                                                <rect key="frame" x="0.0" y="0.0" width="382" height="649"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kye-25-GWU">
-                                                                        <rect key="frame" x="94" y="403" width="195" height="44"/>
+                                                                        <rect key="frame" x="98" y="403" width="195" height="44"/>
                                                                         <subviews>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZtL-tG-Ns2">
                                                                                 <rect key="frame" x="29" y="17" width="137" height="32"/>
