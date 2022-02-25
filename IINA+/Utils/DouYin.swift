@@ -20,8 +20,7 @@ class DouYin: NSObject {
     let douyinCookiesNotification = NSNotification.Name("DouyinCookiesNotification")
     var loadingObserver: NSKeyValueObservation?
     
-    
-    var cookies = [HTTPCookie]()
+    var cookies = [String: String]()
     
     var storageDic = [String: String]()
     
@@ -177,9 +176,25 @@ class DouYin: NSObject {
     }
     
     func checkDouYinCookies(_ cookies: [HTTPCookie]) -> Promise<()> {
-        Promise { resolver in
+        guard let webview = webview else {
+            return  .init(error: CookiesError.invalid)
+        }
+        
+        let cookieKeys = [
+            "X19hY19ub25jZQ==",
+            "X19hY19zaWduYXR1cmU=",
+            "bXNUb2tlbg==",
+            "dHRfc2NpZA=="
+        ].map {
+            $0.base64Decode()
+        }
+        
+        let cid = "dHRjaWQ=".base64Decode()
+        
+        return Promise { resolver in
             guard self.loadingObserver == nil,
-                  self.session == nil else {
+                  self.session == nil,
+                  self.cookies.count == 0 else {
                 resolver.reject(CookiesError.invalid)
                 return
             }
@@ -188,35 +203,41 @@ class DouYin: NSObject {
                 $0.domain.contains("douyin")
             }
             
-            Log("DouYin Cookies Count: \(dyCookies.count)")
+            let names = dyCookies.map({ $0.name }).sorted()
             
-            guard dyCookies.contains(where: { $0.name == "msToken" }),
-                  dyCookies.count >= 10 else {
+            if cookieKeys.allSatisfy(names.contains) {
+                Log("DouYin Cookies prepared.")
+                
+                dyCookies.filter {
+                    cookieKeys.contains($0.name)
+                }.forEach {
+                    self.cookies[$0.name] = $0.value
+                }
+                
+                self.startDouYinCookieStoreObserver(false)
+                resolver.fulfill_()
+            } else {
                 resolver.reject(CookiesError.waintingForCookies)
-                return
             }
+        }.then {
+            webview.evaluateJavaScript("localStorage.\(cid)")
+        }.compactMap {
+            $0 as? String
+        }.done {
+            self.cookies[cid] = $0
             
-            Log("DouYin Cookies prepared.")
-            
-            self.startDouYinCookieStoreObserver(false)
-            
-            self.cookies = dyCookies
-            
-            var cookieStr = ""
-            dyCookies.forEach {
-                cookieStr += "\($0.name)=\($0.value);"
-            }
+            let cValue = self.cookies.map ({
+                "\($0.key)=\($0.value)"
+            }).joined(separator: ";")
             
             let configuration = URLSessionConfiguration.af.default
             
             configuration.headers.add(.userAgent(self.douyinUA))
             configuration.headers.add(name: "referer", value: "https://live.douyin.com")
-            configuration.headers.add(name: "Cookie", value: cookieStr)
+            configuration.headers.add(name: "Cookie", value: cValue)
             
             self.session = Session(configuration: configuration)
             self.webview?.stopLoading()
-            
-            resolver.fulfill_()
         }
     }
     

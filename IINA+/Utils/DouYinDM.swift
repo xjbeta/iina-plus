@@ -26,7 +26,7 @@ class DouYinDM: NSObject {
         proc.videoGet.douyin.storageDic
     }
     
-    var cookies: [HTTPCookie] {
+    var cookies: [String: String] {
         proc.videoGet.douyin.cookies
     }
     
@@ -50,10 +50,6 @@ class DouYinDM: NSObject {
         }
     }
     
-    
-    func getCookie(_ name: String) -> String? {
-        cookies.first(where: { $0.name == name })?.value
-    }
     
     func getRoomId() -> Promise<()> {
         if roomId != "" {
@@ -99,7 +95,7 @@ class DouYinDM: NSObject {
         
         var pars = "aid=6383&live_id=1&device_platform=web&language=en-US&room_id=\(roomId)&resp_content_type=protobuf&version_code=9999&identity=audience&internal_ext=\(internalExt)&cursor=\(cursor)&last_rtt=\(lastRtt)&did_rule=3"
 
-        pars += "&msToken=\(self.getCookie("msToken")!)"
+        pars += "&msToken=\(self.cookies["msToken"]!)"
         
         let key = privateKeys[2].base64Decode()
         
