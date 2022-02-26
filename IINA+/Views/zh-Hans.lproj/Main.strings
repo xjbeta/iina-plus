@@ -228,3 +228,6 @@
 
 /* Class = "NSTextFieldCell"; title = "-"; ObjectID = "TUU-Ih-0ri"; */
 "TUU-Ih-0ri.title" = "";
+
+/* Class = "NSMenuItem"; title = "Copy Url"; ObjectID = "NcK-LD-adN"; */
+"NcK-LD-adN.title" = "复制链接";

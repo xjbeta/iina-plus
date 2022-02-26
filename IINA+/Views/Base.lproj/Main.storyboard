@@ -1148,6 +1148,12 @@
                             </menu>
                         </menuItem>
                         <menuItem isSeparatorItem="YES" id="f7O-ww-8KH"/>
+                        <menuItem title="Copy Url" id="NcK-LD-adN">
+                            <modifierMask key="keyEquivalentModifierMask"/>
+                            <connections>
+                                <action selector="copyUrl:" target="XfG-lQ-9wD" id="epK-LF-nTs"/>
+                            </connections>
+                        </menuItem>
                         <menuItem title="Decode" id="iOf-rb-7BW">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>

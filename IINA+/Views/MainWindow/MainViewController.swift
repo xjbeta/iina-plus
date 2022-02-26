@@ -79,6 +79,12 @@ class MainViewController: NSViewController {
         Log("Remove Filters")
     }
     
+    @IBAction func copyUrl(_ sender: NSMenuItem) {
+        let url = bookmarks[bookmarkTableView.clickedRow].url
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(url, forType: .string)
+    }
+    
     @IBAction func decode(_ sender: NSMenuItem) {
         let url = bookmarks[bookmarkTableView.clickedRow].url
         searchField.stringValue = url
