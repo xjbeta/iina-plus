@@ -557,8 +557,6 @@ extension JSPlayerViewController: WKScriptMessageHandler {
                 print("===========Playback seems stuck===========")
                 print("==========================================")
                 print("==========================================")
-                
-                openResult()
             }
         case .duration:
             let d = message.body as? Int ?? 0
