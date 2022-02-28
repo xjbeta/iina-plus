@@ -27,6 +27,7 @@
 | huya     | ✓           | ✓            | ✓       |
 | egame.qq | ✓           | ✓            | ✓       |
 | cc.163   | ✓           | ✓            | ✕       |
+| douyin   | ✓           | ✓            | ✓       |
 
 ## Danmaku
 
@@ -45,30 +46,34 @@
 ##### Xcode Version: Latest Release
 
 ```
-carthage bootstrap --platform macOS --use-xcframeworks
+git clone https://github.com/xjbeta/iina-plus
+cd iina+/iina+/WebFiles/
+npm install
 ```
 
-Open `.xcodeproj` file.
+Open `IINA+.xcodeproj` with Xcode.
 
 ## Acknowledgements
 
 ### Librarys
 
-- [Marshal](https://github.com/utahiosmac/Marshal)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
-- [Starscream](https://github.com/daltoniam/Starscream)
-- [GzipSwift](https://github.com/1024jp/GzipSwift)
-- [PromiseKit](https://github.com/mxcl/PromiseKit)
 - [swifter](https://github.com/httpswift/swifter)
-- [Sparkle](https://github.com/sparkle-project/Sparkle)
-- [SDWebImage](https://github.com/SDWebImage/SDWebImage)
 - [SwiftSoup](https://github.com/scinfu/SwiftSoup)
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
+- [Marshal](https://github.com/utahiosmac/Marshal)
+- [PromiseKit](https://github.com/mxcl/PromiseKit)
+- [GzipSwift](https://github.com/1024jp/GzipSwift)
 - [swift-protobuf](https://github.com/apple/swift-protobuf)
+- [SDWebImage](https://github.com/SDWebImage/SDWebImage)
+- [Sparkle](https://github.com/sparkle-project/Sparkle)
+- [SocketRocket with SPM patch](https://github.com/xjbeta/SocketRocket)
 
-### Danmaku library
+
+### Web Librarys
 
 - [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary)
+- [flv.js](https://github.com/bilibili/flv.js)
 
 ### Bilibili block list
 

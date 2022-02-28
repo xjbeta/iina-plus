@@ -1,9 +1,6 @@
 /* Class = "NSMenuItem"; title = "IINA+"; ObjectID = "1Xt-HY-uBw"; */
 "1Xt-HY-uBw.title" = "IINA+";
 
-/* Class = "NSButtonCell"; title = "Bottom"; ObjectID = "3gd-01-S3r"; */
-"3gd-01-S3r.title" = "底部";
-
 /* Class = "NSMenuItem"; title = "Enter Full Screen"; ObjectID = "4J7-dP-txa"; */
 "4J7-dP-txa.title" = "进入全屏幕";
 
@@ -16,47 +13,14 @@
 /* Class = "NSMenuItem"; title = "About IINA+"; ObjectID = "5kV-Vb-QxS"; */
 "5kV-Vb-QxS.title" = "关于 IINA+";
 
-/* Class = "NSButtonCell"; title = "Top"; ObjectID = "67F-NV-ZST"; */
-"67F-NV-ZST.title" = "顶部";
-
 /* Class = "NSMenuItem"; title = "Redo"; ObjectID = "6dh-zS-Vam"; */
 "6dh-zS-Vam.title" = "重做";
-
-/* Class = "NSTextFieldCell"; title = "Speed:"; ObjectID = "7I5-KS-9Yq"; */
-"7I5-KS-9Yq.title" = "速度:";
-
-/* Class = "NSButtonCell"; title = "Log in"; ObjectID = "7cP-0P-Xey"; */
-"7cP-0P-Xey.title" = "登陆";
-
-/* Class = "NSTextFieldCell"; title = "Can't Connect to BiliBili."; ObjectID = "7gt-4Z-oJN"; */
-"7gt-4Z-oJN.title" = "无法连接到 BiliBili.";
-
-/* Class = "NSButtonCell"; title = "Test In Browser"; ObjectID = "8QW-xo-GwB"; */
-"8QW-xo-GwB.title" = "在浏览器中测试";
 
 /* Class = "NSMenuItem"; title = "Page Setup…"; ObjectID = "9IL-pn-zAn"; */
 "9IL-pn-zAn.title" = "页面设置…";
 
-/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "9L0-hF-IEB"; */
-"9L0-hF-IEB.label" = "标签";
-
-/* Class = "NSMenuItem"; title = "BilibiliBlockList-Plus"; ObjectID = "9dY-hP-2Dx"; */
-"9dY-hP-2Dx.title" = "BilibiliBlockList-Plus";
-
-/* Class = "NSTextFieldCell"; title = "Font:"; ObjectID = "9dv-QW-DBD"; */
-"9dv-QW-DBD.title" = "字体:";
-
 /* Class = "NSMenuItem"; title = "Save As…"; ObjectID = "9m4-PD-wge"; */
 "9m4-PD-wge.title" = "另存为…";
-
-/* Class = "NSButtonCell"; title = "Color"; ObjectID = "9yo-Px-dkc"; */
-"9yo-Px-dkc.title" = "彩色";
-
-/* Class = "NSTextFieldCell"; title = "Cache:"; ObjectID = "A5h-zc-R34"; */
-"A5h-zc-R34.title" = "缓存:";
-
-/* Class = "NSTextFieldCell"; title = "Port:"; ObjectID = "ARY-s1-nw8"; */
-"ARY-s1-nw8.title" = "端口:";
 
 /* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
 "AYu-sK-qS6.title" = "主菜单";
@@ -70,29 +34,14 @@
 /* Class = "NSMenuItem"; title = "Reload Live Status"; ObjectID = "B5T-5c-UUF"; */
 "B5T-5c-UUF.title" = "重新加载直播状态";
 
-/* Class = "NSButtonCell"; title = "Advanced"; ObjectID = "BG7-bL-pm2"; */
-"BG7-bL-pm2.title" = "高级";
-
 /* Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "BOF-NM-1cW"; */
 "BOF-NM-1cW.title" = "设置…";
-
-/* Class = "NSTextFieldCell"; title = "Danmaku:"; ObjectID = "Cgx-q6-p3D"; */
-"Cgx-q6-p3D.title" = "弹幕:";
 
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "DQA-Zk-dX6"; */
 "DQA-Zk-dX6.title" = "取消";
 
-/* Class = "NSMenuItem"; title = "None"; ObjectID = "Dfn-yM-POE"; */
-"Dfn-yM-POE.title" = "无";
-
-/* Class = "NSMenuItem"; title = "internal"; ObjectID = "DiM-ml-jgm"; */
-"DiM-ml-jgm.title" = "内置";
-
 /* Class = "NSMenuItem"; title = "Clear Menu"; ObjectID = "Dii-yy-hpX"; */
 "Dii-yy-hpX.title" = "清除菜单";
-
-/* Class = "NSTextFieldCell"; title = "0"; ObjectID = "EA2-Gl-qWk"; */
-"EA2-Gl-qWk.title" = "0";
 
 /* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "EBo-47-T3N"; */
 "EBo-47-T3N.title" = "Table View Cell";
@@ -106,26 +55,14 @@
 /* Class = "NSMenuItem"; title = "iina+ Help"; ObjectID = "FKE-Sm-Kum"; */
 "FKE-Sm-Kum.title" = "IINA+ 帮助";
 
-/* Class = "NSTabViewItem"; label = "webView"; ObjectID = "Gtk-iF-AxQ"; */
-"Gtk-iF-AxQ.label" = "网页";
-
 /* Class = "NSMenuItem"; title = "View"; ObjectID = "H8h-7b-M4v"; */
 "H8h-7b-M4v.title" = "视图";
-
-/* Class = "NSButtonCell"; title = "Clean up"; ObjectID = "HkQ-yA-Brc"; */
-"HkQ-yA-Brc.title" = "清理";
 
 /* Class = "NSMenu"; title = "View"; ObjectID = "HyV-fh-RgO"; */
 "HyV-fh-RgO.title" = "视图";
 
-/* Class = "NSTextFieldCell"; title = "N/A"; ObjectID = "I0P-Za-TDB"; */
-"I0P-Za-TDB.title" = "N/A";
-
 /* Class = "NSWindow"; title = "IINA Plus"; ObjectID = "IQv-IB-iLA"; */
 "IQv-IB-iLA.title" = "IINA Plus";
-
-/* Class = "NSTextFieldCell"; title = "Fast"; ObjectID = "JU0-8Q-PcK"; */
-"JU0-8Q-PcK.title" = "快";
 
 /* Class = "NSMenuItem"; title = "Show All"; ObjectID = "Kd2-mp-pUS"; */
 "Kd2-mp-pUS.title" = "显示所有";
@@ -133,17 +70,8 @@
 /* Class = "NSMenuItem"; title = "Bring All to Front"; ObjectID = "LE2-aR-0XJ"; */
 "LE2-aR-0XJ.title" = "前置所有窗口";
 
-/* Class = "NSTextFieldCell"; title = "1.0"; ObjectID = "MMQ-dt-XvF"; */
-"MMQ-dt-XvF.title" = "1.0";
-
-/* Class = "NSMenuItem"; title = "mpv"; ObjectID = "Mej-4E-emp"; */
-"Mej-4E-emp.title" = "mpv";
-
 /* Class = "NSMenuItem"; title = "Services"; ObjectID = "NMo-om-nkz"; */
 "NMo-om-nkz.title" = "服务";
-
-/* Class = "NSTextFieldCell"; title = "Slow"; ObjectID = "Nov-YI-lpr"; */
-"Nov-YI-lpr.title" = "慢";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "最小化";
@@ -154,17 +82,8 @@
 /* Class = "NSMenu"; title = "Open Recent"; ObjectID = "OoZ-mc-req"; */
 "OoZ-mc-req.title" = "最近打开";
 
-/* Class = "NSTabViewItem"; label = "Bilibili"; ObjectID = "PDx-hz-blM"; */
-"PDx-hz-blM.label" = "Bilibili";
-
-/* Class = "NSTextFieldCell"; title = "Opacity:"; ObjectID = "Q5e-BG-Z3p"; */
-"Q5e-BG-Z3p.title" = "透明度:";
-
 /* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "R4o-n2-Eq4"; */
 "R4o-n2-Eq4.title" = "缩放";
-
-/* Class = "NSTextFieldCell"; title = "Block List:"; ObjectID = "Reb-ec-xl5"; */
-"Reb-ec-xl5.title" = "屏蔽列表:";
 
 /* Class = "NSMenuItem"; title = "Select All"; ObjectID = "Ruw-6m-B2m"; */
 "Ruw-6m-B2m.title" = "全选";
@@ -177,9 +96,6 @@
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "窗口";
-
-/* Class = "NSMenuItem"; title = "ykdl"; ObjectID = "VL0-EI-LMe"; */
-"VL0-EI-LMe.title" = "ykdl";
 
 /* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
 "Vdr-fp-XzO.title" = "隐藏其他";
@@ -196,9 +112,6 @@
 /* Class = "NSMenuItem"; title = "Log File"; ObjectID = "YiI-Ed-gFA"; */
 "YiI-Ed-gFA.title" = "日志文件";
 
-/* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "ZJp-u5-c9c"; */
-"ZJp-u5-c9c.label" = "Item 2";
-
 /* Class = "NSMenu"; title = "File"; ObjectID = "ZOn-g3-nrP"; */
 "ZOn-g3-nrP.title" = "文件";
 
@@ -211,17 +124,8 @@
 /* Class = "NSTabViewItem"; label = "search"; ObjectID = "b8j-z5-B7Q"; */
 "b8j-z5-B7Q.label" = "搜索";
 
-/* Class = "NSButtonCell"; title = "Scroll"; ObjectID = "bsi-It-Lhs"; */
-"bsi-It-Lhs.title" = "滚动";
-
-/* Class = "NSTextFieldCell"; title = "Can't Connect to Pilipili."; ObjectID = "c0E-Sk-Qjt"; */
-"c0E-Sk-Qjt.title" = "无法连接到 Pilipili.";
-
 /* Class = "NSTextFieldCell"; title = "Double click to parse the video !"; ObjectID = "c0u-g2-S70"; */
 "c0u-g2-S70.title" = "双击解析视频!";
-
-/* Class = "NSTextFieldCell"; title = "Block Damaku Type:"; ObjectID = "cEB-n2-KKv"; */
-"cEB-n2-KKv.title" = "屏蔽弹幕类型:";
 
 /* Class = "NSMenuItem"; title = "Revert to Saved"; ObjectID = "ciL-oG-gtL"; */
 "ciL-oG-gtL.title" = "恢复为已保存";
@@ -232,26 +136,14 @@
 /* Class = "NSMenuItem"; title = "Undo"; ObjectID = "dRJ-4n-Yzg"; */
 "dRJ-4n-Yzg.title" = "撤销";
 
-/* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "emT-OQ-d79"; */
-"emT-OQ-d79.label" = "Item 3";
-
-/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "f0S-RM-8NK"; */
-"f0S-RM-8NK.title" = "取消";
-
 /* Class = "NSTabViewItem"; label = "bookmarks"; ObjectID = "fmm-kw-xbx"; */
 "fmm-kw-xbx.label" = "书签";
-
-/* Class = "NSMenuItem"; title = "IINA"; ObjectID = "gUQ-m3-Nbi"; */
-"gUQ-m3-Nbi.title" = "IINA";
 
 /* Class = "NSMenuItem"; title = "Paste"; ObjectID = "gVA-U4-sdL"; */
 "gVA-U4-sdL.title" = "粘贴";
 
 /* Class = "NSTabViewItem"; label = "selectVideos"; ObjectID = "gnN-wP-ZUv"; */
 "gnN-wP-ZUv.label" = "selectVideos";
-
-/* Class = "NSMenuItem"; title = "BilibiliBlockList-Basic"; ObjectID = "gti-4i-0YX"; */
-"gti-4i-0YX.title" = "BilibiliBlockList-Basic";
 
 /* Class = "NSMenuItem"; title = "Close"; ObjectID = "gy4-yX-CCS"; */
 "gy4-yX-CCS.title" = "关闭";
@@ -262,68 +154,23 @@
 /* Class = "NSMenuItem"; title = "Decode"; ObjectID = "iOf-rb-7BW"; */
 "iOf-rb-7BW.title" = "解析";
 
-/* Class = "NSTextFieldCell"; title = "Player:"; ObjectID = "j1B-lf-GMA"; */
-"j1B-lf-GMA.title" = "播放器:";
-
-/* Class = "NSButtonCell"; title = "Try again"; ObjectID = "kW6-MH-zq8"; */
-"kW6-MH-zq8.title" = "重试";
-
-/* Class = "NSMenuItem"; title = "you-get"; ObjectID = "kaw-nE-b3T"; */
-"kaw-nE-b3T.title" = "you-get";
-
-/* Class = "NSMenuItem"; title = "Custom"; ObjectID = "lKL-5n-pOY"; */
-"lKL-5n-pOY.title" = "自定义";
-
-/* Class = "NSButtonCell"; title = "System-Regular"; ObjectID = "mJh-g3-lU9"; */
-"mJh-g3-lU9.title" = "System-Regular";
-
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "nY0-2f-1At"; */
 "nY0-2f-1At.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; placeholderString = "19080"; ObjectID = "na9-et-xBZ"; */
-"na9-et-xBZ.placeholderString" = "19080";
-
-/* Class = "NSTextFieldCell"; title = "Decoder:"; ObjectID = "nvc-oD-yhy"; */
-"nvc-oD-yhy.title" = "解码:";
-
-/* Class = "NSTabViewItem"; label = "connectError"; ObjectID = "o99-3x-2mw"; */
-"o99-3x-2mw.label" = "连接错误";
 
 /* Class = "NSMenuItem"; title = "Delete"; ObjectID = "pa3-QI-u2k"; */
 "pa3-QI-u2k.title" = "删除";
 
-/* Class = "NSTabViewItem"; label = "General"; ObjectID = "pnO-IN-deJ"; */
-"pnO-IN-deJ.label" = "一般";
-
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "rC6-Ja-1dy"; */
 "rC6-Ja-1dy.title" = "Text Cell";
-
-/* Class = "NSButtonCell"; title = "Try again"; ObjectID = "rav-Tt-385"; */
-"rav-Tt-385.title" = "重试";
 
 /* Class = "NSButtonCell"; title = "Add a bookmark."; ObjectID = "sGZ-aQ-zLX"; */
 "sGZ-aQ-zLX.title" = "添加一个书签.";
 
-/* Class = "NSWindow"; title = "Preferences"; ObjectID = "tRF-S1-nJm"; */
-"tRF-S1-nJm.title" = "设置";
-
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "tk9-pG-UCq"; */
 "tk9-pG-UCq.title" = "Text Cell";
 
-/* Class = "NSTextFieldCell"; title = "Family:"; ObjectID = "tq2-wz-szV"; */
-"tq2-wz-szV.title" = "字体:";
-
 /* Class = "NSTabViewItem"; label = "bilibili"; ObjectID = "tzg-rU-KII"; */
 "tzg-rU-KII.label" = "bilibili";
-
-/* Class = "NSTextFieldCell"; title = "UserName"; ObjectID = "u5x-hR-Igh"; */
-"u5x-hR-Igh.title" = "用户名";
-
-/* Class = "NSButtonCell"; title = "Logout"; ObjectID = "uGN-oQ-Js3"; */
-"uGN-oQ-Js3.title" = "注销";
-
-/* Class = "NSTabViewItem"; label = "View"; ObjectID = "uOv-gL-Z7m"; */
-"uOv-gL-Z7m.label" = "视图";
 
 /* Class = "NSMenu"; title = "IINA+"; ObjectID = "uQy-DD-JDr"; */
 "uQy-DD-JDr.title" = "IINA+";
@@ -340,17 +187,8 @@
 /* Class = "NSMenuItem"; title = "Copy"; ObjectID = "x3v-GG-iWU"; */
 "x3v-GG-iWU.title" = "复制";
 
-/* Class = "NSTextFieldCell"; title = "Size:"; ObjectID = "xXv-2o-V2q"; */
-"xXv-2o-V2q.title" = "大小:";
-
-/* Class = "NSTextFieldCell"; title = "Style:"; ObjectID = "xdq-gA-Ynd"; */
-"xdq-gA-Ynd.title" = "样式:";
-
 /* Class = "NSMenuItem"; title = "File"; ObjectID = "yI5-44-YUL"; */
 "yI5-44-YUL.title" = "文件";
-
-/* Class = "NSTextFieldCell"; title = "Modify it when '404 Not Found'"; ObjectID = "z9F-7C-J35"; */
-"z9F-7C-J35.title" = "显示'404 Not Found'时修改端口";
 
 /* Class = "NSMenuItem"; title = "Live State"; ObjectID = "B9R-Sz-22X"; */
 "B9R-Sz-22X.title" = "直播状态";
@@ -387,3 +225,9 @@
 
 /* Class = "NSMenuItem"; title = "Other"; ObjectID = "zJw-bL-e86"; */
 "zJw-bL-e86.title" = "其他";
+
+/* Class = "NSTextFieldCell"; title = "-"; ObjectID = "TUU-Ih-0ri"; */
+"TUU-Ih-0ri.title" = "";
+
+/* Class = "NSMenuItem"; title = "Copy Url"; ObjectID = "NcK-LD-adN"; */
+"NcK-LD-adN.title" = "复制链接";

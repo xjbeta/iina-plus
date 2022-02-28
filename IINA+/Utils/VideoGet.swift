@@ -20,12 +20,16 @@ class VideoGet: NSObject {
     let douyuWebview = WKWebView()
     var douyuWebviewObserver: NSKeyValueObservation?
     
+    let douyin = DouYin()
+    
+
     lazy var pSession: Session = {
         let configuration = URLSessionConfiguration.af.default
         let ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
         configuration.headers.add(.userAgent(ua))
         return Session(configuration: configuration)
     }()
+    
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
         let site = SupportSites(url: url)
@@ -138,6 +142,10 @@ class VideoGet: NSObject {
             }.map {
                 $0.write(to: yougetJson)
             }
+        case .douyin:
+            return douyin.getInfo(url).compactMap {
+                ($0 as? DouYinInfo)?.write(to: yougetJson)
+            }
         default:
             return .init(error: VideoGetError.notSupported)
         }
@@ -233,6 +241,8 @@ class VideoGet: NSObject {
             } else {
                 return getCC163Info(url)
             }
+        case .douyin:
+            return douyin.getInfo(url)
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)
@@ -1300,7 +1310,6 @@ extension VideoGet {
             }
         }
     }
-    
     
     // MARK: - MD5
     // https://stackoverflow.com/a/53044349

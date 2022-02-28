@@ -79,6 +79,12 @@ class MainViewController: NSViewController {
         Log("Remove Filters")
     }
     
+    @IBAction func copyUrl(_ sender: NSMenuItem) {
+        let url = bookmarks[bookmarkTableView.clickedRow].url
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(url, forType: .string)
+    }
+    
     @IBAction func decode(_ sender: NSMenuItem) {
         let url = bookmarks[bookmarkTableView.clickedRow].url
         searchField.stringValue = url
@@ -190,7 +196,7 @@ class MainViewController: NSViewController {
                preferences.livePlayer == .iina,
                processes.iinaArchiveType() != .normal {
                 switch site {
-                case .bilibili, .bangumi, .biliLive, .douyu, .huya:
+                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .douyin:
                     processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
                 default:
                     break
@@ -423,7 +429,7 @@ class MainViewController: NSViewController {
         waitingErrorMessage = nil
         yougetResult = nil
         
-        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame].contains(SupportSites(url: url))
+        let jspSupported = [.biliLive, .cc163, .douyu, .huya, .eGame, .douyin].contains(SupportSites(url: url))
         
         if Preferences.shared.enableFlvjs, jspSupported {
             openWithJSPlayer(url)
@@ -835,21 +841,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             case .unsupported:
                 return tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil)
             default:
-                if let v = tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView {
-                    let iv = v.userCoverImageView
-                    iv?.image = nil
-                    var size = iv?.frame.size ?? .zero
-                    size.height *= 2
-                    size.width *= 2
-                    
-                    let transformer = SDImageResizingTransformer(size: size, scaleMode: .aspectFill)
-                    guard let s = data.cover else { return v }
-                    iv?.sd_setImage(
-                        with: .init(string: s),
-                        placeholderImage: nil,
-                        context: [.imageTransformer: transformer])
-                    return v
-                }
+                return tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView
             }
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {

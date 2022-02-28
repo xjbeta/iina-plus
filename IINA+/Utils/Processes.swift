@@ -83,7 +83,9 @@ class Processes: NSObject {
     
     func iinaArchiveType() -> IINAUrlType {
         let b = Bundle(path: "/Applications/IINA.app")
-        let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        guard let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String else {
+            return .none
+        }
         if version.contains("Danmaku") {
             return .danmaku
         } else if version.contains("plugin") {

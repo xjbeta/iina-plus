@@ -29,7 +29,7 @@ class JSPlayerViewController: NSViewController {
     @IBAction func reloadVideo(_ sender: NSButton) {
         startLoading()
         line = 0
-        webView.evaluateJavaScript("flv_destroy();")
+        evaluateJavaScript("flv_destroy();")
         danmaku?.stop()
         decodeUrl()
     }
@@ -37,14 +37,14 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var volumeBox: NSBox!
     @IBOutlet var volumeButton: NSButton!
     @IBAction func mute(_ sender: NSButton) {
-        webView.evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
+        evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
         playerMuted = !playerMuted
         initVolumeButton()
     }
     
     @IBOutlet var volumeSlider: NSSlider!
     @IBAction func volumeChanged(_ sender: NSSlider) {
-        webView.evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
+        evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
         initVolumeButton()
     }
      
@@ -299,11 +299,11 @@ class JSPlayerViewController: NSViewController {
         }
         
         
-        webView.evaluateJavaScript("initContent();")
-        webView.evaluateJavaScript("window.openUrl('\(vUrl)');")
+        evaluateJavaScript("initContent();")
+        evaluateJavaScript("window.openUrl('\(vUrl)');")
         
         switch re.site {
-        case .douyu, .eGame, .biliLive, .huya:
+        case .douyu, .eGame, .biliLive, .huya, .douyin:
             startDM(re.rawUrl)
         case .bilibili, .bangumi:
             break
@@ -345,8 +345,14 @@ class JSPlayerViewController: NSViewController {
         webView = nil
     }
     
+    func evaluateJavaScript(_ str: String) {
+        guard webView != nil else { return }
+        webView.evaluateJavaScript(str)
+    }
+    
+    
     func resize() {
-        webView.evaluateJavaScript("window.resize();")
+        evaluateJavaScript("window.resize();")
     }
     
     func startDM(_ url: String) {
@@ -551,8 +557,6 @@ extension JSPlayerViewController: WKScriptMessageHandler {
                 print("===========Playback seems stuck===========")
                 print("==========================================")
                 print("==========================================")
-                
-                openResult()
             }
         case .duration:
             let d = message.body as? Int ?? 0
@@ -620,7 +624,7 @@ extension JSPlayerViewController: DanmakuDelegate {
         if method != .sendDM {
             print(str)
         }
-        webView.evaluateJavaScript("window.dmMessage(\(str));")
+        evaluateJavaScript("window.dmMessage(\(str));")
     }
 }
 
@@ -632,5 +636,9 @@ extension JSPlayerViewController: NSTableViewDataSource, NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
         result?.videos[row].key
+    }
+    
+    func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
+        return tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("MainWindowTableRowView"), owner: self) as? MainWindowTableRowView
     }
 }

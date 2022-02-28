@@ -95,7 +95,7 @@
                                                 <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xfr-ty-8p1">
                                                     <rect key="frame" x="179" y="25" width="24" height="14"/>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="tips" id="O4b-8P-C13">
-                                                        <font key="font" metaFont="system" size="11"/>
+                                                        <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>

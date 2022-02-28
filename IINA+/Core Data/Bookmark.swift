@@ -10,6 +10,7 @@
 import Cocoa
 import Foundation
 import CoreData
+import SDWebImage
 
 //@objc(Bookmark)
 public class Bookmark: NSManagedObject {
@@ -18,7 +19,11 @@ public class Bookmark: NSManagedObject {
         SupportSites(url: url)
     }()
     
-    func updateState() {
+    @objc dynamic var image: NSImage?
+    
+    private var inited = false
+    
+    func updateState(_ force: Bool = false) {
         if site == .unsupported {
             self.state = LiveState.none.raw
             self.save()
@@ -28,9 +33,10 @@ public class Bookmark: NSManagedObject {
         let limitSec: CGFloat = [.bangumi, .bilibili, .unsupported].contains(site) ? 300 : 20
         
         if let d = updateDate?.timeIntervalSince1970,
-           (Date().timeIntervalSince1970 - d) < limitSec {
+           (Date().timeIntervalSince1970 - d) < limitSec, inited {
             return
         }
+        inited = true
         
         Processes.shared.videoGet.liveInfo(url).done(on: .main) {
             self.setInfo($0)
@@ -50,7 +56,9 @@ public class Bookmark: NSManagedObject {
         let isLiveSite = site != .bangumi && site != .bilibili
         
         cover = isLiveSite ? info.avatar : info.cover
-        cover?.coverUrlFormatter(site: site)
+        cover?.coverUrlFormatter(site: isLiveSite ? site : .biliLive)
+
+        updateImage()
         
         if info.site == .bangumi {
             liveName = "Bangumi"
@@ -67,6 +75,17 @@ public class Bookmark: NSManagedObject {
         updateDate = Date()
         
         save()
+    }
+    
+    private func updateImage() {
+        image = nil
+        if let c = cover {
+            SDWebImageManager.shared.loadImage(
+                with: .init(string: c),
+                progress: nil) { image, _, _, _, _, url in
+                    self.image = image
+            }
+        }
     }
     
     func save() {
