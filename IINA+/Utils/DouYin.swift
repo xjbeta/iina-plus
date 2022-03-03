@@ -21,14 +21,9 @@ class DouYin: NSObject {
     var loadingObserver: NSKeyValueObservation?
     
     var cookies = [String: String]()
-    
     var storageDic = [String: String]()
     
-    
-    let douyinEmptyURL = URL(string: "https://live.douyin.com/1145141919810")!
-    
-    var session: Session?
-    
+    let douyinEmptyURL = URL(string: "https://live.douyin.com/1")!
     let douyinUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)"
     
     let privateKeys = [
@@ -40,7 +35,7 @@ class DouYin: NSObject {
     ]
     
     func getInfo(_ url: URL) -> Promise<LiveInfo> {
-        if session == nil {
+        if cookies.count == 0 {
             if prepareTask == nil {
                 prepareTask = prepareArgs()
             }
@@ -52,10 +47,19 @@ class DouYin: NSObject {
         }
     }
     
-    
     func getContent(_ url: URL) -> Promise<LiveInfo> {
-        return Promise { resolver in
-            session?.request(url).response { response in
+        Promise { resolver in
+            let cookieString = cookies.map {
+                "\($0.key)=\($0.value)"
+            }.joined(separator: ";")
+            
+            let headers = HTTPHeaders([
+                "User-Agent": douyinUA,
+                "referer": "https://live.douyin.com",
+                "Cookie": cookieString
+            ])
+            
+            AF.request(url, headers: headers).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -86,16 +90,15 @@ class DouYin: NSObject {
     }
     
     func prepareArgs() -> Promise<()> {
-        guard session == nil else {
-            return .value(())
-        }
+        cookies.removeAll()
+        storageDic.removeAll()
         deleteDouYinCookies()
-
+        webview?.stopLoading()
+        webview = WKWebView()
+        startDouYinCookieStoreObserver()
+        
+        
         return Promise { resolver in
-            webview?.stopLoading()
-            webview = WKWebView()
-            startDouYinCookieStoreObserver()
-            
             loadingObserver = webview?.observe(\.isLoading) { webView, _ in
                 guard !webView.isLoading else { return }
                 Log("Load Douyin webview finished.")
@@ -171,7 +174,6 @@ class DouYin: NSObject {
         webview?.stopLoading()
         webview = nil
         prepareTask = nil
-        session = nil
         startDouYinCookieStoreObserver(false)
     }
     
@@ -181,10 +183,12 @@ class DouYin: NSObject {
         }
         
         let cookieKeys = [
+            "bGl2ZV9jYW5fYWRkX2R5XzJfZGVza3RvcA==",
+            "eGdwbGF5ZXJfdXNlcl9pZA==",
+            "dHR3aWQ=",
             "X19hY19ub25jZQ==",
             "X19hY19zaWduYXR1cmU=",
-            "bXNUb2tlbg==",
-            "dHRfc2NpZA=="
+            "TU9OSVRPUl9XRUJfSUQ=",
         ].map {
             $0.base64Decode()
         }
@@ -193,7 +197,6 @@ class DouYin: NSObject {
         
         return Promise { resolver in
             guard self.loadingObserver == nil,
-                  self.session == nil,
                   self.cookies.count == 0 else {
                 resolver.reject(CookiesError.invalid)
                 return
@@ -225,18 +228,6 @@ class DouYin: NSObject {
             $0 as? String
         }.done {
             self.cookies[cid] = $0
-            
-            let cValue = self.cookies.map ({
-                "\($0.key)=\($0.value)"
-            }).joined(separator: ";")
-            
-            let configuration = URLSessionConfiguration.af.default
-            
-            configuration.headers.add(.userAgent(self.douyinUA))
-            configuration.headers.add(name: "referer", value: "https://live.douyin.com")
-            configuration.headers.add(name: "Cookie", value: cValue)
-            
-            self.session = Session(configuration: configuration)
             self.webview?.stopLoading()
         }
     }
