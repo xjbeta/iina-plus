@@ -19,19 +19,16 @@ class DouYinDM: NSObject {
     var ua: String {
         proc.videoGet.douyin.douyinUA
     }
-    var session: Session? {
-        proc.videoGet.douyin.session
-    }
+    
     var storageDic: [String: String] {
         proc.videoGet.douyin.storageDic
     }
     
-    var cookies: [String: String] {
-        proc.videoGet.douyin.cookies
-    }
+    var cookies = [String: String]()
     
     var roomId = ""
     
+    private let tokenString = "bXNUb2tlbg==".base64Decode()
     private var webview: WKWebView? = WKWebView()
     private var requestTimer: Timer?
     
@@ -55,7 +52,9 @@ class DouYinDM: NSObject {
         if roomId != "" {
             return .init()
         } else {
-            return proc.videoGet.douyin.getInfo(.init(string: url)!).done {
+            let dy = proc.videoGet.douyin
+            return dy.getInfo(.init(string: url)!).done {
+                self.cookies = dy.cookies
                 self.roomId = ($0 as! DouYinInfo).roomId
             }
         }
@@ -95,7 +94,7 @@ class DouYinDM: NSObject {
         
         var pars = "aid=6383&live_id=1&device_platform=web&language=en-US&room_id=\(roomId)&resp_content_type=protobuf&version_code=9999&identity=audience&internal_ext=\(internalExt)&cursor=\(cursor)&last_rtt=\(lastRtt)&did_rule=3"
 
-        pars += "&msToken=\(self.cookies["msToken"]!)"
+        pars += "&\(tokenString)=\(self.cookies[tokenString] ?? "")"
         
         let key = privateKeys[2].base64Decode()
         
@@ -115,11 +114,28 @@ class DouYinDM: NSObject {
     func requestDM(_ url: String) -> Promise<(Response, Int)> {
         Promise { resolver in
             let date = Date()
-            session!.request(url).response {
+            let cookieString = cookies.map {
+                "\($0.key)=\($0.value)"
+            }.joined(separator: ";")
+            
+            let headers = HTTPHeaders([
+                "User-Agent": ua,
+                "referer": "https://live.douyin.com",
+                "Cookie": cookieString
+            ])
+            
+            AF.request(url, headers: headers).response {
+                if let newToken = $0.response?.headers.filter ({
+                    $0.name == "eC1tcy10b2tlbg==".base64Decode()
+                }).first?.value {
+                    self.cookies[self.tokenString] = newToken
+                }
+                
                 guard let data = $0.data else {
                     resolver.reject(VideoGetError.notFountData)
                     return
                 }
+                
                 let rtt = Int(abs(date.timeIntervalSinceNow * 1000))
                 do {
                     let re = try Response(serializedData: data)
@@ -143,6 +159,8 @@ class DouYinDM: NSObject {
             try? ChatMessage(serializedData: $0.payload)
         }
         
+//        Log(msgs.map({ $0.content }))
+        
         msgs.forEach {
             delegate?.send(.sendDM, text: $0.content, id: "")
         }
@@ -154,7 +172,7 @@ class DouYinDM: NSObject {
             }.done {
                 self.decodeDM($0)
             }.catch {
-                print($0)
+                Log($0)
             }
         }
     }
@@ -171,10 +189,8 @@ class DouYinDM: NSObject {
     enum DouYinDMError: Error {
         case deinited
     }
-}
-
-extension DouYinDM: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    
+    func startRequests() {
         getRoomId().then {
             self.prepareCookies()
         }.then {
@@ -184,7 +200,13 @@ extension DouYinDM: WKNavigationDelegate {
         }.done {
             self.decodeDM($0)
         }.catch {
-            print($0)
+            Log($0)
         }
+    }
+}
+
+extension DouYinDM: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        startRequests()
     }
 }

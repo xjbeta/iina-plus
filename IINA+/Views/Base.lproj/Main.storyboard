@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19529"/>
         <capability name="System colors introduced in macOS 10.13" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -323,19 +324,19 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="dDP-PF-C0a">
-                                <rect key="frame" x="0.0" y="0.0" width="68" height="470"/>
+                                <rect key="frame" x="0.0" y="0.0" width="68" height="468"/>
                                 <subviews>
                                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="JWL-uO-Ceb">
                                         <rect key="frame" x="26" y="20" width="16" height="16"/>
                                     </progressIndicator>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="61" width="68" height="369"/>
+                                        <rect key="frame" x="0.0" y="61" width="68" height="367"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="68" height="369"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="68" height="367"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="IINA_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="369"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="68" height="367"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -428,10 +429,21 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="MainViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
-                    <customView key="view" misplaced="YES" id="r1P-qL-yvV" userLabel="View">
-                        <rect key="frame" x="0.0" y="0.0" width="409" height="649"/>
+                    <customView key="view" id="r1P-qL-yvV" userLabel="View">
+                        <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <wkWebView hidden="YES" wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="REN-XR-UIe">
+                                <rect key="frame" x="631" y="-250" width="10" height="10"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="10" id="p1w-eL-pkF"/>
+                                    <constraint firstAttribute="width" constant="10" id="wPO-h5-V7o"/>
+                                </constraints>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="P2p-GB-s4i">
                                 <rect key="frame" x="0.0" y="0.0" width="391" height="649"/>
                                 <font key="font" metaFont="system"/>
@@ -1075,6 +1087,8 @@
                         <constraints>
                             <constraint firstItem="P2p-GB-s4i" firstAttribute="top" secondItem="r1P-qL-yvV" secondAttribute="top" id="FrP-ws-XlI"/>
                             <constraint firstAttribute="bottom" secondItem="P2p-GB-s4i" secondAttribute="bottom" id="L7v-dJ-eJP"/>
+                            <constraint firstAttribute="trailing" secondItem="REN-XR-UIe" secondAttribute="trailing" constant="-250" id="PrZ-Cw-PmB"/>
+                            <constraint firstAttribute="bottom" secondItem="REN-XR-UIe" secondAttribute="bottom" constant="-250" id="gHB-F1-ACg"/>
                             <constraint firstAttribute="trailing" secondItem="P2p-GB-s4i" secondAttribute="trailing" id="jWG-iC-EtH"/>
                             <constraint firstItem="P2p-GB-s4i" firstAttribute="leading" secondItem="r1P-qL-yvV" secondAttribute="leading" id="rsM-YU-8hL"/>
                         </constraints>
@@ -1084,6 +1098,7 @@
                         <outlet property="bilibiliTableView" destination="H7N-WI-EUW" id="vuc-AO-OF1"/>
                         <outlet property="bookmarkArrayController" destination="VY8-9O-I1C" id="PeA-ZJ-S3Z"/>
                         <outlet property="bookmarkTableView" destination="9PD-kf-1gB" id="RGX-fP-nIe"/>
+                        <outlet property="dyWebView" destination="REN-XR-UIe" id="aEi-qg-pkP"/>
                         <outlet property="liveStateMenu" destination="ep3-bL-1Xz" id="Wzv-ox-TTV"/>
                         <outlet property="mainTabView" destination="P2p-GB-s4i" id="Mrh-N7-7wM"/>
                         <outlet property="noticeTabView" destination="ukG-4m-rfU" id="krp-x6-nHo"/>

@@ -14,22 +14,15 @@ import Alamofire
 import Marshal
 
 class DouYin: NSObject {
-    var webview: WKWebView?
+    
     var prepareTask: Promise<()>?
-    var douyinCNObserver: NSObjectProtocol?
-    let douyinCookiesNotification = NSNotification.Name("DouyinCookiesNotification")
-    var loadingObserver: NSKeyValueObservation?
+    var dyFinishNitification: NSObjectProtocol?
     
     var cookies = [String: String]()
-    
     var storageDic = [String: String]()
     
-    
-    let douyinEmptyURL = URL(string: "https://live.douyin.com/1145141919810")!
-    
-    var session: Session?
-    
-    let douyinUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+    let douyinEmptyURL = URL(string: "https://live.douyin.com/1")!
+    var douyinUA = ""
     
     let privateKeys = [
         "X2J5dGVkX3BhcmFtX3N3",
@@ -40,7 +33,7 @@ class DouYin: NSObject {
     ]
     
     func getInfo(_ url: URL) -> Promise<LiveInfo> {
-        if session == nil {
+        if cookies.count == 0 {
             if prepareTask == nil {
                 prepareTask = prepareArgs()
             }
@@ -52,10 +45,19 @@ class DouYin: NSObject {
         }
     }
     
-    
     func getContent(_ url: URL) -> Promise<LiveInfo> {
-        return Promise { resolver in
-            session?.request(url).response { response in
+        Promise { resolver in
+            let cookieString = cookies.map {
+                "\($0.key)=\($0.value)"
+            }.joined(separator: ";")
+            
+            let headers = HTTPHeaders([
+                "User-Agent": douyinUA,
+                "referer": "https://live.douyin.com",
+                "Cookie": cookieString
+            ])
+            
+            AF.request(url, headers: headers).response { response in
                 if let error = response.error {
                     resolver.reject(error)
                 }
@@ -86,45 +88,20 @@ class DouYin: NSObject {
     }
     
     func prepareArgs() -> Promise<()> {
-        guard session == nil else {
-            return .value(())
-        }
+        cookies.removeAll()
+        storageDic.removeAll()
         deleteDouYinCookies()
-
+        
         return Promise { resolver in
-            webview?.stopLoading()
-            webview = WKWebView()
-            startDouYinCookieStoreObserver()
-            
-            loadingObserver = webview?.observe(\.isLoading) { webView, _ in
-                guard !webView.isLoading else { return }
-                Log("Load Douyin webview finished.")
-                
-                webView.evaluateJavaScript("document.title") { str, error in
-                    guard let s = str as? String else { return }
-                    Log("Douyin webview title \(s).")
-                    if s.contains("抖音直播") {
-                        self.loadingObserver?.invalidate()
-                        self.loadingObserver = nil
-                    } else if s.contains("验证") {
-                        self.deleteCookies().done {
-                            self.webview?.load(.init(url: self.douyinEmptyURL))
-                        }.catch({ _ in })
-                    }
-                }
-            }
-            
-            douyinCNObserver = NotificationCenter.default.addObserver(forName: douyinCookiesNotification, object: nil, queue: .main) { _ in
-                if let n = self.douyinCNObserver {
+            dyFinishNitification = NotificationCenter.default.addObserver(forName: .finishLoadDY, object: nil, queue: .main) { _ in
+                if let n = self.dyFinishNitification {
                     NotificationCenter.default.removeObserver(n)
                 }
                 resolver.fulfill(())
             }
-            
-            webview?.load(.init(url: douyinEmptyURL))
+            NotificationCenter.default.post(name: .startLoadDY, object: nil)
         }
     }
-    
     
     func deleteCookies() -> Promise<()> {
         getAllWKCookies().then {
@@ -157,34 +134,19 @@ class DouYin: NSObject {
             }
         }
     }
-    
-    func startDouYinCookieStoreObserver(_ start: Bool = true) {
-        let httpCookieStore = WKWebsiteDataStore.default().httpCookieStore
-        if start {
-            httpCookieStore.add(self)
-        } else {
-            httpCookieStore.remove(self)
-        }
-    }
 
     deinit {
-        webview?.stopLoading()
-        webview = nil
         prepareTask = nil
-        session = nil
-        startDouYinCookieStoreObserver(false)
     }
     
-    func checkDouYinCookies(_ cookies: [HTTPCookie]) -> Promise<()> {
-        guard let webview = webview else {
-            return  .init(error: CookiesError.invalid)
-        }
-        
+    func checkDouYinCookies(_ webview: WKWebView, _ cookies: [HTTPCookie]) -> Promise<()> {
         let cookieKeys = [
+            "bGl2ZV9jYW5fYWRkX2R5XzJfZGVza3RvcA==",
+            "eGdwbGF5ZXJfdXNlcl9pZA==",
+            "dHR3aWQ=",
             "X19hY19ub25jZQ==",
             "X19hY19zaWduYXR1cmU=",
-            "bXNUb2tlbg==",
-            "dHRfc2NpZA=="
+            "TU9OSVRPUl9XRUJfSUQ=",
         ].map {
             $0.base64Decode()
         }
@@ -192,9 +154,7 @@ class DouYin: NSObject {
         let cid = "dHRjaWQ=".base64Decode()
         
         return Promise { resolver in
-            guard self.loadingObserver == nil,
-                  self.session == nil,
-                  self.cookies.count == 0 else {
+            guard self.cookies.count == 0 else {
                 resolver.reject(CookiesError.invalid)
                 return
             }
@@ -214,65 +174,25 @@ class DouYin: NSObject {
                     self.cookies[$0.name] = $0.value
                 }
                 
-                self.startDouYinCookieStoreObserver(false)
                 resolver.fulfill_()
             } else {
                 resolver.reject(CookiesError.waintingForCookies)
             }
         }.then {
-            webview.evaluateJavaScript("localStorage.\(cid)")
-        }.compactMap {
-            $0 as? String
+            when(fulfilled: [
+                webview.evaluateJavaScript("localStorage.\(cid)"),
+                webview.evaluateJavaScript("window.navigator.userAgent")
+            ])
         }.done {
-            self.cookies[cid] = $0
-            
-            let cValue = self.cookies.map ({
-                "\($0.key)=\($0.value)"
-            }).joined(separator: ";")
-            
-            let configuration = URLSessionConfiguration.af.default
-            
-            configuration.headers.add(.userAgent(self.douyinUA))
-            configuration.headers.add(name: "referer", value: "https://live.douyin.com")
-            configuration.headers.add(name: "Cookie", value: cValue)
-            
-            self.session = Session(configuration: configuration)
-            self.webview?.stopLoading()
+            guard let id = $0[0] as? String, let ua = $0[1] as? String else {
+                throw CookiesError.invalid
+            }
+            self.cookies[cid] = id
+            self.douyinUA = ua
         }
     }
     
     enum CookiesError: Error {
         case invalid, waintingForCookies
-    }
-}
-
-extension DouYin: WKHTTPCookieStoreObserver {
-    func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
-        guard let webview = self.webview else { return }
-        
-        cookieStore.getAllCookies().then {
-            self.checkDouYinCookies($0)
-        }.then {
-            webview.evaluateJavaScript("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
-        }.compactMap { re -> [String: String]? in
-            guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
-            return [
-                self.privateKeys[0].base64Decode(): values[0],
-                self.privateKeys[1].base64Decode(): values[1]
-            ]
-        }.done {
-            self.storageDic = $0
-            self.webview = nil
-            NotificationCenter.default.post(name: self.douyinCookiesNotification, object: nil)
-        }.catch {
-            switch $0 {
-            case CookiesError.invalid:
-                break
-            case CookiesError.waintingForCookies:
-                break
-            default:
-                print($0)
-            }
-        }
     }
 }

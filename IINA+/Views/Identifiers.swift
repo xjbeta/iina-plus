@@ -39,4 +39,7 @@ extension Notification.Name {
     static let updateDanmakuWindow = Notification.Name("com.xjbeta.iina+.DanmakuWindow.Update")
     static let updateDanmukuFont = Notification.Name("com.xjbeta.iina+.DanmakuWindow.FontChanged")
     static let loadDanmaku = Notification.Name("com.xjbeta.iina+.LoadDanmaku")
+    
+    static let startLoadDY = Notification.Name("com.xjbeta.iina+.douyin.StartLoad")
+    static let finishLoadDY = Notification.Name("com.xjbeta.iina+.douyin.FinishLoad")
 }
