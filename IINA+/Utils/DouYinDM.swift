@@ -125,15 +125,15 @@ class DouYinDM: NSObject {
             ])
             
             AF.request(url, headers: headers).response {
-                guard let data = $0.data else {
-                    resolver.reject(VideoGetError.notFountData)
-                    return
-                }
-                
                 if let newToken = $0.response?.headers.filter ({
                     $0.name == "eC1tcy10b2tlbg==".base64Decode()
                 }).first?.value {
                     self.cookies[self.tokenString] = newToken
+                }
+                
+                guard let data = $0.data else {
+                    resolver.reject(VideoGetError.notFountData)
+                    return
                 }
                 
                 let rtt = Int(abs(date.timeIntervalSinceNow * 1000))
@@ -159,6 +159,8 @@ class DouYinDM: NSObject {
             try? ChatMessage(serializedData: $0.payload)
         }
         
+//        Log(msgs.map({ $0.content }))
+        
         msgs.forEach {
             delegate?.send(.sendDM, text: $0.content, id: "")
         }
@@ -170,7 +172,7 @@ class DouYinDM: NSObject {
             }.done {
                 self.decodeDM($0)
             }.catch {
-                print($0)
+                Log($0)
             }
         }
     }
@@ -187,10 +189,8 @@ class DouYinDM: NSObject {
     enum DouYinDMError: Error {
         case deinited
     }
-}
-
-extension DouYinDM: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    
+    func startRequests() {
         getRoomId().then {
             self.prepareCookies()
         }.then {
@@ -200,7 +200,13 @@ extension DouYinDM: WKNavigationDelegate {
         }.done {
             self.decodeDM($0)
         }.catch {
-            print($0)
+            Log($0)
         }
+    }
+}
+
+extension DouYinDM: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        startRequests()
     }
 }
