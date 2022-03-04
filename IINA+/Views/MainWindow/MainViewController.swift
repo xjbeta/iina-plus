@@ -309,6 +309,17 @@ class MainViewController: NSViewController {
                     if s.contains("抖音直播") {
                         self?.dyWebViewLoadingObserver?.invalidate()
                         self?.dyWebViewLoadingObserver = nil
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+                            guard dy.cookies.count == 0,
+                                  let webview = self?.dyWebView else {
+                                return
+                            }
+                            
+                            Log("DouYin Cookies timeout, Reload.")
+                            webview.reload()
+                        }
+                        
                     } else if s.contains("验证") {
                         dy.deleteCookies().done {
                             self?.dyWebView.load(.init(url: dy.douyinEmptyURL))
