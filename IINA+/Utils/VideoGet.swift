@@ -528,22 +528,30 @@ extension VideoGet {
                         
                         let play = try DouyuH5Play(object: json)
                         
-                        let re = play.multirates.map { rate -> (String, Stream) in
-                            var s = Stream(url: "")
-                            s.quality = rate.bit
-                            s.rate = rate.rate
-                            if rate.rate == play.rate {
-                                s.url = play.url
-                            }
-                            return (rate.name, s)
-                        }
-                        resolver.fulfill(re)
+                        resolver.fulfill(play)
                     } catch let error {
                         resolver.reject(error)
                     }
                 }
                 }.catch {
                     resolver.reject($0)
+            }
+        }.then {
+            self.douyuCDNs($0)
+        }.map { play in
+            play.multirates.map { rate -> (String, Stream) in
+                var s = Stream(url: "")
+                s.quality = rate.bit
+                s.rate = rate.rate
+                
+                var urls = play.p2pUrls
+                urls.append(play.flvUrl)
+                
+                if rate.rate == play.rate, urls.count > 0 {
+                    s.url = urls.removeFirst()
+                    s.src = urls
+                }
+                return (rate.name, s)
             }
         }
     }
@@ -558,6 +566,32 @@ extension VideoGet {
         }()
         
         return getDouyuRtmpUrl(roomID, didStr: didStr, rate: rate)
+    }
+    
+    func douyuCDNs(_ info: DouyuH5Play) -> Promise<DouyuH5Play> {
+        Promise { resolver in
+            AF.request(info.cdnUrl).response { response in
+                if let error = response.error {
+                    resolver.reject(error)
+                }
+                guard let data = response.data else {
+                    resolver.reject(VideoGetError.notFountData)
+                    return
+                }
+                
+                do {
+                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                    
+                    let sugs: [String] = try json.value(for: "sug")
+                    let baks: [String] = try json.value(for: "bak")
+                    var info = info
+                    info.initP2pUrls(sugs + baks)
+                    resolver.fulfill(info)
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
     }
     
     // MARK: - Huya

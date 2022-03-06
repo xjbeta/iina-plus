@@ -143,7 +143,11 @@ struct DouyuH5Play: Unmarshaling {
     let rate: Int
     let multirates: [Rate]
     
-    let url: String
+    let flvUrl: String
+    let xsString: String
+    let cdnUrl: String
+    
+    var p2pUrls = [String]()
     
     struct Rate: Unmarshaling {
         let name: String
@@ -166,7 +170,33 @@ struct DouyuH5Play: Unmarshaling {
         multirates = try object.value(for: "data.multirates")
         rate = try object.value(for: "data.rate")
         
-        url = rtmpUrl + "/" + rtmpLive
+        flvUrl = rtmpUrl + "/" + rtmpLive
+        
+        var newRL = rtmpLive.replacingOccurrences(of: "flv", with: "xs").split(separator: "&").map(String.init)
+        
+        let domain: String = try object.value(for: "data.p2pMeta.xp2p_domain")
+        let delay: Int = try object.value(for: "data.p2pMeta.xp2p_txDelay")
+        let txSecret: String = try object.value(for: "data.p2pMeta.xp2p_txSecret")
+        let txTime: String = try object.value(for: "data.p2pMeta.xp2p_txTime")
+        
+        
+        newRL.append(contentsOf: [
+            "delay=\(delay)",
+            "txSecret=\(txSecret)",
+            "txTime=\(txTime)",
+//            "playid=1646460800000-3082600000",
+            "uuid=\(UUID().uuidString)"
+        ])
+        
+        xsString = "\(domain)/live/" + newRL.joined(separator: "&")
+        
+        cdnUrl = "https://\(domain)/\(rtmpLive.subString(to: ".")).xs"
+    }
+    
+    mutating func initP2pUrls(_ urls: [String]) {
+        p2pUrls = urls.map {
+            "https://\($0)/" + xsString
+        }
     }
 }
 
