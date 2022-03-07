@@ -144,8 +144,8 @@ struct DouyuH5Play: Unmarshaling {
     let multirates: [Rate]
     
     let flvUrl: String
-    let xsString: String
-    let cdnUrl: String
+    let xsString: String?
+    let cdnUrl: String?
     
     var p2pUrls = [String]()
     
@@ -163,6 +163,20 @@ struct DouyuH5Play: Unmarshaling {
         }
     }
     
+    struct P2pMeta: Unmarshaling {
+        let domain: String
+        let delay: Int
+        let secret: String
+        let time: String
+        
+        init(object: MarshaledObject) throws {
+            domain = try object.value(for: "xp2p_domain")
+            delay = try object.value(for: "xp2p_txDelay")
+            secret = try object.value(for: "xp2p_txSecret")
+            time = try object.value(for: "xp2p_txTime")
+        }
+    }
+    
     init(object: MarshaledObject) throws {
         roomId = try object.value(for: "data.room_id")
         rtmpUrl = try object.value(for: "data.rtmp_url")
@@ -172,30 +186,30 @@ struct DouyuH5Play: Unmarshaling {
         
         flvUrl = rtmpUrl + "/" + rtmpLive
         
+        guard let meta: P2pMeta = try? object.value(for: "data.p2pMeta") else {
+            xsString = nil
+            cdnUrl = nil
+            return
+        }
+        
         var newRL = rtmpLive.replacingOccurrences(of: "flv", with: "xs").split(separator: "&").map(String.init)
         
-        let domain: String = try object.value(for: "data.p2pMeta.xp2p_domain")
-        let delay: Int = try object.value(for: "data.p2pMeta.xp2p_txDelay")
-        let txSecret: String = try object.value(for: "data.p2pMeta.xp2p_txSecret")
-        let txTime: String = try object.value(for: "data.p2pMeta.xp2p_txTime")
-        
-        
         newRL.append(contentsOf: [
-            "delay=\(delay)",
-            "txSecret=\(txSecret)",
-            "txTime=\(txTime)",
+            "delay=\(meta.delay)",
+            "txSecret=\(meta.secret)",
+            "txTime=\(meta.time)",
 //            "playid=1646460800000-3082600000",
             "uuid=\(UUID().uuidString)"
         ])
         
-        xsString = "\(domain)/live/" + newRL.joined(separator: "&")
-        
-        cdnUrl = "https://\(domain)/\(rtmpLive.subString(to: ".")).xs"
+        xsString = "\(meta.domain)/live/" + newRL.joined(separator: "&")
+        cdnUrl = "https://\(meta.domain)/\(rtmpLive.subString(to: ".")).xs"
     }
     
     mutating func initP2pUrls(_ urls: [String]) {
+        guard let str = xsString else { return }
         p2pUrls = urls.map {
-            "https://\($0)/" + xsString
+            "https://\($0)/" + str
         }
     }
 }
