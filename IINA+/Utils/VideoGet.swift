@@ -300,7 +300,10 @@ class VideoGet: NSObject {
             if stream.url != "" {
                 return .value(json)
             } else {
-                return self.getDouyuUrl(json.id, rate: rate).map {
+                let id = json.id
+                return getDouyuHtml("https://www.douyu.com/\(id)").then {
+                    self.getDouyuUrl(id, rate: rate, jsContext: $0.jsContext)
+                }.map {
                     let url = $0.first {
                         $0.1.rate == rate
                     }?.1.url
