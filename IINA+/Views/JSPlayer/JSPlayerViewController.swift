@@ -28,10 +28,9 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var reloadButton: NSButton!
     @IBAction func reloadVideo(_ sender: NSButton) {
         startLoading()
-        line = 0
         evaluateJavaScript("flv_destroy();")
         danmaku?.stop()
-        decodeUrl()
+        openLive()
     }
     
     @IBOutlet var volumeBox: NSBox!
@@ -61,27 +60,17 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var linesPopUpButton: NSPopUpButton!
     @IBAction func lineChanged(_ sender: NSPopUpButton) {
         guard let title = sender.selectedItem?.title else { return }
-        line = sender.indexOfItem(withTitle: title)
-        openResult()
+        videoLine = sender.indexOfItem(withTitle: title)
+        openLive()
     }
 
     @IBOutlet var quailtyHeightLayoutConstraint: NSLayoutConstraint!
     @IBOutlet var quailtyTableView: NSTableView!
     @IBAction func quailtyChanged(_ sender: NSTableView) {
-        
         let i = quailtyTableView.selectedRow
-        guard let re = result,
-              re.videos.count > i,
-              key != re.videos[i].key else { return }
-        key = re.videos[i].key
-        proc.videoGet.prepareVideoUrl(re, i).done {
-            self.result = $0
-            self.line = 0
-            self.initControllers()
-            self.openResult()
-        }.catch {
-            print($0)
-        }
+        guard let re = result, re.videos.count > i else { return }
+        videoKey = re.videos[i].key
+        openLive()
     }
     
 
@@ -101,15 +90,17 @@ class JSPlayerViewController: NSViewController {
     var hideOSCTimer: WaitTimer?
     
     
-// MARK: - Other Value
+// MARK: - Video Values
     var url = ""
     var result: YouGetJSON?
-    var key: String? {
+    var videoKey: String? {
         didSet {
-            qlButton.title = key ?? ""
+            qlButton.title = videoKey ?? ""
         }
     }
-    var line = 0
+    var videoLine = 0
+    
+// MARK: - Other Value
     
     var webViewFinishLoaded = false
     
@@ -210,7 +201,7 @@ class JSPlayerViewController: NSViewController {
         updateControllersState()
     }
     
-    func decodeUrl() {
+    func openLive() {
         proc.stopDecodeURL()
         proc.videoGet.liveInfo(url, false).get {
             if !$0.isLiving {
@@ -224,18 +215,48 @@ class JSPlayerViewController: NSViewController {
                     $0.key
                 }
                 
-                if self.key == nil || !videoKeys.contains(self.key!) {
-                    self.key = re.videos.first?.key
+                if self.videoKey == nil || !videoKeys.contains(self.videoKey!) {
+                    self.videoKey = re.videos.first?.key
                 }
                 
-                return videoKeys.firstIndex(of: self.key ?? "😶‍🌫️") ?? 0
+                return videoKeys.firstIndex(of: self.videoKey ?? "😶‍🌫️") ?? 0
             }())
         }.done(on: .main) {
             var re = $0
             re.rawUrl = self.url
             self.result = re
+            
+            guard let stream = re.videos.first(where: {
+                $0.key == self.videoKey
+            })?.value else {
+                return
+            }
+            var urls = stream.src
+            if let u = stream.url {
+                urls.insert(u, at: 0)
+            }
+            
+            guard urls.count > 0 else { return }
+            
+            if urls.count <= self.videoLine {
+                self.videoLine = 0
+            }
+            
             self.initControllers()
-            self.openResult()
+            
+            let url = urls[0]
+            
+            self.evaluateJavaScript("initContent();")
+            self.evaluateJavaScript("window.openUrl('\(url)');")
+            
+            switch re.site {
+            case .douyu, .eGame, .biliLive, .huya, .douyin:
+                self.startDM(re.rawUrl)
+            case .bilibili, .bangumi:
+                break
+            default:
+                break
+            }
         }.catch(on: .main, policy: .allErrors) {
             print($0)
         }
@@ -247,7 +268,7 @@ class JSPlayerViewController: NSViewController {
         view.window?.title = result?.title ?? ""
         
         guard let re = result,
-              let key = key,
+              let key = videoKey,
               let s = re.streams[key]
         else { return }
         
@@ -257,6 +278,7 @@ class JSPlayerViewController: NSViewController {
         }
         
         linesPopUpButton.addItems(withTitles: titles)
+        linesPopUpButton.selectItem(at: videoLine)
         
         quailtyTableView.reloadData()
         let index = re.videos.firstIndex {
@@ -286,30 +308,6 @@ class JSPlayerViewController: NSViewController {
         }
         
         volumeButton.image = .init(named: .init(name))
-    }
-    
-    func openResult() {
-        guard let re = result,
-              let key = key,
-              let s = re.streams[key],
-              (line - 1) < s.src.count,
-              let vUrl = line == 0 ? s.url : s.src[line - 1]
-        else {
-            return
-        }
-        
-        
-        evaluateJavaScript("initContent();")
-        evaluateJavaScript("window.openUrl('\(vUrl)');")
-        
-        switch re.site {
-        case .douyu, .eGame, .biliLive, .huya, .douyin:
-            startDM(re.rawUrl)
-        case .bilibili, .bangumi:
-            break
-        default:
-            break
-        }
     }
     
     func initWebView() {
@@ -510,7 +508,7 @@ extension JSPlayerViewController: WKNavigationDelegate {
         webViewFinishLoaded = true
         guard url != "", result == nil else { return }
         
-        decodeUrl()
+        openLive()
     }
 }
 
@@ -522,8 +520,8 @@ extension JSPlayerViewController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         Log("windowWillClose")
         result = nil
-        key = nil
-        line = 0
+        videoKey = nil
+        videoLine = 0
         
         danmaku?.stop()
         danmaku = nil
