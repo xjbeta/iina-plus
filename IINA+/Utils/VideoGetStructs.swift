@@ -843,9 +843,9 @@ struct BangumiInfo: Unmarshaling {
 
     struct BangumiEp: Unmarshaling {
         let id: Int
-        let badge: String
-        let badgeType: Int
-        let badgeColor: String
+//        let badge: String
+//        let badgeType: Int
+//        let badgeColor: String
         let epStatus: Int
         let aid: Int
         let bvid: String
@@ -857,9 +857,9 @@ struct BangumiInfo: Unmarshaling {
         
         init(object: MarshaledObject) throws {
             id = try object.value(for: "id")
-            badge = try object.value(for: "badge")
-            badgeType = try object.value(for: "badgeType")
-            badgeColor = (try? object.value(for: "badgeColor")) ?? ""
+//            badge = try object.value(for: "badge")
+//            badgeType = try object.value(for: "badgeType")
+//            badgeColor = (try? object.value(for: "badgeColor")) ?? ""
             epStatus = try object.value(for: "epStatus")
             aid = try object.value(for: "aid")
             bvid = (try? object.value(for: "bvid")) ?? ""
@@ -868,7 +868,8 @@ struct BangumiInfo: Unmarshaling {
             longTitle = try object.value(for: "longTitle")
             let u: String = try object.value(for: "cover")
             cover = "https:" + u
-            duration = try object.value(for: "duration") / 1000
+            let d: Int? = try? object.value(for: "duration")
+            duration = d ?? 0 / 1000
         }
     }
 }
