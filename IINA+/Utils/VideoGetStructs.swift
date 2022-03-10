@@ -49,12 +49,9 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
 }
 
 struct BiliLivePlayUrl: Unmarshaling {
-    let currentQuality: Int
-    let acceptQuality: [String]
-    let currentQn: Int
-    let qualityDescription: [QualityDescription]
-    let durl: [Durl]
-    
+    let qualityDescriptions: [QualityDescription]
+    let streams: [BiliLiveStream]
+
     struct QualityDescription: Unmarshaling {
         let qn: Int
         let desc: String
@@ -64,19 +61,87 @@ struct BiliLivePlayUrl: Unmarshaling {
         }
     }
     
-    struct Durl: Unmarshaling {
-        var url: String
+    struct BiliLiveStream: Unmarshaling {
+        let protocolName: String
+        let formats: [Format]
         init(object: MarshaledObject) throws {
-            url = try object.value(for: "url")
+            protocolName = try object.value(for: "protocol_name")
+            formats = try object.value(for: "format")
+        }
+    }
+    
+    struct Format: Unmarshaling {
+        let formatName: String
+        let codecs: [Codec]
+        init(object: MarshaledObject) throws {
+            formatName = try object.value(for: "format_name")
+            codecs = try object.value(for: "codec")
+        }
+    }
+    
+    struct Codec: Unmarshaling {
+        let codecName: String
+        let currentQn: Int
+        let acceptQns: [Int]
+        let baseUrl: String
+        let urlInfos: [UrlInfo]
+        init(object: MarshaledObject) throws {
+            codecName = try object.value(for: "codec_name")
+            currentQn = try object.value(for: "current_qn")
+            acceptQns = try object.value(for: "accept_qn")
+            baseUrl = try object.value(for: "base_url")
+            urlInfos = try object.value(for: "url_info")
+        }
+        
+        func urls() -> [String] {
+            urlInfos.map {
+                $0.host + baseUrl + $0.extra
+            }
+        }
+    }
+    
+    struct UrlInfo: Unmarshaling {
+        let host: String
+        let extra: String
+        let streamTtl: Int
+        init(object: MarshaledObject) throws {
+            host = try object.value(for: "host")
+            extra = try object.value(for: "extra")
+            streamTtl = try object.value(for: "stream_ttl")
         }
     }
     
     init(object: MarshaledObject) throws {
-        currentQuality = try object.value(for: "data.current_quality")
-        acceptQuality = try object.value(for: "data.accept_quality")
-        currentQn = try object.value(for: "data.current_qn")
-        qualityDescription = try object.value(for: "data.quality_description")
-        durl = try object.value(for: "data.durl")
+        qualityDescriptions = try object.value(for: "data.playurl_info.playurl.g_qn_desc")
+        streams = try object.value(for: "data.playurl_info.playurl.stream")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        
+        let codecs = streams.flatMap {
+            $0.formats.flatMap {
+                $0.codecs
+            }
+        }
+        
+//        if let codec = codecs.last(where: { $0.codecName == "hevc" }) ?? codecs.first {
+        if let codec = codecs.first {
+            qualityDescriptions.filter {
+                codec.acceptQns.contains($0.qn)
+            }.forEach {
+                var s = Stream(url: "")
+                s.quality = $0.qn
+                if codec.currentQn == $0.qn {
+                    var urls = codec.urls()
+                    s.url = urls.removeFirst()
+                    s.src = urls
+                }
+                json.streams[$0.desc] = s
+            }
+        }
+        
+        return json
     }
 }
 

@@ -68,21 +68,7 @@ class VideoGet: NSObject {
             }.then {
                 self.getBiliLiveJSON("\($0.roomId)")
             }.map {
-                let urls = $0.durl.map {
-                    $0.url
-                }
-                let cqn = $0.currentQn
-                
-                $0.qualityDescription.forEach {
-                    var s = Stream(url: "")
-                    s.quality = $0.qn
-                    if cqn == $0.qn {
-                        s.src = urls
-                        s.url = urls.first
-                    }
-                    yougetJson.streams[$0.desc] = s
-                }
-                return yougetJson
+                $0.write(to: yougetJson)
             }
         case .douyu:
             var roomId = 0
@@ -281,13 +267,7 @@ class VideoGet: NSObject {
                 return .value(json)
             } else {
                 return getBiliLiveJSON("\(json.id)", qn).map {
-                    let urls = $0.durl.map {
-                        $0.url
-                    }
-                    var re = json
-                    re.streams[key]?.url = urls.first
-                    re.streams[key]?.src = urls
-                    return re
+                    $0.write(to: json)
                 }
             }
         case .douyu:
@@ -367,11 +347,9 @@ extension VideoGet {
     }
     
     func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
-//           https://api.live.bilibili.com/room/v1/Room/playUrl?cid=7734200&qn=20000&platform=web
-        
-        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
-        
-        return Promise { resolver in
+        Promise { resolver in
+            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
+            
             AF.request(u).response { response in
                 if let error = response.error {
                     resolver.reject(error)
@@ -386,9 +364,6 @@ extension VideoGet {
             }
         }
     }
-    
-    
-    
     
     // MARK: - Douyu
     func getDouyuHtml(_ url: String) -> Promise<(roomId: String, roomIds: [String], isLiving: Bool, pageId: String, jsContext: JSContext)> {
