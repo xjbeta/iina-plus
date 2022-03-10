@@ -248,6 +248,7 @@ class JSPlayerViewController: NSViewController {
             
             self.evaluateJavaScript("initContent();")
             self.evaluateJavaScript("window.openUrl('\(url)');")
+            self.evaluateJavaScript("flvPlayer.muted = \(self.playerMuted);")
             
             switch re.site {
             case .douyu, .eGame, .biliLive, .huya, .douyin:
