@@ -27,3 +27,15 @@
 
 /* Class = "NSMenuItem"; title = "Item 2"; ObjectID = "zlW-lq-SDz"; */
 "zlW-lq-SDz.title" = "Item 2";
+
+/* Class = "NSTextFieldCell"; title = "Speed:"; ObjectID = "0dj-e7-0em"; */
+"0dj-e7-0em.title" = "速度:";
+
+/* Class = "NSTextFieldCell"; title = "Opacity:"; ObjectID = "K36-Zb-kEo"; */
+"K36-Zb-kEo.title" = "透明度:";
+
+/* Class = "NSButtonCell"; title = "Enable"; ObjectID = "Rpe-rD-fwd"; */
+"Rpe-rD-fwd.title" = "启用";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "V00-Sg-zdq"; */
+"V00-Sg-zdq.title" = "";

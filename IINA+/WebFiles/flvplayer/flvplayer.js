@@ -97,6 +97,7 @@ window.dmMessage = function(event) {
         break;
     case 'stop':
         window.cm.stop();
+        window.cm.clear();
         break;
     case 'initDM':
         window.initDM();

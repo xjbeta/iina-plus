@@ -49,12 +49,9 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
 }
 
 struct BiliLivePlayUrl: Unmarshaling {
-    let currentQuality: Int
-    let acceptQuality: [String]
-    let currentQn: Int
-    let qualityDescription: [QualityDescription]
-    let durl: [Durl]
-    
+    let qualityDescriptions: [QualityDescription]
+    let streams: [BiliLiveStream]
+
     struct QualityDescription: Unmarshaling {
         let qn: Int
         let desc: String
@@ -64,19 +61,87 @@ struct BiliLivePlayUrl: Unmarshaling {
         }
     }
     
-    struct Durl: Unmarshaling {
-        var url: String
+    struct BiliLiveStream: Unmarshaling {
+        let protocolName: String
+        let formats: [Format]
         init(object: MarshaledObject) throws {
-            url = try object.value(for: "url")
+            protocolName = try object.value(for: "protocol_name")
+            formats = try object.value(for: "format")
+        }
+    }
+    
+    struct Format: Unmarshaling {
+        let formatName: String
+        let codecs: [Codec]
+        init(object: MarshaledObject) throws {
+            formatName = try object.value(for: "format_name")
+            codecs = try object.value(for: "codec")
+        }
+    }
+    
+    struct Codec: Unmarshaling {
+        let codecName: String
+        let currentQn: Int
+        let acceptQns: [Int]
+        let baseUrl: String
+        let urlInfos: [UrlInfo]
+        init(object: MarshaledObject) throws {
+            codecName = try object.value(for: "codec_name")
+            currentQn = try object.value(for: "current_qn")
+            acceptQns = try object.value(for: "accept_qn")
+            baseUrl = try object.value(for: "base_url")
+            urlInfos = try object.value(for: "url_info")
+        }
+        
+        func urls() -> [String] {
+            urlInfos.map {
+                $0.host + baseUrl + $0.extra
+            }
+        }
+    }
+    
+    struct UrlInfo: Unmarshaling {
+        let host: String
+        let extra: String
+        let streamTtl: Int
+        init(object: MarshaledObject) throws {
+            host = try object.value(for: "host")
+            extra = try object.value(for: "extra")
+            streamTtl = try object.value(for: "stream_ttl")
         }
     }
     
     init(object: MarshaledObject) throws {
-        currentQuality = try object.value(for: "data.current_quality")
-        acceptQuality = try object.value(for: "data.accept_quality")
-        currentQn = try object.value(for: "data.current_qn")
-        qualityDescription = try object.value(for: "data.quality_description")
-        durl = try object.value(for: "data.durl")
+        qualityDescriptions = try object.value(for: "data.playurl_info.playurl.g_qn_desc")
+        streams = try object.value(for: "data.playurl_info.playurl.stream")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        
+        let codecs = streams.flatMap {
+            $0.formats.flatMap {
+                $0.codecs
+            }
+        }
+        
+//        if let codec = codecs.last(where: { $0.codecName == "hevc" }) ?? codecs.first {
+        if let codec = codecs.first {
+            qualityDescriptions.filter {
+                codec.acceptQns.contains($0.qn)
+            }.forEach {
+                var s = Stream(url: "")
+                s.quality = $0.qn
+                if codec.currentQn == $0.qn {
+                    var urls = codec.urls()
+                    s.url = urls.removeFirst()
+                    s.src = urls
+                }
+                json.streams[$0.desc] = s
+            }
+        }
+        
+        return json
     }
 }
 
@@ -143,7 +208,11 @@ struct DouyuH5Play: Unmarshaling {
     let rate: Int
     let multirates: [Rate]
     
-    let url: String
+    let flvUrl: String
+    let xsString: String?
+    let cdnUrl: String?
+    
+    var p2pUrls = [String]()
     
     struct Rate: Unmarshaling {
         let name: String
@@ -159,6 +228,20 @@ struct DouyuH5Play: Unmarshaling {
         }
     }
     
+    struct P2pMeta: Unmarshaling {
+        let domain: String
+        let delay: Int
+        let secret: String
+        let time: String
+        
+        init(object: MarshaledObject) throws {
+            domain = try object.value(for: "xp2p_domain")
+            delay = try object.value(for: "xp2p_txDelay")
+            secret = try object.value(for: "xp2p_txSecret")
+            time = try object.value(for: "xp2p_txTime")
+        }
+    }
+    
     init(object: MarshaledObject) throws {
         roomId = try object.value(for: "data.room_id")
         rtmpUrl = try object.value(for: "data.rtmp_url")
@@ -166,7 +249,33 @@ struct DouyuH5Play: Unmarshaling {
         multirates = try object.value(for: "data.multirates")
         rate = try object.value(for: "data.rate")
         
-        url = rtmpUrl + "/" + rtmpLive
+        flvUrl = rtmpUrl + "/" + rtmpLive
+        
+        guard let meta: P2pMeta = try? object.value(for: "data.p2pMeta") else {
+            xsString = nil
+            cdnUrl = nil
+            return
+        }
+        
+        var newRL = rtmpLive.replacingOccurrences(of: "flv", with: "xs").split(separator: "&").map(String.init)
+        
+        newRL.append(contentsOf: [
+            "delay=\(meta.delay)",
+            "txSecret=\(meta.secret)",
+            "txTime=\(meta.time)",
+//            "playid=1646460800000-3082600000",
+            "uuid=\(UUID().uuidString)"
+        ])
+        
+        xsString = "\(meta.domain)/live/" + newRL.joined(separator: "&")
+        cdnUrl = "https://\(meta.domain)/\(rtmpLive.subString(to: ".")).xs"
+    }
+    
+    mutating func initP2pUrls(_ urls: [String]) {
+        guard let str = xsString else { return }
+        p2pUrls = urls.map {
+            "https://\($0)/" + str
+        }
     }
 }
 
@@ -799,9 +908,9 @@ struct BangumiInfo: Unmarshaling {
 
     struct BangumiEp: Unmarshaling {
         let id: Int
-        let badge: String
-        let badgeType: Int
-        let badgeColor: String
+//        let badge: String
+//        let badgeType: Int
+//        let badgeColor: String
         let epStatus: Int
         let aid: Int
         let bvid: String
@@ -813,9 +922,9 @@ struct BangumiInfo: Unmarshaling {
         
         init(object: MarshaledObject) throws {
             id = try object.value(for: "id")
-            badge = try object.value(for: "badge")
-            badgeType = try object.value(for: "badgeType")
-            badgeColor = (try? object.value(for: "badgeColor")) ?? ""
+//            badge = try object.value(for: "badge")
+//            badgeType = try object.value(for: "badgeType")
+//            badgeColor = (try? object.value(for: "badgeColor")) ?? ""
             epStatus = try object.value(for: "epStatus")
             aid = try object.value(for: "aid")
             bvid = (try? object.value(for: "bvid")) ?? ""
@@ -824,7 +933,8 @@ struct BangumiInfo: Unmarshaling {
             longTitle = try object.value(for: "longTitle")
             let u: String = try object.value(for: "cover")
             cover = "https:" + u
-            duration = try object.value(for: "duration") / 1000
+            let d: Int? = try? object.value(for: "duration")
+            duration = d ?? 0 / 1000
         }
     }
 }

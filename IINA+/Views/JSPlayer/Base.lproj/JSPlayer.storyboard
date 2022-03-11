@@ -88,6 +88,9 @@
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="enableDanmaku:" target="bU7-R8-ocO" id="yl9-iF-muF"/>
+                                                </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Awz-S7-3hO">
                                                 <rect key="frame" x="184" y="6" width="43" height="16"/>
@@ -288,11 +291,107 @@
                                     <constraint firstAttribute="width" constant="130" id="QNU-XC-1Pe"/>
                                 </constraints>
                             </box>
+                            <box misplaced="YES" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V00-Sg-zdq">
+                                <rect key="frame" x="341" y="185" width="236" height="180"/>
+                                <view key="contentView" id="Ip4-0U-egp">
+                                    <rect key="frame" x="3" y="3" width="230" height="174"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ewv-UV-ySC" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="15" width="169" height="134"/>
+                                            <subviews>
+                                                <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="dBz-gD-lOU">
+                                                    <rect key="frame" x="12" y="12" width="145" height="110"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="145" id="O45-nT-XYK"/>
+                                                    </constraints>
+                                                    <rows>
+                                                        <gridRow id="5Uy-U8-R9a"/>
+                                                        <gridRow id="hcf-Ao-HZM"/>
+                                                        <gridRow id="AlR-gJ-MtE"/>
+                                                        <gridRow id="HjC-Z2-jtc"/>
+                                                        <gridRow id="9ey-Tr-4Y8"/>
+                                                    </rows>
+                                                    <columns>
+                                                        <gridColumn xPlacement="fill" id="DcH-xJ-0gT"/>
+                                                    </columns>
+                                                    <gridCells>
+                                                        <gridCell row="5Uy-U8-R9a" column="DcH-xJ-0gT" id="903-UK-DQu">
+                                                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fo1-hb-HrD">
+                                                                <rect key="frame" x="-2" y="93" width="147" height="18"/>
+                                                                <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Rpe-rD-fwd">
+                                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                                    <font key="font" metaFont="system"/>
+                                                                </buttonCell>
+                                                                <connections>
+                                                                    <action selector="enableDanmaku:" target="bU7-R8-ocO" id="cqr-jl-Si5"/>
+                                                                </connections>
+                                                            </button>
+                                                        </gridCell>
+                                                        <gridCell row="hcf-Ao-HZM" column="DcH-xJ-0gT" id="rea-7u-Uaf">
+                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
+                                                                <rect key="frame" x="-2" y="73" width="149" height="15"/>
+                                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Speed:" id="0dj-e7-0em">
+                                                                    <font key="font" metaFont="cellTitle"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                        </gridCell>
+                                                        <gridCell row="AlR-gJ-MtE" column="DcH-xJ-0gT" id="GjS-ea-P2Z">
+                                                            <slider key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8xK-9v-zUp">
+                                                                <rect key="frame" x="-2" y="41" width="149" height="28"/>
+                                                                <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" minValue="128" maxValue="1080" doubleValue="640" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="RnH-6g-7x8"/>
+                                                                <connections>
+                                                                    <action selector="speedChanged:" target="bU7-R8-ocO" id="5gP-vH-dY2"/>
+                                                                </connections>
+                                                            </slider>
+                                                        </gridCell>
+                                                        <gridCell row="HjC-Z2-jtc" column="DcH-xJ-0gT" id="f6w-tp-Uf4">
+                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
+                                                                <rect key="frame" x="-2" y="26" width="149" height="15"/>
+                                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Opacity:" id="K36-Zb-kEo">
+                                                                    <font key="font" metaFont="cellTitle"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                        </gridCell>
+                                                        <gridCell row="9ey-Tr-4Y8" column="DcH-xJ-0gT" id="No0-so-4uJ">
+                                                            <slider key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sg5-LJ-uVm">
+                                                                <rect key="frame" x="-2" y="-6" width="149" height="28"/>
+                                                                <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="3OU-S0-TZp"/>
+                                                                <connections>
+                                                                    <action selector="opacityChanged:" target="bU7-R8-ocO" id="BEz-Mh-NYC"/>
+                                                                </connections>
+                                                            </slider>
+                                                        </gridCell>
+                                                    </gridCells>
+                                                </gridView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="dBz-gD-lOU" secondAttribute="trailing" constant="12" id="J7v-CC-vEK"/>
+                                                <constraint firstAttribute="bottom" secondItem="dBz-gD-lOU" secondAttribute="bottom" constant="12" id="K3G-ug-LzX"/>
+                                                <constraint firstItem="dBz-gD-lOU" firstAttribute="top" secondItem="ewv-UV-ySC" secondAttribute="top" constant="12" id="eyj-8J-d0f"/>
+                                                <constraint firstItem="dBz-gD-lOU" firstAttribute="leading" secondItem="ewv-UV-ySC" secondAttribute="leading" constant="12" id="wWa-Ia-kep"/>
+                                            </constraints>
+                                        </visualEffectView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="ewv-UV-ySC" firstAttribute="leading" secondItem="Ip4-0U-egp" secondAttribute="leading" id="CF4-Th-yme"/>
+                                        <constraint firstItem="ewv-UV-ySC" firstAttribute="top" secondItem="Ip4-0U-egp" secondAttribute="top" id="GMc-LR-FqE"/>
+                                        <constraint firstAttribute="trailing" secondItem="ewv-UV-ySC" secondAttribute="trailing" id="SJc-5Q-KhB"/>
+                                        <constraint firstAttribute="bottom" secondItem="ewv-UV-ySC" secondAttribute="bottom" constant="15" id="bjv-jN-xHG"/>
+                                    </constraints>
+                                </view>
+                            </box>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="QBH-lg-R4B" secondAttribute="bottom" id="1ch-fr-N79"/>
                             <constraint firstAttribute="trailing" secondItem="QBH-lg-R4B" secondAttribute="trailing" id="36g-Gy-zPb"/>
+                            <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="V00-Sg-zdq" secondAttribute="bottom" id="3OO-rs-CHB"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="58q-ki-cTb" secondAttribute="bottom" id="42s-KS-eFa"/>
+                            <constraint firstItem="V00-Sg-zdq" firstAttribute="centerX" secondItem="Cg1-Ai-cln" secondAttribute="centerX" id="BnR-wF-C6i"/>
                             <constraint firstAttribute="bottom" secondItem="Q3d-da-hps" secondAttribute="bottom" constant="12" id="DQG-9d-mOY"/>
                             <constraint firstItem="58q-ki-cTb" firstAttribute="centerX" secondItem="dOA-Qd-GsD" secondAttribute="centerX" id="GKs-2V-SF6"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" constant="12" id="QI7-df-s64"/>
@@ -304,15 +403,19 @@
                     </view>
                     <connections>
                         <outlet property="controllersView" destination="Q3d-da-hps" id="2JF-LD-RTu"/>
+                        <outlet property="danmakuPrefBox" destination="V00-Sg-zdq" id="f1c-nj-P9c"/>
                         <outlet property="danmakuPrefButton" destination="Cg1-Ai-cln" id="jAp-DJ-qB4"/>
                         <outlet property="durationButton" destination="RmU-8V-9Io" id="dIj-Qg-KEZ"/>
+                        <outlet property="enableDMButton" destination="fo1-hb-HrD" id="K4I-sr-Iy7"/>
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
+                        <outlet property="opacitySlider" destination="sg5-LJ-uVm" id="zAW-0O-4ww"/>
                         <outlet property="qlBox" destination="LJd-y3-Ngp" id="FOk-Qa-LhP"/>
                         <outlet property="qlButton" destination="Awz-S7-3hO" id="eYx-ma-xfH"/>
                         <outlet property="quailtyHeightLayoutConstraint" destination="qJM-NN-NcQ" id="1ZI-cc-0g6"/>
                         <outlet property="quailtyTableView" destination="6So-Mt-rQe" id="P0h-iG-4vQ"/>
                         <outlet property="reloadButton" destination="dqz-eP-LFr" id="Vz4-ZH-WMa"/>
+                        <outlet property="speedSlider" destination="8xK-9v-zUp" id="YbS-he-kSZ"/>
                         <outlet property="volumeBox" destination="58q-ki-cTb" id="TfG-jz-NWL"/>
                         <outlet property="volumeButton" destination="dOA-Qd-GsD" id="iae-EF-tDE"/>
                         <outlet property="volumeSlider" destination="nUX-RS-Z83" id="CB2-cE-iLp"/>

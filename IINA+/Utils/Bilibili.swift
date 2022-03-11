@@ -147,7 +147,7 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
     var title: String
     let longTitle: String
     let coverUrl: URL?
-    let badge: Badge?
+//    let badge: Badge?
     let site: SupportSites
     
     struct Badge {
@@ -160,11 +160,12 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
         id = try object.value(for: "cid")
         index = try object.value(for: "page")
         part = try object.value(for: "part")
-        duration = try object.value(for: "duration")
+        let d: Double? = try? object.value(for: "duration")
+        duration = d ?? 0
         title = part
         longTitle = ""
         coverUrl = nil
-        badge = nil
+//        badge = nil
         site = .bilibili
     }
     
@@ -177,9 +178,9 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
         longTitle = ep.longTitle
         coverUrl = nil
 //        ep.badgeColor
-        badge = .init(badge: ep.badge,
-                      badgeColor: .red,
-                      badgeType: ep.badgeType)
+//        badge = .init(badge: ep.badge,
+//                      badgeColor: .red,
+//                      badgeType: ep.badgeType)
         site = .bangumi
     }
 }
