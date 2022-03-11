@@ -88,6 +88,9 @@
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="enableDanmaku:" target="bU7-R8-ocO" id="yl9-iF-muF"/>
+                                                </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Awz-S7-3hO">
                                                 <rect key="frame" x="184" y="6" width="43" height="16"/>
@@ -295,14 +298,15 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ewv-UV-ySC" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
-                                            <rect key="frame" x="0.0" y="15" width="169" height="112"/>
+                                            <rect key="frame" x="0.0" y="15" width="169" height="134"/>
                                             <subviews>
                                                 <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="dBz-gD-lOU">
-                                                    <rect key="frame" x="12" y="12" width="145" height="88"/>
+                                                    <rect key="frame" x="12" y="12" width="145" height="110"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="145" id="O45-nT-XYK"/>
                                                     </constraints>
                                                     <rows>
+                                                        <gridRow id="5Uy-U8-R9a"/>
                                                         <gridRow id="hcf-Ao-HZM"/>
                                                         <gridRow id="AlR-gJ-MtE"/>
                                                         <gridRow id="HjC-Z2-jtc"/>
@@ -312,6 +316,18 @@
                                                         <gridColumn xPlacement="fill" id="DcH-xJ-0gT"/>
                                                     </columns>
                                                     <gridCells>
+                                                        <gridCell row="5Uy-U8-R9a" column="DcH-xJ-0gT" id="903-UK-DQu">
+                                                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fo1-hb-HrD">
+                                                                <rect key="frame" x="-2" y="93" width="147" height="18"/>
+                                                                <buttonCell key="cell" type="check" title="Enable" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Rpe-rD-fwd">
+                                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                                    <font key="font" metaFont="system"/>
+                                                                </buttonCell>
+                                                                <connections>
+                                                                    <action selector="enableDanmaku:" target="bU7-R8-ocO" id="cqr-jl-Si5"/>
+                                                                </connections>
+                                                            </button>
+                                                        </gridCell>
                                                         <gridCell row="hcf-Ao-HZM" column="DcH-xJ-0gT" id="rea-7u-Uaf">
                                                             <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
                                                                 <rect key="frame" x="-2" y="73" width="149" height="15"/>
@@ -390,6 +406,7 @@
                         <outlet property="danmakuPrefBox" destination="V00-Sg-zdq" id="f1c-nj-P9c"/>
                         <outlet property="danmakuPrefButton" destination="Cg1-Ai-cln" id="jAp-DJ-qB4"/>
                         <outlet property="durationButton" destination="RmU-8V-9Io" id="dIj-Qg-KEZ"/>
+                        <outlet property="enableDMButton" destination="fo1-hb-HrD" id="K4I-sr-Iy7"/>
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
                         <outlet property="opacitySlider" destination="sg5-LJ-uVm" id="zAW-0O-4ww"/>

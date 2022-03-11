@@ -49,9 +49,16 @@ class JSPlayerViewController: NSViewController {
      
     @IBOutlet var durationButton: NSButton!
     
-    
-    @IBOutlet var danmakuPrefButton: NSButton!
     @IBOutlet weak var danmakuPrefBox: NSBox!
+    @IBOutlet var danmakuPrefButton: NSButton!
+    
+    @IBOutlet weak var enableDMButton: NSButton!
+    @IBAction func enableDanmaku(_ sender: NSButton) {
+        let enableDM = sender.state == .on
+        send(enableDM ? .start : .stop, text: "", id: "")
+        
+        startDM()
+    }
     
     @IBOutlet weak var speedSlider: NSSlider!
     @IBAction func speedChanged(_ sender: NSSlider) {
@@ -149,6 +156,7 @@ class JSPlayerViewController: NSViewController {
         let pref = Preferences.shared
         speedSlider.doubleValue = pref.dmSpeed
         opacitySlider.doubleValue = pref.dmOpacity
+        enableDMButton.state = pref.enableDanmaku ? .on : .off
         
         initVolumeButton()
         initTrackingAreas()
@@ -272,7 +280,7 @@ class JSPlayerViewController: NSViewController {
             
             switch re.site {
             case .douyu, .eGame, .biliLive, .huya, .douyin:
-                self.startDM(re.rawUrl)
+                self.startDM()
             case .bilibili, .bangumi:
                 break
             default:
@@ -374,14 +382,15 @@ class JSPlayerViewController: NSViewController {
         evaluateJavaScript("window.resize();")
     }
     
-    func startDM(_ url: String) {
+    func startDM() {
         let pref = Preferences.shared
-        guard pref.enableDanmaku else { return }
-        
         if let d = danmaku {
             d.stop()
             danmaku = nil
         }
+        guard let url = result?.rawUrl,
+              pref.enableDanmaku,
+              enableDMButton.state == .on else { return }
         
         danmaku = Danmaku(url)
         danmaku?.loadDM()
