@@ -51,7 +51,7 @@ class JSPlayerViewController: NSViewController {
     
     
     @IBOutlet var danmakuPrefButton: NSButton!
-    
+    @IBOutlet weak var danmakuPrefBox: NSBox!
     
     
     @IBOutlet var qlButton: NSButton!
@@ -86,6 +86,7 @@ class JSPlayerViewController: NSViewController {
     var mouseInVolumeBox = false
     
     var mouseInDanmaku = false
+    var mouseInDanmakuBox = false
     
     var hideOSCTimer: WaitTimer?
     
@@ -133,6 +134,7 @@ class JSPlayerViewController: NSViewController {
         super.viewDidLoad()
         qlBox.isHidden = true
         volumeBox.isHidden = true
+        danmakuPrefBox.isHidden = true
         initVolumeButton()
         initTrackingAreas()
         
@@ -145,6 +147,7 @@ class JSPlayerViewController: NSViewController {
         startTrackingAreas(controllersView)
         startTrackingAreas(qlBox)
         startTrackingAreas(volumeBox)
+        startTrackingAreas(danmakuPrefBox)
         
         hideOSCTimer?.stop()
         hideOSCTimer = nil
@@ -167,6 +170,8 @@ class JSPlayerViewController: NSViewController {
             userInfo["id"] = .qlSelector
         case volumeBox:
             userInfo["id"] = .volume
+        case danmakuPrefBox:
+            userInfo["id"] = .danmakuPref
         default:
             break
         }
@@ -383,7 +388,7 @@ class JSPlayerViewController: NSViewController {
         case .volume:
             mouseInVolumeBox = true
         case .danmakuPref:
-            break
+            mouseInDanmakuBox = true
         case .none:
             break
         }
@@ -402,7 +407,7 @@ class JSPlayerViewController: NSViewController {
         case .volume:
             mouseInVolumeBox = false
         case .danmakuPref:
-            break
+            mouseInDanmakuBox = false
         case .none:
             break
         }
@@ -412,9 +417,10 @@ class JSPlayerViewController: NSViewController {
     override func mouseMoved(with event: NSEvent) {
         mouseInWindowTimeOut = false
         if mouseInWindow,
-            !mouseInControlls,
-            !mouseInQLBox,
-            !mouseInVolumeBox {
+           !mouseInControlls,
+           !mouseInQLBox,
+           !mouseInVolumeBox,
+           !mouseInDanmakuBox {
             hideOSCTimer?.run()
         } else {
             hideOSCTimer?.stop()
@@ -424,7 +430,9 @@ class JSPlayerViewController: NSViewController {
             if !mouseInQLBox {
                 mouseInQL = false
             }
-            mouseInDanmaku = false
+            if !mouseInDanmakuBox {
+                mouseInDanmaku = false
+            }
             if !mouseInVolumeBox {
                 mouseInVolume = false
             }
@@ -490,12 +498,13 @@ class JSPlayerViewController: NSViewController {
             
             volumeBox.isHidden = !(mouseInVolume || mouseInVolumeBox)
             qlBox.isHidden = !(mouseInQL || mouseInQLBox)
+            danmakuPrefBox.isHidden = !(mouseInDanmaku || mouseInDanmakuBox)
         } else {
             view.window?.hideTitlebar(true)
             controllersView.isHidden = true
             volumeBox.isHidden = true
             qlBox.isHidden = true
-//            danmakuBox.isHidden = true
+            danmakuPrefBox.isHidden = true
         }
     }
     
