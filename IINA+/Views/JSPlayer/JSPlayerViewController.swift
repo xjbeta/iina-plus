@@ -420,9 +420,7 @@ class JSPlayerViewController: NSViewController {
             hideOSCTimer?.stop()
         }
         
-        guard mouseInControlls,
-              let v0 = reloadButton.isHidden ? loadingProgressIndicator : reloadButton
-        else {
+        guard mouseInControlls, let v0 = durationButton else {
             if !mouseInQLBox {
                 mouseInQL = false
             }
