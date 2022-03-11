@@ -53,6 +53,16 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var danmakuPrefButton: NSButton!
     @IBOutlet weak var danmakuPrefBox: NSBox!
     
+    @IBOutlet weak var speedSlider: NSSlider!
+    @IBAction func speedChanged(_ sender: NSSlider) {
+        send(.dmSpeed, text: "\(sender.doubleValue)", id: "")
+    }
+    
+    @IBOutlet weak var opacitySlider: NSSlider!
+    @IBAction func opacityChanged(_ sender: NSSlider) {
+        send(.dmOpacity, text: "\(sender.doubleValue)", id: "")
+    }
+    
     
     @IBOutlet var qlButton: NSButton!
     @IBOutlet var qlBox: NSBox!
@@ -135,6 +145,11 @@ class JSPlayerViewController: NSViewController {
         qlBox.isHidden = true
         volumeBox.isHidden = true
         danmakuPrefBox.isHidden = true
+        
+        let pref = Preferences.shared
+        speedSlider.doubleValue = pref.dmSpeed
+        opacitySlider.doubleValue = pref.dmOpacity
+        
         initVolumeButton()
         initTrackingAreas()
         
@@ -627,9 +642,7 @@ extension JSPlayerViewController: DanmakuDelegate {
     func send(_ method: DanamkuMethod, text: String, id: String) {
         guard let data = try? JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text)),
             let str = String(data: data, encoding: .utf8) else { return }
-        if method != .sendDM {
-            print(str)
-        }
+//        print(method, str)
         evaluateJavaScript("window.dmMessage(\(str));")
     }
 }

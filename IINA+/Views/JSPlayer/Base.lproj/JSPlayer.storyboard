@@ -316,7 +316,7 @@
                                                             <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
                                                                 <rect key="frame" x="-2" y="73" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Speed:" id="0dj-e7-0em">
-                                                                    <font key="font" metaFont="system" size="12"/>
+                                                                    <font key="font" metaFont="cellTitle"/>
                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -326,13 +326,16 @@
                                                             <slider key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8xK-9v-zUp">
                                                                 <rect key="frame" x="-2" y="41" width="149" height="28"/>
                                                                 <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" minValue="128" maxValue="1080" doubleValue="640" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="RnH-6g-7x8"/>
+                                                                <connections>
+                                                                    <action selector="speedChanged:" target="bU7-R8-ocO" id="5gP-vH-dY2"/>
+                                                                </connections>
                                                             </slider>
                                                         </gridCell>
                                                         <gridCell row="HjC-Z2-jtc" column="DcH-xJ-0gT" id="f6w-tp-Uf4">
                                                             <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
                                                                 <rect key="frame" x="-2" y="26" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Opacity:" id="K36-Zb-kEo">
-                                                                    <font key="font" metaFont="system" size="12"/>
+                                                                    <font key="font" metaFont="cellTitle"/>
                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -342,6 +345,9 @@
                                                             <slider key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sg5-LJ-uVm">
                                                                 <rect key="frame" x="-2" y="-6" width="149" height="28"/>
                                                                 <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="10" sliderType="linear" id="3OU-S0-TZp"/>
+                                                                <connections>
+                                                                    <action selector="opacityChanged:" target="bU7-R8-ocO" id="BEz-Mh-NYC"/>
+                                                                </connections>
                                                             </slider>
                                                         </gridCell>
                                                     </gridCells>
@@ -386,11 +392,13 @@
                         <outlet property="durationButton" destination="RmU-8V-9Io" id="dIj-Qg-KEZ"/>
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
+                        <outlet property="opacitySlider" destination="sg5-LJ-uVm" id="zAW-0O-4ww"/>
                         <outlet property="qlBox" destination="LJd-y3-Ngp" id="FOk-Qa-LhP"/>
                         <outlet property="qlButton" destination="Awz-S7-3hO" id="eYx-ma-xfH"/>
                         <outlet property="quailtyHeightLayoutConstraint" destination="qJM-NN-NcQ" id="1ZI-cc-0g6"/>
                         <outlet property="quailtyTableView" destination="6So-Mt-rQe" id="P0h-iG-4vQ"/>
                         <outlet property="reloadButton" destination="dqz-eP-LFr" id="Vz4-ZH-WMa"/>
+                        <outlet property="speedSlider" destination="8xK-9v-zUp" id="YbS-he-kSZ"/>
                         <outlet property="volumeBox" destination="58q-ki-cTb" id="TfG-jz-NWL"/>
                         <outlet property="volumeButton" destination="dOA-Qd-GsD" id="iae-EF-tDE"/>
                         <outlet property="volumeSlider" destination="nUX-RS-Z83" id="CB2-cE-iLp"/>
