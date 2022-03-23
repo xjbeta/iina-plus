@@ -9,16 +9,41 @@
 import Foundation
 import Marshal
 
+enum PluginOptionsType: Int {
+    case ws, xmlFile, none
+}
+
 struct DanmakuPluginOptions: Encodable {
-    var mpvArgs:  [String]
-    
-    let uuid: String
+    let rawUrl: String
+    let mpvScript: String
     let port: Int
+    let urls: [String]
+    
+    var type: Int = PluginOptionsType.none.rawValue
+    
+    let qualitys: [String]
+    let lines: [String]
+    let currentQuality: Int
+    let currentLine: Int
+    
     var xmlPath: String?
     
-    init(mpvArgs: [String], uuid: String, port: Int) {
-        self.mpvArgs = mpvArgs
-        self.uuid = uuid
+    init(rawUrl: String,
+         mpvScript: String,
+         urls: [String],
+         qualitys: [String],
+         lines: [String],
+         currentQuality: Int,
+         currentLine: Int,
+         port: Int) {
+        self.rawUrl = rawUrl
+        self.mpvScript = mpvScript
+        self.urls = urls
+        self.qualitys = qualitys
+        self.lines = lines
+        self.currentQuality = currentQuality
+        self.currentLine = currentLine
+        
         self.port = port
     }
 }
