@@ -247,11 +247,10 @@ class JSPlayerViewController: NSViewController {
                     self.videoKey = re.videos.first?.key
                 }
                 
-                return videoKeys.firstIndex(of: self.videoKey ?? "😶‍🌫️") ?? 0
+                return self.videoKey ?? "😶‍🌫️"
             }())
         }.done(on: .main) {
             var re = $0
-            re.rawUrl = self.url
             self.result = re
             
             guard let stream = re.videos.first(where: {

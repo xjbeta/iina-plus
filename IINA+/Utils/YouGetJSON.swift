@@ -9,16 +9,41 @@
 import Foundation
 import Marshal
 
+enum PluginOptionsType: Int {
+    case ws, xmlFile, none
+}
+
 struct DanmakuPluginOptions: Encodable {
-    var mpvArgs:  [String]
-    
-    let uuid: String
+    let rawUrl: String
+    let mpvScript: String
     let port: Int
+    let urls: [String]
+    
+    var type: Int = PluginOptionsType.none.rawValue
+    
+    let qualitys: [String]
+    let lines: [String]
+    let currentQuality: Int
+    let currentLine: Int
+    
     var xmlPath: String?
     
-    init(mpvArgs: [String], uuid: String, port: Int) {
-        self.mpvArgs = mpvArgs
-        self.uuid = uuid
+    init(rawUrl: String,
+         mpvScript: String,
+         urls: [String],
+         qualitys: [String],
+         lines: [String],
+         currentQuality: Int,
+         currentLine: Int,
+         port: Int) {
+        self.rawUrl = rawUrl
+        self.mpvScript = mpvScript
+        self.urls = urls
+        self.qualitys = qualitys
+        self.lines = lines
+        self.currentQuality = currentQuality
+        self.currentLine = currentLine
+        
         self.port = port
     }
 }
@@ -187,17 +212,41 @@ struct YouGetJSON: Unmarshaling, Codable {
     }
     
     func iinaPlusArgsString(_ key: String) -> String? {
-        guard let url = videoUrl(key) else {
-            return nil
+        let urls: [String] = {
+            var urls = [String]()
+            if let u = streams[key]?.url {
+                urls.append(u)
+            }
+            if let us = streams[key]?.src {
+                urls.append(contentsOf: us)
+            }
+            return urls
+        }()
+        
+        let qualitys = videos.map {
+            $0.key
         }
+        let lineCount: Int = urls.count
         
         var opts = DanmakuPluginOptions(
-            mpvArgs: [url, "replace", mpvOptionsToScriptValue(mpvOptions)],
-            uuid: uuid,
+            rawUrl: rawUrl,
+            mpvScript: mpvOptionsToScriptValue(mpvOptions),
+            urls: urls,
+            qualitys: qualitys,
+            lines: (0..<lineCount).map {
+                "Line \($0 + 1)"
+            },
+            currentQuality: qualitys.firstIndex(of: key) ?? 0,
+            currentLine: 0,
             port: Preferences.shared.dmPort)
+
+        if Preferences.shared.enableDanmaku {
+            opts.type = PluginOptionsType.ws.rawValue
+        }
         
         if let dmPath = VideoGet().dmPath(uuid),
             FileManager.default.fileExists(atPath: dmPath) {
+            opts.type = PluginOptionsType.xmlFile.rawValue
             opts.xmlPath = dmPath
         }
         

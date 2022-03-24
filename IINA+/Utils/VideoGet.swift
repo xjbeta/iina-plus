@@ -50,9 +50,10 @@ class VideoGet: NSObject {
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        
         var yougetJson = YouGetJSON(url:"")
+        yougetJson.rawUrl = url
         yougetJson.streams.removeAll()
+        
         guard let url = URL(string: url) else {
             return .init(error: VideoGetError.notSupported)
         }
@@ -239,7 +240,7 @@ class VideoGet: NSObject {
         }
     }
     
-    func prepareVideoUrl(_ json: YouGetJSON, _ row: Int) -> Promise<YouGetJSON> {
+    func prepareVideoUrl(_ json: YouGetJSON, _ key: String) -> Promise<YouGetJSON> {
         
         guard json.id != -1 else {
             return .value(json)
@@ -247,7 +248,6 @@ class VideoGet: NSObject {
         
         switch json.site {
         case .bilibili, .bangumi:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.url == "" else {
                 return .value(json)
@@ -256,10 +256,9 @@ class VideoGet: NSObject {
             
             return bilibiliPlayUrl(yougetJson: json, false, true, qn)
         case .biliLive:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.quality != -1 else {
-                return .init(error: VideoGetError.notFountData)
+                return .value(json)
             }
             let qn = stream.quality
             
@@ -271,10 +270,9 @@ class VideoGet: NSObject {
                 }
             }
         case .douyu:
-            let key = json.videos[row].key
             guard let stream = json.streams[key],
                   stream.quality != -1 else {
-                return .init(error: VideoGetError.notFountData)
+                return .value(json)
             }
             let rate = stream.rate
             if stream.url != "" {
@@ -809,6 +807,7 @@ extension VideoGet {
                              playInfoData: Data,
                              initialStateData: Data) -> Promise<(YouGetJSON)> {
         var yougetJson = YouGetJSON(url:"")
+        yougetJson.rawUrl = url.absoluteString
         yougetJson.streams.removeAll()
         
         return Promise { resolver in
@@ -967,6 +966,7 @@ extension VideoGet {
         }
         var json = YouGetJSON(url:"")
         json.streams.removeAll()
+        json.rawUrl = url.absoluteString
         
         switch bUrl.urlType {
         case .video:

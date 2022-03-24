@@ -42,7 +42,6 @@ class HttpServer: NSObject, DanmakuDelegate {
         var state: ContentState = .unknown
     }
     
-    
     private var unknownSessions = [WebSocketSession]()
     private var registeredItems = [RegisteredItem]()
     private var danmukuObservers: [NSObjectProtocol] = []
@@ -121,13 +120,19 @@ class HttpServer: NSObject, DanmakuDelegate {
                 return HttpResponse.ok(.data(data))
             }
             
-            server.POST["/video"] = { request -> HttpResponse in
+            server.get["/video"] = { request -> HttpResponse in
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
+                var pars = [String: String]()
+                request.queryParams.forEach {
+                    pars[$0.0] = $0.1.removingPercentEncoding
+                }
+                let key = pars["key"] ?? ""
                 
-                guard let url = request.parameters["url"],
-                      let json = self.decode(url),
-                      let data = try? encoder.encode(json) else {
+                guard let url = pars["url"],
+                      let json = self.decode(url, key: key),
+                      let data = pars["pluginAPI"] == nil ? try? encoder.encode(json) : json.iinaPlusArgsString(key)?.data(using: .utf8)
+                else {
                     return .badRequest(nil)
                 }
                 
@@ -138,30 +143,55 @@ class HttpServer: NSObject, DanmakuDelegate {
             server["/danmaku/:path"] = directoryBrowser(dir)
             
             server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
-                
                 guard let sessions = self?.unknownSessions,
-                    sessions.contains(session),
-                    let i = self?.registeredItems.firstIndex(where: { $0.id == text }) else { return }
-                self?.unknownSessions.removeAll {
-                    $0 == session
+                      sessions.contains(session) else {
+                    return
                 }
                 
-                self?.registeredItems[i].state = .contented
-                self?.registeredItems[i].session = session
-                Log(self?.registeredItems.map({ $0.url }))
-                
-                if Processes.shared.iinaArchiveType() == .danmaku {
-                    if let site = self?.registeredItems[i].site,
-                        site == .bilibili {
-                        self?.registeredItems[i].danmaku.loadFilters(text)
+                if let i = self?.registeredItems.firstIndex(where: { $0.id == text }) {
+                    self?.unknownSessions.removeAll {
+                        $0 == session
                     }
                     
-                    self?.registeredItems[i].danmaku.loadCustomFont(text)
-                    self?.registeredItems[i].danmaku.customDMSpeed(text)
-                    self?.registeredItems[i].danmaku.customDMOpdacity(text)
+                    self?.registeredItems[i].state = .contented
+                    self?.registeredItems[i].session = session
+                    Log(self?.registeredItems.map({ $0.url }))
+                    
+                    if Processes.shared.iinaArchiveType() == .danmaku {
+                        if let site = self?.registeredItems[i].site,
+                           site == .bilibili {
+                            self?.registeredItems[i].danmaku.loadFilters(text)
+                        }
+                        
+                        self?.registeredItems[i].danmaku.loadCustomFont(text)
+                        self?.registeredItems[i].danmaku.customDMSpeed(text)
+                        self?.registeredItems[i].danmaku.customDMOpdacity(text)
+                    }
+                    self?.registeredItems[i].danmaku.loadDM()
+                } else if text.starts(with: "iinaDM://") {
+                    let u = String(text.dropFirst("iinaDM://".count))
+                    
+                    let site = SupportSites(url: u)
+                    
+                    
+                    guard ![.unsupported, .bangumi, .bilibili, .b23].contains(site) else { return }
+                    
+                    DispatchQueue.main.async {
+                        let d = Danmaku(u)
+                        d.id = u
+                        d.delegate = self
+                        
+                        self?.registeredItems.append(.init(
+                            id: u,
+                            site: site,
+                            url: u,
+                            session: session,
+                            danmaku: d,
+                            state: .contented))
+                        d.loadDM()
+                    }
                 }
-                self?.registeredItems[i].danmaku.loadDM()
-                
+
             }, connected: { [weak self] session in
                 Log("Websocket client connected.")
                 self?.unknownSessions.append(session)
@@ -280,16 +310,18 @@ class HttpServer: NSObject, DanmakuDelegate {
     }
     
     
-    private func decode(_ url: String) -> YouGetJSON? {
+    private func decode(_ url: String, key: String = "") -> YouGetJSON? {
         var re: YouGetJSON?
         let queue = DispatchGroup()
         queue.enter()
-        videoGet.decodeUrl(url).done {
+        videoGet.decodeUrl(url).then{
+            self.videoGet.prepareVideoUrl($0, key)
+        }.done {
             re = $0
         }.ensure {
             queue.leave()
         }.catch {
-            print($0)
+            Log($0)
         }
         queue.wait()
         return re

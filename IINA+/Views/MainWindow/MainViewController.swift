@@ -189,7 +189,7 @@ class MainViewController: NSViewController {
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
         
-        videoGet.prepareVideoUrl(yougetJSON, row).get {
+        videoGet.prepareVideoUrl(yougetJSON, key).get {
             yougetJSON = $0
         }.then { _ in
             videoGet.prepareDanmakuFile(
@@ -317,7 +317,7 @@ class MainViewController: NSViewController {
                             }
                             
                             Log("DouYin Cookies timeout, Reload.")
-                            webview.reload()
+                            webview.load(.init(url: dy.douyinEmptyURL))
                         }
                         
                     } else if s.contains("验证") {
@@ -540,7 +540,6 @@ class MainViewController: NSViewController {
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     self.yougetResult = $0
-                    self.yougetResult?.rawUrl = str
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
                     resolver.reject($0)
