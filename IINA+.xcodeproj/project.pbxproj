@@ -60,6 +60,8 @@
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
 		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
+		018F4F6128126FFD0045B67C /* Huya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6028126FFD0045B67C /* Huya.swift */; };
+		018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 018F4F632812BFC60045B67C /* PMKAlamofire */; };
 		01942A3227C345060092FA5A /* DouYinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinMessage.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
@@ -199,6 +201,7 @@
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
 		0189534727A0F5A90011BAAC /* LiveStateTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateTextField.swift; sourceTree = "<group>"; };
 		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
+		018F4F6028126FFD0045B67C /* Huya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Huya.swift; sourceTree = "<group>"; };
 		01942A3127C345060092FA5A /* DouYinMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinMessage.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
@@ -254,6 +257,7 @@
 				01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */,
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
+				018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */,
 				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
@@ -342,6 +346,7 @@
 		012601722119BA6D00C9C639 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				018F4F5F280D89BB0045B67C /* SupportSites */,
 				01DCD2F8259710D800D286C8 /* BilibiliDM.swift */,
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
 				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
@@ -350,7 +355,6 @@
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
 				01942A3127C345060092FA5A /* DouYinMessage.swift */,
 				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
-				0199489D2742852E00C71708 /* SupportSites.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
@@ -428,6 +432,15 @@
 				0120934527A4F8E6002C7FD3 /* JSPlayerControllersView.swift */,
 			);
 			path = JSPlayer;
+			sourceTree = "<group>";
+		};
+		018F4F5F280D89BB0045B67C /* SupportSites */ = {
+			isa = PBXGroup;
+			children = (
+				0199489D2742852E00C71708 /* SupportSites.swift */,
+				018F4F6028126FFD0045B67C /* Huya.swift */,
+			);
+			path = SupportSites;
 			sourceTree = "<group>";
 		};
 		019EB39D21453A97000FD123 /* Resources */ = {
@@ -552,6 +565,7 @@
 				01C0809627BC074000E87A8C /* SDWebImage */,
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
+				018F4F632812BFC60045B67C /* PMKAlamofire */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -606,6 +620,7 @@
 				01C0809527BC074000E87A8C /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				01C0809827BC079200E87A8C /* XCRemoteSwiftPackageReference "Sparkle" */,
 				01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */,
+				018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -700,6 +715,7 @@
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				011E4D3321E99CA400997633 /* Log.swift in Sources */,
+				018F4F6128126FFD0045B67C /* Huya.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
@@ -965,6 +981,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PromiseKit/PMKAlamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 		01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -1056,6 +1080,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		018F4F632812BFC60045B67C /* PMKAlamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */;
+			productName = PMKAlamofire;
+		};
 		01C0807B27BC00EA00E87A8C /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */;

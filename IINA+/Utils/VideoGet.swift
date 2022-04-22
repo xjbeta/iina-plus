@@ -16,15 +16,12 @@ import WebKit
 import SwiftSoup
 
 class VideoGet: NSObject {
-    let douyin = DouYin()
+    lazy var douyin = DouYin()
+    lazy var huya = Huya()
     
-
-    lazy var pSession: Session = {
-        let configuration = URLSessionConfiguration.af.default
-        let ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
-        configuration.headers.add(.userAgent(ua))
-        return Session(configuration: configuration)
-    }()
+    
+    
+    
     
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
@@ -96,13 +93,7 @@ class VideoGet: NSObject {
                 return yougetJson
             }
         case .huya:
-            return getHuyaInfoM(url).map {
-                yougetJson.title = $0.0.title
-                $0.1.enumerated().forEach {
-                    yougetJson.streams[$0.element.0] = $0.element.1
-                }
-                return yougetJson
-            }
+            return huya.decodeUrl(url.absoluteString)
         case .eGame:
             return getEgameMInfo(url).map {
                 yougetJson.title = $0.title
@@ -185,9 +176,7 @@ class VideoGet: NSObject {
                 $0 as LiveInfo
             }
         case .huya:
-            return getHuyaInfoM(url).map {
-                $0.0
-            }
+            return huya.liveInfo(url.absoluteString)
         case .eGame:
             return getEgameMInfo(url).map {
                 $0 as LiveInfo
@@ -562,121 +551,7 @@ extension VideoGet {
         }
     }
     
-    // MARK: - Huya
-    
-    func getHuyaInfo(_ url: URL) -> Promise<(HuyaInfo, [(String, Stream)])> {
-//        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
-        return Promise { resolver in
-            AF.request(url.absoluteString).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                 
-                let hyPlayerConfigStr: String? = {
-                    guard let text = response.text else { return nil }
-                    var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
-                    guard let index = str.lastIndex(of: ";") else { return nil }
-                    str.removeSubrange(index ..< str.endIndex)
-                    return str
-                }()
-                
-                guard let text = response.text,
-                    let roomInfoData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
-                      let profileInfoData = text.subString(from: "var TT_PROFILE_INFO = ", to: ";var").data(using: .utf8),
-                      let playerInfoData = hyPlayerConfigStr?.data(using: .utf8) else {
-                    resolver.reject(VideoGetError.notFindUrls)
-                    return
-                }
-                
-                do {
-                    var roomInfoJson: JSONObject = try JSONParser.JSONObjectWithData(roomInfoData)
-                    let profileInfoData: JSONObject = try JSONParser.JSONObjectWithData(profileInfoData)
-                    let playerInfoJson: JSONObject = try JSONParser.JSONObjectWithData(playerInfoData)
-                    
-                    roomInfoJson.merge(profileInfoData) { (current, _) in current }
-                    let info: HuyaInfo = try HuyaInfo(object: roomInfoJson)
-                    
-                    if !info.isLiving {
-                        resolver.fulfill((info, []))
-                        return
-                    }
-                    
 
-                    
-                    let streamStr: String = try playerInfoJson.value(for: "stream")
-                    
-                    guard let streamData = Data(base64Encoded: streamStr) else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
-                    }
-                    
-                    let streamJSON: JSONObject = try JSONParser.JSONObjectWithData(streamData)
-                    
-                    let huyaStream: HuyaStream = try HuyaStream(object: streamJSON)
-                
-                    var urls = [String]()
-                    
-                    if info.isSeeTogetherRoom {
-                        urls = huyaStream.data.first?.urlsBak ?? []
-                    } else {
-                        urls = huyaStream.data.first?.urls ?? []
-                    }
-                    
-                    guard urls.count > 0 else {
-                        resolver.reject(VideoGetError.notFindUrls)
-                        return
-                    }
-                    
-                    let re = huyaStream.vMultiStreamInfo.enumerated().map { info -> (String, Stream) in
-                            
-                        let u = urls.first!.replacingOccurrences(of: "ratio=0", with: "ratio=\(info.element.iBitRate)")
-                        var s = Stream(url: u)
-                        
-                        if info.element.iBitRate == 0,
-                           info.offset == 0 {
-                            s.quality = huyaStream.vMultiStreamInfo.map {
-                                $0.iBitRate
-                            }.max() ?? 999999999
-                            s.quality += 1
-                        } else {
-                            s.quality = info.element.iBitRate
-                        }
-                        return (info.element.sDisplayName, s)
-                    }
-                    
-                    resolver.fulfill((info, re))
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getHuyaInfoM(_ url: URL) -> Promise<(HuyaInfoM, [(String, Stream)])> {
-        return Promise { resolver in
-            pSession.request(url.absoluteString).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                guard let text = response.text,
-                      let jsonData = text.subString(from: "<script> window.HNF_GLOBAL_INIT = ", to: " </script>").data(using: .utf8)
-                else {
-                    resolver.reject(VideoGetError.notFindUrls)
-                    return
-                }
-                
-                do {
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    
-                    let info: HuyaInfoM = try HuyaInfoM(object: jsonObj)
-                          
-                    resolver.fulfill((info, info.urls))
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
     
     // MARK: - eGame
     
