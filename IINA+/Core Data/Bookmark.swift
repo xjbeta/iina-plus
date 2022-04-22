@@ -37,7 +37,7 @@ public class Bookmark: NSManagedObject {
             return
         }
         inited = true
-        
+        state = LiveState.none.raw
         Processes.shared.videoGet.liveInfo(url).done(on: .main) {
             self.setInfo($0)
             }.catch(on: .main) {
