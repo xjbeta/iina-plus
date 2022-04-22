@@ -358,7 +358,6 @@
 				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
 				013CE8DF21854813000271FB /* VideoGet.swift */,
-				01892C7727C0CDA400494AFD /* DouYin.swift */,
 				01942A3127C345060092FA5A /* DouYinMessage.swift */,
 				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
@@ -445,6 +444,7 @@
 			children = (
 				0199489D2742852E00C71708 /* SupportSites.swift */,
 				018F4F692812D95C0045B67C /* CC163.swift */,
+				01892C7727C0CDA400494AFD /* DouYin.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
 				018F4F672812D2E70045B67C /* EGame.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,

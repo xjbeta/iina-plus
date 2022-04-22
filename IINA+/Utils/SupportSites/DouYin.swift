@@ -12,8 +12,9 @@ import PromiseKit
 import SwiftSoup
 import Alamofire
 import Marshal
+import PMKAlamofire
 
-class DouYin: NSObject {
+class DouYin: NSObject, SupportSiteProtocol {
     
     var prepareTask: Promise<()>?
     var dyFinishNitification: NSObjectProtocol?
@@ -32,7 +33,7 @@ class DouYin: NSObject {
         "X3NpZ25hdHVyZQ=="
     ]
     
-    func getInfo(_ url: URL) -> Promise<LiveInfo> {
+    func liveInfo(_ url: String) -> Promise<LiveInfo> {
         if cookies.count == 0 {
             if prepareTask == nil {
                 prepareTask = prepareArgs()
@@ -45,36 +46,31 @@ class DouYin: NSObject {
         }
     }
     
-    func getContent(_ url: URL) -> Promise<LiveInfo> {
-        Promise { resolver in
-            let cookieString = cookies.map {
-                "\($0.key)=\($0.value)"
-            }.joined(separator: ";")
-            
-            let headers = HTTPHeaders([
-                "User-Agent": douyinUA,
-                "referer": "https://live.douyin.com",
-                "Cookie": cookieString
-            ])
-            
-            AF.request(url, headers: headers).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                guard let text = response.text,
-                      let json = self.getJSON(text) else {
-                    resolver.reject(VideoGetError.notFountData)
-                    return
-                }
-                
-                do {
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
-                    let info = try DouYinInfo(object: jsonObj)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
+    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
+        liveInfo(url).compactMap {
+            ($0 as? DouYinInfo)?.write(to: YouGetJSON(rawUrl: url))
+        }
+    }
+    
+    
+    func getContent(_ url: String) -> Promise<LiveInfo> {
+        let cookieString = cookies.map {
+            "\($0.key)=\($0.value)"
+        }.joined(separator: ";")
+        
+        let headers = HTTPHeaders([
+            "User-Agent": douyinUA,
+            "referer": "https://live.douyin.com",
+            "Cookie": cookieString
+        ])
+        
+        return AF.request(url, headers: headers).responseString().map {
+            guard let json = self.getJSON($0.string) else {
+                throw VideoGetError.notFountData
             }
+            
+            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
+            return try DouYinInfo(object: jsonObj)
         }
     }
     
@@ -119,7 +115,7 @@ class DouYin: NSObject {
     
     
     func getAllWKCookies() -> Promise<[HTTPCookie]> {
-        return Promise { resolver in
+        Promise { resolver in
             WKWebsiteDataStore.default().httpCookieStore.getAllCookies {
                 let cookies = $0.filter({ $0.domain.contains("douyin") })
                 resolver.fulfill(cookies)
@@ -128,7 +124,7 @@ class DouYin: NSObject {
     }
     
     func deleteWKCookie(_ cookie: HTTPCookie) -> Promise<()> {
-        return Promise { resolver in
+        Promise { resolver in
             WKWebsiteDataStore.default().httpCookieStore.delete(cookie) {
                 resolver.fulfill_()
             }
@@ -194,5 +190,62 @@ class DouYin: NSObject {
     
     enum CookiesError: Error {
         case invalid, waintingForCookies
+    }
+}
+
+struct DouYinInfo: Unmarshaling, LiveInfo {
+    var title: String
+    var name: String
+    var avatar: String
+    var cover: String
+    var isLiving: Bool
+    var site = SupportSites.douyin
+    
+    var roomId: String
+    var webRid: String
+    var urls = [String: String]()
+    
+    
+    init(object: MarshaledObject) throws {
+        roomId = try object.value(for: "initialState.roomStore.roomInfo.roomId")
+        webRid = try object.value(for: "initialState.roomStore.roomInfo.web_rid")
+        
+        title = try object.value(for: "initialState.roomStore.roomInfo.room.title")
+        let status: Int = try object.value(for: "initialState.roomStore.roomInfo.room.status")
+        isLiving = status == 2
+        
+        let flvUrls: [String: String]? = try? object.value(for: "initialState.roomStore.roomInfo.room.stream_url.flv_pull_url")
+        urls = flvUrls ?? [:]
+        
+        /*
+        let hlsUrls: [String: String] = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.hls_pull_url_map")
+         */
+        //        name = try object.value(for: "initialState.roomStore.roomInfo.room.stream_url.live_core_sdk_data.anchor.nickname")
+        
+        name = try object.value(for: "initialState.roomStore.roomInfo.anchor.nickname")
+        
+        let covers: [String]? = try object.value(for: "initialState.roomStore.roomInfo.room.cover.url_list")
+        cover = covers?.first ?? ""
+        
+        let avatars: [String] = try object.value(for: "initialState.roomStore.roomInfo.anchor.avatar_thumb.url_list")
+        avatar = avatars.first ?? ""
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        json.title = title
+        
+        
+        urls.map {
+            ($0.key, $0.value.replacingOccurrences(of: "http://", with: "https://"))
+        }.sorted { v0, v1 in
+            v0.0 < v1.0
+        }.enumerated().forEach {
+            var stream = Stream(url: $0.element.1)
+            stream.quality = 999 - $0.offset
+            json.streams[$0.element.0] = stream
+        }
+        
+        return json
     }
 }

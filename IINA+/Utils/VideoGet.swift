@@ -80,9 +80,7 @@ class VideoGet: NSObject {
         case .cc163:
             return cc163.decodeUrl(url.absoluteString)
         case .douyin:
-            return douyin.getInfo(url).compactMap {
-                ($0 as? DouYinInfo)?.write(to: yougetJson)
-            }
+            return douyin.decodeUrl(url.absoluteString)
         default:
             return .init(error: VideoGetError.notSupported)
         }
@@ -161,7 +159,7 @@ class VideoGet: NSObject {
         case .cc163:
             return cc163.liveInfo(url.absoluteString)
         case .douyin:
-            return douyin.getInfo(url)
+            return douyin.liveInfo(url.absoluteString)
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)
