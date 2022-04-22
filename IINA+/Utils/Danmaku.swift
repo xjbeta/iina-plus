@@ -185,7 +185,7 @@ class Danmaku: NSObject {
                 self.socket?.open()
             }
         case .eGame:
-            videoGet.getEgameInfo(url).done {
+            videoGet.eGame.getEgameInfo(url.absoluteString).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {

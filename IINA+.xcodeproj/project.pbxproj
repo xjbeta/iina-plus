@@ -63,6 +63,7 @@
 		018F4F6128126FFD0045B67C /* Huya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6028126FFD0045B67C /* Huya.swift */; };
 		018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 018F4F632812BFC60045B67C /* PMKAlamofire */; };
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
+		018F4F682812D2E80045B67C /* EGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F672812D2E70045B67C /* EGame.swift */; };
 		01942A3227C345060092FA5A /* DouYinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinMessage.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
@@ -204,6 +205,7 @@
 		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
 		018F4F6028126FFD0045B67C /* Huya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Huya.swift; sourceTree = "<group>"; };
 		018F4F652812C3EB0045B67C /* Douyu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Douyu.swift; sourceTree = "<group>"; };
+		018F4F672812D2E70045B67C /* EGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EGame.swift; sourceTree = "<group>"; };
 		01942A3127C345060092FA5A /* DouYinMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinMessage.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
@@ -440,8 +442,9 @@
 			isa = PBXGroup;
 			children = (
 				0199489D2742852E00C71708 /* SupportSites.swift */,
-				018F4F6028126FFD0045B67C /* Huya.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
+				018F4F672812D2E70045B67C /* EGame.swift */,
+				018F4F6028126FFD0045B67C /* Huya.swift */,
 			);
 			path = SupportSites;
 			sourceTree = "<group>";
@@ -689,6 +692,7 @@
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
+				018F4F682812D2E80045B67C /* EGame.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,

@@ -19,9 +19,7 @@ class VideoGet: NSObject {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
-    
-    
-    
+    lazy var eGame = EGame()
     
     
     
@@ -74,15 +72,7 @@ class VideoGet: NSObject {
         case .huya:
             return huya.decodeUrl(url.absoluteString)
         case .eGame:
-            return getEgameMInfo(url).map {
-                yougetJson.title = $0.title
-                $0.streamInfos.enumerated().forEach {
-                    var s = Stream(url: $0.element.playUrl)
-                    s.quality = 999 - $0.offset
-                    yougetJson.streams[$0.element.desc] = s
-                }
-                return yougetJson
-            }
+            return eGame.decodeUrl(url.absoluteString)
         case .bilibili:
             return getBilibili(url)
         case .bangumi:
@@ -151,9 +141,7 @@ class VideoGet: NSObject {
         case .huya:
             return huya.liveInfo(url.absoluteString)
         case .eGame:
-            return getEgameMInfo(url).map {
-                $0 as LiveInfo
-            }
+            return eGame.liveInfo(url.absoluteString)
         case .bilibili:
             return getBilibiliHTMLDatas(url).map {
                 let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
@@ -324,88 +312,7 @@ extension VideoGet {
             }
         }
     }
-    
-    // MARK: - Douyu
-    
 
-    
-    // MARK: - eGame
-    
-    func getEgameInfo(_ url: URL) -> Promise<(EgameInfo, [EgameUrl])> {
-        return Promise { resolver in
-            AF.request(url.absoluteString).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                guard var jsString = response.text?.subString(from: "window.__NUXT__=", to: "</script>") else {
-                    resolver.reject(VideoGetError.egameFunctionNotFound)
-                    return
-                }
-                jsString = "jsonObj=" + jsString
-                
-                let jsContext = JSContext()
-                jsContext?.evaluateScript(jsString)
-                let result = jsContext?.evaluateScript("JSON.stringify(jsonObj)")
-                
-                let jsonData = result?.toString()?.data(using: .utf8) ?? Data()
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    let info: EgameInfo = try EgameInfo(object: json)
-                    
-                    var urls: [EgameUrl] = try json.value(for: "state.live-info.liveInfo.videoInfo.streamInfos")
-                    let urlsBak: [EgameUrl] = try json.value(for: "state.live-info.liveBaseInfo.streamInfo.streamInfos")
-                    
-                    urlsBak.forEach { bak in
-                        guard let i = urls.firstIndex(where: {
-                            $0.levelType == bak.levelType
-                            && $0.desc == bak.desc
-                        }) else {
-                            return
-                        }
-                        urls[i].src.append(bak.playUrl)
-                    }
-                    
-                    resolver.fulfill((info, urls))
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getEgameMInfo(_ url: URL) -> Promise<(EgameMInfo)> {
-        let pcs = url.pathComponents
-        guard pcs.count > 1,
-              let rid = Int(pcs[1]) else {
-                  return .init(error: VideoGetError.invalidLink)
-              }
-        let u = "https://m.egame.qq.com/live?anchorid=\(rid)"
-        
-        return Promise { resolver in
-            AF.request(u).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                
-                guard let str = response.text?.subString(from: "try {            window.serverData = ", to: ";\r\n"),
-                      let data = str.data(using: .utf8)
-                else {
-                    resolver.reject(VideoGetError.egameFunctionNotFound)
-                    return
-                }
-                
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-                    let info = try EgameMInfo(object: json)
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
     
     // MARK: - Bilibili
     func getBilibili(_ url: URL) -> Promise<(YouGetJSON)> {
