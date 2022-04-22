@@ -589,14 +589,14 @@ class MainViewController: NSViewController {
             } else if url.host == "www.douyu.com",
                       url.pathComponents.count > 2,
                       url.pathComponents[1] == "topic" {
-                
-                videoGet.getDouyuHtml(str).done {
+                let douyu = videoGet.douyu
+                douyu.getDouyuHtml(str).done {
                     guard $0.roomIds.count > 0 else {
                         decodeUrl()
                         return
                     }
                     let cid = $0.roomId
-                    videoGet.getDouyuEventRoomNames($0.pageId).done {
+                    douyu.getDouyuEventRoomNames($0.pageId).done {
                         let infos = $0.enumerated().map {
                             DouyuVideoSelector(
                                 index: $0.offset,

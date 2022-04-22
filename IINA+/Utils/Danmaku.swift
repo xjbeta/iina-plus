@@ -161,7 +161,7 @@ class Danmaku: NSObject {
             
             Log("Processes.shared.videoGet.getDouyuHtml")
             
-            videoGet.getDouyuHtml(url.absoluteString).done {
+            videoGet.douyu.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
                     Log($0)
