@@ -36,8 +36,14 @@ public class Bookmark: NSManagedObject {
            (Date().timeIntervalSince1970 - d) < limitSec, inited {
             return
         }
+        
         inited = true
-        state = LiveState.none.raw
+        
+        if let d = updateDate?.timeIntervalSince1970,
+           (Date().timeIntervalSince1970 - d) > 1800 {
+            state = LiveState.none.raw
+        }
+        
         Processes.shared.videoGet.liveInfo(url).done(on: .main) {
             self.setInfo($0)
             }.catch(on: .main) {
