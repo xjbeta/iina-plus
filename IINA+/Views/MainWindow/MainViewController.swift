@@ -614,7 +614,7 @@ class MainViewController: NSViewController {
                     resolver.reject($0)
                 }
             } else if url.host == "cc.163.com" {
-                videoGet.getCC163State(url.absoluteString).done {
+                videoGet.cc163.getCC163State(url.absoluteString).done {
                     if let i = $0.info as? CC163Info {
                         let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
                         str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"

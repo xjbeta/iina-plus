@@ -20,7 +20,7 @@ class VideoGet: NSObject {
     lazy var huya = Huya()
     lazy var douyu = Douyu()
     lazy var eGame = EGame()
-    
+    lazy var cc163 = CC163()
     
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
@@ -78,15 +78,7 @@ class VideoGet: NSObject {
         case .bangumi:
             return getBangumi(url)
         case .cc163:
-            return getCC163Ccid(url).then {
-                self.getCC163ChannelID($0)
-            }.then {
-                self.getCC163Videos($0)
-            }.compactMap {
-                $0.first
-            }.map {
-                $0.write(to: yougetJson)
-            }
+            return cc163.decodeUrl(url.absoluteString)
         case .douyin:
             return douyin.getInfo(url).compactMap {
                 ($0 as? DouYinInfo)?.write(to: yougetJson)
@@ -167,15 +159,7 @@ class VideoGet: NSObject {
                 return info
             }
         case .cc163:
-            if url.pathComponents.count == 4,
-               url.pathComponents[1] == "ccid" {
-                var info = BilibiliInfo()
-                info.site = .cc163
-                info.isLiving = true
-                return .value(info)
-            } else {
-                return getCC163Info(url)
-            }
+            return cc163.liveInfo(url.absoluteString)
         case .douyin:
             return douyin.getInfo(url)
         default:
@@ -689,190 +673,6 @@ extension VideoGet {
             }
         }
     }
-    
-    // MARK: - CC163
-    
-    func getCC163Info(_ url: URL) -> Promise<LiveInfo> {
-        return Promise { resolver in
-            getCC163State(url.absoluteString).done {
-                if let i = $0.info {
-                    resolver.fulfill(i)
-                } else if let cid = $0.list.first?.cid {
-                    self.getCC163ZtState(cid: cid).done {
-                        resolver.fulfill($0)
-                    }.catch {
-                        resolver.reject($0)
-                    }
-                } else {
-                    resolver.reject(VideoGetError.invalidLink)
-                }
-            }.catch {
-                resolver.reject($0)
-            }
-        }
-    }
-    
-    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ZTInfo])> {
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                let json = response.text?.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">")
-                
-                let jsonData = json?.data(using: .utf8) ?? Data()
-                
-                do {
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    
-                    if let domain: String = try? jsonObj.value(for: "query.domain") {
-                        let list = try self.getCC163ZtRoomList(response.text ?? "")
-                        resolver.fulfill((nil, list))
-                    } else if let cid: String = try? jsonObj.value(for: "query.subcId") {
-                        self.getCC163ZtState(cid: cid).done {
-                            resolver.fulfill(($0, []))
-                        }.catch {
-                            resolver.reject($0)
-                        }
-                    } else {
-                        let info = try CC163Info(object: jsonObj)
-                        resolver.fulfill((info, []))
-                    }
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getCC163ZtRoomList(_ text: String) throws -> [CC163ZTInfo] {
-        return try SwiftSoup.parse(text)
-            .getElementsByClass("channel_list").first()?
-            .children().map {
-                
-                CC163ZTInfo(
-                    name: try $0.children().first()?.children().first()?.text() ?? "",
-                    ccid: try $0.attr("ccid"),
-                    channel: try ($0.attr("channel").starts(with: "https:") ? $0.attr("channel") : "https:" + $0.attr("channel")),
-                    cid: try $0.attr("cid"),
-                    index: try $0.attr("index"),
-                    roomid: try $0.attr("roomid"),
-                    isLiving:  $0.children().first()?.children().hasClass("icon-live") ?? false)
-            }.filter {
-                $0.ccid != "" && $0.roomid != ""
-            } ?? []
-    }
-    
-    func getCC163ZtState(cid: String) -> Promise<LiveInfo> {
-        
-        let url = "https://cc.163.com/live/channel/?channelids=\(cid)"
-
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let infos: [CC163ChannelInfo] = try json.value(for: "data")
-                
-                    guard let info = infos.first else {
-                        resolver.reject(VideoGetError.notFountData)
-                        return
-                    }
-                    guard info.isLiving else {
-                        resolver.reject(VideoGetError.isNotLiving)
-                        return
-                    }
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getCC163(_ ccid: String) -> Promise<[String]> {
-        let url = "https://vapi.cc.163.com/video_play_url/\(ccid)"
-        
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                let json = response.text
-                let jsonData = json?.data(using: .utf8) ?? Data()
-                
-                do {
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    
-                    var re = [String]()
-                    re.append(try jsonObj.value(for: "videourl"))
-                    re.append(try jsonObj.value(for: "bakvideourl"))
-                    
-                    resolver.fulfill(re)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getCC163Ccid(_ url: URL) -> Promise<(String)> {
-        let pcs = url.pathComponents
-        if pcs.count == 4,
-           pcs[1] == "ccid" {
-            return .value((pcs[2]))
-        } else {
-            return getCC163Info(url).compactMap {
-                $0 as? CC163Info
-            }.map {
-                $0.ccid
-            }
-        }
-    }
-    
-    func getCC163ChannelID(_ ccid: String) -> Promise<(Int)> {
-        let url = "https://api.cc.163.com/v1/activitylives/anchor/lives?anchor_ccid=\(ccid)"
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let jsonData = response.data ?? Data()
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    let id: Int = try jsonObj.value(for: "data.\(ccid).channel_id")
-                    
-                    resolver.fulfill(id)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getCC163Videos(_ channelID: Int) -> Promise<[CC163NewVideos]> {
-        let url = "https://cc.163.com/live/channel/?channelids=\(channelID)"
-        
-        return Promise { resolver in
-            AF.request(url).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let jsonData = response.data ?? Data()
-                    let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-                    let videos: [CC163NewVideos] = try jsonObj.value(for: "data")
-                
-                    resolver.fulfill(videos)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-
 }
 
 enum VideoGetError: Error {
