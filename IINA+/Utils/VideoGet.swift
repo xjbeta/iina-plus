@@ -21,6 +21,7 @@ class VideoGet: NSObject {
     lazy var douyu = Douyu()
     lazy var eGame = EGame()
     lazy var cc163 = CC163()
+    lazy var biliLive = BiliLive()
     
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
@@ -59,14 +60,7 @@ class VideoGet: NSObject {
         
         switch site {
         case .biliLive:
-            return getBiliLiveRoomId(url).get {
-                yougetJson.title = $0.title
-                yougetJson.id = $0.roomId
-            }.then {
-                self.getBiliLiveJSON("\($0.roomId)")
-            }.map {
-                $0.write(to: yougetJson)
-            }
+            return biliLive.decodeUrl(url.absoluteString)
         case .douyu:
             return douyu.decodeUrl(url.absoluteString)
         case .huya:
@@ -116,16 +110,7 @@ class VideoGet: NSObject {
         let roomId = Int(url.lastPathComponent) ?? -1
         switch site {
         case .biliLive:
-            var info = BiliLiveInfo()
-            return getBiliLiveRoomId(url).get {
-                info = $0
-            }.then {
-                self.getBiliUserInfo($0.roomId)
-            }.map {
-                info.name = $0.name
-                info.avatar = $0.avatar
-                return info
-            }
+            return biliLive.liveInfo(url.absoluteString)
         case .douyu:
             return douyu.liveInfo(url.absoluteString)
         case .huya:
@@ -197,7 +182,7 @@ class VideoGet: NSObject {
             if stream.src.count > 0 {
                 return .value(json)
             } else {
-                return getBiliLiveJSON("\(json.id)", qn).map {
+                return biliLive.getBiliLiveJSON("\(json.id)", qn).map {
                     $0.write(to: json)
                 }
             }
@@ -232,68 +217,7 @@ class VideoGet: NSObject {
 
 extension VideoGet {
     
-    // MARK: - BiliLive
-    func getBiliLiveRoomId(_ url: URL) -> Promise<(BiliLiveInfo)> {
-        let roomID = url.lastPathComponent
-        return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let longID: Int = try json.value(for: "data.room_id")
 
-                    var info = BiliLiveInfo()
-                    info.title = try json.value(for: "data.title")
-                    info.isLiving = try json.value(for: "data.live_status") == 1
-                    info.roomId = longID
-                    info.cover = try json.value(for: "data.user_cover")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getBiliUserInfo(_ roomId: Int) -> Promise<(BiliLiveInfo)> {
-        return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)").response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    var info = BiliLiveInfo()
-                    info.name = try json.value(for: "data.info.uname")
-                    info.avatar = try json.value(for: "data.info.face")
-                    resolver.fulfill(info)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
-        Promise { resolver in
-            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
-            
-            AF.request(u).response { response in
-                if let error = response.error {
-                    resolver.reject(error)
-                }
-                do {
-                    let json: JSONObject = try JSONParser.JSONObjectWithData(response.data ?? Data())
-                    let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
-                    resolver.fulfill(playUrl)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
 
     
     // MARK: - Bilibili

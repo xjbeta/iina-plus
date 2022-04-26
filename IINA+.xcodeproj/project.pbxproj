@@ -65,6 +65,7 @@
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
 		018F4F682812D2E80045B67C /* EGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F672812D2E70045B67C /* EGame.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
+		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
 		01942A3227C345060092FA5A /* DouYinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinMessage.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
@@ -208,6 +209,7 @@
 		018F4F652812C3EB0045B67C /* Douyu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Douyu.swift; sourceTree = "<group>"; };
 		018F4F672812D2E70045B67C /* EGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EGame.swift; sourceTree = "<group>"; };
 		018F4F692812D95C0045B67C /* CC163.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CC163.swift; sourceTree = "<group>"; };
+		018F4F6B2817FFF30045B67C /* BiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLive.swift; sourceTree = "<group>"; };
 		01942A3127C345060092FA5A /* DouYinMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinMessage.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
 				018F4F672812D2E70045B67C /* EGame.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
+				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 			);
 			path = SupportSites;
 			sourceTree = "<group>";
@@ -726,6 +729,7 @@
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				011E4D3321E99CA400997633 /* Log.swift in Sources */,
+				018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */,
 				018F4F662812C3EB0045B67C /* Douyu.swift in Sources */,
 				018F4F6128126FFD0045B67C /* Huya.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,
