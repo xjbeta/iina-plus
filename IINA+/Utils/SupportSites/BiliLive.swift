@@ -32,7 +32,8 @@ class BiliLive: NSObject, SupportSiteProtocol {
             yougetJson.title = $0.title
             yougetJson.id = $0.roomId
         }.then {
-            self.getBiliLiveJSON("\($0.roomId)")
+//            self.getBiliLiveJSON("\($0.roomId)")
+            self.getBiliLiveOldJSON("\($0.roomId)")
         }.map {
             $0.write(to: yougetJson)
         }
@@ -63,9 +64,21 @@ class BiliLive: NSObject, SupportSiteProtocol {
     }
     
     func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
-        AF.request("https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8").responseData().map {
+        let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
+
+        return AF.request(u).responseData().map {
             let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
             let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+            return playUrl
+        }
+    }
+    
+    func getBiliLiveOldJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLiveOldPlayUrl)> {
+        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+        
+        return AF.request(u).responseData().map {
+            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+            let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
             return playUrl
         }
     }
@@ -91,6 +104,59 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
         isLiving = "\(try object.any(for: "live_status"))" == "1"
     }
 }
+
+
+struct BiliLiveOldPlayUrl: Unmarshaling {
+    let currentQuality: Int
+    let acceptQuality: [String]
+    let currentQn: Int
+    let qualityDescription: [QualityDescription]
+    let durl: [Durl]
+    
+    struct QualityDescription: Unmarshaling {
+        let qn: Int
+        let desc: String
+        init(object: MarshaledObject) throws {
+            qn = try object.value(for: "qn")
+            desc = try object.value(for: "desc")
+        }
+    }
+    
+    struct Durl: Unmarshaling {
+        var url: String
+        init(object: MarshaledObject) throws {
+            url = try object.value(for: "url")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        currentQuality = try object.value(for: "data.current_quality")
+        acceptQuality = try object.value(for: "data.accept_quality")
+        currentQn = try object.value(for: "data.current_qn")
+        qualityDescription = try object.value(for: "data.quality_description")
+        durl = try object.value(for: "data.durl")
+    }
+    
+    func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+        var json = yougetJson
+        let urls = durl.map {
+            $0.url
+        }
+        let cqn = currentQn
+        
+        qualityDescription.forEach {
+            var s = Stream(url: "")
+            s.quality = $0.qn
+            if cqn == $0.qn {
+                s.src = urls
+                s.url = urls.first
+            }
+            json.streams[$0.desc] = s
+        }
+        return json
+    }
+}
+
 
 struct BiliLivePlayUrl: Unmarshaling {
     let qualityDescriptions: [QualityDescription]
