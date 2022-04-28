@@ -53,7 +53,7 @@ class DouYinDM: NSObject {
             return .init()
         } else {
             let dy = proc.videoGet.douyin
-            return dy.getInfo(.init(string: url)!).done {
+            return dy.liveInfo(url).done {
                 self.cookies = dy.cookies
                 self.roomId = ($0 as! DouYinInfo).roomId
             }

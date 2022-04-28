@@ -161,7 +161,7 @@ class Danmaku: NSObject {
             
             Log("Processes.shared.videoGet.getDouyuHtml")
             
-            videoGet.getDouyuHtml(url.absoluteString).done {
+            videoGet.douyu.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
                     Log($0)
@@ -185,7 +185,7 @@ class Danmaku: NSObject {
                 self.socket?.open()
             }
         case .eGame:
-            videoGet.getEgameInfo(url).done {
+            videoGet.eGame.getEgameInfo(url.absoluteString).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {

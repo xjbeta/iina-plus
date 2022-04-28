@@ -80,7 +80,7 @@ class BilibiliCardImageBoxView: NSView {
         case .init🐴:
             state = .init🐴
             if pImages.count == 0 {
-                Bilibili().getPvideo(aid).done(on: .main) { pvideo in
+                Processes.shared.videoGet.bilibili.getPvideo(aid).done(on: .main) { pvideo in
                     self.pImages = pvideo.pImages
                     self.updatePreview(.start, per: self.previewPercent)
                     }.catch { error in

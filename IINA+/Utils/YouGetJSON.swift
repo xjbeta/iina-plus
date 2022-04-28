@@ -107,6 +107,11 @@ struct YouGetJSON: Unmarshaling, Codable {
         streams = try object.value(for: "streams")
     }
     
+    init(rawUrl: String) {
+        streams = [:]
+        self.rawUrl = rawUrl
+    }
+    
     init(url: String) {
         streams = ["url": Stream(url: url)]
     }

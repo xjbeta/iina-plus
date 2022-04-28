@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import PromiseKit
 
 enum SupportSites: String {
     case b23 = "b23.tv"
@@ -103,4 +104,9 @@ enum LiveState: Int {
             }
         }
     }
+}
+
+protocol SupportSiteProtocol {
+    func liveInfo(_ url: String) -> Promise<LiveInfo>
+    func decodeUrl(_ url: String) -> Promise<YouGetJSON>
 }

@@ -18,10 +18,6 @@ private extension NSPasteboard.PasteboardType {
 }
 
 class MainViewController: NSViewController {
-    // MARK: - DY Init
-    @IBOutlet weak var dyWebView: WKWebView!
-    var dyWebViewLoadingObserver: NSKeyValueObservation?
-    
     // MARK: - Main Views
     @IBOutlet weak var mainTabView: NSTabView!
     var mainTabViewOldItem = SidebarItem.none
@@ -108,7 +104,7 @@ class MainViewController: NSViewController {
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
-    let bilibili = Bilibili()
+    let bilibili = Processes.shared.videoGet.bilibili
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -119,10 +115,8 @@ class MainViewController: NSViewController {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
                 searchField.becomeFirstResponder()
                 startSearch(self)
-            } else if card.videos > 1,
-                      let u = URL(string: "https://www.bilibili.com/video/\(bvid)") {
-                
-                bilibili.getVideoList(u).done { infos in
+            } else if card.videos > 1 {
+                bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)").done { infos in
                     self.showSelectVideo(bvid, infos: infos)
                     }.catch { error in
                         Log("Get video list error: \(error)")
@@ -290,45 +284,6 @@ class MainViewController: NSViewController {
             
             let i = arrayController.fetchPredicate == nil ? 0 : 1
             self.noticeTabView.selectTabViewItem(at: i)
-        }
-        
-        NotificationCenter.default.addObserver(forName: .startLoadDY, object: nil, queue: .main) { [weak self] _ in
-            guard let webview = self?.dyWebView else {
-                return
-            }
-            
-            let dy = Processes.shared.videoGet.douyin
-            
-            self?.dyWebViewLoadingObserver = webview.observe(\.isLoading) { webView, _ in
-                guard !webView.isLoading else { return }
-                Log("Load Douyin webview finished.")
-                
-                webView.evaluateJavaScript("document.title") { str, error in
-                    guard let s = str as? String else { return }
-                    Log("Douyin webview title \(s).")
-                    if s.contains("抖音直播") {
-                        self?.dyWebViewLoadingObserver?.invalidate()
-                        self?.dyWebViewLoadingObserver = nil
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
-                            guard dy.cookies.count == 0,
-                                  let webview = self?.dyWebView else {
-                                return
-                            }
-                            
-                            Log("DouYin Cookies timeout, Reload.")
-                            webview.load(.init(url: dy.douyinEmptyURL))
-                        }
-                        
-                    } else if s.contains("验证") {
-                        dy.deleteCookies().done {
-                            self?.dyWebView.load(.init(url: dy.douyinEmptyURL))
-                        }.catch({ _ in })
-                    }
-                }
-            }
-            WKWebsiteDataStore.default().httpCookieStore.add(self!)
-            webview.load(.init(url: dy.douyinEmptyURL))
         }
     }
     
@@ -549,7 +504,7 @@ class MainViewController: NSViewController {
             if directly {
                 decodeUrl()
             } else if let bUrl = BilibiliUrl(url: str) {
-                let u = URL(string: bUrl.fUrl)!
+                let u = bUrl.fUrl
                 var re: Promise<Void>
                 
                 switch bUrl.urlType {
@@ -589,14 +544,14 @@ class MainViewController: NSViewController {
             } else if url.host == "www.douyu.com",
                       url.pathComponents.count > 2,
                       url.pathComponents[1] == "topic" {
-                
-                videoGet.getDouyuHtml(str).done {
+                let douyu = videoGet.douyu
+                douyu.getDouyuHtml(str).done {
                     guard $0.roomIds.count > 0 else {
                         decodeUrl()
                         return
                     }
                     let cid = $0.roomId
-                    videoGet.getDouyuEventRoomNames($0.pageId).done {
+                    douyu.getDouyuEventRoomNames($0.pageId).done {
                         let infos = $0.enumerated().map {
                             DouyuVideoSelector(
                                 index: $0.offset,
@@ -614,7 +569,7 @@ class MainViewController: NSViewController {
                     resolver.reject($0)
                 }
             } else if url.host == "cc.163.com" {
-                videoGet.getCC163State(url.absoluteString).done {
+                videoGet.cc163.getCC163State(url.absoluteString).done {
                     if let i = $0.info as? CC163Info {
                         let title = i.title.data(using: .utf8)?.base64EncodedString() ?? ""
                         str = "https://cc.163.com/ccid/\(i.ccid)/\(title)"
@@ -1026,45 +981,6 @@ extension MainViewController: NSMenuDelegate {
             initLiveSiteMenu()
         default:
             return
-        }
-    }
-}
-
-extension MainViewController: WKHTTPCookieStoreObserver {
-    func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
-        let dy = Processes.shared.videoGet.douyin
-        guard dyWebViewLoadingObserver == nil,
-              let webview = dyWebView,
-              dy.cookies.count == 0 else {
-            return
-        }
-        
-        cookieStore.getAllCookies().then {
-            dy.checkDouYinCookies(webview, $0)
-        }.then {
-            webview.evaluateJavaScript("localStorage.\(dy.privateKeys[0].base64Decode()) + ',' + localStorage.\(dy.privateKeys[1].base64Decode())")
-        }.compactMap { re -> [String: String]? in
-            guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
-            return [
-                dy.privateKeys[0].base64Decode(): values[0],
-                dy.privateKeys[1].base64Decode(): values[1]
-            ]
-        }.done {
-            self.dyWebView.stopLoading()
-            self.dyWebView.removeFromSuperview()
-            self.dyWebView = nil
-            WKWebsiteDataStore.default().httpCookieStore.remove(self)
-            dy.storageDic = $0
-            NotificationCenter.default.post(name: .finishLoadDY, object: nil)
-        }.catch {
-            switch $0 {
-            case DouYin.CookiesError.invalid:
-                break
-            case DouYin.CookiesError.waintingForCookies:
-                break
-            default:
-                Log($0)
-            }
         }
     }
 }
