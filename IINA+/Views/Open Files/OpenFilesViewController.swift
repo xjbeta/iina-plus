@@ -138,12 +138,11 @@ class OpenFilesViewController: NSViewController {
             return .value(json)
         }
         
-        guard let bUrl = formatBiliUrl(s),
-              let url = URL(string: bUrl.fUrl) else {
+        guard let bUrl = formatBiliUrl(s) else {
             return .init(error: OpenFilesError.invalidDanmakuUrl)
         }
         
-        return videoGet.bilibiliPrepareID(url).map {
+        return videoGet.bilibili.bilibiliPrepareID(bUrl.fUrl).map {
             json.id = $0.id
             json.bvid = $0.bvid
             json.duration = $0.duration

@@ -17,7 +17,7 @@ class BilibiliLoginViewController: NSViewController {
     @IBOutlet weak var waitProgressIndicator: NSProgressIndicator!
     var webView: WKWebView!
     var dismiss: (() -> Void)?
-    let bilibili = Bilibili()
+    let bilibili = Processes.shared.videoGet.bilibili
     @IBAction func tryAgain(_ sender: Any) {
         loadWebView()
     }
@@ -98,7 +98,7 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
                 firstly {
                     after(seconds: 3)
                 }.then {
-                    Bilibili().isLogin()
+                    self.bilibili.isLogin()
                 }.done(on: .main) {
                     Log("islogin \($0.0), \($0.1)")
                     

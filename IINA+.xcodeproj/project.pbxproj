@@ -362,7 +362,6 @@
 				013CE8DF21854813000271FB /* VideoGet.swift */,
 				01942A3127C345060092FA5A /* DouYinMessage.swift */,
 				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
-				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
@@ -451,6 +450,7 @@
 				018F4F672812D2E70045B67C /* EGame.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
+				01683DDA2118905D0016A886 /* Bilibili.swift */,
 			);
 			path = SupportSites;
 			sourceTree = "<group>";

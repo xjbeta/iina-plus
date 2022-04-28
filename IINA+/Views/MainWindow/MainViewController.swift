@@ -104,7 +104,7 @@ class MainViewController: NSViewController {
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
-    let bilibili = Bilibili()
+    let bilibili = Processes.shared.videoGet.bilibili
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -115,10 +115,8 @@ class MainViewController: NSViewController {
                 searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
                 searchField.becomeFirstResponder()
                 startSearch(self)
-            } else if card.videos > 1,
-                      let u = URL(string: "https://www.bilibili.com/video/\(bvid)") {
-                
-                bilibili.getVideoList(u).done { infos in
+            } else if card.videos > 1 {
+                bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)").done { infos in
                     self.showSelectVideo(bvid, infos: infos)
                     }.catch { error in
                         Log("Get video list error: \(error)")
@@ -506,7 +504,7 @@ class MainViewController: NSViewController {
             if directly {
                 decodeUrl()
             } else if let bUrl = BilibiliUrl(url: str) {
-                let u = URL(string: bUrl.fUrl)!
+                let u = bUrl.fUrl
                 var re: Promise<Void>
                 
                 switch bUrl.urlType {
