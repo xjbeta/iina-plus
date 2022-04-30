@@ -44,7 +44,7 @@ public class Bookmark: NSManagedObject {
             state = LiveState.none.raw
         }
         
-        Processes.shared.videoGet.liveInfo(url).done(on: .main) {
+        Processes.shared.videoDecoder.liveInfo(url).done(on: .main) {
             self.setInfo($0)
             }.catch(on: .main) {
                 let s = "Get live status error: \($0) \n - \(self.url)"

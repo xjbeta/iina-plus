@@ -32,7 +32,7 @@
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
-		013CE8E021854813000271FB /* VideoGet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoGet.swift */; };
+		013CE8E021854813000271FB /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoDecoder.swift */; };
 		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
 		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
 		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
@@ -174,7 +174,7 @@
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
-		013CE8DF21854813000271FB /* VideoGet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGet.swift; sourceTree = "<group>"; };
+		013CE8DF21854813000271FB /* VideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
 		013CE8F52185D992000271FB /* HttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
 		014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OpenFilesWindow.storyboard; sourceTree = "<group>"; };
 		014327B822AF5BED00651064 /* OpenFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesViewController.swift; sourceTree = "<group>"; };
@@ -352,11 +352,9 @@
 		012601722119BA6D00C9C639 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				018F4F5F280D89BB0045B67C /* SupportSites */,
+				018F4F5F280D89BB0045B67C /* VideoDecoder */,
 				01B090A6281CFF1B00E305B7 /* Danmaku */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
-				013CE8DF21854813000271FB /* VideoGet.swift */,
-				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
@@ -434,9 +432,11 @@
 			path = JSPlayer;
 			sourceTree = "<group>";
 		};
-		018F4F5F280D89BB0045B67C /* SupportSites */ = {
+		018F4F5F280D89BB0045B67C /* VideoDecoder */ = {
 			isa = PBXGroup;
 			children = (
+				013CE8DF21854813000271FB /* VideoDecoder.swift */,
+				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
 				0199489D2742852E00C71708 /* SupportSites.swift */,
 				018F4F692812D95C0045B67C /* CC163.swift */,
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
@@ -446,7 +446,7 @@
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 			);
-			path = SupportSites;
+			path = VideoDecoder;
 			sourceTree = "<group>";
 		};
 		019EB39D21453A97000FD123 /* Resources */ = {
@@ -753,7 +753,7 @@
 				01010132211E987D002F0F7F /* WaitingTableCellView.swift in Sources */,
 				01892C7827C0CDA400494AFD /* DouYin.swift in Sources */,
 				0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */,
-				013CE8E021854813000271FB /* VideoGet.swift in Sources */,
+				013CE8E021854813000271FB /* VideoDecoder.swift in Sources */,
 				01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */,

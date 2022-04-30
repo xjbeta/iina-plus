@@ -104,7 +104,7 @@ class MainViewController: NSViewController {
     @IBOutlet weak var bilibiliTableView: NSTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
-    let bilibili = Processes.shared.videoGet.bilibili
+    let bilibili = Processes.shared.videoDecoder.bilibili
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -178,7 +178,7 @@ class MainViewController: NSViewController {
         clear()
         let uuid = yougetJSON.uuid
         
-        let videoGet = processes.videoGet
+        let videoGet = processes.videoDecoder
         
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
@@ -440,7 +440,7 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         var str = url
         
-        VideoGet().bilibiliUrlFormatter(url).get {
+        Processes.shared.videoDecoder.bilibiliUrlFormatter(url).get {
             if self.searchField.stringValue == str {
                 self.searchField.stringValue = $0
                 str = $0
@@ -477,7 +477,7 @@ class MainViewController: NSViewController {
     func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
         
         return Promise { resolver in
-            let videoGet = Processes.shared.videoGet
+            let videoGet = Processes.shared.videoDecoder
             var str = url
             yougetResult = nil
             guard str.isUrl,

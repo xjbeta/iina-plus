@@ -138,7 +138,7 @@ class Danmaku: NSObject {
     func loadDM() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
-        let videoGet = Processes.shared.videoGet
+        let videoDecoder = Processes.shared.videoDecoder
         switch liveSite {
         case .bilibili, .bangumi:
             delegate?.send(.loadDM, text: "", id: id)
@@ -159,9 +159,9 @@ class Danmaku: NSObject {
             }
         case .douyu:
             
-            Log("Processes.shared.videoGet.getDouyuHtml")
+            Log("Processes.shared.videoDecoder.getDouyuHtml")
             
-            videoGet.douyu.getDouyuHtml(url.absoluteString).done {
+            videoDecoder.douyu.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
                     Log($0)
@@ -179,7 +179,7 @@ class Danmaku: NSObject {
                 Log("Init huya AnchorUid failed \($0).")
             }
         case .eGame:
-            videoGet.eGame.getEgameInfo(url.absoluteString).done {
+            videoDecoder.eGame.getEgameInfo(url.absoluteString).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {

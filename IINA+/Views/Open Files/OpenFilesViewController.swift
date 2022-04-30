@@ -119,16 +119,16 @@ class OpenFilesViewController: NSViewController {
             return .init(error: OpenFilesError.invalidVideoUrl)
         }
         
-        return Processes.shared.videoGet.decodeUrl(bUrl.fUrl)
+        return Processes.shared.videoDecoder.decodeUrl(bUrl.fUrl)
     }
     
     func getDanmaku(_ yougetJSON: YouGetJSON) -> Promise<(YouGetJSON)> {
-        let videoGet = Processes.shared.videoGet
+        let videoDecoder = Processes.shared.videoDecoder
         var json = yougetJSON
         guard danmakuURL == nil else {
             let url = danmakuURL!
             let data = FileManager.default.contents(atPath: url.path)
-            videoGet.saveDMFile(data, with: json.uuid)
+            videoDecoder.saveDMFile(data, with: json.uuid)
             return .value(json)
         }
         
@@ -142,13 +142,13 @@ class OpenFilesViewController: NSViewController {
             return .init(error: OpenFilesError.invalidDanmakuUrl)
         }
         
-        return videoGet.bilibili.bilibiliPrepareID(bUrl.fUrl).map {
+        return videoDecoder.bilibili.bilibiliPrepareID(bUrl.fUrl).map {
             json.id = $0.id
             json.bvid = $0.bvid
             json.duration = $0.duration
             return json
         }.then {
-            videoGet.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
+            videoDecoder.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
         }.map {
             json
         }

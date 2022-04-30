@@ -1,5 +1,5 @@
 //
-//  VideoGet.swift
+//  VideoDecoder.swift
 //  iina+
 //
 //  Created by xjbeta on 2018/10/28.
@@ -15,7 +15,7 @@ import JavaScriptCore
 import WebKit
 import SwiftSoup
 
-class VideoGet: NSObject {
+class VideoDecoder: NSObject {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
@@ -181,7 +181,7 @@ class VideoGet: NSObject {
 
 
 
-extension VideoGet {
+extension VideoDecoder {
     
 
 

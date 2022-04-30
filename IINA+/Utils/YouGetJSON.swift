@@ -249,7 +249,7 @@ struct YouGetJSON: Unmarshaling, Codable {
             opts.type = PluginOptionsType.ws.rawValue
         }
         
-        if let dmPath = VideoGet().dmPath(uuid),
+        if let dmPath = VideoDecoder().dmPath(uuid),
             FileManager.default.fileExists(atPath: dmPath) {
             opts.type = PluginOptionsType.xmlFile.rawValue
             opts.xmlPath = dmPath

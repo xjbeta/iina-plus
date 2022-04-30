@@ -17,7 +17,7 @@ class BilibiliLoginViewController: NSViewController {
     @IBOutlet weak var waitProgressIndicator: NSProgressIndicator!
     var webView: WKWebView!
     var dismiss: (() -> Void)?
-    let bilibili = Processes.shared.videoGet.bilibili
+    let bilibili = Processes.shared.videoDecoder.bilibili
     @IBAction func tryAgain(_ sender: Any) {
         loadWebView()
     }
