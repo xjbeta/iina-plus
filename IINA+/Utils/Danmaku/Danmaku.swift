@@ -167,22 +167,16 @@ class Danmaku: NSObject {
                     Log($0)
             }
         case .huya:
-            
-            AF.request(url.absoluteString).response { response in
-                guard response.error == nil,
-                      let text = response.text,
-                      let roomData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
-                      let roomInfo: JSONObject = try? JSONParser.JSONObjectWithData(roomData),
-                      let id: Int = try? roomInfo.value(for: "id") else {
-                    Log("Init huya AnchorUid failed.")
-                    return
-                }
+            AF.request(url.absoluteString).responseString().done {
+                let roomData = $0.string.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
+                let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
                 
-                self.huyaAnchorUid = id
-                
+                self.huyaAnchorUid = try roomInfo.value(for: "id")
                 self.socket = .init(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
+            }.catch {
+                Log("Init huya AnchorUid failed \($0).")
             }
         case .eGame:
             videoGet.eGame.getEgameInfo(url.absoluteString).done {
