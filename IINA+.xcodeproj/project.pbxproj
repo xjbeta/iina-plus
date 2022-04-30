@@ -66,7 +66,7 @@
 		018F4F682812D2E80045B67C /* EGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F672812D2E70045B67C /* EGame.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
 		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
-		01942A3227C345060092FA5A /* DouYinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinMessage.swift */; };
+		01942A3227C345060092FA5A /* DouYinDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinDMMessage.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
@@ -105,7 +105,7 @@
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
-		01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDM.swift */; };
+		01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */; };
 		01E40FE022C06BDC00864118 /* DataResponseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
@@ -210,7 +210,7 @@
 		018F4F672812D2E70045B67C /* EGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EGame.swift; sourceTree = "<group>"; };
 		018F4F692812D95C0045B67C /* CC163.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CC163.swift; sourceTree = "<group>"; };
 		018F4F6B2817FFF30045B67C /* BiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLive.swift; sourceTree = "<group>"; };
-		01942A3127C345060092FA5A /* DouYinMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinMessage.swift; sourceTree = "<group>"; };
+		01942A3127C345060092FA5A /* DouYinDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinDMMessage.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
@@ -240,7 +240,7 @@
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
-		01DCD2F8259710D800D286C8 /* BilibiliDM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDM.swift; sourceTree = "<group>"; };
+		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
 		01E40FDF22C06BDC00864118 /* DataResponseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataResponseExtension.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -355,12 +355,9 @@
 			isa = PBXGroup;
 			children = (
 				018F4F5F280D89BB0045B67C /* SupportSites */,
-				01DCD2F8259710D800D286C8 /* BilibiliDM.swift */,
-				013CE8DD2184459E000271FB /* Danmaku.swift */,
-				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
+				01B090A6281CFF1B00E305B7 /* Danmaku */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
 				013CE8DF21854813000271FB /* VideoGet.swift */,
-				01942A3127C345060092FA5A /* DouYinMessage.swift */,
 				015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */,
 				01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */,
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
@@ -508,6 +505,17 @@
 				01AEC8AE20EDFD02001406E8 /* Assets.xcassets */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		01B090A6281CFF1B00E305B7 /* Danmaku */ = {
+			isa = PBXGroup;
+			children = (
+				013CE8DD2184459E000271FB /* Danmaku.swift */,
+				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
+				01942A3127C345060092FA5A /* DouYinDMMessage.swift */,
+				01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */,
+			);
+			path = Danmaku;
 			sourceTree = "<group>";
 		};
 		01B53B5027B64DFD0051F7B4 /* flvplayer */ = {
@@ -692,7 +700,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
-				01DCD2F9259710D800D286C8 /* BilibiliDM.swift in Sources */,
+				01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */,
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
 				0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */,
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
@@ -704,7 +712,7 @@
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
-				01942A3227C345060092FA5A /* DouYinMessage.swift in Sources */,
+				01942A3227C345060092FA5A /* DouYinDMMessage.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
 				01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,

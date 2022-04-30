@@ -276,17 +276,29 @@ class Danmaku: NSObject {
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
             timer.setEventHandler {
-                switch self.liveSite {
-                case .biliLive:
-                    self.sendMsg(self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
-                case .douyu:
-                    //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
-                    let keeplive = "type@=mrkl/"
-                    self.sendMsg(self.douyuSocketFormatter(keeplive))
-                case .huya:
-                    try? self.socket?.sendPing(Data())
-                default:
-                    break
+                do {
+                    switch self.liveSite {
+                    case .biliLive:
+                        let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
+                        try self.socket?.send(data: data)
+                    case .douyu:
+                        //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                        let keeplive = "type@=mrkl/"
+                        let data = self.douyuSocketFormatter(keeplive)
+                        try self.socket?.send(data: data)
+                    case .huya:
+                        try self.socket?.sendPing(Data())
+                    default:
+                        try self.socket?.sendPing(Data())
+                    }
+                } catch let error {
+                    if (error as NSError).code == 2134 {
+                        self.stop()
+                        self.loadDM()
+                        Log("Danmaku Error 2134, restart.")
+                    } else {
+                        Log(error)
+                    }
                 }
             }
             timer.resume()
