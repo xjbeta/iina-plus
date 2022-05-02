@@ -206,8 +206,6 @@ class Danmaku: NSObject {
     }
     
     func loadCustomFont(_ id: String = "rua-uuid~~~") {
-        return
-        
         let pref = Preferences.shared
         let font = pref.danmukuFontFamilyName
         let size = pref.danmukuFontSize
