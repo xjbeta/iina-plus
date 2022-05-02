@@ -148,9 +148,7 @@ class VideoDecoder: NSObject {
             if stream.src.count > 0 {
                 return .value(json)
             } else {
-                return biliLive.getBiliLiveJSON("\(json.id)", qn).map {
-                    $0.write(to: json)
-                }
+                return biliLive.getBiliLiveJSON(json, qn)
             }
         case .douyu:
             guard let stream = json.streams[key],
