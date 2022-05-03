@@ -15,7 +15,7 @@ import Marshal
 class BiliLive: NSObject, SupportSiteProtocol {
     
     enum APIType {
-        case playUrl, roomPlayInfo
+        case playUrl, roomPlayInfo, html
     }
     
     let apiType = APIType.playUrl
@@ -90,6 +90,16 @@ class BiliLive: NSObject, SupportSiteProtocol {
             return AF.request(u).responseData().map {
                 let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
                 let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+                return playUrl.write(to: result)
+            }
+        case .html:
+            let u = "https://live.bilibili.com/\(roomID)"
+            return AF.request(u).responseString().map {
+                let s = $0.string.subString(from: "<script>window.__NEPTUNE_IS_MY_WAIFU__=", to: "</script>")
+                let data = s.data(using: .utf8) ?? Data()
+                
+                let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                let playUrl: BiliLivePlayUrl = try json.value(for: "roomInitRes")
                 return playUrl.write(to: result)
             }
         }
@@ -168,7 +178,6 @@ struct BiliLiveOldPlayUrl: Unmarshaling {
         return json
     }
 }
-
 
 struct BiliLivePlayUrl: Unmarshaling {
     let qualityDescriptions: [QualityDescription]
