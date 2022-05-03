@@ -14,7 +14,7 @@ import Cocoa
 class Processes: NSObject {
     
     static let shared = Processes()
-    let videoGet = VideoGet()
+    let videoDecoder = VideoDecoder()
     let httpServer = HttpServer()
     
     var decodeTask: Process?
@@ -134,7 +134,7 @@ class Processes: NSObject {
         var cancelme = false
         
         let promise = Promise<YouGetJSON> { resolver in
-            self.videoGet.decodeUrl(url).done {
+            self.videoDecoder.decodeUrl(url).done {
                 guard !cancelme else { return resolver.reject(PMKError.cancelled) }
                 resolver.fulfill($0)
                 }.catch {

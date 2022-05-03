@@ -13,6 +13,13 @@ import PMKAlamofire
 import Marshal
 
 class BiliLive: NSObject, SupportSiteProtocol {
+    
+    enum APIType {
+        case playUrl, roomPlayInfo, html
+    }
+    
+    let apiType = APIType.playUrl
+    
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         var info = BiliLiveInfo()
         return getBiliLiveRoomId(url).get {
@@ -31,11 +38,10 @@ class BiliLive: NSObject, SupportSiteProtocol {
         return getBiliLiveRoomId(url).get {
             yougetJson.title = $0.title
             yougetJson.id = $0.roomId
-        }.then {
-//            self.getBiliLiveJSON("\($0.roomId)")
-            self.getBiliLiveOldJSON("\($0.roomId)")
-        }.map {
-            $0.write(to: yougetJson)
+        }.get {
+            yougetJson.id = $0.roomId
+        }.then { _ in
+            self.getBiliLiveJSON(yougetJson)
         }
     }
     
@@ -63,23 +69,39 @@ class BiliLive: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getBiliLiveJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLivePlayUrl)> {
-        let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
-
-        return AF.request(u).responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
-            return playUrl
-        }
-    }
-    
-    func getBiliLiveOldJSON(_ roomID: String, _ quality: Int = 20000) -> Promise<(BiliLiveOldPlayUrl)> {
-        let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+    func getBiliLiveJSON(_ yougetJSON: YouGetJSON, _ quality: Int = 20000) -> Promise<(YouGetJSON)> {
         
-        return AF.request(u).responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
-            return playUrl
+        let result = yougetJSON
+        let roomID = result.id
+        
+        
+        switch apiType {
+        case .playUrl:
+            let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+            
+            return AF.request(u).responseData().map {
+                let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+                let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
+                return playUrl.write(to: result)
+            }
+        case .roomPlayInfo:
+            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
+
+            return AF.request(u).responseData().map {
+                let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+                let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+                return playUrl.write(to: result)
+            }
+        case .html:
+            let u = "https://live.bilibili.com/\(roomID)"
+            return AF.request(u).responseString().map {
+                let s = $0.string.subString(from: "<script>window.__NEPTUNE_IS_MY_WAIFU__=", to: "</script>")
+                let data = s.data(using: .utf8) ?? Data()
+                
+                let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+                let playUrl: BiliLivePlayUrl = try json.value(for: "roomInitRes")
+                return playUrl.write(to: result)
+            }
         }
     }
 }
@@ -156,7 +178,6 @@ struct BiliLiveOldPlayUrl: Unmarshaling {
         return json
     }
 }
-
 
 struct BiliLivePlayUrl: Unmarshaling {
     let qualityDescriptions: [QualityDescription]

@@ -30,7 +30,7 @@ class BilibiliViewController: NSViewController {
     enum BiliBiliTabs: Int {
         case info, login, error, progress
     }
-    let bilibili = Processes.shared.videoGet.bilibili
+    let bilibili = Processes.shared.videoDecoder.bilibili
     
     override func viewDidLoad() {
         super.viewDidLoad()

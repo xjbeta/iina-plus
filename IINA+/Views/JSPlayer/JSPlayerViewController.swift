@@ -231,14 +231,14 @@ class JSPlayerViewController: NSViewController {
     
     func openLive() {
         proc.stopDecodeURL()
-        proc.videoGet.liveInfo(url, false).get {
+        proc.videoDecoder.liveInfo(url, false).get {
             if !$0.isLiving {
                 throw VideoGetError.isNotLiving
             }
         }.then { _ in
             self.proc.decodeURL(self.url)
         }.then { re in
-            self.proc.videoGet.prepareVideoUrl(re, {
+            self.proc.videoDecoder.prepareVideoUrl(re, {
                 let videoKeys = re.videos.map {
                     $0.key
                 }

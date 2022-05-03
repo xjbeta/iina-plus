@@ -1,5 +1,5 @@
 //
-//  VideoGet.swift
+//  VideoDecoder.swift
 //  iina+
 //
 //  Created by xjbeta on 2018/10/28.
@@ -15,7 +15,7 @@ import JavaScriptCore
 import WebKit
 import SwiftSoup
 
-class VideoGet: NSObject {
+class VideoDecoder: NSObject {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
@@ -148,9 +148,7 @@ class VideoGet: NSObject {
             if stream.src.count > 0 {
                 return .value(json)
             } else {
-                return biliLive.getBiliLiveJSON("\(json.id)", qn).map {
-                    $0.write(to: json)
-                }
+                return biliLive.getBiliLiveJSON(json, qn)
             }
         case .douyu:
             guard let stream = json.streams[key],
@@ -181,7 +179,7 @@ class VideoGet: NSObject {
 
 
 
-extension VideoGet {
+extension VideoDecoder {
     
 
 

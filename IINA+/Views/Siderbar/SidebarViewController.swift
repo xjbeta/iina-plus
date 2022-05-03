@@ -56,7 +56,7 @@ class SidebarViewController: NSViewController {
             }
         }
         
-        Processes.shared.videoGet.bilibili.isLogin().done { _ in
+        Processes.shared.videoDecoder.bilibili.isLogin().done { _ in
             }.catch { _ in
                 self.biliStatusChanged(false)
         }

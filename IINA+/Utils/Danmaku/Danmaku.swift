@@ -138,7 +138,7 @@ class Danmaku: NSObject {
     func loadDM() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
-        let videoGet = Processes.shared.videoGet
+        let videoDecoder = Processes.shared.videoDecoder
         switch liveSite {
         case .bilibili, .bangumi:
             delegate?.send(.loadDM, text: "", id: id)
@@ -159,33 +159,27 @@ class Danmaku: NSObject {
             }
         case .douyu:
             
-            Log("Processes.shared.videoGet.getDouyuHtml")
+            Log("Processes.shared.videoDecoder.getDouyuHtml")
             
-            videoGet.douyu.getDouyuHtml(url.absoluteString).done {
+            videoDecoder.douyu.getDouyuHtml(url.absoluteString).done {
                 self.initDouYuSocket($0.roomId)
                 }.catch {
                     Log($0)
             }
         case .huya:
-            
-            AF.request(url.absoluteString).response { response in
-                guard response.error == nil,
-                      let text = response.text,
-                      let roomData = text.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8),
-                      let roomInfo: JSONObject = try? JSONParser.JSONObjectWithData(roomData),
-                      let id: Int = try? roomInfo.value(for: "id") else {
-                    Log("Init huya AnchorUid failed.")
-                    return
-                }
+            AF.request(url.absoluteString).responseString().done {
+                let roomData = $0.string.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
+                let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
                 
-                self.huyaAnchorUid = id
-                
+                self.huyaAnchorUid = try roomInfo.value(for: "id")
                 self.socket = .init(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
+            }.catch {
+                Log("Init huya AnchorUid failed \($0).")
             }
         case .eGame:
-            videoGet.eGame.getEgameInfo(url.absoluteString).done {
+            videoDecoder.eGame.getEgameInfo(url.absoluteString).done {
                 self.egameInfo = $0.0
                 self.startEgameTimer()
                 }.catch {
@@ -212,8 +206,6 @@ class Danmaku: NSObject {
     }
     
     func loadCustomFont(_ id: String = "rua-uuid~~~") {
-        return
-        
         let pref = Preferences.shared
         let font = pref.danmukuFontFamilyName
         let size = pref.danmukuFontSize
@@ -276,17 +268,29 @@ class Danmaku: NSObject {
         if let timer = timer {
             timer.schedule(deadline: .now(), repeating: .seconds(30))
             timer.setEventHandler {
-                switch self.liveSite {
-                case .biliLive:
-                    self.sendMsg(self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data)
-                case .douyu:
-                    //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
-                    let keeplive = "type@=mrkl/"
-                    self.sendMsg(self.douyuSocketFormatter(keeplive))
-                case .huya:
-                    try? self.socket?.sendPing(Data())
-                default:
-                    break
+                do {
+                    switch self.liveSite {
+                    case .biliLive:
+                        let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
+                        try self.socket?.send(data: data)
+                    case .douyu:
+                        //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                        let keeplive = "type@=mrkl/"
+                        let data = self.douyuSocketFormatter(keeplive)
+                        try self.socket?.send(data: data)
+                    case .huya:
+                        try self.socket?.sendPing(Data())
+                    default:
+                        try self.socket?.sendPing(Data())
+                    }
+                } catch let error {
+                    if (error as NSError).code == 2134 {
+                        self.stop()
+                        self.loadDM()
+                        Log("Danmaku Error 2134, restart.")
+                    } else {
+                        Log(error)
+                    }
                 }
             }
             timer.resume()

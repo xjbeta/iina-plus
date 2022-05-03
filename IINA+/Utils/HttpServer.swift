@@ -49,7 +49,7 @@ class HttpServer: NSObject, DanmakuDelegate {
     
     private var httpFilesURL: URL?
     
-    let videoGet = VideoGet()
+    let videoDecoder = VideoDecoder()
     
     func register(_ id: String,
                   site: SupportSites,
@@ -314,8 +314,8 @@ class HttpServer: NSObject, DanmakuDelegate {
         var re: YouGetJSON?
         let queue = DispatchGroup()
         queue.enter()
-        videoGet.decodeUrl(url).then{
-            self.videoGet.prepareVideoUrl($0, key)
+        videoDecoder.decodeUrl(url).then{
+            self.videoDecoder.prepareVideoUrl($0, key)
         }.done {
             re = $0
         }.ensure {

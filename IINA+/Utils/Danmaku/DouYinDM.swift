@@ -17,11 +17,11 @@ class DouYinDM: NSObject {
     
     let proc = Processes.shared
     var ua: String {
-        proc.videoGet.douyin.douyinUA
+        proc.videoDecoder.douyin.douyinUA
     }
     
     var storageDic: [String: String] {
-        proc.videoGet.douyin.storageDic
+        proc.videoDecoder.douyin.storageDic
     }
     
     var cookies = [String: String]()
@@ -33,7 +33,7 @@ class DouYinDM: NSObject {
     private var requestTimer: Timer?
     
     var privateKeys: [String] {
-        proc.videoGet.douyin.privateKeys
+        proc.videoDecoder.douyin.privateKeys
     }
     
     func start(_ url: String) {
@@ -52,7 +52,7 @@ class DouYinDM: NSObject {
         if roomId != "" {
             return .init()
         } else {
-            let dy = proc.videoGet.douyin
+            let dy = proc.videoDecoder.douyin
             return dy.liveInfo(url).done {
                 self.cookies = dy.cookies
                 self.roomId = ($0 as! DouYinInfo).roomId
