@@ -90,6 +90,11 @@ struct YouGetJSON: Unmarshaling, Codable {
                 if audio != "" {
                     args.append("\(MPVOption.Audio.audioFile)=\(audio)")
                 }
+            case .biliLive:
+                args.append(contentsOf: [
+                    "\(MPVOption.ProgramBehavior.ytdl)=no",
+                    "\(MPVOption.Network.referrer)=https://live.bilibili.com/"
+                ])
             default:
                 args.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
             }
@@ -110,6 +115,7 @@ struct YouGetJSON: Unmarshaling, Codable {
     init(rawUrl: String) {
         streams = [:]
         self.rawUrl = rawUrl
+        self.site = SupportSites(url: rawUrl)
     }
     
     init(url: String) {
