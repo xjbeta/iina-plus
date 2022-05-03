@@ -1,0 +1,44 @@
+name: Archive
+
+
+on:
+  push:
+    tags: [ 0.* ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+
+jobs:
+  release-osx:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Show Build Version
+        run: xcodebuild -version
+
+      - name: Show Build Settings
+        run: xcodebuild -showBuildSettings
+
+      - name: Show Build SDK
+        run: xcodebuild -showsdks
+
+      - name: Prepare create-dmg
+        run: npm install --global create-dmg
+
+      - name: Prepare WebFiles Dependencies
+        run: |
+          cd IINA+/WebFiles/
+          npm install
+
+      - name: SPM
+        run: xcodebuild -resolvePackageDependencies
+
+      - name: Archive Project
+        run: xcodebuild archive -project IINA+.xcodeproj -scheme iina+ -archivePath archive/iina+.xcarchive -showBuildTimingSummary -allowProvisioningUpdates
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: archive
+          path: archive/
