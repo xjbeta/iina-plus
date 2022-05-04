@@ -55,14 +55,17 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent ../../dSYMs dSYMs.zip
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
+        if: "!startsWith(github.ref, 'refs/tags/')"
         with:
           name: archive
-          path: archive/IINA+.xcarchive/Products/Applications/
-
+          path: |
+            archive/IINA+.xcarchive/Products/Applications/*.zip
+            archive/IINA+.xcarchive/Products/Applications/*.dmg
+            
       - name: Release
         uses: softprops/action-gh-release@v1
-        # if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           generate_release_notes: true
           files: |
