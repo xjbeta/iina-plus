@@ -53,3 +53,9 @@ jobs:
 
           ditto -c -k --sequesterRsrc --keepParent *.app "$(basename *.dmg .dmg)".zip
           ditto -c -k --sequesterRsrc --keepParent ../../dSYMs dSYMs.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: archive
+          path: archive/IINA+.xcarchive/Products/Applications/
