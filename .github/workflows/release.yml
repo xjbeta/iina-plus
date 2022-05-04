@@ -40,8 +40,23 @@ jobs:
       - name: SPM
         run: xcodebuild -resolvePackageDependencies
 
-      - name: Archive Project
+      - name: Archive
         run: xcodebuild archive -project IINA+.xcodeproj -scheme IINA+ -archivePath archive/IINA+.xcarchive -showBuildTimingSummary -allowProvisioningUpdates
+
+      - name: CodeSign And Package
+        shell: zsh {0}
+        run: |
+          cd archive/IINA+.xcarchive/Products/Applications/
+          codesign --deep --force --timestamp --sign ${{ secrets.SIGN_NAME }} *.app
+          create-dmg *.app
+          codesign --deep --force --timestamp --sign ${{ secrets.SIGN_NAME }} *.dmg
+
+          ditto -c -k --sequesterRsrc --keepParent *.app "$(basename *.dmg .dmg)".zip
+          ditto -c -k --sequesterRsrc --keepParent ../../dSYMs dSYMs.zip
+
+
+
+
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
