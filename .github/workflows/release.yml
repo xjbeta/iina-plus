@@ -59,3 +59,12 @@ jobs:
         with:
           name: archive
           path: archive/IINA+.xcarchive/Products/Applications/
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+          with:
+          files: |
+            archive/IINA+.xcarchive/Products/Applications/dSYMs.zip
+            archive/IINA+.xcarchive/Products/Applications/*.zip
+            archive/IINA+.xcarchive/Products/Applications/*.dmg
