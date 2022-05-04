@@ -14,6 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: apple-actions/import-codesign-certs@v1
+          with: 
+            p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+            p12-password: ${{ secrets.P12_PASSWORD }}
+
       - name: Show Build Version
         run: xcodebuild -version
 
@@ -22,6 +27,7 @@ jobs:
 
       - name: Show Build SDK
         run: xcodebuild -showsdks
+
 
       - name: Prepare create-dmg
         run: npm install --global create-dmg
