@@ -15,8 +15,8 @@ import SwiftSoup
 
 class CC163: NSObject, SupportSiteProtocol {
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        if url.pathComponents.count == 4,
-           url.pathComponents[1] == "ccid" {
+        if url.pathComponents.count == 5,
+           url.pathComponents[2] == "ccid" {
             var info = BilibiliInfo()
             info.site = .cc163
             info.isLiving = true
@@ -118,9 +118,9 @@ class CC163: NSObject, SupportSiteProtocol {
     
     func getCC163Ccid(_ url: String) -> Promise<(String)> {
         let pcs = url.pathComponents
-        if pcs.count == 4,
+        if pcs.count == 5,
            pcs[2] == "ccid" {
-            return .value((pcs[2]))
+            return .value((pcs[3]))
         } else {
             return getCC163Info(url).compactMap {
                 $0 as? CC163Info
