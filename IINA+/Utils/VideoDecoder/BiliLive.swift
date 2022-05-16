@@ -77,7 +77,7 @@ class BiliLive: NSObject, SupportSiteProtocol {
         
         switch apiType {
         case .playUrl:
-            let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
+            let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=h5"
             
             return AF.request(u).responseData().map {
                 let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
@@ -85,7 +85,7 @@ class BiliLive: NSObject, SupportSiteProtocol {
                 return playUrl.write(to: result)
             }
         case .roomPlayInfo:
-            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8"
+            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=h5&ptype=8"
 
             return AF.request(u).responseData().map {
                 let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
