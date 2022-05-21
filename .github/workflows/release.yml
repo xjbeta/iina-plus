@@ -95,4 +95,4 @@ jobs:
           git checkout -b ci-test
           git add -A
           git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
-          git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git origin ci-test
+          git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git
