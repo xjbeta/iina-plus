@@ -95,7 +95,7 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
           cd AppUpdaterAppcasts
-          git checkout -b ci-test
+          # git checkout -b ci-test
           git add -A
           git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
           git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git
