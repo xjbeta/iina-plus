@@ -88,6 +88,9 @@ jobs:
           cp archive/IINA+.xcarchive/Products/Applications/IINA*.dmg AppUpdaterAppcasts/IINA-Plus/
           Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
 
+          git config --global user.name 'xjbeta'
+          git config --global user.email 'xjbeta@users.noreply.github.com'
+
           cd AppUpdaterAppcasts
           git checkout -b ci-test
           git add -A
