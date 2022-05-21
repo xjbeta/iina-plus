@@ -88,11 +88,11 @@ jobs:
           cp archive/IINA+.xcarchive/Products/Applications/IINA*.dmg AppUpdaterAppcasts/IINA-Plus/
           Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
 
-          git config --global user.name 'xjbeta'
-          git config --global user.email 'xjbeta@users.noreply.github.com'
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
           cd AppUpdaterAppcasts
           git checkout -b ci-test
           git add -A
           git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
-          git push origin ci-test
+          git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git origin ci-test
