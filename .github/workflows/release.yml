@@ -91,5 +91,5 @@ jobs:
           cd AppUpdaterAppcasts
           git checkout -b ci-test
           git add -A
-          git commit -m "IINA+ $(${{ steps.tag_version.outputs.new_tag }})"
-          git push origin
+          git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
+          git push origin ci-test
