@@ -28,7 +28,7 @@ jobs:
       
       - name: Sparkle Test
         shell: zsh {0}
-        run: Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ SUPRIVATEEDKEY }}
+        run: Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
 
       - uses: apple-actions/import-codesign-certs@v1
         with: 
