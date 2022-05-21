@@ -14,10 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/checkout@v3
-        with:
-          repository: xjbeta/AppUpdaterAppcasts
-          fetch-depth: 1
+      - name: Clone AppUpdaterAppcasts
+        run: git clone https://github.com/xjbeta/AppUpdaterAppcasts
 
       - name: Download Sparkle
         shell: zsh {0}
