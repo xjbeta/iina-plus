@@ -23,10 +23,6 @@ jobs:
           curl -s https://api.github.com/repos/sparkle-project/Sparkle/releases/latest | grep -wo "https.*.tar.xz" | wget -qi -
           mkdir Sparkle
           tar -xf Sparkle*.tar.xz -C Sparkle
-      
-      - name: Sparkle Test
-        shell: zsh {0}
-        run: Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
 
       - uses: apple-actions/import-codesign-certs@v1
         with: 
@@ -84,3 +80,16 @@ jobs:
           files: |
             archive/IINA+.xcarchive/Products/Applications/*.zip
             archive/IINA+.xcarchive/Products/Applications/*.dmg
+
+      - name: Sparkle
+        shell: zsh {0}
+        run: |
+          cp archive/IINA+.xcarchive/Products/Applications/IINA*.zip AppUpdaterAppcasts/IINA-Plus/
+          cp archive/IINA+.xcarchive/Products/Applications/IINA*.dmg AppUpdaterAppcasts/IINA-Plus/
+          Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
+
+          cd AppUpdaterAppcasts
+          git checkout -b ci-test
+          git add -A
+          git commit -m "IINA+ $(${{ steps.tag_version.outputs.new_tag }})"
+          git push origin
