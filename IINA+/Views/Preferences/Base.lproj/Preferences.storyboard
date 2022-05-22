@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="5BR-mF-h66">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="5BR-mF-h66">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -537,20 +537,23 @@
             <objects>
                 <viewController id="2Zp-SK-RIm" customClass="BilibiliViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Q7X-0y-LXy">
-                        <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                        <rect key="frame" x="0.0" y="0.0" width="240" height="158"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" initialItem="XkE-pd-vDk" translatesAutoresizingMaskIntoConstraints="NO" id="Xqe-fU-6Ii">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                                <rect key="frame" x="0.0" y="58" width="240" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="oov-R8-DSE"/>
+                                </constraints>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="Item 2" identifier="" id="qqF-RM-1Ix" userLabel="info">
                                         <view key="view" id="NLf-Kn-hOF">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <gridView xPlacement="fill" yPlacement="top" rowAlignment="none" rowSpacing="5" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="lDf-s1-E4c">
-                                                    <rect key="frame" x="20" y="20" width="200" height="58"/>
+                                                    <rect key="frame" x="20" y="20" width="200" height="60"/>
                                                     <rows>
                                                         <gridRow height="27" id="CYR-Jg-uRP"/>
                                                         <gridRow id="3Iy-ZP-uwc"/>
@@ -561,7 +564,7 @@
                                                     <gridCells>
                                                         <gridCell row="CYR-Jg-uRP" column="Ub7-tO-8OW" id="rr9-ET-WYB">
                                                             <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PuY-LL-seT">
-                                                                <rect key="frame" x="59" y="39" width="83" height="19"/>
+                                                                <rect key="frame" x="59" y="41" width="83" height="19"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="UserName" id="VcX-14-PGH">
                                                                     <font key="font" metaFont="systemMedium" size="15"/>
                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -571,7 +574,7 @@
                                                         </gridCell>
                                                         <gridCell row="3Iy-ZP-uwc" column="Ub7-tO-8OW" id="3rz-bg-dBd">
                                                             <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dsc-5d-CIv">
-                                                                <rect key="frame" x="33" y="-1" width="134" height="32"/>
+                                                                <rect key="frame" x="33" y="1" width="134" height="32"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="d9o-iL-CHp"/>
                                                                 </constraints>
@@ -674,15 +677,60 @@
                                     </tabViewItem>
                                 </tabViewItems>
                             </tabView>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cbx-Rw-Y5D">
+                                <rect key="frame" x="20" y="55" width="200" height="5"/>
+                            </box>
+                            <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hdd-dS-YAN">
+                                <rect key="frame" x="20" y="20" width="178" height="22"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uBa-3G-xWo">
+                                        <rect key="frame" x="-2" y="3" width="48" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Codec:" id="QVl-54-yko">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nQ9-mp-2fB">
+                                        <rect key="frame" x="54" y="-1" width="126" height="24"/>
+                                        <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="selectOne" id="i7r-Ag-NHC">
+                                            <font key="font" metaFont="system"/>
+                                            <segments>
+                                                <segment label="AV1"/>
+                                                <segment label="HEVC" selected="YES" tag="1"/>
+                                                <segment label="AVC"/>
+                                            </segments>
+                                        </segmentedCell>
+                                        <connections>
+                                            <action selector="codecChanged:" target="2Zp-SK-RIm" id="ygf-2i-guh"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="Xqe-fU-6Ii" secondAttribute="bottom" id="HKF-jh-vOn"/>
+                            <constraint firstItem="Hdd-dS-YAN" firstAttribute="top" secondItem="cbx-Rw-Y5D" secondAttribute="bottom" constant="15" id="AjG-Ce-HUf"/>
+                            <constraint firstItem="cbx-Rw-Y5D" firstAttribute="top" secondItem="Xqe-fU-6Ii" secondAttribute="bottom" id="CG1-z9-i6p"/>
+                            <constraint firstItem="Hdd-dS-YAN" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" constant="20" symbolic="YES" id="DAZ-mp-7rg"/>
                             <constraint firstAttribute="trailing" secondItem="Xqe-fU-6Ii" secondAttribute="trailing" id="Itb-z3-Cmj"/>
+                            <constraint firstAttribute="bottom" secondItem="Hdd-dS-YAN" secondAttribute="bottom" constant="20" symbolic="YES" id="L1x-Tl-p9v"/>
+                            <constraint firstItem="cbx-Rw-Y5D" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" constant="20" id="Wfa-M6-kcm"/>
                             <constraint firstItem="Xqe-fU-6Ii" firstAttribute="top" secondItem="Q7X-0y-LXy" secondAttribute="top" id="YC7-vN-nZN"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Hdd-dS-YAN" secondAttribute="trailing" constant="20" id="fSh-gy-myT"/>
                             <constraint firstItem="Xqe-fU-6Ii" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" id="kM4-XD-kL8"/>
+                            <constraint firstAttribute="trailing" secondItem="cbx-Rw-Y5D" secondAttribute="trailing" constant="20" id="rDR-Eb-Vwo"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="codecSegmentedControl" destination="nQ9-mp-2fB" id="rPs-RX-nsq"/>
                         <outlet property="progressIndicator" destination="VWK-Y4-Jd2" id="L9h-xf-58g"/>
                         <outlet property="tabView" destination="Xqe-fU-6Ii" id="b7i-eO-cWn"/>
                         <outlet property="userNameTextField" destination="PuY-LL-seT" id="NUh-N6-NTR"/>
@@ -690,7 +738,7 @@
                 </viewController>
                 <customObject id="sqw-hA-e63" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2071" y="887"/>
+            <point key="canvasLocation" x="2071" y="917"/>
         </scene>
         <!--Advanced View Controller-->
         <scene sceneID="x8z-40-Wqp">

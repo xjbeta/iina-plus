@@ -27,6 +27,15 @@ class BilibiliViewController: NSViewController {
     
     @IBOutlet weak var progressIndicator: NSProgressIndicator!
     
+    @IBOutlet weak var codecSegmentedControl: NSSegmentedControl!
+    @IBAction func codecChanged(_ sender: NSSegmentedControl) {
+        Preferences.shared.biliCodec = sender.selectedSegment
+    }
+    
+    enum BiliCodec: Int {
+        case av1, hevc, avc
+    }
+    
     enum BiliBiliTabs: Int {
         case info, login, error, progress
     }
@@ -35,6 +44,8 @@ class BilibiliViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initStatus()
+        
+        codecSegmentedControl.selectedSegment = Preferences.shared.biliCodec
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {

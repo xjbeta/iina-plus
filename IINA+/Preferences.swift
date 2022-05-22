@@ -170,6 +170,15 @@ class Preferences: NSObject {
         }
     }
     
+    @objc dynamic var biliCodec: Int {
+        get {
+            return defaults(.biliCodec) as? Int ?? 1
+        }
+        set {
+            defaultsSet(newValue, forKey: .biliCodec)
+        }
+    }
+    
     private func colorEncode(_ color: NSColor) -> Data {
         (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
     }
@@ -209,4 +218,6 @@ enum PreferenceKeys: String {
     case stateOffline
     case stateReplay
     case stateUnknown
+    
+    case biliCodec
 }
