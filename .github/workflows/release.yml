@@ -86,6 +86,7 @@ jobs:
 
       - name: Sparkle
         shell: zsh {0}
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           cp archive/IINA+.xcarchive/Products/Applications/IINA*.zip AppUpdaterAppcasts/IINA-Plus/
           cp archive/IINA+.xcarchive/Products/Applications/IINA*.dmg AppUpdaterAppcasts/IINA-Plus/
