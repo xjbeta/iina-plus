@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Alamofire
 
 enum SidebarItem: String {
     case bookmarks
@@ -26,6 +27,10 @@ class SidebarViewController: NSViewController {
     @IBOutlet weak var sidebarTableView: NSTableView!
     var sideBarItems: [SidebarItem] = [.bookmarks, .search]
     var sideBarSelectedItem: SidebarItem = .none
+    
+    var reachabilityManager: NetworkReachabilityManager?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         sideBarSelectedItem = sideBarItems.first ?? .none
@@ -55,7 +60,10 @@ class SidebarViewController: NSViewController {
                 self.biliStatusChanged(isLogin)
             }
         }
-        
+        startNRMListening()
+    }
+    
+    func checkBiliLoginState() {
         Processes.shared.videoDecoder.bilibili.isLogin().done { _ in
             }.catch { _ in
                 self.biliStatusChanged(false)
@@ -70,6 +78,36 @@ class SidebarViewController: NSViewController {
             }
             self.sidebarTableView.reloadData()
         }
+    }
+    
+    
+    func startNRMListening() {
+        stopNRMListening()
+        
+        reachabilityManager = NetworkReachabilityManager(host: "www.bilibili.com")
+        reachabilityManager?.startListening { status in
+            switch status {
+            case .reachable(.cellular):
+                Log("NetworkReachability reachable cellular.")
+                self.checkBiliLoginState()
+            case .reachable(.ethernetOrWiFi):
+                Log("NetworkReachability reachable ethernetOrWiFi.")
+                self.checkBiliLoginState()
+            case .notReachable:
+                Log("NetworkReachability notReachable.")
+            case .unknown:
+                break
+            }
+        }
+    }
+    
+    func stopNRMListening() {
+        reachabilityManager?.stopListening()
+        reachabilityManager = nil
+    }
+    
+    deinit {
+        stopNRMListening()
     }
     
 }
