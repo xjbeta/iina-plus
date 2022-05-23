@@ -170,12 +170,21 @@ class Preferences: NSObject {
         }
     }
     
-    @objc dynamic var biliCodec: Int {
+    @objc dynamic var bilibiliCodec: Int {
         get {
-            return defaults(.biliCodec) as? Int ?? 1
+            return defaults(.bilibiliCodec) as? Int ?? 1
         }
         set {
-            defaultsSet(newValue, forKey: .biliCodec)
+            defaultsSet(newValue, forKey: .bilibiliCodec)
+        }
+    }
+    
+    @objc dynamic var bililiveHevc: Bool {
+        get {
+            return defaults(.bililiveHevc) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .bililiveHevc)
         }
     }
     
@@ -219,5 +228,6 @@ enum PreferenceKeys: String {
     case stateReplay
     case stateUnknown
     
-    case biliCodec
+    case bilibiliCodec
+    case bililiveHevc
 }

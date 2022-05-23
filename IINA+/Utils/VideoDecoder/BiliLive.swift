@@ -250,9 +250,7 @@ struct BiliLivePlayUrl: Unmarshaling {
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {
         var json = yougetJson
         
-        // FLV AVC
-        if let codec = streams.first(where: { $0.protocolName == "http_stream" })?.formats.first(where: { $0.formatName == "flv" })?.codecs.first(where: { $0.codecName == "avc" }) {
-            
+        func write(_ codec: BiliLivePlayUrl.Codec) {
             qualityDescriptions.filter {
                 codec.acceptQns.contains($0.qn)
             }.forEach {
@@ -267,24 +265,15 @@ struct BiliLivePlayUrl: Unmarshaling {
             }
         }
         
+        // FLV AVC
+        if let codec = streams.first(where: { $0.protocolName == "http_stream" })?.formats.first(where: { $0.formatName == "flv" })?.codecs.first(where: { $0.codecName == "avc" }) {
+            write(codec)
+        }
+        
         // M3U8 HEVC
-        if Preferences.shared.biliCodec == 1,
+        if Preferences.shared.bililiveHevc,
            let codec = streams.first(where: { $0.protocolName == "http_hls" })?.formats.first(where: { $0.formatName == "fmp4" })?.codecs.first(where: { $0.codecName == "hevc" }) {
-            
-            print(codec.acceptQns)
-            
-            qualityDescriptions.filter {
-                codec.acceptQns.contains($0.qn)
-            }.forEach {
-                var s = Stream(url: "")
-                s.quality = $0.qn
-                if codec.currentQn == $0.qn {
-                    var urls = codec.urls()
-                    s.url = urls.removeFirst()
-                    s.src = urls
-                }
-                json.streams[$0.desc] = s
-            }
+            write(codec)
         }
         return json
     }

@@ -756,7 +756,7 @@ struct BilibiliPlayInfo: Unmarshaling {
         var newVideos = [Int: VideoInfo]()
         
         var vs = videos.filter {
-            switch Preferences.shared.biliCodec {
+            switch Preferences.shared.bilibiliCodec {
             case 0:
                 return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
             case 1:
