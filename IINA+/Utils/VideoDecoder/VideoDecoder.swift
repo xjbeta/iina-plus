@@ -95,7 +95,6 @@ class VideoDecoder: NSObject {
             return .init(error: VideoGetError.notSupported)
         }
         let site = SupportSites(url: url.absoluteString)
-        let roomId = Int(url.lastPathComponent) ?? -1
         switch site {
         case .biliLive:
             return biliLive.liveInfo(url.absoluteString)

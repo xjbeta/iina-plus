@@ -80,10 +80,7 @@
                                             <rect key="frame" x="88" y="257" width="210" height="20"/>
                                             <subviews>
                                                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k92-oP-2xr">
-                                                    <rect key="frame" x="-3" y="-4" width="107" height="25"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="100" id="wmX-gH-C5b"/>
-                                                    </constraints>
+                                                    <rect key="frame" x="-3" y="-4" width="133" height="25"/>
                                                     <popUpButtonCell key="cell" type="push" title="IINA" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Tcc-b4-Nna" id="fW1-8E-VcW">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="menu"/>
@@ -101,7 +98,10 @@
                                                     </popUpButtonCell>
                                                 </popUpButton>
                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xfr-ty-8p1">
-                                                    <rect key="frame" x="117" y="3" width="95" height="14"/>
+                                                    <rect key="frame" x="143" y="3" width="69" height="14"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="65" id="cxL-VP-ScG"/>
+                                                    </constraints>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="tips" id="O4b-8P-C13">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>

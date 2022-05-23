@@ -116,7 +116,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
                 yougetJson.id = try initialStateJson.value(for: "videoData.cid")
-                let bvid: String = try initialStateJson.value(for: "videoData.bvid")
+//                let bvid: String = try initialStateJson.value(for: "videoData.bvid")
                 
                 if let p = URL(string: url)?.query?.replacingOccurrences(of: "p=", with: ""),
                    let pInt = Int(p),
