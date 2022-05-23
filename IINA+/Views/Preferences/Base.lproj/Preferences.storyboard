@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="5BR-mF-h66">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="5BR-mF-h66">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -537,31 +537,34 @@
             <objects>
                 <viewController id="2Zp-SK-RIm" customClass="BilibiliViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Q7X-0y-LXy">
-                        <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                        <rect key="frame" x="0.0" y="0.0" width="305" height="184"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tabView drawsBackground="NO" type="noTabsNoBorder" initialItem="XkE-pd-vDk" translatesAutoresizingMaskIntoConstraints="NO" id="Xqe-fU-6Ii">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                                <rect key="frame" x="0.0" y="84" width="305" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="oov-R8-DSE"/>
+                                </constraints>
                                 <font key="font" metaFont="system"/>
                                 <tabViewItems>
                                     <tabViewItem label="Item 2" identifier="" id="qqF-RM-1Ix" userLabel="info">
                                         <view key="view" id="NLf-Kn-hOF">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="305" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <gridView xPlacement="fill" yPlacement="top" rowAlignment="none" rowSpacing="5" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="lDf-s1-E4c">
-                                                    <rect key="frame" x="20" y="20" width="200" height="58"/>
+                                                    <rect key="frame" x="20" y="20" width="245" height="60"/>
                                                     <rows>
                                                         <gridRow height="27" id="CYR-Jg-uRP"/>
                                                         <gridRow id="3Iy-ZP-uwc"/>
                                                     </rows>
                                                     <columns>
-                                                        <gridColumn xPlacement="center" width="200" id="Ub7-tO-8OW"/>
+                                                        <gridColumn xPlacement="center" width="245" id="Ub7-tO-8OW"/>
                                                     </columns>
                                                     <gridCells>
                                                         <gridCell row="CYR-Jg-uRP" column="Ub7-tO-8OW" id="rr9-ET-WYB">
                                                             <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PuY-LL-seT">
-                                                                <rect key="frame" x="59" y="39" width="83" height="19"/>
+                                                                <rect key="frame" x="81" y="41" width="83" height="19"/>
                                                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="UserName" id="VcX-14-PGH">
                                                                     <font key="font" metaFont="systemMedium" size="15"/>
                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -571,7 +574,7 @@
                                                         </gridCell>
                                                         <gridCell row="3Iy-ZP-uwc" column="Ub7-tO-8OW" id="3rz-bg-dBd">
                                                             <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dsc-5d-CIv">
-                                                                <rect key="frame" x="33" y="-1" width="134" height="32"/>
+                                                                <rect key="frame" x="56" y="1" width="134" height="32"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="d9o-iL-CHp"/>
                                                                 </constraints>
@@ -597,11 +600,11 @@
                                     </tabViewItem>
                                     <tabViewItem label="Tab" identifier="" id="XkE-pd-vDk" userLabel="login">
                                         <view key="view" id="OXQ-pd-puW">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="98"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="271" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zhX-AV-lQQ">
-                                                    <rect key="frame" x="82" y="32" width="77" height="32"/>
+                                                    <rect key="frame" x="82" y="34" width="77" height="32"/>
                                                     <buttonCell key="cell" type="push" title="Log in" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tFa-ZK-G6I">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="system"/>
@@ -620,11 +623,11 @@
                                     </tabViewItem>
                                     <tabViewItem label="View" identifier="" id="QhA-nB-s4n" userLabel="error">
                                         <view key="view" id="9ea-AW-UI5">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="91"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="271" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <gridView fixedFrame="YES" xPlacement="center" yPlacement="top" rowAlignment="none" rowSpacing="8" columnSpacing="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="XqC-Je-6K5">
-                                                    <rect key="frame" x="29" y="27" width="183" height="49"/>
+                                                    <rect key="frame" x="29" y="36" width="183" height="49"/>
                                                     <rows>
                                                         <gridRow id="rBc-vz-pFB"/>
                                                         <gridRow id="nAT-cD-QSD"/>
@@ -662,11 +665,11 @@
                                     </tabViewItem>
                                     <tabViewItem label="Item 3" identifier="" id="EJW-PI-j48" userLabel="progress">
                                         <view key="view" id="est-Lk-msw">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="91"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="271" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="VWK-Y4-Jd2">
-                                                    <rect key="frame" x="104" y="24" width="32" height="32"/>
+                                                    <rect key="frame" x="104" y="33" width="32" height="32"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 </progressIndicator>
                                             </subviews>
@@ -674,12 +677,82 @@
                                     </tabViewItem>
                                 </tabViewItems>
                             </tabView>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cbx-Rw-Y5D">
+                                <rect key="frame" x="20" y="81" width="265" height="5"/>
+                            </box>
+                            <gridView xPlacement="fill" yPlacement="fill" rowAlignment="none" rowSpacing="5" columnSpacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="vyS-cu-G3Q">
+                                <rect key="frame" x="30" y="20" width="231" height="43"/>
+                                <rows>
+                                    <gridRow yPlacement="center" id="TnA-JH-2Hj"/>
+                                    <gridRow yPlacement="center" id="Qvm-eD-8nd"/>
+                                </rows>
+                                <columns>
+                                    <gridColumn width="85" id="QLl-QR-T78"/>
+                                    <gridColumn xPlacement="leading" width="132" id="VpS-Kw-CMK"/>
+                                </columns>
+                                <gridCells>
+                                    <gridCell row="TnA-JH-2Hj" column="QLl-QR-T78" id="rYS-Yk-ihH">
+                                        <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uBa-3G-xWo">
+                                            <rect key="frame" x="-2" y="24" width="89" height="16"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Bilibili Codec:" id="QVl-54-yko">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </gridCell>
+                                    <gridCell row="TnA-JH-2Hj" column="VpS-Kw-CMK" id="oRw-CN-5lW">
+                                        <segmentedControl key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nQ9-mp-2fB">
+                                            <rect key="frame" x="97" y="20" width="126" height="24"/>
+                                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="texturedRounded" trackingMode="selectOne" id="i7r-Ag-NHC">
+                                                <font key="font" metaFont="system"/>
+                                                <segments>
+                                                    <segment label="AV1"/>
+                                                    <segment label="HEVC" selected="YES" tag="1"/>
+                                                    <segment label="AVC"/>
+                                                </segments>
+                                            </segmentedCell>
+                                            <connections>
+                                                <binding destination="SBJ-xI-NI7" name="selectedIndex" keyPath="self.bilibiliCodec" id="jrE-qA-JhP"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </gridCell>
+                                    <gridCell row="Qvm-eD-8nd" column="QLl-QR-T78" id="HjX-Zm-qi1">
+                                        <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x5f-mM-bkl">
+                                            <rect key="frame" x="-2" y="0.0" width="89" height="16"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="BiliLive HEVC" id="iTL-J0-MpL">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </gridCell>
+                                    <gridCell row="Qvm-eD-8nd" column="VpS-Kw-CMK" id="bgg-pc-DZB">
+                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4aY-2j-Emz">
+                                            <rect key="frame" x="97" y="-1" width="18" height="18"/>
+                                            <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xx5-mg-uCU">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <binding destination="SBJ-xI-NI7" name="value" keyPath="self.bililiveHevc" id="2J9-Tb-o6H"/>
+                                            </connections>
+                                        </button>
+                                    </gridCell>
+                                </gridCells>
+                            </gridView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="Xqe-fU-6Ii" secondAttribute="bottom" id="HKF-jh-vOn"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="vyS-cu-G3Q" secondAttribute="trailing" constant="30" id="3WJ-Aw-vmA"/>
+                            <constraint firstItem="vyS-cu-G3Q" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" constant="30" id="B3g-iH-Z7y"/>
+                            <constraint firstItem="cbx-Rw-Y5D" firstAttribute="top" secondItem="Xqe-fU-6Ii" secondAttribute="bottom" id="CG1-z9-i6p"/>
                             <constraint firstAttribute="trailing" secondItem="Xqe-fU-6Ii" secondAttribute="trailing" id="Itb-z3-Cmj"/>
+                            <constraint firstItem="cbx-Rw-Y5D" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" constant="20" id="Wfa-M6-kcm"/>
                             <constraint firstItem="Xqe-fU-6Ii" firstAttribute="top" secondItem="Q7X-0y-LXy" secondAttribute="top" id="YC7-vN-nZN"/>
                             <constraint firstItem="Xqe-fU-6Ii" firstAttribute="leading" secondItem="Q7X-0y-LXy" secondAttribute="leading" id="kM4-XD-kL8"/>
+                            <constraint firstAttribute="bottom" secondItem="vyS-cu-G3Q" secondAttribute="bottom" constant="20" symbolic="YES" id="l0M-Va-mFS"/>
+                            <constraint firstAttribute="trailing" secondItem="cbx-Rw-Y5D" secondAttribute="trailing" constant="20" id="rDR-Eb-Vwo"/>
+                            <constraint firstItem="vyS-cu-G3Q" firstAttribute="top" relation="greaterThanOrEqual" secondItem="cbx-Rw-Y5D" secondAttribute="bottom" constant="15" id="z4h-Wj-roB"/>
                         </constraints>
                     </view>
                     <connections>
@@ -689,8 +762,9 @@
                     </connections>
                 </viewController>
                 <customObject id="sqw-hA-e63" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <customObject id="SBJ-xI-NI7" customClass="Preferences" customModule="IINA_" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="2071" y="887"/>
+            <point key="canvasLocation" x="2071.5" y="932"/>
         </scene>
         <!--Advanced View Controller-->
         <scene sceneID="x8z-40-Wqp">
@@ -1009,7 +1083,7 @@ Gw
                 </viewController>
                 <customObject id="QhL-Mo-38d" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2071" y="1328"/>
+            <point key="canvasLocation" x="2071" y="1439"/>
         </scene>
         <!--Font Selector View Controller-->
         <scene sceneID="Dps-ip-xUD">

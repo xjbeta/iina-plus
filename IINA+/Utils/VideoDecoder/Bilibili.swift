@@ -164,6 +164,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         case dolbyAudio = 256
         case dolbyVideo = 512
         case dash8K = 1024
+        case dashAV1 = 2048
     }
      
     func bilibiliPlayUrl(yougetJson: YouGetJSON,
@@ -183,14 +184,14 @@ class Bilibili: NSObject, SupportSiteProtocol {
             inner = false
         }
         
-        let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
+        let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dashAV1.rawValue + BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         
         
         var u = isBangumi ?
         "https://api.bilibili.com/pgc/player/web/playurl?" :
         "https://api.bilibili.com/x/player/playurl?"
         
-        u += "cid=\(cid)&qn=\(qn)&otype=json&bvid=\(yougetJson.bvid)&fnver=0&fnval=\(fnval)&fourk=1"
+        u += "cid=\(cid)&bvid=\(yougetJson.bvid)&qn=\(qn)&fnver=0&fnval=\(fnval)&fourk=1"
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
@@ -705,12 +706,14 @@ struct BilibiliPlayInfo: Unmarshaling {
         let bandwidth: Int
         var description: String = ""
         let backupUrl: [String]
+        let codecs: String
         
         init(object: MarshaledObject) throws {
             url = try object.value(for: "baseUrl")
             id = try object.value(for: "id")
             bandwidth = try object.value(for: "bandwidth")
             backupUrl = (try? object.value(for: "backupUrl")) ?? []
+            codecs = try object.value(for: "codecs")
         }
     }
     
@@ -750,19 +753,36 @@ struct BilibiliPlayInfo: Unmarshaling {
             descriptionDic[$0.element] = acceptDescription[$0.offset]
         }
         
-        var newVideos = [VideoInfo]()
+        var newVideos = [Int: VideoInfo]()
         
-        videos.enumerated().forEach {
+        var vs = videos.filter {
+            switch Preferences.shared.bilibiliCodec {
+            case 0:
+                return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
+            case 1:
+                return $0.codecs.starts(with: "hev")
+            default:
+                return $0.codecs.starts(with: "avc")
+            }
+        }
+        
+        if vs.count == 0 {
+            vs = videos.filter {
+                $0.codecs.starts(with: "avc")
+            }
+        }
+        
+        vs.enumerated().forEach {
             var video = $0.element
             let des = descriptionDic[video.id] ?? "unkonwn"
             video.index = $0.offset
-//             ignore low bandwidth video
-            if !newVideos.map({ $0.id }).contains(video.id) {
-                video.description = des
-                newVideos.append(video)
-            }
+            video.description = des
+            newVideos[video.id] = video
         }
-        self.videos = newVideos
+        
+        self.videos = newVideos.map {
+            $0.value
+        }
         duration = try object.value(for: "dash.duration")
     }
     

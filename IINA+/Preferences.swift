@@ -170,6 +170,24 @@ class Preferences: NSObject {
         }
     }
     
+    @objc dynamic var bilibiliCodec: Int {
+        get {
+            return defaults(.bilibiliCodec) as? Int ?? 1
+        }
+        set {
+            defaultsSet(newValue, forKey: .bilibiliCodec)
+        }
+    }
+    
+    @objc dynamic var bililiveHevc: Bool {
+        get {
+            return defaults(.bililiveHevc) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .bililiveHevc)
+        }
+    }
+    
     private func colorEncode(_ color: NSColor) -> Data {
         (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
     }
@@ -209,4 +227,7 @@ enum PreferenceKeys: String {
     case stateOffline
     case stateReplay
     case stateUnknown
+    
+    case bilibiliCodec
+    case bililiveHevc
 }
