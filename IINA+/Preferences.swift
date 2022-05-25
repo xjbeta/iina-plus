@@ -35,6 +35,15 @@ class Preferences: NSObject {
         }
     }
     
+    @objc var autoOpenResult: Bool {
+        get {
+            return defaults(.autoOpenResult) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .autoOpenResult)
+        }
+    }
+    
     @objc var enableDanmaku: Bool {
         get {
             return defaults(.enableDanmaku) as? Bool ?? false
@@ -213,6 +222,8 @@ private extension Preferences {
 enum PreferenceKeys: String {
     case livePlayer
     case enableFlvjs
+    case autoOpenResult
+    
     case enableDanmaku
     case danmukuFontFamilyName
     case danmukuFontWeight

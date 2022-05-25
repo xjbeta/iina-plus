@@ -116,7 +116,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 }
                 let pages: [Page] = try initialStateJson.value(for: "videoData.pages")
                 yougetJson.id = try initialStateJson.value(for: "videoData.cid")
-                let bvid: String = try initialStateJson.value(for: "videoData.bvid")
+//                let bvid: String = try initialStateJson.value(for: "videoData.bvid")
                 
                 if let p = URL(string: url)?.query?.replacingOccurrences(of: "p=", with: ""),
                    let pInt = Int(p),
@@ -368,12 +368,12 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getVideoList(_ url: String) -> Promise<[BilibiliVideoSelector]> {
         var aid = -1
         var bvid = ""
-        let pathComponents = url.pathComponents
         
-        guard pathComponents.count >= 4 else {
+        let pathComponents = URL(string: url)?.pathComponents ?? []
+        guard pathComponents.count >= 3 else {
             return .init(error: VideoGetError.cantFindIdForDM)
         }
-        let idP = pathComponents[3]
+        let idP = pathComponents[2]
         if idP.starts(with: "av"), let id = Int(idP.replacingOccurrences(of: "av", with: "")) {
             aid = id
         } else if idP.starts(with: "BV") {

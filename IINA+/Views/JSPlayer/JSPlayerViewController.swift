@@ -250,7 +250,7 @@ class JSPlayerViewController: NSViewController {
                 return self.videoKey ?? "😶‍🌫️"
             }())
         }.done(on: .main) {
-            var re = $0
+            let re = $0
             self.result = re
             
             guard let stream = re.videos.first(where: {
@@ -373,7 +373,9 @@ class JSPlayerViewController: NSViewController {
     
     func evaluateJavaScript(_ str: String) {
         guard webView != nil else { return }
-        webView.evaluateJavaScript(str)
+        webView.evaluateJavaScript(str).catch {
+            Log("evaluateJavaScript error \($0)")
+        }
     }
     
     

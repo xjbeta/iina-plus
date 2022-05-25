@@ -538,14 +538,14 @@
 		01F46C9F2102EEFB00FE9DAD /* Preferences */ = {
 			isa = PBXGroup;
 			children = (
-				01C0807727BB5CFD00E87A8C /* Preferences.storyboard */,
-				0196CB6321214B4200BCD29E /* AdvancedViewController.swift */,
-				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
-				01683DDD211924160016A886 /* BilibiliViewController.swift */,
-				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
-				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
-				01260170211948BF00C9C639 /* PreferencesTabViewController.swift */,
 				01398984210F27A600B7042F /* PreferencesWindowController.swift */,
+				01260170211948BF00C9C639 /* PreferencesTabViewController.swift */,
+				01C0807727BB5CFD00E87A8C /* Preferences.storyboard */,
+				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
+				01683DDD211924160016A886 /* BilibiliViewController.swift */,
+				0196CB6321214B4200BCD29E /* AdvancedViewController.swift */,
+				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
+				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				0189533E279FBC470011BAAC /* ColorPickButton.swift */,
 			);
 			path = Preferences;
@@ -943,7 +943,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.10;
+				MARKETING_VERSION = 0.6.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -967,7 +967,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.10;
+				MARKETING_VERSION = 0.6.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
