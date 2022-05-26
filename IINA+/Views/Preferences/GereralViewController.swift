@@ -25,26 +25,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         NSWorkspace.shared.open(url)
     }
     
-// MARK: - Live State Color
-    @IBOutlet var livingColorPick: ColorPickButton!
-    @IBOutlet var offlineColorPick: ColorPickButton!
-    @IBOutlet var replayColorPick: ColorPickButton!
-    @IBOutlet var unknownColorPick: ColorPickButton!
-    
-    
-    var colorPanelCloseNotification: NSObjectProtocol?
-    var currentPicker: ColorPickButton?
-    
-    @IBAction func pickColor(_ sender: ColorPickButton) {
-        currentPicker = sender
-        
-        let colorPanel = NSColorPanel.shared
-        colorPanel.color = sender.color
-        colorPanel.setTarget(self)
-        colorPanel.setAction(#selector(colorDidChange))
-        colorPanel.makeKeyAndOrderFront(self)
-        colorPanel.isContinuous = true
-    }
     
     let pref = Preferences.shared
     
@@ -56,16 +36,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         portTextField.isEnabled = pref.enableDanmaku
             && Processes.shared.iinaArchiveType() != .normal
             && Processes.shared.iinaBuildVersion() > 16
-        
-        
-        colorPanelCloseNotification = NotificationCenter.default.addObserver(forName: NSColorPanel.willCloseNotification, object: nil, queue: .main) { _ in
-            self.currentPicker = nil
-        }
-        
-        livingColorPick.color = pref.stateLiving
-        offlineColorPick.color = pref.stateOffline
-        replayColorPick.color = pref.stateReplay
-        unknownColorPick.color = pref.stateUnknown
     }
     
     func menuDidClose(_ menu: NSMenu) {
@@ -156,31 +126,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         }
     }
     
-    @objc func colorDidChange(sender: NSColorPanel) {
-        let colorPanel = sender
-        guard let picker = currentPicker else { return }
-        
-        picker.color = colorPanel.color
-        
-        switch picker {
-        case livingColorPick:
-            pref.stateLiving = colorPanel.color
-        case offlineColorPick:
-            pref.stateOffline = colorPanel.color
-        case replayColorPick:
-            pref.stateReplay = colorPanel.color
-        case unknownColorPick:
-            pref.stateUnknown = colorPanel.color
-        default:
-            break
-        }
-    }
-    
-    deinit {
-        if let n = colorPanelCloseNotification {
-            NotificationCenter.default.removeObserver(n)
-        }
-    }
 }
 
 extension GereralViewController: FontSelectorDelegate {

@@ -18,7 +18,7 @@ class BiliLive: NSObject, SupportSiteProtocol {
         case playUrl, roomPlayInfo, html
     }
     
-    let apiType = APIType.playUrl
+    let apiType = APIType.roomPlayInfo
     
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         var info = BiliLiveInfo()
@@ -85,7 +85,7 @@ class BiliLive: NSObject, SupportSiteProtocol {
                 return playUrl.write(to: result)
             }
         case .roomPlayInfo:
-            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=h5&ptype=8"
+            let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=h5&ptype=8&dolby=5"
 
             return AF.request(u).responseData().map {
                 let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
@@ -250,14 +250,7 @@ struct BiliLivePlayUrl: Unmarshaling {
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {
         var json = yougetJson
         
-        let codecs = streams.flatMap {
-            $0.formats.flatMap {
-                $0.codecs
-            }
-        }
-        
-//        if let codec = codecs.last(where: { $0.codecName == "hevc" }) ?? codecs.first {
-        if let codec = codecs.first {
+        func write(_ codec: BiliLivePlayUrl.Codec) {
             qualityDescriptions.filter {
                 codec.acceptQns.contains($0.qn)
             }.forEach {
@@ -272,6 +265,16 @@ struct BiliLivePlayUrl: Unmarshaling {
             }
         }
         
+        // FLV AVC
+        if let codec = streams.first(where: { $0.protocolName == "http_stream" })?.formats.first(where: { $0.formatName == "flv" })?.codecs.first(where: { $0.codecName == "avc" }) {
+            write(codec)
+        }
+        
+        // M3U8 HEVC
+        if Preferences.shared.bililiveHevc,
+           let codec = streams.first(where: { $0.protocolName == "http_hls" })?.formats.first(where: { $0.formatName == "fmp4" })?.codecs.first(where: { $0.codecName == "hevc" }) {
+            write(codec)
+        }
         return json
     }
 }

@@ -13,9 +13,6 @@
 /* Class = "NSButtonCell"; title = "Try again"; ObjectID = "6g4-C2-AIh"; */
 "6g4-C2-AIh.title" = "重试";
 
-/* Class = "NSTextFieldCell"; title = "Offline"; ObjectID = "B9H-jf-2Cx"; */
-"B9H-jf-2Cx.title" = "离线";
-
 /* Class = "NSTextFieldCell"; title = "Port:"; ObjectID = "BAX-B0-esq"; */
 "BAX-B0-esq.title" = "端口:";
 
@@ -27,9 +24,6 @@
 
 /* Class = "NSTextFieldCell"; title = "Speed:"; ObjectID = "ERX-47-CUe"; */
 "ERX-47-CUe.title" = "速度:";
-
-/* Class = "NSTextFieldCell"; title = "Live State:"; ObjectID = "EkU-rT-BBc"; */
-"EkU-rT-BBc.title" = "直播状态:";
 
 /* Class = "NSButtonCell"; title = "Test In Browser"; ObjectID = "FbN-8d-UIb"; */
 "FbN-8d-UIb.title" = "在浏览器中测试";
@@ -52,14 +46,8 @@
 /* Class = "NSButtonCell"; title = "Try again"; ObjectID = "KAl-8g-PHG"; */
 "KAl-8g-PHG.title" = "重试";
 
-/* Class = "NSTextFieldCell"; title = "Living"; ObjectID = "LUy-IH-SmV"; */
-"LUy-IH-SmV.title" = "直播中";
-
 /* Class = "NSTextFieldCell"; title = "tips"; ObjectID = "O4b-8P-C13"; */
 "O4b-8P-C13.title" = "tips";
-
-/* Class = "NSTextFieldCell"; title = "Replay"; ObjectID = "ONz-C2-kg0"; */
-"ONz-C2-kg0.title" = "重播";
 
 /* Class = "NSTextFieldCell"; title = "Block List:"; ObjectID = "OSe-eo-ngK"; */
 "OSe-eo-ngK.title" = "屏蔽列表:";
@@ -133,9 +121,6 @@
 /* Class = "NSTextFieldCell"; title = "Block Damaku Type:"; ObjectID = "iHw-Yk-8kI"; */
 "iHw-Yk-8kI.title" = "屏蔽弹幕类型:";
 
-/* Class = "NSTextFieldCell"; title = "Unknown"; ObjectID = "kQe-Vb-FhZ"; */
-"kQe-Vb-FhZ.title" = "未知";
-
 /* Class = "NSButtonCell"; title = "Play live with internal flv.js"; ObjectID = "nYK-y9-7tF"; */
 "nYK-y9-7tF.title" = "使用内置的flv.js 播放直播";
 
@@ -171,3 +156,36 @@
 
 /* Class = "NSMenuItem"; title = "mpv"; ObjectID = "zo1-xj-Lyr"; */
 "zo1-xj-Lyr.title" = "mpv";
+
+/* Class = "NSTextFieldCell"; title = "Living"; ObjectID = "1ly-MG-PV5"; */
+"1ly-MG-PV5.title" = "直播中";
+
+/* Class = "NSTextFieldCell"; title = "Replay"; ObjectID = "9Rb-3A-pS4"; */
+"9Rb-3A-pS4.title" = "重播";
+
+/* Class = "NSTextFieldCell"; title = "Live State:"; ObjectID = "CfS-Ci-nxw"; */
+"CfS-Ci-nxw.title" = "直播状态:";
+
+/* Class = "NSTextFieldCell"; title = "Offline"; ObjectID = "Of0-KI-IUP"; */
+"Of0-KI-IUP.title" = "离线";
+
+/* Class = "NSTextFieldCell"; title = "Bilibili Codec:"; ObjectID = "QVl-54-yko"; */
+"QVl-54-yko.title" = "B站解码";
+
+/* Class = "NSButtonCell"; title = "Auto Open Decode Result"; ObjectID = "hPC-yj-akr"; */
+"hPC-yj-akr.title" = "自动打开解析结果";
+
+/* Class = "NSSegmentedCell"; i7r-Ag-NHC.ibShadowedLabels[0] = "AV1"; ObjectID = "i7r-Ag-NHC"; */
+"i7r-Ag-NHC.ibShadowedLabels[0]" = "AV1";
+
+/* Class = "NSSegmentedCell"; i7r-Ag-NHC.ibShadowedLabels[1] = "HEVC"; ObjectID = "i7r-Ag-NHC"; */
+"i7r-Ag-NHC.ibShadowedLabels[1]" = "HEVC";
+
+/* Class = "NSSegmentedCell"; i7r-Ag-NHC.ibShadowedLabels[2] = "AVC"; ObjectID = "i7r-Ag-NHC"; */
+"i7r-Ag-NHC.ibShadowedLabels[2]" = "AVC";
+
+/* Class = "NSTextFieldCell"; title = "BiliLive HEVC"; ObjectID = "iTL-J0-MpL"; */
+"iTL-J0-MpL.title" = "B站直播 HEVC";
+
+/* Class = "NSTextFieldCell"; title = "Unknown"; ObjectID = "o7B-lQ-AHT"; */
+"o7B-lQ-AHT.title" = "未知";

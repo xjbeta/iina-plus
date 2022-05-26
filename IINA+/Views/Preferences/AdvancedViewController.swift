@@ -41,6 +41,29 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     
     @IBOutlet weak var blockListPopUpButton: NSPopUpButton!
     
+// MARK: - Live State Color
+    @IBOutlet var livingColorPick: ColorPickButton!
+    @IBOutlet var offlineColorPick: ColorPickButton!
+    @IBOutlet var replayColorPick: ColorPickButton!
+    @IBOutlet var unknownColorPick: ColorPickButton!
+    
+    
+    var colorPanelCloseNotification: NSObjectProtocol?
+    var currentPicker: ColorPickButton?
+    
+    @IBAction func pickColor(_ sender: ColorPickButton) {
+        currentPicker = sender
+        
+        let colorPanel = NSColorPanel.shared
+        colorPanel.color = sender.color
+        colorPanel.setTarget(self)
+        colorPanel.setAction(#selector(colorDidChange))
+        colorPanel.makeKeyAndOrderFront(self)
+        colorPanel.isContinuous = true
+    }
+    
+    let pref = Preferences.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,6 +79,15 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         }
         
         initBlockListMenu()
+        
+        colorPanelCloseNotification = NotificationCenter.default.addObserver(forName: NSColorPanel.willCloseNotification, object: nil, queue: .main) { _ in
+            self.currentPicker = nil
+        }
+        
+        livingColorPick.color = pref.stateLiving
+        offlineColorPick.color = pref.stateOffline
+        replayColorPick.color = pref.stateReplay
+        unknownColorPick.color = pref.stateUnknown
     }
     
     override func viewWillAppear() {
@@ -108,6 +140,32 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         } else {
             let index = blockListPopUpButton.indexOfSelectedItem
             Preferences.shared.dmBlockList.type = BlockList.BlockListType(rawValue: index) ?? .none
+        }
+    }
+    
+    @objc func colorDidChange(sender: NSColorPanel) {
+        let colorPanel = sender
+        guard let picker = currentPicker else { return }
+        
+        picker.color = colorPanel.color
+        
+        switch picker {
+        case livingColorPick:
+            pref.stateLiving = colorPanel.color
+        case offlineColorPick:
+            pref.stateOffline = colorPanel.color
+        case replayColorPick:
+            pref.stateReplay = colorPanel.color
+        case unknownColorPick:
+            pref.stateUnknown = colorPanel.color
+        default:
+            break
+        }
+    }
+    
+    deinit {
+        if let n = colorPanelCloseNotification {
+            NotificationCenter.default.removeObserver(n)
         }
     }
 }

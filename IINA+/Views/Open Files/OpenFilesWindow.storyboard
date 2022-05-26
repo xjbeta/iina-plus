@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="pu0-ea-1qY">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="pu0-ea-1qY">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Window Controller-->
         <scene sceneID="15s-8F-1FV">
             <objects>
-                <windowController showSeguePresentationStyle="single" id="pu0-ea-1qY" customClass="OpenFilesWindowController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController showSeguePresentationStyle="single" id="pu0-ea-1qY" customClass="OpenFilesWindowController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="O5L-g3-Z7W">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
                         <rect key="contentRect" x="196" y="240" width="540" height="220"/>
@@ -31,7 +31,7 @@
         <!--Open Files View Controller-->
         <scene sceneID="byj-bC-GNz">
             <objects>
-                <viewController id="NV9-Bq-JWd" customClass="OpenFilesViewController" customModule="iina_" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="NV9-Bq-JWd" customClass="OpenFilesViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="iyO-Cj-bI7">
                         <rect key="frame" x="0.0" y="0.0" width="540" height="220"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -64,7 +64,7 @@
                                             </gridCell>
                                             <gridCell row="vxX-Qe-faS" column="Fmz-vV-9jE" id="WkC-2L-IeR"/>
                                             <gridCell row="qgg-zV-drn" column="2qP-0h-LYg" xPlacement="fill" id="Pcc-o7-IUZ">
-                                                <textField key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fbu-er-y34">
+                                                <textField key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fbu-er-y34">
                                                     <rect key="frame" x="0.0" y="65" width="391" height="21"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="BV1Ht411M75h / video" id="3IV-o9-jO0">
                                                         <font key="font" metaFont="system"/>
@@ -78,7 +78,7 @@
                                             </gridCell>
                                             <gridCell row="qgg-zV-drn" column="Fmz-vV-9jE" yPlacement="bottom" id="sYR-d4-idv">
                                                 <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="d2O-XN-Y6G">
-                                                    <rect key="frame" x="405" y="58" width="101" height="32"/>
+                                                    <rect key="frame" x="404" y="58" width="103" height="32"/>
                                                     <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zdP-gK-kBB">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="system"/>
@@ -100,7 +100,7 @@
                                             </gridCell>
                                             <gridCell row="yg5-ht-5bw" column="Fmz-vV-9jE" id="NDX-sy-ggG"/>
                                             <gridCell row="Vn6-Ou-se2" column="2qP-0h-LYg" xPlacement="fill" id="4pg-Dw-Y10">
-                                                <textField key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j64-Kn-Usz">
+                                                <textField key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j64-Kn-Usz">
                                                     <rect key="frame" x="0.0" y="0.0" width="391" height="21"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="BV1Ht411M75h / select xml file" id="fYG-PN-XX8">
                                                         <font key="font" metaFont="system"/>
@@ -114,7 +114,7 @@
                                             </gridCell>
                                             <gridCell row="Vn6-Ou-se2" column="Fmz-vV-9jE" yPlacement="bottom" id="GJx-eI-Fpx">
                                                 <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="52R-px-XKl">
-                                                    <rect key="frame" x="405" y="-7" width="101" height="32"/>
+                                                    <rect key="frame" x="404" y="-7" width="103" height="32"/>
                                                     <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cLq-AR-VMe">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="system"/>
@@ -127,7 +127,7 @@
                                         </gridCells>
                                     </gridView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hHJ-Cb-We8">
-                                        <rect key="frame" x="393" y="13" width="133" height="32"/>
+                                        <rect key="frame" x="400" y="13" width="127" height="32"/>
                                         <buttonCell key="cell" type="push" title="Open With IINA" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fc7-Qw-2GM">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -137,7 +137,7 @@
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bhG-Py-Vnw">
-                                        <rect key="frame" x="14" y="13" width="82" height="32"/>
+                                        <rect key="frame" x="13" y="13" width="76" height="32"/>
                                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0ML-YN-Uaj">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
