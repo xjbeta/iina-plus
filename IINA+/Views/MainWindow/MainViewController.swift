@@ -159,7 +159,6 @@ class MainViewController: NSViewController {
     @IBAction func openSelectedSuggestion(_ sender: Any) {
         let row = suggestionsTableView.selectedRow
         let processes = Processes.shared
-        let preferences = Preferences.shared
         
         func clear() {
             isSearching = false
@@ -168,7 +167,7 @@ class MainViewController: NSViewController {
         }
         
         guard row != -1,
-            var yougetJSON = yougetResult else {
+            let yougetJSON = yougetResult else {
             if isSearching {
                 processes.stopDecodeURL()
             }
@@ -176,34 +175,7 @@ class MainViewController: NSViewController {
             return
         }
         clear()
-        let uuid = yougetJSON.uuid
-        
-        let videoGet = processes.videoDecoder
-        
-        let key = yougetJSON.videos[row].key
-        let site = SupportSites(url: self.searchField.stringValue)
-        
-        videoGet.prepareVideoUrl(yougetJSON, key).get {
-            yougetJSON = $0
-        }.then { _ in
-            videoGet.prepareDanmakuFile(
-                yougetJSON: yougetJSON,
-                id: uuid)
-        }.done {
-            // init Danmaku
-            if preferences.enableDanmaku,
-               preferences.livePlayer == .iina,
-               processes.iinaArchiveType() != .normal {
-                switch site {
-                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .douyin:
-                    processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
-                default:
-                    break
-                }
-            }
-            
-            processes.openWithPlayer(yougetJSON, key)
-        }.catch {
+        open(result: yougetJSON, row: row).catch {
             Log("Prepare DM file error : \($0)")
         }
     }
@@ -494,7 +466,13 @@ class MainViewController: NSViewController {
                 }.then { _ in
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
-                    self.yougetResult = $0
+                    if Preferences.shared.autoOpenResult {
+                        self.open(result: $0, row: 0).catch {
+                            Log("Prepare DM file error : \($0)")
+                        }
+                    } else {
+                        self.yougetResult = $0
+                    }
                     resolver.fulfill(())
                 }.catch(on: .main, policy: .allErrors) {
                     resolver.reject($0)
@@ -596,6 +574,41 @@ class MainViewController: NSViewController {
             } else {
                 decodeUrl()
             }
+        }
+    }
+    
+    func open(result: YouGetJSON, row: Int) -> Promise<()> {
+        let processes = Processes.shared
+        let preferences = Preferences.shared
+        
+        var yougetJSON = result
+        let uuid = yougetJSON.uuid
+        
+        let videoGet = processes.videoDecoder
+        
+        let key = yougetJSON.videos[row].key
+        let site = SupportSites(url: self.searchField.stringValue)
+        
+        return videoGet.prepareVideoUrl(yougetJSON, key).get {
+            yougetJSON = $0
+        }.then { _ in
+            videoGet.prepareDanmakuFile(
+                yougetJSON: yougetJSON,
+                id: uuid)
+        }.done {
+            // init Danmaku
+            if preferences.enableDanmaku,
+               preferences.livePlayer == .iina,
+               processes.iinaArchiveType() != .normal {
+                switch site {
+                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .douyin:
+                    processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
+                default:
+                    break
+                }
+            }
+            
+            processes.openWithPlayer(yougetJSON, key)
         }
     }
     

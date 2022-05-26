@@ -35,6 +35,15 @@ class Preferences: NSObject {
         }
     }
     
+    @objc var autoOpenResult: Bool {
+        get {
+            return defaults(.autoOpenResult) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .autoOpenResult)
+        }
+    }
+    
     @objc var enableDanmaku: Bool {
         get {
             return defaults(.enableDanmaku) as? Bool ?? false
@@ -170,6 +179,24 @@ class Preferences: NSObject {
         }
     }
     
+    @objc dynamic var bilibiliCodec: Int {
+        get {
+            return defaults(.bilibiliCodec) as? Int ?? 1
+        }
+        set {
+            defaultsSet(newValue, forKey: .bilibiliCodec)
+        }
+    }
+    
+    @objc dynamic var bililiveHevc: Bool {
+        get {
+            return defaults(.bililiveHevc) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .bililiveHevc)
+        }
+    }
+    
     private func colorEncode(_ color: NSColor) -> Data {
         (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
     }
@@ -195,6 +222,8 @@ private extension Preferences {
 enum PreferenceKeys: String {
     case livePlayer
     case enableFlvjs
+    case autoOpenResult
+    
     case enableDanmaku
     case danmukuFontFamilyName
     case danmukuFontWeight
@@ -209,4 +238,7 @@ enum PreferenceKeys: String {
     case stateOffline
     case stateReplay
     case stateUnknown
+    
+    case bilibiliCodec
+    case bililiveHevc
 }

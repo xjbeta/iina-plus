@@ -181,9 +181,8 @@ class DouYin: NSObject, SupportSiteProtocol {
             $0.domain.contains("douyin")
         }
         
-        return webview.evaluateJavaScript("document.getElementsByClassName('webcast-chatroom___item').length").then { length -> Promise<()> in
-            
-            if let l = length as? Int, l == 2 {
+        return webview.evaluateJavaScript("self.__LOADABLE_LOADED_CHUNKS__.length").then { length -> Promise<()> in
+            if let l = length as? Int, l == 15 {
                 dyCookies.forEach {
                     self.cookies[$0.name] = $0.value
                 }
