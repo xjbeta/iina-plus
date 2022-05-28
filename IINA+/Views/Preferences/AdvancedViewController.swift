@@ -23,11 +23,13 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         initCacheSize()
     }
     
-    var blockTypeButtons: [NSButton] = []
+    var blockTypeButtons: [NSButton: String] = [:]
     @IBAction func chooseBlockType(_ sender: NSButton) {
         Preferences.shared.dmBlockType = blockTypeButtons.filter {
-            $0.state == .on
-        }.map { $0.title }
+            $0.key.state == .on
+        }.map {
+            $0.value
+        }
     }
     
     lazy var choosePanel: NSOpenPanel = {
@@ -66,16 +68,15 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        blockTypeButtons.append(scrollButton)
-        blockTypeButtons.append(topButton)
-        blockTypeButtons.append(bottomButton)
-        blockTypeButtons.append(colorButton)
-        blockTypeButtons.append(advancedButton)
+        blockTypeButtons[scrollButton] = "Scroll"
+        blockTypeButtons[topButton] = "Top"
+        blockTypeButtons[bottomButton] = "Bottom"
+        blockTypeButtons[colorButton] = "Color"
+        blockTypeButtons[advancedButton] = "Advanced"
         blockTypeButtons.filter {
-            Preferences.shared.dmBlockType.contains($0.title)
+            Preferences.shared.dmBlockType.contains($0.value)
             }.forEach {
-                $0.state = .on
+                $0.key.state = .on
         }
         
         initBlockListMenu()
