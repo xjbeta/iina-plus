@@ -209,7 +209,7 @@ struct YouGetJSON: Unmarshaling, Codable {
     
     func videoUrl(_ key: String) -> String? {
         switch site {
-        case .bilibili, .bangumi:
+        case .bilibili, .bangumi, .biliLive:
             return streams[key]?.url
         case .local:
             return streams.first?.value.url
