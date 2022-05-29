@@ -213,13 +213,6 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
-        NotificationCenter.default.addObserver(forName: .loadDanmaku, object: nil, queue: .main) {
-            guard let dic = $0.userInfo as? [String: String],
-                let id = dic["id"] else { return }
-            
-            proc.httpServer.register(id, site: .bilibili, url: "https://swift.org/\(id)")
-        }
-        
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
@@ -596,18 +589,6 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            // init Danmaku
-            if preferences.enableDanmaku,
-               preferences.livePlayer == .iina,
-               processes.iinaArchiveType() != .normal {
-                switch site {
-                case .bilibili, .bangumi, .biliLive, .douyu, .huya, .douyin:
-                    processes.httpServer.register(uuid, site: site, url: self.searchField.stringValue)
-                default:
-                    break
-                }
-            }
-            
             processes.openWithPlayer(yougetJSON, key)
         }
     }

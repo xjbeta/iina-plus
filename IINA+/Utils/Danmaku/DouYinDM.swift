@@ -13,7 +13,7 @@ import PromiseKit
 
 class DouYinDM: NSObject {
     var url = ""
-    var delegate: DanmakuDelegate?
+    var delegate: DanmakuSubDelegate?
     
     let proc = Processes.shared
     var ua: String {
@@ -162,7 +162,7 @@ class DouYinDM: NSObject {
 //        Log(msgs.map({ $0.content }))
         
         msgs.forEach {
-            delegate?.send(.sendDM, text: $0.content, id: "")
+            delegate?.send(.sendDM, text: $0.content)
         }
         
         requestTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] timer in
