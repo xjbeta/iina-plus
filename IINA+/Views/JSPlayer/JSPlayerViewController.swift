@@ -55,19 +55,18 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet weak var enableDMButton: NSButton!
     @IBAction func enableDanmaku(_ sender: NSButton) {
         let enableDM = sender.state == .on
-        send(enableDM ? .start : .stop, text: "", id: "")
-        
+        danmakuWS?.send(enableDM ? .start : .stop, text: "")
         startDM()
     }
     
     @IBOutlet weak var speedSlider: NSSlider!
     @IBAction func speedChanged(_ sender: NSSlider) {
-        send(.dmSpeed, text: "\(sender.doubleValue)", id: "")
+        danmakuWS?.send(.dmSpeed, text: "\(sender.doubleValue)")
     }
     
     @IBOutlet weak var opacitySlider: NSSlider!
     @IBAction func opacityChanged(_ sender: NSSlider) {
-        send(.dmOpacity, text: "\(sender.doubleValue)", id: "")
+        danmakuWS?.send(.dmOpacity, text: "\(sender.doubleValue)")
     }
     
     
@@ -124,6 +123,7 @@ class JSPlayerViewController: NSViewController {
     
     var windowSizeInited = false
     var danmaku: Danmaku?
+    var danmakuWS: DanmakuWS!
     let proc = Processes.shared
     
     var playerMuted = false
@@ -163,6 +163,8 @@ class JSPlayerViewController: NSViewController {
         
         startLoading()
         initWebView()
+        
+        danmakuWS = .init(id: "", site: .local, url: "", webview: webView)
     }
     
     func initTrackingAreas() {
@@ -389,17 +391,16 @@ class JSPlayerViewController: NSViewController {
             d.stop()
             danmaku = nil
         }
-        guard let url = result?.rawUrl,
+        guard let re = result,
               pref.enableDanmaku,
               enableDMButton.state == .on else { return }
-        
-        danmaku = Danmaku(url)
+        danmaku = Danmaku(re.rawUrl)
         danmaku?.loadDM()
         danmaku?.delegate = self
         
-        danmaku?.loadCustomFont()
-        danmaku?.customDMSpeed()
-        danmaku?.customDMOpdacity()
+        danmakuWS.loadCustomFont()
+        danmakuWS.customDMSpeed()
+        danmakuWS.customDMOpdacity()
     }
     
     override func mouseEntered(with event: NSEvent) {
@@ -644,16 +645,8 @@ extension JSPlayerViewController: WKScriptMessageHandler {
 }
 
 extension JSPlayerViewController: DanmakuDelegate {
-    struct DanmakuEvent: Encodable {
-        var method: String
-        var text: String
-    }
-    
-    func send(_ method: DanamkuMethod, text: String, id: String) {
-        guard let data = try? JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text)),
-            let str = String(data: data, encoding: .utf8) else { return }
-//        print(method, str)
-        evaluateJavaScript("window.dmMessage(\(str));")
+    func send(_ method: DanamkuMethod, text: String, sender: Danmaku) {
+        danmakuWS?.send(method, text: text)
     }
 }
 
