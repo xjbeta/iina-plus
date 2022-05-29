@@ -145,9 +145,13 @@ struct YouGetJSON: Unmarshaling, Codable {
             "mpv_" + $0
         }
         args.insert("url=\(url)", at: 0)
+        
+        
+        let newUUID = [uuid, rawUrl].joined(separator: "👻").toHexString()
+        
         if Preferences.shared.enableDanmaku {
             args.append("danmaku")
-            args.append("uuid=\(uuid)")
+            args.append("uuid=\(newUUID)")
         }
         args.append("dmPort=\(Preferences.shared.dmPort)")
         args.append("directly")

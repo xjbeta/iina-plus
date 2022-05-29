@@ -133,9 +133,11 @@ function updateStatus(status){
 function start(websocketServerLocation){
     ws = new WebSocket(websocketServerLocation);
     updateStatus('warning');
-    ws.onopen = function(evt) { 
-        updateStatus();
-        ws.send(uuid);
+    ws.onopen = function(evt) {
+        if (isLiving) {
+            updateStatus();
+            ws.send("iinaWebDM://" + uuid);
+        };
     };
     ws.onmessage = function(evt) { 
         var event = JSON.parse(evt.data);
@@ -164,9 +166,9 @@ function start(websocketServerLocation){
             if (event.text == 'acfun') {
                 loadDM('/danmaku/iina-plus-danmaku.json', 'acfun');
             } else {
-                loadDM('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
+                loadDM('/danmaku/' + 'danmaku' + '-' + event.text + '.xml');
                 
-                console.log('/danmaku/' + 'danmaku' + '-' + uuid + '.xml');
+                console.log('/danmaku/' + 'danmaku' + '-' + event.text + '.xml');
             }
             isLiving = false;
             break;
