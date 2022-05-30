@@ -17,7 +17,11 @@ import PromiseKit
 import Marshal
 
 protocol DanmakuDelegate {
-    func send(_ method: DanamkuMethod, text: String, id: String)
+    func send(_ method: DanamkuMethod, text: String, sender: Danmaku)
+}
+
+protocol DanmakuSubDelegate {
+    func send(_ method: DanamkuMethod, text: String)
 }
 
 class Danmaku: NSObject {
@@ -140,8 +144,6 @@ class Danmaku: NSObject {
         let roomID = url.lastPathComponent
         let videoDecoder = Processes.shared.videoDecoder
         switch liveSite {
-        case .bilibili, .bangumi:
-            delegate?.send(.loadDM, text: "", id: id)
         case .biliLive:
             socket = .init(url: biliLiveServer!)
             socket?.delegate = self
@@ -202,43 +204,7 @@ class Danmaku: NSObject {
     }
     
     private func sendDM(_ str: String) {
-        delegate?.send(.sendDM, text: str, id: id)
-    }
-    
-    func loadCustomFont(_ id: String = "rua-uuid~~~") {
-        let pref = Preferences.shared
-        let font = pref.danmukuFontFamilyName
-        let size = pref.danmukuFontSize
-        let weight = pref.danmukuFontWeight
-        
-        var text = ".customFont {"
-        text += "color: #fff;"
-        text += "font-family: '\(font) \(weight)', SimHei, SimSun, Heiti, 'MS Mincho', 'Meiryo', 'Microsoft YaHei', monospace;"
-        text += "font-size: \(size)px;"
-        
-        
-        text += "letter-spacing: 0;line-height: 100%;margin: 0;padding: 3px 0 0 0;position: absolute;text-decoration: none;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;-webkit-text-size-adjust: none;-ms-text-size-adjust: none;text-size-adjust: none;-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);-webkit-transform-origin: 0% 0%;-ms-transform-origin: 0% 0%;transform-origin: 0% 0%;white-space: pre;word-break: keep-all;}"
-        
-        Log("Danmaku font \(font) \(weight), \(size)px.")
-        
-        delegate?.send(.customFont, text: text, id: id)
-    }
-
-    func customDMSpeed(_ id: String = "rua-uuid~~~") {
-        let dmSpeed = Int(Preferences.shared.dmSpeed)
-        delegate?.send(.dmSpeed, text: "\(dmSpeed)", id: id)
-    }
-
-    func customDMOpdacity(_ id: String = "rua-uuid~~~") {
-        delegate?.send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)", id: id)
-    }
-    
-    func loadFilters(_ id: String = "rua-uuid~~~") {
-        var types = Preferences.shared.dmBlockType
-        if Preferences.shared.dmBlockList.type != .none {
-            types.append("List")
-        }
-        delegate?.send(.dmBlockList, text: types.joined(separator: ", "), id: id)
+        delegate?.send(.sendDM, text: str, sender: self)
     }
     
     private func initDouYuSocket(_ roomID: String) {
@@ -500,7 +466,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         default:
             break
         }
-        delegate?.send(.liveDMServer, text: "error", id: id)
+        delegate?.send(.liveDMServer, text: "error", sender: self)
     }
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
@@ -713,7 +679,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                         }
                     } else if $0.starts(with: "type@=error") {
                         Log("douyu socket disconnected: \($0)")
-                        self.delegate?.send(.liveDMServer, text: "error", id: id)
+                        self.delegate?.send(.liveDMServer, text: "error", sender: self)
                         socket?.close()
                     } else if $0.starts(with: "type@=loginres") {
                         Log("douyu content success")
@@ -751,9 +717,9 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
     }
 }
 
-extension Danmaku: DanmakuDelegate {
-    func send(_ method: DanamkuMethod, text: String, id: String) {
-        sendDM(text)
+extension Danmaku: DanmakuSubDelegate {
+    func send(_ method: DanamkuMethod, text: String) {
+        delegate?.send(method, text: text, sender: self)
     }
 }
 

@@ -305,6 +305,7 @@ enum VideoGetError: Error {
     case douyuUrlError
     case douyuSignError
     case douyuNotFoundRoomId
+    case douyuNotFoundSubRooms
     case douyuRoomIdsCountError
     
     case isNotLiving

@@ -121,7 +121,7 @@ class Douyu: NSObject, SupportSiteProtocol {
         
         AF.request("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0").responseString().map {
             guard let data = self.douyuRoomJsonFormatter($0.string)?.data(using: .utf8) else {
-                throw VideoGetError.douyuNotFoundRoomId
+                throw VideoGetError.douyuNotFoundSubRooms
             }
             
             let json: JSONObject = try JSONParser.JSONObjectWithData(data)

@@ -176,7 +176,7 @@ class Processes: NSObject {
         case .iina where type == .normal && buildVersion >= 90:
 //            1.0.0 beta3 build 86  URL Scheme without mpv options
 //            1.0.0 beta4 build 90
-            if [.bilibili, .bangumi].contains(json.site) {
+            if [.bilibili, .bangumi, .biliLive].contains(json.site) {
                 openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
             } else {
                 openWithURLScheme(iinaUrl)
