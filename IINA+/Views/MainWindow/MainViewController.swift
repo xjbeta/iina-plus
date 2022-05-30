@@ -534,7 +534,12 @@ class MainViewController: NSViewController {
                         self.showSelectVideo("", infos: infos, currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
                     }.catch {
-                        resolver.reject($0)
+                        switch $0 {
+                        case VideoGetError.douyuNotFoundSubRooms:
+                            decodeUrl()
+                        default:
+                            resolver.reject($0)
+                        }
                     }
                 }.catch {
                     resolver.reject($0)
