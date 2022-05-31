@@ -33,9 +33,10 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         initFontSelector()
         initMenu(for: playerPopUpButton)
         
+        let proc = Processes.shared
         portTextField.isEnabled = pref.enableDanmaku
-            && Processes.shared.iinaArchiveType() != .normal
-            && Processes.shared.iinaBuildVersion() > 16
+        && ((proc.iinaArchiveType() == .danmaku && proc.iinaBuildVersion() > 16) || proc.iinaArchiveType() == .plugin)
+            
     }
     
     func menuDidClose(_ menu: NSMenu) {
