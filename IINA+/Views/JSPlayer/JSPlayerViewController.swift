@@ -362,6 +362,8 @@ class JSPlayerViewController: NSViewController {
     }
     
     func deinitWebView() {
+        evaluateJavaScript("flv_destroy();")
+        
         webView.stopLoading()
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
