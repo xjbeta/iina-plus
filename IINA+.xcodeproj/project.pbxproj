@@ -55,6 +55,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
+		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
 		01892C8327C27FAB00494AFD /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01892C8127C27FAB00494AFD /* douyin.html */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
@@ -198,6 +199,7 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
 		01892C8127C27FAB00494AFD /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 				018F4F6028126FFD0045B67C /* Huya.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
+				018739ED2852135200156F3F /* QQLive.swift */,
 			);
 			path = VideoDecoder;
 			sourceTree = "<group>";
@@ -756,6 +759,7 @@
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
+				018739EE2852135200156F3F /* QQLive.swift in Sources */,
 				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
 				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
 				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
