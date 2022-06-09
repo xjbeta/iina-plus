@@ -185,7 +185,7 @@ class HttpServer: NSObject, DanmakuDelegate {
          case .bilibili, .bangumi:
          // Return DM File
          return .badRequest(nil)
-         case .eGame, .douyu, .huya, .biliLive:
+         case .douyu, .huya, .biliLive:
          self.register(uuid, site: site, url: url)
          default:
          return .badRequest(nil)

@@ -55,6 +55,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
+		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
 		01892C8327C27FAB00494AFD /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01892C8127C27FAB00494AFD /* douyin.html */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
@@ -63,7 +64,6 @@
 		018F4F6128126FFD0045B67C /* Huya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6028126FFD0045B67C /* Huya.swift */; };
 		018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 018F4F632812BFC60045B67C /* PMKAlamofire */; };
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
-		018F4F682812D2E80045B67C /* EGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F672812D2E70045B67C /* EGame.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
 		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
 		01942A3227C345060092FA5A /* DouYinDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinDMMessage.swift */; };
@@ -199,6 +199,7 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
 		01892C8127C27FAB00494AFD /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
@@ -206,7 +207,6 @@
 		0189534E27A138310011BAAC /* JSPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerViewController.swift; sourceTree = "<group>"; };
 		018F4F6028126FFD0045B67C /* Huya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Huya.swift; sourceTree = "<group>"; };
 		018F4F652812C3EB0045B67C /* Douyu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Douyu.swift; sourceTree = "<group>"; };
-		018F4F672812D2E70045B67C /* EGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EGame.swift; sourceTree = "<group>"; };
 		018F4F692812D95C0045B67C /* CC163.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CC163.swift; sourceTree = "<group>"; };
 		018F4F6B2817FFF30045B67C /* BiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLive.swift; sourceTree = "<group>"; };
 		01942A3127C345060092FA5A /* DouYinDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinDMMessage.swift; sourceTree = "<group>"; };
@@ -441,10 +441,10 @@
 				018F4F692812D95C0045B67C /* CC163.swift */,
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
-				018F4F672812D2E70045B67C /* EGame.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
+				018739ED2852135200156F3F /* QQLive.swift */,
 			);
 			path = VideoDecoder;
 			sourceTree = "<group>";
@@ -703,7 +703,6 @@
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
-				018F4F682812D2E80045B67C /* EGame.swift in Sources */,
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
@@ -760,6 +759,7 @@
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
+				018739EE2852135200156F3F /* QQLive.swift in Sources */,
 				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
 				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
 				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
@@ -943,7 +943,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.12;
+				MARKETING_VERSION = 0.6.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -967,7 +967,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.12;
+				MARKETING_VERSION = 0.6.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

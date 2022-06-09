@@ -89,6 +89,12 @@ class BiliLive: NSObject, SupportSiteProtocol {
 
             return AF.request(u).responseData().map {
                 let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+                
+                if try json.value(for: "data.encrypted") == true,
+                   try json.value(for: "data.pwd_verified") == false {
+                    throw VideoGetError.needPassWork
+                }
+                
                 let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
                 return playUrl.write(to: result)
             }

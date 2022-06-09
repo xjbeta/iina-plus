@@ -116,7 +116,7 @@ extension String {
             u += "@\(maxH)h.jpg"
         case .biliLive:
             u += "@\(maxH)w_\(maxH)h_1c.jpg"
-        case .huya, .eGame:
+        case .huya:
 //            default 140x140
             break
         case .douyu, .cc163:

@@ -280,7 +280,7 @@ class JSPlayerViewController: NSViewController {
             self.evaluateJavaScript("flvPlayer.muted = \(self.playerMuted);")
             
             switch re.site {
-            case .douyu, .eGame, .biliLive, .huya, .douyin:
+            case .douyu, .biliLive, .huya, .douyin:
                 self.startDM()
             case .bilibili, .bangumi:
                 break
@@ -362,6 +362,8 @@ class JSPlayerViewController: NSViewController {
     }
     
     func deinitWebView() {
+        evaluateJavaScript("flv_destroy();")
+        
         webView.stopLoading()
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)

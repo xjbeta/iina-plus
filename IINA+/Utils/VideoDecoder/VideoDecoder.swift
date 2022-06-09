@@ -19,10 +19,10 @@ class VideoDecoder: NSObject {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
-    lazy var eGame = EGame()
     lazy var cc163 = CC163()
     lazy var biliLive = BiliLive()
     lazy var bilibili = Bilibili()
+    lazy var qqLive = QQLive()
     
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
@@ -55,14 +55,14 @@ class VideoDecoder: NSObject {
             return douyu.decodeUrl(url)
         case .huya:
             return huya.decodeUrl(url)
-        case .eGame:
-            return eGame.decodeUrl(url)
         case .bilibili, .bangumi:
             return bilibili.decodeUrl(url)
         case .cc163:
             return cc163.decodeUrl(url)
         case .douyin:
             return douyin.decodeUrl(url)
+        case .qqLive:
+            return qqLive.decodeUrl(url)
         default:
             return .init(error: VideoGetError.notSupported)
         }
@@ -90,26 +90,22 @@ class VideoDecoder: NSObject {
     }
     
     func liveInfo(_ url: String, _ checkSupport: Bool = true) -> Promise<LiveInfo> {
-        
-        guard let url = URL(string: url) else {
-            return .init(error: VideoGetError.notSupported)
-        }
-        let site = SupportSites(url: url.absoluteString)
+        let site = SupportSites(url: url)
         switch site {
         case .biliLive:
-            return biliLive.liveInfo(url.absoluteString)
+            return biliLive.liveInfo(url)
         case .douyu:
-            return douyu.liveInfo(url.absoluteString)
+            return douyu.liveInfo(url)
         case .huya:
-            return huya.liveInfo(url.absoluteString)
-        case .eGame:
-            return eGame.liveInfo(url.absoluteString)
+            return huya.liveInfo(url)
         case .bilibili, .bangumi:
-            return bilibili.liveInfo(url.absoluteString)
+            return bilibili.liveInfo(url)
         case .cc163:
-            return cc163.liveInfo(url.absoluteString)
+            return cc163.liveInfo(url)
         case .douyin:
-            return douyin.liveInfo(url.absoluteString)
+            return douyin.liveInfo(url)
+        case .qqLive:
+            return qqLive.liveInfo(url)
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)
@@ -311,7 +307,6 @@ enum VideoGetError: Error {
     case isNotLiving
     case notFindUrls
     case notSupported
-    case egameFunctionNotFound
     
     case cantFindIdForDM
     
@@ -320,4 +315,5 @@ enum VideoGetError: Error {
     case cantWatch
     case notFountData
     case needVip
+    case needPassWork
 }
