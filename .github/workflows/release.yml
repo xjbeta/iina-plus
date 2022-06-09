@@ -23,7 +23,7 @@ jobs:
       - name: Download Sparkle
         shell: zsh {0}
         run: |
-          curl -s https://api.github.com/repos/sparkle-project/Sparkle/releases/latest | grep -wo "https.*.tar.xz" | wget -qi -
+          brew info --json=v2 sparkle | grep -wo "https.*.tar.xz" | wget -qi -
           mkdir Sparkle
           tar -xf Sparkle*.tar.xz -C Sparkle
 
