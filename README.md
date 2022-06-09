@@ -25,7 +25,6 @@
 | bililive | ✓           | ✓            | ✓       |
 | douyu    | ✓           | ✓            | ✓       |
 | huya     | ✓           | ✓            | ✓       |
-| egame.qq | ✓           | ✓            | ✓       |
 | cc.163   | ✓           | ✓            | ✕       |
 | douyin   | ✓           | ✓            | ✓       |
 

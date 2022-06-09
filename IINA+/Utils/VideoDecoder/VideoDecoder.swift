@@ -19,7 +19,6 @@ class VideoDecoder: NSObject {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
-    lazy var eGame = EGame()
     lazy var cc163 = CC163()
     lazy var biliLive = BiliLive()
     lazy var bilibili = Bilibili()
@@ -55,8 +54,6 @@ class VideoDecoder: NSObject {
             return douyu.decodeUrl(url)
         case .huya:
             return huya.decodeUrl(url)
-        case .eGame:
-            return eGame.decodeUrl(url)
         case .bilibili, .bangumi:
             return bilibili.decodeUrl(url)
         case .cc163:
@@ -102,8 +99,6 @@ class VideoDecoder: NSObject {
             return douyu.liveInfo(url.absoluteString)
         case .huya:
             return huya.liveInfo(url.absoluteString)
-        case .eGame:
-            return eGame.liveInfo(url.absoluteString)
         case .bilibili, .bangumi:
             return bilibili.liveInfo(url.absoluteString)
         case .cc163:
@@ -311,7 +306,6 @@ enum VideoGetError: Error {
     case isNotLiving
     case notFindUrls
     case notSupported
-    case egameFunctionNotFound
     
     case cantFindIdForDM
     
