@@ -314,4 +314,5 @@ enum VideoGetError: Error {
     case cantWatch
     case notFountData
     case needVip
+    case needPassWork
 }
