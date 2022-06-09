@@ -31,6 +31,8 @@ class Danmaku: NSObject {
     var id = ""
     var delegate: DanmakuDelegate?
     
+    private var heartBeatCount = 0
+    
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveIDs = (rid: "", token: "")
     
@@ -108,6 +110,7 @@ class Danmaku: NSObject {
         socket = nil
         timer?.cancel()
         douyuSavedData = Data()
+        heartBeatCount = 0
         
         douyinDM?.stop()
         douyinDM = nil
@@ -233,9 +236,17 @@ class Danmaku: NSObject {
                         let data = self.douyuSocketFormatter(keeplive)
                         try self.socket?.send(data: data)
                     case .huya:
-                        try self.socket?.sendPing(Data())
+                        let result = self.huyaJSContext?.evaluateScript("new Uint8Array(sendHeartBeat());")
+                        let data = Data(result?.toArray() as? [UInt8] ?? [])
+                        self.sendMsg(data)
                     default:
                         try self.socket?.sendPing(Data())
+                    }
+                    self.heartBeatCount += 1
+                    if self.heartBeatCount > 5 {
+                        self.stop()
+                        self.loadDM()
+                        Log("HeartBeatCount exceed, restart.")
                     }
                 } catch let error {
                     if (error as NSError).code == 2134 {
@@ -374,7 +385,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             //            0000 0234
             //            0-4 json length + head
             if data.count == 20 {
-//                Log("received heartbeat")
+                Log("Danmaku HeartBeatRsp")
+                heartBeatCount = 0
                 return
             } else if data.count == 26 {
                 Log("bililive connect success")
@@ -441,8 +453,11 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             } else if str.starts(with: "EWebSocketCommandType") {
                 Log("huya websocket info \(str)")
                 return
+            } else if str == "EWebSocketCommandType.EWSCmdS2C_HeartBeatRsp" {
+                Log("Danmaku HeartBeatRsp")
+                heartBeatCount = 0
+                return
             }
-            
             
             guard let data = str.data(using: .utf8),
                   let msg = try? JSONDecoder().decode(HuYaDanmuMsg.self, from: data) else {
@@ -582,6 +597,9 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                         socket?.close()
                     } else if $0.starts(with: "type@=loginres") {
                         Log("douyu content success")
+                    } else if $0 == "type@=mrkl" {
+                        Log("Danmaku HeartBeatRsp")
+                        heartBeatCount = 0
                     }
             }
         default:

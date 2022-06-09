@@ -35,6 +35,14 @@ function sendRegisterGroups(arr) {
     return os.getBuffer();
 };
 
+function sendHeartBeat() {
+    var req = new HUYA.WebSocketCommand;
+    req.iCmdType = HUYA.EWebSocketCommandType.EWSCmdC2S_HeartBeatReq;
+    var os = new Taf.JceOutputStream;
+    req.writeTo(os);
+    return os.getBuffer();
+};
+
 function test(t) {
     var arrayBuffer = new Uint8Array(t).buffer;
     var i = new Taf.JceInputStream(arrayBuffer);
@@ -98,6 +106,8 @@ function test(t) {
             return 'EWebSocketCommandType.EWSCmdS2C_EnterP2PAck';
         case HUYA.EWebSocketCommandType.EWSCmdS2C_ExitP2PAck:
             return 'EWebSocketCommandType.EWSCmdS2C_ExitP2PAck';
+        case HUYA.EWebSocketCommandType.EWSCmdS2C_HeartBeatRsp:
+            return 'EWebSocketCommandType.EWSCmdS2C_HeartBeatRsp';
         default:
             return 'EWebSocketCommandType.Default';
     };
