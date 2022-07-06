@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage",
       "state" : {
-        "revision" : "2e63d0061da449ad0ed130768d05dceb1496de44",
-        "version" : "5.12.5"
+        "revision" : "c4b8660bb3ef543fe4bdcaac0db956b32dc5583f",
+        "version" : "5.13.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "286edd1fa22505a9e54d170e9fd07d775ea233f2",
-        "version" : "2.1.0"
+        "revision" : "c1bf68f91f5c37ba5b3ac5028e34ceb5d444de12",
+        "version" : "2.2.0"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scinfu/SwiftSoup",
       "state" : {
-        "revision" : "41e7c263fb8c277e980ebcb9b0b5f6031d3d4886",
-        "version" : "2.4.2"
+        "revision" : "6778575285177365cbad3e5b8a72f2a20583cfec",
+        "version" : "2.4.3"
       }
     }
   ],

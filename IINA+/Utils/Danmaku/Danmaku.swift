@@ -168,7 +168,8 @@ class Danmaku: NSObject {
             }
         case .huya:
             AF.request(url.absoluteString).responseString().done {
-                let roomData = $0.string.subString(from: "var TT_ROOM_DATA = ", to: ";var").data(using: .utf8) ?? Data()
+                let js = $0.string.subString(from: "var TT_ROOM_DATA = ", to: "};")
+                let roomData = (js + "}").data(using: .utf8) ?? Data()
                 let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
                 
                 self.huyaAnchorUid = try roomInfo.value(for: "id")
