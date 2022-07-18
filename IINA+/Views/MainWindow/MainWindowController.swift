@@ -23,6 +23,13 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
         NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
     }
     
+    func windowDidChangeOcclusionState(_ notification: Notification) {
+        guard let w = window,
+              w.occlusionState.rawValue == 8194,
+              !w.isMainWindow
+        else { return }
+        NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
+    }
 }
 
 
