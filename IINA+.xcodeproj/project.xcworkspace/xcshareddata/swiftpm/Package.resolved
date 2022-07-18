@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire",
       "state" : {
-        "revision" : "354dda32d89fc8cd4f5c46487f64957d355f53d8",
-        "version" : "5.6.1"
+        "revision" : "8dd85aee02e39dd280c75eef88ffdb86eed4b07b",
+        "version" : "5.6.2"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage",
       "state" : {
-        "revision" : "c4b8660bb3ef543fe4bdcaac0db956b32dc5583f",
-        "version" : "5.13.0"
+        "revision" : "cc1995b73883a1f97931366879d862c53a32bf82",
+        "version" : "5.13.1"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "c1bf68f91f5c37ba5b3ac5028e34ceb5d444de12",
-        "version" : "2.2.0"
+        "revision" : "059ce9128775d5a636c7f4716f71a58919d3111e",
+        "version" : "2.2.1"
       }
     },
     {
