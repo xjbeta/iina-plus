@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mxcl/PromiseKit",
       "state" : {
-        "revision" : "c946b7561fbe11379a874e59faa2c5f8077ae0e1",
-        "version" : "6.17.1"
+        "revision" : "ed3192004c0b00b4b3d7baa9578ee655c66faae3",
+        "version" : "6.18.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage",
       "state" : {
-        "revision" : "cc1995b73883a1f97931366879d862c53a32bf82",
-        "version" : "5.13.1"
+        "revision" : "3e48cb68d8e668d146dc59c73fb98cb628616236",
+        "version" : "5.13.2"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e1499bc69b9040b29184f7f2996f7bab467c1639",
-        "version" : "1.19.0"
+        "revision" : "fa0fcd43f272a260e7f734f23e6dc55e16fcae0a",
+        "version" : "1.19.1"
       }
     },
     {
