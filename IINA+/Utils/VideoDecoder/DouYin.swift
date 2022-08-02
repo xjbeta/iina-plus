@@ -74,7 +74,13 @@ class DouYin: NSObject, SupportSiteProtocol {
             }
             
             let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
-            return try DouYinInfo(object: jsonObj)
+            
+            if let re = try? DouYinInfo(object: jsonObj) {
+                return re
+            } else {
+                let info: DouYinInfo = try jsonObj.value(for: "app")
+                return info
+            }
         }
     }
     
@@ -265,7 +271,11 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
     
     
     init(object: MarshaledObject) throws {
-        roomId = try object.value(for: "initialState.roomStore.roomInfo.roomId")
+        if let rid: String = try? object.value(for: "initialState.roomStore.roomInfo.roomId") {
+            roomId = rid
+        } else {
+            roomId = try object.value(for: "initialState.roomStore.roomInfo.room.id_str")
+        }
         webRid = try object.value(for: "initialState.roomStore.roomInfo.web_rid")
         
         title = try object.value(for: "initialState.roomStore.roomInfo.room.title")
