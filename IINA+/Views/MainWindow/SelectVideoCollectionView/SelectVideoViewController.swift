@@ -92,7 +92,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             s = "\(info.index)  \(info.title)"
         case .bangumi:
             s = info.title
-            if let longTitle = (info as? BilibiliVideoSelector)?.longTitle {
+            if let longTitle = (info as? BiliVideoSelector)?.longTitle {
                 s += "  \(longTitle)"
             }
         case .douyu:
@@ -135,7 +135,12 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
         var u = ""
         switch info.site {
         case .bilibili:
-            u = "https://www.bilibili.com/video/\(videoId)?p=\(info.index)"
+            guard let info = info as? BiliVideoSelector else { return }
+            if info.isCollection {
+                u = "https://www.bilibili.com/video/\(info.bvid)"
+            } else {
+                u = "https://www.bilibili.com/video/\(videoId)?p=\(info.index)"
+            }
         case .douyu:
             u = "https://www.douyu.com/\(info.id)"
         case .bangumi:
