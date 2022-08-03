@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire",
       "state" : {
-        "revision" : "354dda32d89fc8cd4f5c46487f64957d355f53d8",
-        "version" : "5.6.1"
+        "revision" : "8dd85aee02e39dd280c75eef88ffdb86eed4b07b",
+        "version" : "5.6.2"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mxcl/PromiseKit",
       "state" : {
-        "revision" : "c946b7561fbe11379a874e59faa2c5f8077ae0e1",
-        "version" : "6.17.1"
+        "revision" : "ed3192004c0b00b4b3d7baa9578ee655c66faae3",
+        "version" : "6.18.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage",
       "state" : {
-        "revision" : "c4b8660bb3ef543fe4bdcaac0db956b32dc5583f",
-        "version" : "5.13.0"
+        "revision" : "3e48cb68d8e668d146dc59c73fb98cb628616236",
+        "version" : "5.13.2"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "c1bf68f91f5c37ba5b3ac5028e34ceb5d444de12",
-        "version" : "2.2.0"
+        "revision" : "059ce9128775d5a636c7f4716f71a58919d3111e",
+        "version" : "2.2.1"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e1499bc69b9040b29184f7f2996f7bab467c1639",
-        "version" : "1.19.0"
+        "revision" : "fa0fcd43f272a260e7f734f23e6dc55e16fcae0a",
+        "version" : "1.19.1"
       }
     },
     {

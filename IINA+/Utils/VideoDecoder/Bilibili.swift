@@ -243,9 +243,14 @@ class Bilibili: NSObject, SupportSiteProtocol {
         case .video:
             json.site = .bilibili
             return getVideoList(url).compactMap { list -> YouGetJSON? in
-                guard let s = list.first(where: { $0.index == bUrl.p }) else {
-                    return nil
+                var selector = list.first
+                if let s = selector, s.isCollection {
+                    selector = list.first(where: { $0.bvid == bUrl.id })
+                } else {
+                    selector = list.first(where: { $0.index == bUrl.p })
                 }
+                guard let s = selector else { return nil }
+                
                 json.id = s.id
                 json.bvid = s.bvid
                 json.title = s.title
@@ -365,7 +370,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BilibiliVideoSelector]> {
+    func getVideoList(_ url: String) -> Promise<[BiliVideoSelector]> {
         var aid = -1
         var bvid = ""
         
@@ -393,17 +398,21 @@ class Bilibili: NSObject, SupportSiteProtocol {
         
         return r.responseData().map {
             let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            var infos: [BilibiliVideoSelector] = try json.value(for: "data.pages")
-            let bvid: String = try json.value(for: "data.bvid")
             
-            if infos.count == 1 {
-                infos[0].title = try json.value(for: "data.title")
+            if let collection: BilibiliVideoCollection = try json.value(for: "data.ugc_season"), collection.episodes.count > 0 {
+                return collection.episodes
+            } else {
+                var infos: [BiliVideoSelector] = try json.value(for: "data.pages")
+                let bvid: String = try json.value(for: "data.bvid")
+                
+                if infos.count == 1 {
+                    infos[0].title = try json.value(for: "data.title")
+                }
+                infos.enumerated().forEach {
+                    infos[$0.offset].bvid = bvid
+                }
+                return infos
             }
-            infos.enumerated().forEach {
-                infos[$0.offset].bvid = bvid
-            }
-            
-            return infos
         }
     }
     
@@ -544,15 +553,20 @@ struct BilibiliPvideo: Unmarshaling {
     }
 }
 
-struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
-    
+protocol BilibiliVideoSelector: VideoSelector {
+    var bvid: String { get set }
+    var duration: Int { get set }
+}
+
+struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
     var bvid = ""
+    var isCollection = false
     
     // epid
     let id: Int
     var index: Int
     let part: String
-    let duration: TimeInterval
+    var duration: Int
     var title: String
     let longTitle: String
     let coverUrl: URL?
@@ -567,14 +581,24 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
     
     init(object: MarshaledObject) throws {
         id = try object.value(for: "cid")
-        index = try object.value(for: "page")
-        part = try object.value(for: "part")
-        let d: Double? = try? object.value(for: "duration")
-        duration = d ?? 0
-        title = part
+        
+        if let pic: String = try? object.value(for: "arc.pic") {
+            coverUrl = .init(string: pic)
+            duration = (try? object.value(for: "arc.duration")) ?? 0
+            bvid = try object.value(for: "bvid")
+            index = 0
+            title = try object.value(for: "title")
+            isCollection = true
+            part = ""
+        } else {
+            index = try object.value(for: "page")
+            part = try object.value(for: "part")
+            duration = (try? object.value(for: "duration")) ?? 0
+            title = part
+            coverUrl = nil
+    //        badge = nil
+        }
         longTitle = ""
-        coverUrl = nil
-//        badge = nil
         site = .bilibili
     }
     
@@ -594,14 +618,52 @@ struct BilibiliVideoSelector: Unmarshaling, VideoSelector {
     }
 }
 
+struct BilibiliVideoCollection: Unmarshaling {
+    let id: Int
+    let title: String
+    let cover: URL?
+    let mid: Int
+    let epCount: Int
+    let isPaySeason: Bool
+    let episodes: [BiliVideoSelector]
+    
+    init(object: MarshaledObject) throws {
+        id = try object.value(for: "id")
+        title = try object.value(for: "title")
+        cover = .init(string: try object.value(for: "cover"))
+        mid = try object.value(for: "mid")
+        epCount = try object.value(for: "ep_count")
+        isPaySeason = try object.value(for: "is_pay_season")
+        
+        let s: [Section] = try object.value(for: "sections")
+        episodes = s.first?.episodes ?? []
+    }
+    
+    struct Section: Unmarshaling {
+        let id: Int
+        let title: String
+        let episodes: [BiliVideoSelector]
+        
+        init(object: MarshaledObject) throws {
+            id = try object.value(for: "id")
+            title = try object.value(for: "title")
+            var eps: [BiliVideoSelector] = try object.value(for: "episodes")
+            eps.enumerated().forEach {
+                eps[$0.offset].index = $0.offset + 1
+            }
+            episodes = eps
+        }
+    }
+}
+
 struct BangumiList: Unmarshaling {
     let title: String
     let epList: [BangumiInfo.BangumiEp]
     let sections: [BangumiInfo.BangumiSections]
     
-    var epVideoSelectors: [BilibiliVideoSelector] {
+    var epVideoSelectors: [BiliVideoSelector] {
         get {
-            var list = epList.map(BilibiliVideoSelector.init)
+            var list = epList.map(BiliVideoSelector.init)
             list.enumerated().forEach {
                 list[$0.offset].index = $0.offset + 1
             }
@@ -609,11 +671,11 @@ struct BangumiList: Unmarshaling {
         }
     }
     
-    var selectionVideoSelectors: [BilibiliVideoSelector] {
+    var selectionVideoSelectors: [BiliVideoSelector] {
         get {
             var list = sections.compactMap {
                 $0.epList.first
-            }.map(BilibiliVideoSelector.init)
+            }.map(BiliVideoSelector.init)
             list.enumerated().forEach {
                 list[$0.offset].index = $0.offset + 1
             }

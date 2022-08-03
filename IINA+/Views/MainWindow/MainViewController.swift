@@ -189,6 +189,10 @@ class MainViewController: NSViewController {
         super.viewDidLoad()
         let proc = Processes.shared
         
+        dataManager.requestData().forEach {
+            $0.state = LiveState.none.raw
+        }
+        
         loadBilibiliCards()
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
