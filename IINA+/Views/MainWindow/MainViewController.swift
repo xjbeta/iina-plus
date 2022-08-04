@@ -486,7 +486,8 @@ class MainViewController: NSViewController {
                 case .video:
                     re = bilibili.getVideoList(u).done { infos in
                         if infos.count > 1 {
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: bUrl.p - 1)
+                            let cItem = infos.first!.isCollection ? infos.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
+                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
