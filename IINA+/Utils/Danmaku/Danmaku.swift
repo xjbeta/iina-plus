@@ -14,14 +14,15 @@ import Gzip
 import JavaScriptCore
 import CryptoSwift
 import PromiseKit
+import PMKAlamofire
 import Marshal
 
 protocol DanmakuDelegate {
-    func send(_ method: DanamkuMethod, text: String, sender: Danmaku)
+    func send(_ event: DanmakuEvent, sender: Danmaku)
 }
 
 protocol DanmakuSubDelegate {
-    func send(_ method: DanamkuMethod, text: String)
+    func send(_ event: DanmakuEvent)
 }
 
 class Danmaku: NSObject {
@@ -35,6 +36,7 @@ class Danmaku: NSObject {
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
     var biliLiveIDs = (rid: "", token: "")
+    var bililiveEmoticons = [BiliLiveEmoticon]()
     
     struct BiliLiveDanmuMsg: Decodable {
         struct ResultObj: Decodable {
@@ -149,10 +151,11 @@ class Danmaku: NSObject {
             bililiveRid(roomID).get {
                 self.biliLiveIDs.rid = $0
             }.then {
-                self.bililiveToken($0)
-            }.get {
-                self.biliLiveIDs.token = $0
-            }.done { _ in
+                when(fulfilled: self.bililiveToken($0),
+                     self.bililiveEmoticons($0))
+            }.done {
+                self.biliLiveIDs.token = $0.0
+                self.bililiveEmoticons = $0.1
                 self.socket?.open()
             }.catch {
                 Log("can't find bilibili ids \($0).")
@@ -195,8 +198,8 @@ class Danmaku: NSObject {
         }
     }
     
-    private func sendDM(_ str: String) {
-        delegate?.send(.sendDM, text: str, sender: self)
+    private func sendDM(_ event: DanmakuEvent) {
+        delegate?.send(event, sender: self)
     }
     
     private func initDouYuSocket(_ roomID: String) {
@@ -294,6 +297,68 @@ class Danmaku: NSObject {
         }
     }
     
+    struct BiliLiveEmoticon: Unmarshaling {
+        let emoji: String
+        let url: String
+        let width: Int
+        let height: Int
+        let identity: Int
+        let emoticonUnique: String
+        let emoticonId: Int
+        
+        var emoticonData: Data?
+        
+        init(object: MarshaledObject) throws {
+            emoji = try object.value(for: "emoji")
+            let u: String = try object.value(for: "url")
+            url = u.replacingOccurrences(of: "http://", with: "https://")
+            width = try object.value(for: "width")
+            height = try object.value(for: "height")
+            identity = try object.value(for: "identity")
+            emoticonUnique = try object.value(for: "emoticon_unique")
+            emoticonId = try object.value(for: "emoticon_id")
+        }
+    }
+    
+    
+    func bililiveEmoticons(_ rid: String) -> Promise<([BiliLiveEmoticon])> {
+        return Promise { resolver in
+            AF.request("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)").response {
+                
+                struct BiliLiveEmoticonData: Unmarshaling {
+                    let emoticons: [BiliLiveEmoticon]
+                    let pkgId: Int
+                    let pkgName: String
+                    init(object: MarshaledObject) throws {
+                        emoticons = try object.value(for: "emoticons")
+                        pkgId = try object.value(for: "pkg_id")
+                        pkgName = try object.value(for: "pkg_name")
+                    }
+                }
+                
+                do {
+                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
+                    let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
+                    var emoticons = emoticonData.flatMap {
+                        $0.emoticons
+                    }
+                    
+                    when(fulfilled: emoticons.enumerated().map { item -> Promise<()> in
+                        AF.request(item.element.url).responseData().done {
+                            emoticons[item.offset].emoticonData = $0.data
+                        }
+                    }).done {
+                        resolver.fulfill(emoticons)
+                    }.catch {
+                        resolver.reject($0)
+                    }
+                } catch let error {
+                    resolver.reject(error)
+                }
+            }
+        }
+    }
+    
     /*
     func testedBilibiliAPI() {
         let p = ["aid": 31027408,
@@ -377,7 +442,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         default:
             break
         }
-        delegate?.send(.liveDMServer, text: "error", sender: self)
+        delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
     }
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
@@ -391,6 +456,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 return
             } else if data.count == 26 {
                 Log("bililive connect success")
+                self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
                 return
             }
             
@@ -431,14 +497,26 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                     d.removeAll()
                 }
             }
-
-
-            datas.compactMap {
-                try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: $0)
-                }.compactMap {
-                    $0.info.compactMap ({ $0.msg }).first
-                }.forEach {
-                    sendDM($0)
+            
+            datas.forEach { data in
+                if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
+                   let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == s }) {
+                    
+                    guard let base64 = emoticon.emoticonData?.base64EncodedString(),
+                            base64.count > 0 else { return }
+                    
+                    let ext = NSString(string: emoticon.url.lastPathComponent).pathExtension
+                    
+                    let size = Int(emoticon.width / 2) > 125 ? 125 : Int(emoticon.width / 2)
+                    
+                    sendDM(.init(
+                        method: .sendDM,
+                        text: "",
+                        imageSrc: "data:image/\(ext);base64," + base64,
+                        imageWidth: size))
+                } else if let s = (try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: data))?.info.compactMap ({ $0.msg }).first {
+                    sendDM(.init(method: .sendDM, text: s))
+                }
             }
         case .huya:
             let bytes = [UInt8](data)
@@ -450,6 +528,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             
             if str == "EWebSocketCommandType.EWSCmdS2C_RegisterGroupRsp" {
                 Log("huya connect success")
+                self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
                 return
             } else if str.starts(with: "EWebSocketCommandType") {
                 Log("huya websocket info \(str)")
@@ -471,7 +550,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                msg.iProtocolType == 2,
                !huyaBlockList.contains(where: msg.sMsg.contains) {
                
-                sendDM(msg.sMsg)
+                sendDM(.init(method: .sendDM, text: msg.sMsg))
             }
             
             
@@ -590,14 +669,15 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                             return
                         }
                         DispatchQueue.main.async {
-                            self.sendDM(dm)
+                            self.sendDM(.init(method: .sendDM, text: dm))
                         }
                     } else if $0.starts(with: "type@=error") {
                         Log("douyu socket disconnected: \($0)")
-                        self.delegate?.send(.liveDMServer, text: "error", sender: self)
+                        self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
                         socket?.close()
                     } else if $0.starts(with: "type@=loginres") {
                         Log("douyu content success")
+                        self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
                     } else if $0 == "type@=mrkl" {
                         Log("Danmaku HeartBeatRsp")
                         heartBeatCount = 0
@@ -636,8 +716,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
 }
 
 extension Danmaku: DanmakuSubDelegate {
-    func send(_ method: DanamkuMethod, text: String) {
-        delegate?.send(method, text: text, sender: self)
+    func send(_ event: DanmakuEvent) {
+        delegate?.send(event, sender: self)
     }
 }
 

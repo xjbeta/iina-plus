@@ -162,7 +162,7 @@ class DouYinDM: NSObject {
 //        Log(msgs.map({ $0.content }))
         
         msgs.forEach {
-            delegate?.send(.sendDM, text: $0.content)
+            delegate?.send(.init(method: .sendDM, text: $0.content))
         }
         
         requestTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] timer in
