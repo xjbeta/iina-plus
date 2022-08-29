@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "comment-core-library": "^0.11.1",
+    "comment-core-library": "github:xjbeta/CommentCoreLibrary#iina-grunt",
     "crypto-js": "^4.1.1",
     "flv.js": "^1.6.2"
   }
