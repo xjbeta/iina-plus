@@ -589,6 +589,10 @@ class MainViewController: NSViewController {
         
         let videoGet = processes.videoDecoder
         
+        guard yougetJSON.videos.count > 0 else {
+            return .init(error: VideoGetError.notFountData)
+        }
+        
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
         
