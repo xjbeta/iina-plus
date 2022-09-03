@@ -16,6 +16,7 @@ import CryptoSwift
 import PromiseKit
 import PMKAlamofire
 import Marshal
+import SDWebImage
 
 protocol DanmakuDelegate {
     func send(_ event: DanmakuEvent, sender: Danmaku)
@@ -344,8 +345,15 @@ class Danmaku: NSObject {
                     }
                     
                     when(fulfilled: emoticons.enumerated().map { item -> Promise<()> in
-                        AF.request(item.element.url).responseData().done {
-                            emoticons[item.offset].emoticonData = $0.data
+                        let key = "BiliLive_Emoticons_" + item.element.emoticonUnique
+                        if let image = SDImageCache.shared.imageFromCache(forKey: key) {
+                            emoticons[item.offset].emoticonData = image.sd_imageData()
+                            return .value
+                        } else {
+                            return AF.request(item.element.url).responseData().done {
+                                emoticons[item.offset].emoticonData = $0.data
+                                SDImageCache.shared.store(NSImage(data: $0.data), forKey: key)
+                            }
                         }
                     }).done {
                         resolver.fulfill(emoticons)
