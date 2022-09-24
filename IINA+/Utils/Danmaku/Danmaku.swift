@@ -176,7 +176,13 @@ class Danmaku: NSObject {
                 let roomData = (js + "}").data(using: .utf8) ?? Data()
                 let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
                 
-                self.huyaAnchorUid = try roomInfo.value(for: "id")
+                if let id: String = try? roomInfo.value(for: "id"),
+                    let uid = Int(id) {
+                    self.huyaAnchorUid = uid
+                } else {
+                    self.huyaAnchorUid = try roomInfo.value(for: "id")
+                }
+                
                 self.socket = .init(url: self.huyaServer!)
                 self.socket?.delegate = self
                 self.socket?.open()
