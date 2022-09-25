@@ -55,18 +55,18 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet weak var enableDMButton: NSButton!
     @IBAction func enableDanmaku(_ sender: NSButton) {
         let enableDM = sender.state == .on
-        danmakuWS?.send(enableDM ? .start : .stop, text: "")
+        danmakuWS?.send(.init(method: enableDM ? .start : .stop, text: ""))
         startDM()
     }
     
     @IBOutlet weak var speedSlider: NSSlider!
     @IBAction func speedChanged(_ sender: NSSlider) {
-        danmakuWS?.send(.dmSpeed, text: "\(sender.doubleValue)")
+        danmakuWS?.send(.init(method: .dmSpeed, text: "\(sender.doubleValue)"))
     }
     
     @IBOutlet weak var opacitySlider: NSSlider!
     @IBAction func opacityChanged(_ sender: NSSlider) {
-        danmakuWS?.send(.dmOpacity, text: "\(sender.doubleValue)")
+        danmakuWS?.send(.init(method: .dmOpacity, text: "\(sender.doubleValue)"))
     }
     
     
@@ -647,8 +647,8 @@ extension JSPlayerViewController: WKScriptMessageHandler {
 }
 
 extension JSPlayerViewController: DanmakuDelegate {
-    func send(_ method: DanamkuMethod, text: String, sender: Danmaku) {
-        danmakuWS?.send(method, text: text)
+    func send(_ event: DanmakuEvent, sender: Danmaku) {
+        danmakuWS?.send(event)
     }
 }
 

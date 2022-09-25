@@ -41,6 +41,11 @@ class DataManager: NSObject {
         try? context.save()
     }
     
+    func delete(_ bookmark: Bookmark) {
+        context.delete(bookmark)
+        try? context.save()
+    }
+    
     func moveBookmark(at oldIndex: Int, to newIndex: Int) {
         let bookmarks = requestData()
         let oldBookmark = bookmarks[oldIndex]

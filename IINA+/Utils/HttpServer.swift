@@ -10,7 +10,7 @@ import Cocoa
 import Swifter
 import WebKit
 
-enum DanamkuMethod: String {
+enum DanamkuMethod: String, Encodable {
     case start,
     stop,
     initDM,
@@ -23,9 +23,11 @@ enum DanamkuMethod: String {
     dmOpacity,
     dmFontSize,
     dmBlockList
+    
 }
 
 class HttpServer: NSObject, DanmakuDelegate {
+    
     private var server = Swifter.HttpServer()
     
     private var unknownSessions = [WebSocketSession]()
@@ -279,11 +281,11 @@ class HttpServer: NSObject, DanmakuDelegate {
         }
     }
     
-    func send(_ method: DanamkuMethod, text: String = "", sender: Danmaku) {
+    func send(_ event: DanmakuEvent, sender: Danmaku) {
         self.connectedItems.filter {
             $0.url == sender.url
         }.forEach {
-            $0.send(method, text: text)
+            $0.send(event)
         }
     }
     
@@ -323,8 +325,16 @@ extension HttpRequest {
 }
 
 struct DanmakuEvent: Encodable {
-    var method: String
+    var method: DanamkuMethod
     var text: String
+    
+    var imageSrc: String?
+    var imageWidth: Int?
+    
+    func string() -> String? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
 }
 
 struct DanmakuWS {
@@ -335,10 +345,9 @@ struct DanmakuWS {
     
     var webview: WKWebView? = nil
     
-    func send(_ method: DanamkuMethod, text: String = "") {
-        guard let data = try? JSONEncoder().encode(DanmakuEvent(method: method.rawValue, text: text)),
-            let str = String(data: data, encoding: .utf8) else { return }
-        
+    func send(_ event: DanmakuEvent) {
+        guard let str = event.string() else { return }
+
         if let s = session {
             s.writeText(str)
         } else if let wv = webview {
@@ -366,16 +375,15 @@ struct DanmakuWS {
         
         Log("Danmaku font \(font) \(weight), \(size)px.")
         
-        send(.customFont, text: text)
+        send(.init(method: .customFont, text: text))
     }
 
     func customDMSpeed() {
-        let dmSpeed = Int(Preferences.shared.dmSpeed)
-        send(.dmSpeed, text: "\(dmSpeed)")
+        send(.init(method: .dmSpeed, text: "\(Int(Preferences.shared.dmSpeed))"))
     }
 
     func customDMOpdacity() {
-        send(.dmOpacity, text: "\(Preferences.shared.dmOpacity)")
+        send(.init(method: .dmOpacity, text: "\(Preferences.shared.dmOpacity)"))
     }
     
     func loadFilters() {
@@ -383,10 +391,10 @@ struct DanmakuWS {
         if Preferences.shared.dmBlockList.type != .none {
             types.append("List")
         }
-        send(.dmBlockList, text: types.joined(separator: ", "))
+        send(.init(method: .dmBlockList, text: types.joined(separator: ", ")))
     }
     
     func loadXMLDM() {
-        send(.loadDM, text: id)
+        send(.init(method: .loadDM, text: id))
     }
 }

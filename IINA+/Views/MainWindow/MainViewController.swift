@@ -56,16 +56,22 @@ class MainViewController: NSViewController {
     
     @IBAction func deleteBookmark(_ sender: Any) {
         guard let index = bookmarkTableView.selectedIndexs().first,
-            let w = view.window else { return }
+              let objs = bookmarkArrayController.arrangedObjects as? [Bookmark],
+              index > 0,
+              index < objs.count,
+              let w = view.window else { return }
+        let obj = objs[index]
+        
+        
         let alert = NSAlert()
         alert.messageText = "Delete Bookmark."
-        alert.informativeText = "This item will be deleted."
+        alert.informativeText = "\(obj.liveName == "" ? obj.url : obj.liveName) will be deleted."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Delete")
         alert.addButton(withTitle: "Cancel")
         alert.beginSheetModal(for: w) { [weak self] in
             if $0 == .alertFirstButtonReturn {
-                self?.dataManager.deleteBookmark(index)
+                self?.dataManager.delete(obj)
                 self?.bookmarkTableView.reloadData()
             }
         }
@@ -486,7 +492,8 @@ class MainViewController: NSViewController {
                 case .video:
                     re = bilibili.getVideoList(u).done { infos in
                         if infos.count > 1 {
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: bUrl.p - 1)
+                            let cItem = infos.first!.isCollection ? infos.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
+                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
@@ -587,6 +594,10 @@ class MainViewController: NSViewController {
         let uuid = yougetJSON.uuid
         
         let videoGet = processes.videoDecoder
+        
+        guard yougetJSON.videos.count > 0 else {
+            return .init(error: VideoGetError.notFountData)
+        }
         
         let key = yougetJSON.videos[row].key
         let site = SupportSites(url: self.searchField.stringValue)
