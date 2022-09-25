@@ -56,16 +56,22 @@ class MainViewController: NSViewController {
     
     @IBAction func deleteBookmark(_ sender: Any) {
         guard let index = bookmarkTableView.selectedIndexs().first,
-            let w = view.window else { return }
+              let objs = bookmarkArrayController.arrangedObjects as? [Bookmark],
+              index > 0,
+              index < objs.count,
+              let w = view.window else { return }
+        let obj = objs[index]
+        
+        
         let alert = NSAlert()
         alert.messageText = "Delete Bookmark."
-        alert.informativeText = "This item will be deleted."
+        alert.informativeText = "\(obj.liveName == "" ? obj.url : obj.liveName) will be deleted."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Delete")
         alert.addButton(withTitle: "Cancel")
         alert.beginSheetModal(for: w) { [weak self] in
             if $0 == .alertFirstButtonReturn {
-                self?.dataManager.deleteBookmark(index)
+                self?.dataManager.delete(obj)
                 self?.bookmarkTableView.reloadData()
             }
         }
