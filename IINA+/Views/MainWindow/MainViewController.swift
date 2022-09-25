@@ -57,7 +57,7 @@ class MainViewController: NSViewController {
     @IBAction func deleteBookmark(_ sender: Any) {
         guard let index = bookmarkTableView.selectedIndexs().first,
               let objs = bookmarkArrayController.arrangedObjects as? [Bookmark],
-              index > 0,
+              index >= 0,
               index < objs.count,
               let w = view.window else { return }
         let obj = objs[index]
