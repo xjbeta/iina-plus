@@ -87,13 +87,30 @@ class MainViewController: NSViewController {
     }
     
     @IBAction func copyUrl(_ sender: NSMenuItem) {
-        let url = bookmarks[bookmarkTableView.clickedRow].url
+        var url: String?
+        switch sender.menu {
+        case bookmarkTableView.menu:
+            url = bookmarks[bookmarkTableView.clickedRow].url
+        case bilibiliTableView.menu:
+            url = "https://www.bilibili.com/video/" + bilibiliCards[bilibiliTableView.clickedRow].bvid
+        default: break
+        }
+        guard let url = url else { return }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(url, forType: .string)
     }
     
     @IBAction func decode(_ sender: NSMenuItem) {
-        let url = bookmarks[bookmarkTableView.clickedRow].url
+        var url: String?
+        switch sender.menu {
+        case bookmarkTableView.menu:
+            url = bookmarks[bookmarkTableView.clickedRow].url
+        case bilibiliTableView.menu:
+            url = "https://www.bilibili.com/video/" + bilibiliCards[bilibiliTableView.clickedRow].bvid
+        default: break
+        }
+        guard let url = url else { return }
+        
         searchField.stringValue = url
         searchField.becomeFirstResponder()
         startSearch(self)
