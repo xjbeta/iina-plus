@@ -263,7 +263,7 @@ struct BiliLivePlayUrl: Unmarshaling {
                 var s = Stream(url: "")
                 s.quality = $0.qn
                 if codec.currentQn == $0.qn {
-                    var urls = codec.urls()
+                    var urls = MBGA.update(codec.urls())
                     s.url = urls.removeFirst()
                     s.src = urls
                 }

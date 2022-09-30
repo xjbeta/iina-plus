@@ -853,10 +853,16 @@ struct BilibiliPlayInfo: Unmarshaling {
         yougetJson.duration = duration
         
         videos.enumerated().forEach {
-            var stream = Stream(url: $0.element.url)
+            var urls = $0.element.backupUrl
+            urls.append($0.element.url)
+            urls = MBGA.update(urls)
+            
+            var stream = Stream(url: "")
 //            stream.quality = $0.element.bandwidth
             stream.quality = 999 - $0.element.index
-            stream.src = $0.element.backupUrl
+            
+            stream.url = urls.removeFirst()
+            stream.src = urls
             yougetJson.streams[$0.element.description] = stream
         }
         
@@ -905,8 +911,12 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
             var stream = yougetJson.streams[$0.value] ?? Stream(url: "")
             if $0.key == quality,
                 let durl = durl.first {
-                stream.url = durl.url
-                stream.src = durl.backupUrls
+                var urls = durl.backupUrls
+                urls.append(durl.url)
+                urls = MBGA.update(urls)
+                
+                stream.url = urls.removeFirst()
+                stream.src = urls
             }
             stream.quality = $0.key
             yougetJson.streams[$0.value] = stream

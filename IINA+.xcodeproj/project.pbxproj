@@ -102,6 +102,7 @@
 		01C0809727BC074000E87A8C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809627BC074000E87A8C /* SDWebImage */; };
 		01C0809A27BC079200E87A8C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809927BC079200E87A8C /* Sparkle */; };
 		01C0809D27BC0BC400E87A8C /* SocketRocket in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809C27BC0BC400E87A8C /* SocketRocket */; };
+		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
@@ -236,6 +237,7 @@
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
 		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
+		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
@@ -445,6 +447,7 @@
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
+				01C338B428E47B3F004CC0B8 /* MBGA.swift */,
 			);
 			path = VideoDecoder;
 			sourceTree = "<group>";
@@ -704,6 +707,7 @@
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
+				01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
