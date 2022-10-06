@@ -556,11 +556,11 @@ class MainViewController: NSViewController {
                             DouyuVideoSelector(
                                 index: $0.offset,
                                 title: $0.element.text,
-                                id: Int($0.element.onlineRoomId) ?? 0,
+                                id: Int($0.element.roomId) ?? 0,
                                 coverUrl: nil)
                         }
 
-                        self.showSelectVideo("", infos: [("", infos)], currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
+                        self.showSelectVideo("", infos: [("", infos)], currentItem: $0.map({ $0.roomId }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
                     }.catch {
                         switch $0 {

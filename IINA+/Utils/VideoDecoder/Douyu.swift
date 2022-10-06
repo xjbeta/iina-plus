@@ -125,7 +125,9 @@ class Douyu: NSObject, SupportSiteProtocol {
             }
             
             let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-            return try json.value(for: "children")
+            return (try json.value(for: "children")).filter {
+                $0.roomId != ""
+            }
         }
     }
     
@@ -275,10 +277,19 @@ struct DouyuVideoSelector: VideoSelector {
 }
 
 struct DouyuEventRoom: Unmarshaling {
-    let onlineRoomId: String
+    let roomId: String
     let text: String
     init(object: MarshaledObject) throws {
-        onlineRoomId = try object.value(for: "props.onlineRoomId")
+        if let rid: String = try? object.value(for: "props.onlineRoomId") {
+            roomId = rid
+        } else if let rid: String = try? object.value(for: "props.liveRoomId") {
+            roomId = rid
+        } else {
+            roomId = ""
+            text = ""
+            return
+        }
+        
         text = try object.value(for: "props.text")
     }
 }
