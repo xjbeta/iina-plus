@@ -110,6 +110,19 @@ class BiliLive: NSObject, SupportSiteProtocol {
             }
         }
     }
+    
+    func getRoomList(_ url: String) -> Promise<[(String, String)]> {
+        AF.request(url).responseString().map {
+            let s = $0.string.subString(from: "window.__initialState = ", to: ";\n")
+            let data = s.data(using: .utf8) ?? Data()
+            
+            let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+            let list: [BiliLiveRoomList] = try json.value(for: "live-non-revenue-player")
+            return list.first?.roomList.map {
+                ($0.roomId, $0.tabText)
+            } ?? []
+        }
+    }
 }
 
 struct BiliLiveInfo: Unmarshaling, LiveInfo {
@@ -283,4 +296,34 @@ struct BiliLivePlayUrl: Unmarshaling {
         }
         return json
     }
+}
+
+struct BiliLiveRoomList: Unmarshaling {
+    let defaultRoomId: String
+    let roomList: [Room]
+    
+    struct Room: Unmarshaling {
+        let roomId: String
+        let tabText: String
+        init(object: MarshaledObject) throws {
+            roomId = try object.value(for: "roomId")
+            tabText = try object.value(for: "tabText")
+        }
+    }
+    
+    init(object: MarshaledObject) throws {
+        defaultRoomId = try object.value(for: "defaultRoomId")
+        roomList = try object.value(for: "roomsConfig")
+    }
+}
+
+
+struct BiliLiveVideoSelector: VideoSelector {
+    let id: Int = 0
+    var coverUrl: URL?
+    
+    let site = SupportSites.biliLive
+    let index: Int
+    let title: String
+    let url: String
 }

@@ -590,6 +590,23 @@ class MainViewController: NSViewController {
                 }.catch {
                     resolver.reject($0)
                 }
+            } else if url.host == "live.bilibili.com" {
+                videoGet.biliLive.getRoomList(url.absoluteString).done {
+                    if $0.count == 0 {
+                        decodeUrl()
+                    } else {
+                        let infos = $0.enumerated().map {
+                            BiliLiveVideoSelector(
+                                index: $0.offset,
+                                title: $0.element.1,
+                                url: "https://live.bilibili.com/\($0.element.0)")
+                        }
+                        self.showSelectVideo("", infos: [("", infos)])
+                        resolver.fulfill(())
+                    }
+                }.catch {
+                    resolver.reject($0)
+                }
             } else if url.host == "cc.163.com" {
                 videoGet.cc163.getCC163State(url.absoluteString).done {
                     if let i = $0.info as? CC163Info {
