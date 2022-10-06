@@ -242,7 +242,8 @@ class Bilibili: NSObject, SupportSiteProtocol {
         switch bUrl.urlType {
         case .video:
             json.site = .bilibili
-            return getVideoList(url).compactMap { list -> YouGetJSON? in
+            return getVideoList(url).compactMap { eps -> YouGetJSON? in
+                let list = eps.flatMap({ $0.1 })
                 var selector = list.first
                 if let s = selector, s.isCollection {
                     selector = list.first(where: { $0.bvid == bUrl.id })
@@ -370,7 +371,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BiliVideoSelector]> {
+    func getVideoList(_ url: String) -> Promise<[(String, [BiliVideoSelector])]> {
         var aid = -1
         var bvid = ""
         
@@ -411,7 +412,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 infos.enumerated().forEach {
                     infos[$0.offset].bvid = bvid
                 }
-                return infos
+                return [("", infos)]
             }
         }
     }
@@ -625,7 +626,7 @@ struct BilibiliVideoCollection: Unmarshaling {
     let mid: Int
     let epCount: Int
     let isPaySeason: Bool
-    let episodes: [BiliVideoSelector]
+    let episodes: [(String, [BiliVideoSelector])]
     
     init(object: MarshaledObject) throws {
         id = try object.value(for: "id")
@@ -636,7 +637,9 @@ struct BilibiliVideoCollection: Unmarshaling {
         isPaySeason = try object.value(for: "is_pay_season")
         
         let s: [Section] = try object.value(for: "sections")
-        episodes = s.first?.episodes ?? []
+        episodes = s.map {
+            ($0.title, $0.episodes)
+        }
     }
     
     struct Section: Unmarshaling {

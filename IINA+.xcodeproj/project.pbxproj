@@ -89,6 +89,8 @@
 		01B53B6427B64FD20051F7B4 /* flvplayer.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* flvplayer.css */; };
 		01B53B6527B64FD20051F7B4 /* flvplayer.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* flvplayer.htm */; };
 		01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
+		01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */; };
+		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
 		01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */; };
 		01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807727BB5CFD00E87A8C /* Preferences.storyboard */; };
 		01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0807B27BC00EA00E87A8C /* Alamofire */; };
@@ -233,6 +235,8 @@
 		01B53B5827B64F270051F7B4 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebFiles/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
 		01B53B5A27B64F370051F7B4 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
 		01B53B5C27B64F420051F7B4 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
+		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
+		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
@@ -409,6 +413,8 @@
 				016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */,
 				016792ED212C421F003517A7 /* SelectVideoCollectionViewItemView.swift */,
 				016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */,
+				01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */,
+				01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */,
 			);
 			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
@@ -663,6 +669,7 @@
 				01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
+				01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				01892C8327C27FAB00494AFD /* douyin.html in Resources */,
@@ -746,6 +753,7 @@
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
 				0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
+				01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */,
 				0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */,
 				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,

@@ -389,7 +389,7 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: String, infos: [VideoSelector], currentItem: Int = 0) {
+    func showSelectVideo(_ videoId: String, infos: [(String, [VideoSelector])], currentItem: Int = 0) {
         guard let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first else {
             return
         }
@@ -508,8 +508,9 @@ class MainViewController: NSViewController {
                 switch bUrl.urlType {
                 case .video:
                     re = bilibili.getVideoList(u).done { infos in
-                        if infos.count > 1 {
-                            let cItem = infos.first!.isCollection ? infos.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
+                        let list = infos.flatMap({ $0.1 })
+                        if list.count > 1 {
+                            let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
                             self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
                             resolver.fulfill(())
                         } else {
@@ -530,7 +531,7 @@ class MainViewController: NSViewController {
                                 } ?? 0
                             }
                             
-                            self.showSelectVideo("", infos: epVS, currentItem: cItem)
+                            self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
                             resolver.fulfill(())
                         }
                     }
@@ -559,7 +560,7 @@ class MainViewController: NSViewController {
                                 coverUrl: nil)
                         }
 
-                        self.showSelectVideo("", infos: infos, currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
+                        self.showSelectVideo("", infos: [("", infos)], currentItem: $0.map({ $0.onlineRoomId }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
                     }.catch {
                         switch $0 {
@@ -591,7 +592,7 @@ class MainViewController: NSViewController {
                                 isLiving: $0.element.isLiving,
                                 url: $0.element.channel)
                         }
-                        self.showSelectVideo("", infos: infos)
+                        self.showSelectVideo("", infos: [("", infos)])
                         resolver.fulfill(())
                     }
                 }.catch {
