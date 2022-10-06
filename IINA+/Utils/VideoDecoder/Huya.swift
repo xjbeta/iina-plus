@@ -11,6 +11,7 @@ import PromiseKit
 import Alamofire
 import PMKAlamofire
 import Marshal
+import SwiftSoup
 
 class Huya: NSObject, SupportSiteProtocol {
     
@@ -39,6 +40,15 @@ class Huya: NSObject, SupportSiteProtocol {
     }
     
     // MARK: - Huya
+    
+    // href, name
+    func getHuyaRoomList(_ url: String) -> Promise<[(String, String)]> {
+        AF.request(url).responseString().map {
+            try SwiftSoup.parse($0.string).getElementsByClass("match-nav").first()?.children().compactMap {
+                try? ($0.attr("href"), $0.text())
+            } ?? []
+        }
+    }
     
     func getHuyaInfo(_ url: String) -> Promise<(HuyaInfo, [(String, Stream)])> {
 //        https://github.com/zhangn1985/ykdl/blob/master/ykdl/extractors/huya/live.py
@@ -427,4 +437,14 @@ fileprivate func huyaUrlFormatter2(_ u: String) -> String? {
 
     
     return uc.url?.absoluteString
+}
+
+struct HuyaVideoSelector: VideoSelector {
+    let id: Int = 0
+    var coverUrl: URL?
+    
+    let site = SupportSites.huya
+    let index: Int
+    let title: String
+    let url: String
 }

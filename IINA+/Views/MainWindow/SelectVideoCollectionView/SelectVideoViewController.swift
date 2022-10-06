@@ -115,7 +115,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             if let longTitle = (info as? BiliVideoSelector)?.longTitle {
                 s += "  \(longTitle)"
             }
-        case .douyu:
+        case .douyu, .huya:
             s = info.title
         case .cc163:
             let i = info as! CC163VideoSelector
@@ -163,6 +163,9 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             }
         case .douyu:
             u = "https://www.douyu.com/\(info.id)"
+        case .huya:
+            guard let info = info as? HuyaVideoSelector else { return }
+            u = info.url
         case .bangumi:
             u = "https://www.bilibili.com/bangumi/play/ep\(info.id)"
         case .cc163:
