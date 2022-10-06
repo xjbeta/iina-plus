@@ -114,9 +114,9 @@ class BiliLive: NSObject, SupportSiteProtocol {
     func getRoomList(_ url: String) -> Promise<[(String, String)]> {
         AF.request(url).responseString().map {
             let s = $0.string.subString(from: "window.__initialState = ", to: ";\n")
-            let data = s.data(using: .utf8) ?? Data()
+            guard let data = s.data(using: .utf8),
+                  let json: JSONObject = try? JSONParser.JSONObjectWithData(data) else { return [] }
             
-            let json: JSONObject = try JSONParser.JSONObjectWithData(data)
             let list: [BiliLiveRoomList] = try json.value(for: "live-non-revenue-player")
             return list.first?.roomList.map {
                 ($0.roomId, $0.tabText)
