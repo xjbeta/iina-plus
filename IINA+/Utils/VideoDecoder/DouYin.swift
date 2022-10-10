@@ -64,7 +64,7 @@ class DouYin: NSObject, SupportSiteProtocol {
         
         let headers = HTTPHeaders([
             "User-Agent": douyinUA,
-            "referer": "https://live.douyin.com",
+            "referer": url,
             "Cookie": cookieString
         ])
         
