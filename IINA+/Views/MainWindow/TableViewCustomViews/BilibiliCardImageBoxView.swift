@@ -11,7 +11,13 @@ import Cocoa
 class BilibiliCardImageBoxView: NSView {
     var pic: NSImage? = nil
     var pImages: [NSImage] = []
-    var aid: Int = 0
+    var pAid: Int = -1
+    var aid: Int = 0 {
+        didSet {
+            pAid = -1
+            pImages = []
+        }
+    }
     var displayedIndex = -1
     
     var state: PreviewStatus = .init🐴
@@ -79,9 +85,11 @@ class BilibiliCardImageBoxView: NSView {
         switch status {
         case .init🐴:
             state = .init🐴
-            if pImages.count == 0 {
-                Processes.shared.videoDecoder.bilibili.getPvideo(aid).done(on: .main) { pvideo in
+            if pImages.count == 0 || pAid != aid {
+                let id = aid
+                Processes.shared.videoDecoder.bilibili.getPvideo(id).done(on: .main) { pvideo in
                     self.pImages = pvideo.pImages
+                    self.pAid = id
                     self.updatePreview(.start, per: self.previewPercent)
                     }.catch { error in
                         Log("Error when get pImages: \(error)")

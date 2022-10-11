@@ -125,7 +125,20 @@ class Douyu: NSObject, SupportSiteProtocol {
             }
             
             let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-            return try json.value(for: "children")
+            return (try json.value(for: "children")).filter {
+                $0.roomId != ""
+            }
+        }
+    }
+    
+    func getDouyuEventRoomOnlineStatus(_ pageId: String) -> Promise<[String: Bool]> {
+        
+        struct RoomOnlineStatus: Decodable {
+            let data: [String: Bool]
+        }
+        
+        return AF.request("https://www.douyu.com/japi/carnival/c/roomActivity/getRoomOnlineStatus?pageId=\(pageId)").responseDecodable(RoomOnlineStatus.self).map {
+            $0.data
         }
     }
     
@@ -270,15 +283,26 @@ struct DouyuVideoSelector: VideoSelector {
     let site = SupportSites.douyu
     let index: Int
     let title: String
-    let id: Int
+    let id: String
+    let url: String
+    var isLiving: Bool
     let coverUrl: URL?
 }
 
 struct DouyuEventRoom: Unmarshaling {
-    let onlineRoomId: String
+    let roomId: String
     let text: String
     init(object: MarshaledObject) throws {
-        onlineRoomId = try object.value(for: "props.onlineRoomId")
+        if let rid: String = try? object.value(for: "props.onlineRoomId") {
+            roomId = rid
+        } else if let rid: String = try? object.value(for: "props.liveRoomId") {
+            roomId = rid
+        } else {
+            roomId = ""
+            text = ""
+            return
+        }
+        
         text = try object.value(for: "props.text")
     }
 }

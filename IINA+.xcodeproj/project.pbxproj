@@ -89,6 +89,8 @@
 		01B53B6427B64FD20051F7B4 /* flvplayer.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932827A3B441002C7FD3 /* flvplayer.css */; };
 		01B53B6527B64FD20051F7B4 /* flvplayer.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932A27A3B441002C7FD3 /* flvplayer.htm */; };
 		01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
+		01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */; };
+		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
 		01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */; };
 		01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807727BB5CFD00E87A8C /* Preferences.storyboard */; };
 		01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0807B27BC00EA00E87A8C /* Alamofire */; };
@@ -102,6 +104,7 @@
 		01C0809727BC074000E87A8C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809627BC074000E87A8C /* SDWebImage */; };
 		01C0809A27BC079200E87A8C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809927BC079200E87A8C /* Sparkle */; };
 		01C0809D27BC0BC400E87A8C /* SocketRocket in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809C27BC0BC400E87A8C /* SocketRocket */; };
+		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
@@ -232,10 +235,13 @@
 		01B53B5827B64F270051F7B4 /* flv.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = flv.min.js; path = "IINA+/WebFiles/node_modules/flv.js/dist/flv.min.js"; sourceTree = SOURCE_ROOT; };
 		01B53B5A27B64F370051F7B4 /* CommentCoreLibrary.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CommentCoreLibrary.min.js; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/CommentCoreLibrary.min.js"; sourceTree = SOURCE_ROOT; };
 		01B53B5C27B64F420051F7B4 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
+		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
+		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
 		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
+		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
@@ -407,6 +413,8 @@
 				016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */,
 				016792ED212C421F003517A7 /* SelectVideoCollectionViewItemView.swift */,
 				016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */,
+				01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */,
+				01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */,
 			);
 			path = SelectVideoCollectionView;
 			sourceTree = "<group>";
@@ -445,6 +453,7 @@
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
+				01C338B428E47B3F004CC0B8 /* MBGA.swift */,
 			);
 			path = VideoDecoder;
 			sourceTree = "<group>";
@@ -660,6 +669,7 @@
 				01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
 				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
+				01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
 				01AEC8B220EDFD02001406E8 /* Main.storyboard in Resources */,
 				01892C8327C27FAB00494AFD /* douyin.html in Resources */,
@@ -704,6 +714,7 @@
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
+				01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
@@ -742,6 +753,7 @@
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
 				0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */,
 				01AEC8BC20EDFFBD001406E8 /* YouGetJSON.swift in Sources */,
+				01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */,
 				0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */,
 				01683DD9211869AE0016A886 /* BilibiliLoginViewController.swift in Sources */,
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
@@ -944,7 +956,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.18;
+				MARKETING_VERSION = 0.6.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -969,7 +981,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.18;
+				MARKETING_VERSION = 0.6.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

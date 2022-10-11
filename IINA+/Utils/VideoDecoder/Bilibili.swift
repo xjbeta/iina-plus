@@ -242,7 +242,8 @@ class Bilibili: NSObject, SupportSiteProtocol {
         switch bUrl.urlType {
         case .video:
             json.site = .bilibili
-            return getVideoList(url).compactMap { list -> YouGetJSON? in
+            return getVideoList(url).compactMap { eps -> YouGetJSON? in
+                let list = eps.flatMap({ $0.1 })
                 var selector = list.first
                 if let s = selector, s.isCollection {
                     selector = list.first(where: { $0.bvid == bUrl.id })
@@ -251,7 +252,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 }
                 guard let s = selector else { return nil }
                 
-                json.id = s.id
+                json.id = Int(s.id) ?? -1
                 json.bvid = s.bvid
                 json.title = s.title
                 json.duration = Int(s.duration)
@@ -370,7 +371,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getVideoList(_ url: String) -> Promise<[BiliVideoSelector]> {
+    func getVideoList(_ url: String) -> Promise<[(String, [BiliVideoSelector])]> {
         var aid = -1
         var bvid = ""
         
@@ -411,7 +412,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 infos.enumerated().forEach {
                     infos[$0.offset].bvid = bvid
                 }
-                return infos
+                return [("", infos)]
             }
         }
     }
@@ -559,11 +560,14 @@ protocol BilibiliVideoSelector: VideoSelector {
 }
 
 struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
+    var url: String = ""
+    var isLiving: Bool = false
+    
     var bvid = ""
     var isCollection = false
     
     // epid
-    let id: Int
+    let id: String
     var index: Int
     let part: String
     var duration: Int
@@ -580,7 +584,8 @@ struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
     }
     
     init(object: MarshaledObject) throws {
-        id = try object.value(for: "cid")
+        let cid: Int = try object.value(for: "cid")
+        id = "\(cid)"
         
         if let pic: String = try? object.value(for: "arc.pic") {
             coverUrl = .init(string: pic)
@@ -603,7 +608,7 @@ struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
     }
     
     init(ep: BangumiInfo.BangumiEp) {
-        id = ep.id
+        id = "\(ep.id)"
         index = -1
         part = ""
         duration = 0
@@ -625,7 +630,7 @@ struct BilibiliVideoCollection: Unmarshaling {
     let mid: Int
     let epCount: Int
     let isPaySeason: Bool
-    let episodes: [BiliVideoSelector]
+    let episodes: [(String, [BiliVideoSelector])]
     
     init(object: MarshaledObject) throws {
         id = try object.value(for: "id")
@@ -636,7 +641,9 @@ struct BilibiliVideoCollection: Unmarshaling {
         isPaySeason = try object.value(for: "is_pay_season")
         
         let s: [Section] = try object.value(for: "sections")
-        episodes = s.first?.episodes ?? []
+        episodes = s.map {
+            ($0.title, $0.episodes)
+        }
     }
     
     struct Section: Unmarshaling {
@@ -853,10 +860,16 @@ struct BilibiliPlayInfo: Unmarshaling {
         yougetJson.duration = duration
         
         videos.enumerated().forEach {
-            var stream = Stream(url: $0.element.url)
+            var urls = $0.element.backupUrl
+            urls.append($0.element.url)
+            urls = MBGA.update(urls)
+            
+            var stream = Stream(url: "")
 //            stream.quality = $0.element.bandwidth
             stream.quality = 999 - $0.element.index
-            stream.src = $0.element.backupUrl
+            
+            stream.url = urls.removeFirst()
+            stream.src = urls
             yougetJson.streams[$0.element.description] = stream
         }
         
@@ -905,8 +918,12 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
             var stream = yougetJson.streams[$0.value] ?? Stream(url: "")
             if $0.key == quality,
                 let durl = durl.first {
-                stream.url = durl.url
-                stream.src = durl.backupUrls
+                var urls = durl.backupUrls
+                urls.append(durl.url)
+                urls = MBGA.update(urls)
+                
+                stream.url = urls.removeFirst()
+                stream.src = urls
             }
             stream.quality = $0.key
             yougetJson.streams[$0.value] = stream

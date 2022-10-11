@@ -23,7 +23,9 @@ protocol VideoSelector {
     var site: SupportSites { get }
     var index: Int { get }
     var title: String { get }
-    var id: Int { get }
+    var id: String { get }
+    var url: String { get }
+    var isLiving: Bool { get }
     var coverUrl: URL? { get }
 }
 
