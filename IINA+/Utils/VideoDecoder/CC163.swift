@@ -74,18 +74,24 @@ class CC163: NSObject, SupportSiteProtocol {
     func getCC163ZtRoomList(_ text: String) throws -> [CC163ZTInfo] {
         try SwiftSoup.parse(text)
             .getElementsByClass("channel_list").first()?
-            .children().map {
+            .children().compactMap { item -> CC163ZTInfo? in
+                func findAttr(_ key: String) -> String {
+                    (try? item.getElementsByAttribute(key).first()?.attr(key)) ?? ""
+                }
                 
-                CC163ZTInfo(
-                    name: try $0.children().first()?.children().first()?.text() ?? "",
-                    ccid: try $0.attr("ccid"),
-                    channel: try ($0.attr("channel").starts(with: "https:") ? $0.attr("channel") : "https:" + $0.attr("channel")),
-                    cid: try $0.attr("cid"),
-                    index: try $0.attr("index"),
-                    roomid: try $0.attr("roomid"),
-                    isLiving:  $0.children().first()?.children().hasClass("icon-live") ?? false)
-            }.filter {
-                $0.ccid != "" && $0.roomid != ""
+                let info = CC163ZTInfo(
+                    name: try item.text(),
+                    ccid: findAttr("ccid"),
+                    channel: (findAttr("channel").starts(with: "https:") || findAttr("channel") == "") ? findAttr("channel") : "https:" + findAttr("channel"),
+                    cid: findAttr("cid"),
+                    index: findAttr("index"),
+                    roomid: findAttr("roomid"),
+                    isLiving: (try? item.getElementsByClass("icon-live").first()) != nil)
+                if (info.ccid != "" || info.roomid != ""), info.channel != "" {
+                    return info
+                } else {   
+                    return nil
+                }
             } ?? []
     }
     
@@ -186,7 +192,7 @@ struct CC163VideoSelector: VideoSelector {
     let ccid: String
     let isLiving: Bool
     let url: String
-    let id: Int = -1
+    let id: String
     let coverUrl: URL? = nil
 }
 
@@ -221,14 +227,18 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
     }
 }
 
+protocol CC163Video {
+    var vbr: Int { get }
+    var urls: [String] { get set }
+}
 
 struct CC163NewVideos: Unmarshaling {
     let title: String
-    let videos: [String: VideoItem]
+    let videos: [String: CC163Video]
     
-    struct VideoItem: Unmarshaling {
+    struct VideoItem: CC163Video, Unmarshaling {
         let vbr: Int
-        let urls: [String]
+        var urls: [String]
         
         init(object: MarshaledObject) throws {
             vbr = try object.value(for: "vbr")
@@ -238,8 +248,39 @@ struct CC163NewVideos: Unmarshaling {
         }
     }
     
+    struct StramItem: CC163Video, Unmarshaling {
+        let vbr: Int
+        var urls: [String]
+        
+        let streamname: String
+        
+        init(object: MarshaledObject) throws {
+            vbr = try object.value(for: "vbr")
+            streamname = try object.value(for: "streamname")
+            let cdns: [String: String] = try object.value(for: "CDN_FMT")
+            urls = [
+
+            ]
+            
+            if let v = cdns["ali"] {
+                urls.append("https://alipullhdlptscopy.cc.netease.com/pushstation/\(streamname).flv?\(v)")
+            }
+            
+            if let v = cdns["ks"] {
+                urls.append("https://kspullhdlptscopy.cc.netease.com/pushstation/\(streamname).flv?\(v)")
+            }
+        }
+    }
+    
     init(object: MarshaledObject) throws {
-        videos = try object.value(for: "quickplay.resolution")
+        videos = try {
+            if let re: [String: VideoItem] = try? object.value(for: "quickplay.resolution") {
+                return re
+            } else {
+                let re: [String: StramItem] = try object.value(for: "stream_list")
+                return re
+            }
+        }()
         title = try object.value(for: "title")
     }
     
