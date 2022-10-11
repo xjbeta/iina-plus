@@ -15,7 +15,7 @@ import SwiftSoup
 
 class CC163: NSObject, SupportSiteProtocol {
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        if url.pathComponents.count == 5,
+        if url.pathComponents.count == 4,
            url.pathComponents[2] == "ccid" {
             var info = BilibiliInfo()
             info.site = .cc163
@@ -43,23 +43,33 @@ class CC163: NSObject, SupportSiteProtocol {
             if let i = state.info {
                 return .value(i)
             } else if let cid = state.list.first?.cid {
-                return self.getCC163ZtState(cid: cid)
+                return self.getCC163ZtState(cid: "\(cid)")
             } else {
                 throw VideoGetError.invalidLink
             }
         }
     }
     
-    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ZTInfo])> {
-        AF.request(url).responseString().then { re -> Promise<(info: LiveInfo?, list: [CC163ZTInfo])> in
+    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ChannelInfo])> {
+        AF.request(url).responseString().then { re -> Promise<(info: LiveInfo?, list: [CC163ChannelInfo])> in
             guard let jsonData = re.string.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">").data(using: .utf8) else {
                 throw VideoGetError.notFountData
             }
             let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
             
             if let domain: String = try? jsonObj.value(for: "query.domain") {
-                let list = try self.getCC163ZtRoomList(re.string)
-                return .value((nil, list))
+                let list = try self.getCC163ZtRoomList(jsonObj)
+                guard list.count > 0 else {
+                    throw VideoGetError.notFountData
+                }
+                
+                if let cid = list.first!.cid {
+                    return self.getCC163ZtState(cid: "\(cid)").map {
+                        ($0, list)
+                    }
+                } else {
+                    return .value((list.first, list))
+                }
             } else if let cid: String = try? jsonObj.value(for: "query.subcId") {
                 return self.getCC163ZtState(cid: cid).map {
                     ($0, [])
@@ -71,28 +81,28 @@ class CC163: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getCC163ZtRoomList(_ text: String) throws -> [CC163ZTInfo] {
-        try SwiftSoup.parse(text)
-            .getElementsByClass("channel_list").first()?
-            .children().compactMap { item -> CC163ZTInfo? in
-                func findAttr(_ key: String) -> String {
-                    (try? item.getElementsByAttribute(key).first()?.attr(key)) ?? ""
-                }
-                
-                let info = CC163ZTInfo(
-                    name: try item.text(),
-                    ccid: findAttr("ccid"),
-                    channel: (findAttr("channel").starts(with: "https:") || findAttr("channel") == "") ? findAttr("channel") : "https:" + findAttr("channel"),
-                    cid: findAttr("cid"),
-                    index: findAttr("index"),
-                    roomid: findAttr("roomid"),
-                    isLiving: (try? item.getElementsByClass("icon-live").first()) != nil)
-                if (info.ccid != "" || info.roomid != ""), info.channel != "" {
-                    return info
-                } else {   
-                    return nil
-                }
-            } ?? []
+    func getCC163ZtRoomList(_ json: JSONObject) throws -> [CC163ChannelInfo] {
+    
+        
+        let fallback: [String: Any] = try json.value(for: "props.pageProps.fallback")
+        
+        let value = fallback.first {
+            $0.key.contains("format=json")
+        }?.value as? [String: Any]
+        
+        let obj = try (
+            value?["module_infos"] as? [[String: Any]]
+        )?.first {
+            try $0.value(for: "module_type") == "living"
+        }
+        
+        guard let obj = obj,
+              let data = try? JSONSerialization.data(withJSONObject: obj, options: .prettyPrinted) else {
+            return []
+        }
+         
+        let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+        return try jsonObj.value(for: "content")
     }
     
     func getCC163ZtState(cid: String) -> Promise<LiveInfo> {
@@ -124,7 +134,7 @@ class CC163: NSObject, SupportSiteProtocol {
     
     func getCC163Ccid(_ url: String) -> Promise<(String)> {
         let pcs = url.pathComponents
-        if pcs.count == 5,
+        if pcs.count == 4,
            pcs[2] == "ccid" {
             return .value((pcs[3]))
         } else {
@@ -205,24 +215,46 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
     var site: SupportSites
     
     var ccid: Int
+    var cid: Int?
 
+    var channel: String
+    
     init(object: MarshaledObject) throws {
         site = .cc163
-        title = try object.value(for: "title")
-        name = try object.value(for: "nickname")
-        cover = try object.value(for: "cover")
-        cover = cover.replacingOccurrences(of: "http://", with: "https://")
         
-        if let nolive: Int = try? object.value(for: "nolive"),
+        name = try object.optionalAny(for: "nickname") as? String ?? object.value(for: "name")
+        channel = object.optionalAny(for: "living_channel") as? String ?? ""
+        
+        if let isLiving: Bool = try? object.value(for: "is_living") {
+            self.isLiving = isLiving
+            
+            if let id: Int = try? object.value(for: "ccid") {
+                ccid = id
+            } else {
+                ccid = try object.value(for: "channelid")
+                cid = ccid
+            }
+            
+        } else if let nolive: Int = try? object.value(for: "nolive"),
            nolive == 1 {
             ccid = try object.value(for: "roomid")
-            avatar = cover
             isLiving = false
         } else {
             ccid = try object.value(for: "ccid")
-            avatar = try object.value(for: "purl")
-            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
             isLiving = true
+        }
+        
+
+        if isLiving {
+            title = try object.value(for: "title")
+            cover = try object.value(for: "cover")
+            cover = cover.replacingOccurrences(of: "http://", with: "https://")
+            avatar = (try? object.value(for: "purl")) ?? ""
+            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        } else {
+            title = (try? object.value(for: "title")) ?? name
+            cover = ""
+            avatar = ""
         }
     }
 }
