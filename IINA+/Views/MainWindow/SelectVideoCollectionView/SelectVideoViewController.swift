@@ -115,14 +115,8 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             if let longTitle = (info as? BiliVideoSelector)?.longTitle {
                 s += "  \(longTitle)"
             }
-        case .douyu, .huya, .biliLive:
-            s = info.title
-        case .cc163:
-            let i = info as! CC163VideoSelector
-            s = i.title
-            if i.isLiving {
-                s += " - 直播中"
-            }
+        case .douyu, .huya, .biliLive, .cc163:
+            s = (info.isLiving ? "🔥" : "") + info.title
         default:
             break
         }
@@ -161,13 +155,7 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
             } else {
                 u = "https://www.bilibili.com/video/\(videoId)?p=\(info.index)"
             }
-        case .douyu:
-            u = "https://www.douyu.com/\(info.id)"
-        case .huya:
-            guard let info = info as? HuyaVideoSelector else { return }
-            u = info.url
-        case .biliLive:
-            guard let info = info as? BiliLiveVideoSelector else { return }
+        case .douyu, .huya, .biliLive:
             u = info.url
         case .bangumi:
             u = "https://www.bilibili.com/bangumi/play/ep\(info.id)"

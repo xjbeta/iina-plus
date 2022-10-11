@@ -41,12 +41,31 @@ class Huya: NSObject, SupportSiteProtocol {
     
     // MARK: - Huya
     
+    struct HuyaRoomList {
+        var current: String
+        var list = [HuyaVideoSelector]()
+    }
+    
+    
     // href, name
-    func getHuyaRoomList(_ url: String) -> Promise<[(String, String)]> {
+    func getHuyaRoomList(_ url: String) -> Promise<HuyaRoomList> {
         AF.request(url).responseString().map {
-            try SwiftSoup.parse($0.string).getElementsByClass("match-nav").first()?.children().compactMap {
-                try? ($0.attr("href"), $0.text())
-            } ?? []
+            var re = HuyaRoomList(current: "")
+            try SwiftSoup.parse($0.string).getElementsByClass("match-nav").first()?.children().enumerated().forEach {
+                
+                if try $0.element.attr("class") == "on" {
+                    re.current = try $0.element.attr("href")
+                }
+                
+                try re.list.append(.init(
+                    id: $0.element.attr("href"),
+                    index: $0.offset,
+                    title: $0.element.text(),
+                    url: "https://www.huya.com/\($0.element.attr("href"))",
+                    isLiving: $0.element.getChildNodes().contains(where: { try $0.attr("class") == "live" })
+                ))
+            }
+            return re
         }
     }
     
@@ -440,11 +459,12 @@ fileprivate func huyaUrlFormatter2(_ u: String) -> String? {
 }
 
 struct HuyaVideoSelector: VideoSelector {
-    let id: Int = 0
+    var id: String
     var coverUrl: URL?
     
     let site = SupportSites.huya
     let index: Int
     let title: String
     let url: String
+    let isLiving: Bool
 }

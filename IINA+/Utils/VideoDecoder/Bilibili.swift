@@ -252,7 +252,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 }
                 guard let s = selector else { return nil }
                 
-                json.id = s.id
+                json.id = Int(s.id) ?? -1
                 json.bvid = s.bvid
                 json.title = s.title
                 json.duration = Int(s.duration)
@@ -560,11 +560,14 @@ protocol BilibiliVideoSelector: VideoSelector {
 }
 
 struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
+    var url: String = ""
+    var isLiving: Bool = false
+    
     var bvid = ""
     var isCollection = false
     
     // epid
-    let id: Int
+    let id: String
     var index: Int
     let part: String
     var duration: Int
@@ -581,7 +584,8 @@ struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
     }
     
     init(object: MarshaledObject) throws {
-        id = try object.value(for: "cid")
+        let cid: Int = try object.value(for: "cid")
+        id = "\(cid)"
         
         if let pic: String = try? object.value(for: "arc.pic") {
             coverUrl = .init(string: pic)
@@ -604,7 +608,7 @@ struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
     }
     
     init(ep: BangumiInfo.BangumiEp) {
-        id = ep.id
+        id = "\(ep.id)"
         index = -1
         part = ""
         duration = 0

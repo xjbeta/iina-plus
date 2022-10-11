@@ -131,6 +131,17 @@ class Douyu: NSObject, SupportSiteProtocol {
         }
     }
     
+    func getDouyuEventRoomOnlineStatus(_ pageId: String) -> Promise<[String: Bool]> {
+        
+        struct RoomOnlineStatus: Decodable {
+            let data: [String: Bool]
+        }
+        
+        return AF.request("https://www.douyu.com/japi/carnival/c/roomActivity/getRoomOnlineStatus?pageId=\(pageId)").responseDecodable(RoomOnlineStatus.self).map {
+            $0.data
+        }
+    }
+    
     func getDouyuUrl(_ roomID: Int, rate: Int = 0, jsContext: JSContext) -> Promise<[(String, Stream)]> {
         let time = Int(Date().timeIntervalSince1970)
         let didStr: String = {
@@ -272,7 +283,9 @@ struct DouyuVideoSelector: VideoSelector {
     let site = SupportSites.douyu
     let index: Int
     let title: String
-    let id: Int
+    let id: String
+    let url: String
+    var isLiving: Bool
     let coverUrl: URL?
 }
 

@@ -524,10 +524,9 @@ class MainViewController: NSViewController {
                             decodeUrl()
                         } else {
                             var cItem = 0
-                            if bUrl.id.starts(with: "ep"),
-                                let epId = Int(bUrl.id.dropFirst(2)) {
+                            if bUrl.id.starts(with: "ep") {
                                 cItem = epVS.firstIndex {
-                                    $0.id == epId
+                                    $0.id == bUrl.id.dropFirst(2)
                                 } ?? 0
                             }
                             
@@ -545,22 +544,31 @@ class MainViewController: NSViewController {
                       url.pathComponents.count > 2,
                       url.pathComponents[1] == "topic" {
                 let douyu = videoGet.douyu
-                douyu.getDouyuHtml(str).done {
-                    guard $0.roomIds.count > 0 else {
+                douyu.getDouyuHtml(str).done { htmls in
+                    guard htmls.roomIds.count > 0 else {
                         decodeUrl()
                         return
                     }
-                    let cid = $0.roomId
-                    douyu.getDouyuEventRoomNames($0.pageId).done {
-                        let infos = $0.enumerated().map {
+                    let cid = htmls.roomId
+                    var re = [DouyuVideoSelector]()
+                    
+                    douyu.getDouyuEventRoomNames(htmls.pageId).get {
+                        re = $0.enumerated().map {
                             DouyuVideoSelector(
                                 index: $0.offset,
                                 title: $0.element.text,
-                                id: Int($0.element.roomId) ?? 0,
+                                id: $0.element.roomId,
+                                url: "https://www.douyu.com/\($0.element.roomId)",
+                                isLiving: false,
                                 coverUrl: nil)
                         }
-
-                        self.showSelectVideo("", infos: [("", infos)], currentItem: $0.map({ $0.roomId }).firstIndex(of: cid) ?? 0)
+                    }.then { _ in
+                        douyu.getDouyuEventRoomOnlineStatus(htmls.pageId)
+                    }.done { status in
+                        re.enumerated().forEach {
+                            re[$0.offset].isLiving = status[$0.element.id] ?? false
+                        }
+                        self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
                         resolver.fulfill(())
                     }.catch {
                         switch $0 {
@@ -574,17 +582,11 @@ class MainViewController: NSViewController {
                     resolver.reject($0)
                 }
             } else if url.host == "www.huya.com" {                
-                videoGet.huya.getHuyaRoomList(url.absoluteString).done {
-                    if $0.count == 0 {
+                videoGet.huya.getHuyaRoomList(url.absoluteString).done { rl in
+                    if rl.list.count == 0 {
                         decodeUrl()
                     } else {
-                        let infos = $0.enumerated().map {
-                            HuyaVideoSelector(
-                                index: $0.offset,
-                                title: $0.element.1,
-                                url: "https://www.huya.com/\($0.element.0)")
-                        }
-                        self.showSelectVideo("", infos: [("", infos)])
+                        self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
                         resolver.fulfill(())
                     }
                 }.catch {
@@ -592,16 +594,16 @@ class MainViewController: NSViewController {
                 }
             } else if url.host == "live.bilibili.com" {
                 videoGet.biliLive.getRoomList(url.absoluteString).done {
-                    if $0.count == 0 {
+                    if $0.1.count == 0 {
                         decodeUrl()
                     } else {
-                        let infos = $0.enumerated().map {
-                            BiliLiveVideoSelector(
-                                index: $0.offset,
-                                title: $0.element.1,
-                                url: "https://live.bilibili.com/\($0.element.0)")
+                        var c = 0
+                        if url.pathComponents.count > 1 {
+                            let id = "\(url.pathComponents[1])"
+                            c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
                         }
-                        self.showSelectVideo("", infos: [("", infos)])
+                        
+                        self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
                         resolver.fulfill(())
                     }
                 }.catch {
@@ -624,7 +626,8 @@ class MainViewController: NSViewController {
                                 title: $0.element.name,
                                 ccid: $0.element.ccid,
                                 isLiving: $0.element.isLiving,
-                                url: $0.element.channel)
+                                url: $0.element.channel,
+                                id: $0.element.ccid)
                         }
                         self.showSelectVideo("", infos: [("", infos)])
                         resolver.fulfill(())

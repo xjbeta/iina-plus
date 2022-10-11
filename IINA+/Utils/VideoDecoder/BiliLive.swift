@@ -111,17 +111,51 @@ class BiliLive: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getRoomList(_ url: String) -> Promise<[(String, String)]> {
-        AF.request(url).responseString().map {
-            let s = $0.string.subString(from: "window.__initialState = ", to: ";\n")
+    func getRoomList(_ url: String) -> Promise<(String, [BiliLiveVideoSelector])> {
+        var re = [BiliLiveVideoSelector]()
+        
+        return AF.request(url).responseString().map { res -> [BiliLiveVideoSelector] in
+            let s = res.string.subString(from: "window.__initialState = ", to: ";\n")
             guard let data = s.data(using: .utf8),
                   let json: JSONObject = try? JSONParser.JSONObjectWithData(data) else { return [] }
             
             let list: [BiliLiveRoomList] = try json.value(for: "live-non-revenue-player")
-            return list.first?.roomList.map {
-                ($0.roomId, $0.tabText)
+            
+            re = list.first?.roomList.enumerated().map {
+                BiliLiveVideoSelector(
+                    id: $0.element.roomId,
+                    sid: "",
+                    index: $0.offset,
+                    title: $0.element.tabText, url: "")
             } ?? []
+            return re
+        }.then {
+            self.liveInfos($0.compactMap({ Int($0.id) }))
+        }.map {
+            guard let json: JSONObject = try? JSONParser.JSONObjectWithData($0) else { return ("", []) }
+            
+            try re.enumerated().forEach {
+                let info: BiliLiveBaseInfo = try json.value(for: "data.by_room_ids.\($0.element.id)")
+                re[$0.offset].isLiving = info.isLiving
+                re[$0.offset].url = info.url
+                re[$0.offset].sid = "\(info.shortId)"
+            }
+            return ("", re)
         }
+    }
+    
+    func liveInfos(_ roomIds: [Int]) -> Promise<Data> {
+        let s = roomIds.filter {
+            $0 > 0
+        }.map {
+            "room_ids=\($0)"
+        }.joined(separator: "&")
+        
+        guard s.count > 0 else { return .value(Data()) }
+        
+        let u = "https://api.live.bilibili.com/xlive/web-room/v1/index/getRoomBaseInfo?\(s)&req_biz=web_room_componet"
+        
+        return AF.request(u).responseData().map({ $0.data })
     }
 }
 
@@ -146,6 +180,19 @@ struct BiliLiveInfo: Unmarshaling, LiveInfo {
     }
 }
 
+struct BiliLiveBaseInfo: Unmarshaling {
+    let roomId: Int
+    let shortId: Int
+    let isLiving: Bool
+    let url: String
+    
+    init(object: MarshaledObject) throws {
+        roomId = try object.value(for: "room_id")
+        shortId = try object.value(for: "short_id")
+        isLiving = try object.value(for: "live_status") == 1
+        url = try object.value(for: "live_url")
+    }
+}
 
 struct BiliLiveOldPlayUrl: Unmarshaling {
     let currentQuality: Int
@@ -319,11 +366,13 @@ struct BiliLiveRoomList: Unmarshaling {
 
 
 struct BiliLiveVideoSelector: VideoSelector {
-    let id: Int = 0
+    let id: String
+    var sid: String
     var coverUrl: URL?
+    var isLiving: Bool = false
     
     let site = SupportSites.biliLive
     let index: Int
     let title: String
-    let url: String
+    var url: String
 }
