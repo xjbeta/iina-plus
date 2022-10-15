@@ -126,7 +126,8 @@ class BiliLive: NSObject, SupportSiteProtocol {
                     id: $0.element.roomId,
                     sid: "",
                     index: $0.offset,
-                    title: $0.element.tabText, url: "")
+                    title: $0.element.tabText,
+                    url: "")
             } ?? []
             return re
         }.then {
@@ -134,11 +135,21 @@ class BiliLive: NSObject, SupportSiteProtocol {
         }.map {
             guard let json: JSONObject = try? JSONParser.JSONObjectWithData($0) else { return ("", []) }
             
-            try re.enumerated().forEach {
-                let info: BiliLiveBaseInfo = try json.value(for: "data.by_room_ids.\($0.element.id)")
-                re[$0.offset].isLiving = info.isLiving
-                re[$0.offset].url = info.url
-                re[$0.offset].sid = "\(info.shortId)"
+            let rooms: [String: BiliLiveBaseInfo] = try json.value(for: "data.by_room_ids")
+            
+            re.enumerated().forEach { s in
+                let id = s.element.id
+                guard let info = rooms[id] ?? rooms.values.first(where: { $0.shortId == Int(id) }) else {
+                    re[s.offset].url = "https://live.bilibili.com/\(id)"
+                    return
+                }
+                
+                re[s.offset].isLiving = info.isLiving
+                re[s.offset].url = info.url
+                re[s.offset].sid = "\(info.shortId)"
+                if re[s.offset].title == "" {
+                    re[s.offset].title = info.uname
+                }
             }
             return ("", re)
         }
@@ -186,11 +197,16 @@ struct BiliLiveBaseInfo: Unmarshaling {
     let isLiving: Bool
     let url: String
     
+    let title: String
+    let uname: String
+    
     init(object: MarshaledObject) throws {
         roomId = try object.value(for: "room_id")
         shortId = try object.value(for: "short_id")
         isLiving = try object.value(for: "live_status") == 1
         url = try object.value(for: "live_url")
+        title = try object.value(for: "title")
+        uname = try object.value(for: "uname")
     }
 }
 
@@ -373,6 +389,6 @@ struct BiliLiveVideoSelector: VideoSelector {
     
     let site = SupportSites.biliLive
     let index: Int
-    let title: String
+    var title: String
     var url: String
 }
