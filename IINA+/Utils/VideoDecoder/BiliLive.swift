@@ -135,13 +135,20 @@ class BiliLive: NSObject, SupportSiteProtocol {
         }.map {
             guard let json: JSONObject = try? JSONParser.JSONObjectWithData($0) else { return ("", []) }
             
-            try re.enumerated().forEach {
-                let info: BiliLiveBaseInfo = try json.value(for: "data.by_room_ids.\($0.element.id)")
-                re[$0.offset].isLiving = info.isLiving
-                re[$0.offset].url = info.url
-                re[$0.offset].sid = "\(info.shortId)"
-                if re[$0.offset].title == "" {
-                    re[$0.offset].title = info.uname
+            let rooms: [String: BiliLiveBaseInfo] = try json.value(for: "data.by_room_ids")
+            
+            re.enumerated().forEach { s in
+                let id = s.element.id
+                guard let info = rooms[id] ?? rooms.values.first(where: { $0.shortId == Int(id) }) else {
+                    re[s.offset].url = "https://live.bilibili.com/\(id)"
+                    return
+                }
+                
+                re[s.offset].isLiving = info.isLiving
+                re[s.offset].url = info.url
+                re[s.offset].sid = "\(info.shortId)"
+                if re[s.offset].title == "" {
+                    re[s.offset].title = info.uname
                 }
             }
             return ("", re)
