@@ -46,8 +46,8 @@
 
 ```
 git clone https://github.com/xjbeta/iina-plus
-cd iina+/iina+/WebFiles/
-npm install
+cd iina-plus
+bash InstallDeps.sh
 ```
 
 Open `IINA+.xcodeproj` with Xcode.
