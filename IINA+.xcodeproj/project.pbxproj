@@ -119,7 +119,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		013CE8EF2185D09F000271FB /* Copy Web Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = WebFiles;
 			dstSubfolderSpec = 7;
 			files = (
@@ -134,7 +134,7 @@
 				01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */,
 			);
 			name = "Copy Web Files";
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		014F541926D9184100B9E82A /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -949,7 +949,7 @@
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = "iina+/Info.plist";
+				INFOPLIST_FILE = "IINA+/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -960,7 +960,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "IINA+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -974,7 +974,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "iina+/Info.plist";
+				INFOPLIST_FILE = "IINA+/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -985,7 +985,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "IINA+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
