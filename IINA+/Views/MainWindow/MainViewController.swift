@@ -594,7 +594,7 @@ class MainViewController: NSViewController {
                 }
             } else if url.host == "live.bilibili.com" {
                 videoGet.biliLive.getRoomList(url.absoluteString).done {
-                    if $0.1.count == 0 {
+                    if $0.1.count == 0 || $0.1.count == 1 {
                         decodeUrl()
                     } else {
                         var c = 0
