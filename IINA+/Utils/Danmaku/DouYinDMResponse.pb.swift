@@ -20,7 +20,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Response {
+struct DouYinDMResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2700,8 +2700,8 @@ struct EffectMixImageInfo {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-extension Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = "Response"
+extension DouYinDMResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = "DouYinDMResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "messages"),
     2: .same(proto: "cursor"),
@@ -2770,7 +2770,7 @@ extension Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Response, rhs: Response) -> Bool {
+  static func ==(lhs: DouYinDMResponse, rhs: DouYinDMResponse) -> Bool {
     if lhs.messages != rhs.messages {return false}
     if lhs.cursor != rhs.cursor {return false}
     if lhs.fetchInterval != rhs.fetchInterval {return false}
