@@ -101,12 +101,22 @@ class HttpServer: NSObject, DanmakuDelegate {
             let ws: DanmakuWS? = {
                 if text.starts(with: "iinaDM://") {
                     clickType = .plugin
-                    let u = String(text.dropFirst("iinaDM://".count))
+                    var v = 0
+                    var u = String(text.dropFirst("iinaDM://".count))
                     
-                    return .init(id: u,
-                                 site: .init(url: u),
-                                 url: u,
-                                 session: session)
+                    if u.starts(with: "v=") {
+                        let vu = u.split(separator: "&", maxSplits: 1)
+                        guard vu.count == 2 else { return nil }
+                        v = Int(vu[0].dropFirst(2)) ?? 0
+                        u = String(vu[1])
+                    }
+                    
+                    var re = DanmakuWS(id: u,
+                                       site: .init(url: u),
+                                       url: u,
+                                       session: session)
+                    re.version = v
+                    return re
                 } else if text.starts(with: "iinaWebDM://") {
                     let hex = String(text.dropFirst("iinaWebDM://".count))
                     clickType = .danmaku
@@ -114,10 +124,12 @@ class HttpServer: NSObject, DanmakuDelegate {
                             ids.count == 2 else { return nil }
                     let u = ids[1]
                     
-                    return .init(id: ids[0],
-                                 site: .init(url: u),
-                                 url: u,
-                                 session: session)
+                    var re = DanmakuWS(id: ids[0],
+                                       site: .init(url: u),
+                                       url: u,
+                                       session: session)
+                    re.version = 1
+                    return re
                 } else {
                     return nil
                 }
@@ -324,12 +336,17 @@ extension HttpRequest {
     }
 }
 
+struct DanmakuComment: Encodable {
+    var text: String
+    var imageSrc: String?
+    var imageWidth: Int?
+}
+
 struct DanmakuEvent: Encodable {
     var method: DanamkuMethod
     var text: String
     
-    var imageSrc: String?
-    var imageWidth: Int?
+    var dms: [DanmakuComment]?
     
     func string() -> String? {
         guard let data = try? JSONEncoder().encode(self) else { return nil }
@@ -345,17 +362,28 @@ struct DanmakuWS {
     
     var webview: WKWebView? = nil
     
+    var version = 0
+    
     func send(_ event: DanmakuEvent) {
-        guard let str = event.string() else { return }
+        switch version {
+        case 0 where event.method == .sendDM:
+            event.dms?.forEach {
+                let de = DanmakuEvent(method: .sendDM, text: $0.text)
+                guard let str = de.string(), let s = session else { return }
+                s.writeText(str)
+            }
+        default:
+            guard let str = event.string() else { return }
 
-        if let s = session {
-            s.writeText(str)
-        } else if let wv = webview {
-            wv.evaluateJavaScript("window.dmMessage(\(str));").catch { _ in }
-        }
-        
-        if !str.contains("sendDM") {
-            Log("WriteText to \(id): \(str)")
+            if let s = session {
+                s.writeText(str)
+            } else if let wv = webview {
+                wv.evaluateJavaScript("window.dmMessage(\(str));").catch { _ in }
+            }
+            
+            if !str.contains("sendDM") {
+                Log("WriteText to \(id): \(str)")
+            }
         }
     }
     

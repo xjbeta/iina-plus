@@ -208,6 +208,11 @@ class Danmaku: NSObject {
     }
     
     private func sendDM(_ event: DanmakuEvent) {
+        if event.method == .sendDM,
+           let dms = event.dms,
+           dms.count == 0 {
+            return
+        }
         delegate?.send(event, sender: self)
     }
     
@@ -523,26 +528,30 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-            datas.forEach { data in
+            let dms = datas.compactMap { data -> DanmakuComment? in
                 if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
                    let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == s }) {
                     
                     guard let base64 = emoticon.emoticonData?.base64EncodedString(),
-                            base64.count > 0 else { return }
+                            base64.count > 0 else { return nil }
                     
                     let ext = NSString(string: emoticon.url.lastPathComponent).pathExtension
                     
                     let size = Int(emoticon.width / 2) > 125 ? 125 : Int(emoticon.width / 2)
                     
-                    sendDM(.init(
-                        method: .sendDM,
+                    
+                    return DanmakuComment(
                         text: "",
                         imageSrc: "data:image/\(ext);base64," + base64,
-                        imageWidth: size))
+                        imageWidth: size)
                 } else if let s = (try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: data))?.info.compactMap ({ $0.msg }).first {
-                    sendDM(.init(method: .sendDM, text: s))
+                    return DanmakuComment(text: s)
+                } else {
+                    return nil
                 }
             }
+            
+            sendDM(.init(method: .sendDM, text: "", dms: dms))
         case .huya:
             let bytes = [UInt8](data)
             guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
@@ -574,8 +583,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                msg.iUri == 1400,
                msg.iProtocolType == 2,
                !huyaBlockList.contains(where: msg.sMsg.contains) {
-               
-                sendDM(.init(method: .sendDM, text: msg.sMsg))
+                let dm = DanmakuComment(text: msg.sMsg)
+                sendDM(.init(method: .sendDM, text: "", dms: [dm]))
             }
             
             
@@ -685,6 +694,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
+            var dms = [DanmakuComment]()
+            
             msgDatas.compactMap {
                 String(data: $0, encoding: .utf8)
                 }.forEach {
@@ -693,9 +704,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                         guard !douyuBlockList.contains(where: dm.contains) else {
                             return
                         }
-                        DispatchQueue.main.async {
-                            self.sendDM(.init(method: .sendDM, text: dm))
-                        }
+                        dms.append(.init(text: dm))
                     } else if $0.starts(with: "type@=error") {
                         Log("douyu socket disconnected: \($0)")
                         self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
@@ -709,18 +718,21 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                     }
             }
             
+            
         case .douyin:
             do {
                 let re = try DouYinResponse(serializedData: data)
                 let ree = try DouYinDMResponse(serializedData: re.data.gunzipped())
                 
-                ree.messages.filter {
+                let dms = ree.messages.filter {
                     $0.method == "WebcastChatMessage"
                 }.compactMap {
                     try? ChatMessage(serializedData: $0.payload)
-                }.forEach {
-                    self.sendDM(.init(method: .sendDM, text: $0.content))
+                }.map {
+                    DanmakuComment(text: $0.content)
                 }
+                
+                sendDM(.init(method: .sendDM, text: "", dms: dms))
                 
                 guard ree.needAck else { return }
                 
