@@ -86,7 +86,6 @@ class Danmaku: NSObject {
 
     let cc163Server = URL(string: "wss://weblink.cc.163.com")
     
-    
     var douyinDM: DouYinDM?
     
     
@@ -101,8 +100,6 @@ class Danmaku: NSObject {
             } else {
                 Log("Not found huya.js.")
             }
-        case .douyin:
-            douyinDM = .init()
         default:
             break
         }
@@ -190,8 +187,13 @@ class Danmaku: NSObject {
                 Log("Init huya AnchorUid failed \($0).")
             }
         case .douyin:
+            douyinDM = .init()
+            douyinDM?.requestPrepared = { ur in
+                self.socket = .init(urlRequest: ur)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }
             douyinDM?.start(self.url)
-            douyinDM?.delegate = self
         default:
             break
         }
@@ -233,44 +235,53 @@ class Danmaku: NSObject {
         timer?.cancel()
         timer = nil
         timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
-        if let timer = timer {
-            timer.schedule(deadline: .now(), repeating: .seconds(30))
-            timer.setEventHandler {
-                do {
-                    switch self.liveSite {
-                    case .biliLive:
-                        let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
-                        try self.socket?.send(data: data)
-                    case .douyu:
-                        //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
-                        let keeplive = "type@=mrkl/"
-                        let data = self.douyuSocketFormatter(keeplive)
-                        try self.socket?.send(data: data)
-                    case .huya:
-                        let result = self.huyaJSContext?.evaluateScript("new Uint8Array(sendHeartBeat());")
-                        let data = Data(result?.toArray() as? [UInt8] ?? [])
-                        self.sendMsg(data)
-                    default:
-                        try self.socket?.sendPing(Data())
-                    }
-                    self.heartBeatCount += 1
-                    if self.heartBeatCount > 5 {
-                        self.stop()
-                        self.loadDM()
-                        Log("HeartBeatCount exceed, restart.")
-                    }
-                } catch let error {
-                    if (error as NSError).code == 2134 {
-                        self.stop()
-                        self.loadDM()
-                        Log("Danmaku Error 2134, restart.")
-                    } else {
-                        Log(error)
-                    }
+        guard let timer = timer else {
+            return
+        }
+        
+        let interval: DispatchTimeInterval = liveSite == .douyin ? .seconds(10) : .seconds(30)
+        
+        timer.schedule(deadline: .now(), repeating: interval)
+        timer.setEventHandler {
+            do {
+                switch self.liveSite {
+                case .biliLive:
+                    let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
+                    try self.socket?.send(data: data)
+                case .douyu:
+                    //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                    let keeplive = "type@=mrkl/"
+                    let data = self.douyuSocketFormatter(keeplive)
+                    try self.socket?.send(data: data)
+                case .huya:
+                    let result = self.huyaJSContext?.evaluateScript("new Uint8Array(sendHeartBeat());")
+                    let data = Data(result?.toArray() as? [UInt8] ?? [])
+                    self.sendMsg(data)
+                    
+                case .douyin:
+                    var pf = DouYinPushFrame()
+                    pf.payloadType = "hb"
+                    try self.socket?.sendPing(pf.serializedData())
+                default:
+                    try self.socket?.sendPing(Data())
+                }
+                self.heartBeatCount += 1
+                if self.heartBeatCount > 5 {
+                    self.stop()
+                    self.loadDM()
+                    Log("HeartBeatCount exceed, restart.")
+                }
+            } catch let error {
+                if (error as NSError).code == 2134 {
+                    self.stop()
+                    self.loadDM()
+                    Log("Danmaku Error 2134, restart.")
+                } else {
+                    Log(error)
                 }
             }
-            timer.resume()
         }
+        timer.resume()
     }
     
 
@@ -697,6 +708,60 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                         heartBeatCount = 0
                     }
             }
+            
+        case .douyin:
+            do {
+                let re = try DouYinResponse(serializedData: data)
+                let ree = try DouYinDMResponse(serializedData: re.data.gunzipped())
+                
+                ree.messages.filter {
+                    $0.method == "WebcastChatMessage"
+                }.compactMap {
+                    try? ChatMessage(serializedData: $0.payload)
+                }.forEach {
+                    self.sendDM(.init(method: .sendDM, text: $0.content))
+                }
+                
+                guard ree.needAck else { return }
+                
+                var pf = DouYinPushFrame()
+                pf.payloadType = "ack"
+                pf.logid = re.wssPushLogID
+                
+                let payload: [UInt8] = {
+                    var t = [UInt8]()
+                    func push(_ e: UInt32) {
+                        t.append(UInt8(e))
+                    }
+                    
+                    ree.internalExt.unicodeScalars.forEach {
+                        let e = $0.value
+                        switch e {
+                        case _ where e < 128:
+                            push(e)
+                        case _ where e < 2048:
+                            push(192 + (e >> 6))
+                            push(128 + (63 & e))
+                        case _ where e < 65536:
+                            push(224 + (e >> 12))
+                            push(128 + (e >> 6 & 63))
+                            push(128 + (63 & e))
+                        default:
+                            break
+                        }
+                    }
+                    
+                    return t
+                }()
+                
+                pf.data = Data(payload)
+                
+                try? webSocket.send(data: pf.serializedData())
+                
+            } catch let error {
+                Log("\(error)")
+            }
+            
         default:
             break
         }
