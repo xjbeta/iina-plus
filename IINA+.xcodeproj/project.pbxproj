@@ -55,6 +55,8 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
+		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
+		0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */; };
 		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
 		01892C8327C27FAB00494AFD /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01892C8127C27FAB00494AFD /* douyin.html */; };
@@ -66,7 +68,7 @@
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
 		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
-		01942A3227C345060092FA5A /* DouYinDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinDMMessage.swift */; };
+		01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
@@ -119,7 +121,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		013CE8EF2185D09F000271FB /* Copy Web Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = WebFiles;
 			dstSubfolderSpec = 7;
 			files = (
@@ -202,6 +204,8 @@
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
+		0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinPushFrame.pb.swift; sourceTree = "<group>"; };
 		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
 		01892C8127C27FAB00494AFD /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
@@ -212,7 +216,7 @@
 		018F4F652812C3EB0045B67C /* Douyu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Douyu.swift; sourceTree = "<group>"; };
 		018F4F692812D95C0045B67C /* CC163.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CC163.swift; sourceTree = "<group>"; };
 		018F4F6B2817FFF30045B67C /* BiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLive.swift; sourceTree = "<group>"; };
-		01942A3127C345060092FA5A /* DouYinDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinDMMessage.swift; sourceTree = "<group>"; };
+		01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinDMResponse.pb.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
@@ -518,7 +522,9 @@
 			children = (
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
 				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
-				01942A3127C345060092FA5A /* DouYinDMMessage.swift */,
+				0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */,
+				0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */,
+				01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */,
 				01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */,
 			);
 			path = Danmaku;
@@ -719,7 +725,7 @@
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
-				01942A3227C345060092FA5A /* DouYinDMMessage.swift in Sources */,
+				01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
 				01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
@@ -728,12 +734,14 @@
 				0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
+				0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
 				0120934627A4F8E6002C7FD3 /* JSPlayerControllersView.swift in Sources */,
 				0199489E2742852E00C71708 /* SupportSites.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
+				0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
@@ -949,18 +957,18 @@
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = "iina+/Info.plist";
+				INFOPLIST_FILE = "IINA+/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.20;
+				MARKETING_VERSION = 0.6.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "IINA+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -974,18 +982,18 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "iina+/Info.plist";
+				INFOPLIST_FILE = "IINA+/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.20;
+				MARKETING_VERSION = 0.6.21;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "iina+/iina+-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "IINA+/iina+-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};

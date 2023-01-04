@@ -249,7 +249,9 @@ extension VideoDecoder {
     
     func saveDMFile(_ data: Data?, with id: String) {
         guard let path = dmPath(id) else { return }
-
+        var p = path
+        p.deleteLastPathComponent()
+        try? FileManager.default.createDirectory(atPath: p, withIntermediateDirectories: true)
         FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
         Log("Saved DM in \(path)")
     }

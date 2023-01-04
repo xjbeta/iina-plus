@@ -93,23 +93,24 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
               str.contains("bili_jct") else { return }
         displayWait()
         webviewObserver = webView.observe(\.isLoading) { (webView, _) in
-            if !webView.isLoading {
-                Log("Finish loading")
-                firstly {
-                    after(seconds: 3)
-                }.then {
-                    self.bilibili.isLogin()
-                }.done(on: .main) {
-                    Log("islogin \($0.0), \($0.1)")
-                    
-                    if $0.0 {
-                        self.dismiss?()
-                    } else {
-                        self.tabView.selectTabViewItem(at: 1)
-                    }
-                }.catch(on: .main) { _ in
+            guard !webView.isLoading else { return }
+            Log("Finish loading")
+            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies().done {
+                $0.forEach {
+                    HTTPCookieStorage.shared.setCookie($0)
+                }
+            }.then {
+                self.bilibili.isLogin()
+            }.done(on: .main) {
+                Log("islogin \($0.0), \($0.1)")
+                
+                if $0.0 {
+                    self.dismiss?()
+                } else {
                     self.tabView.selectTabViewItem(at: 1)
                 }
+            }.catch(on: .main) { _ in
+                self.tabView.selectTabViewItem(at: 1)
             }
         }
     }

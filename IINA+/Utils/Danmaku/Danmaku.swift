@@ -86,7 +86,6 @@ class Danmaku: NSObject {
 
     let cc163Server = URL(string: "wss://weblink.cc.163.com")
     
-    
     var douyinDM: DouYinDM?
     
     
@@ -101,8 +100,6 @@ class Danmaku: NSObject {
             } else {
                 Log("Not found huya.js.")
             }
-        case .douyin:
-            douyinDM = .init()
         default:
             break
         }
@@ -190,8 +187,13 @@ class Danmaku: NSObject {
                 Log("Init huya AnchorUid failed \($0).")
             }
         case .douyin:
+            douyinDM = .init()
+            douyinDM?.requestPrepared = { ur in
+                self.socket = .init(urlRequest: ur)
+                self.socket?.delegate = self
+                self.socket?.open()
+            }
             douyinDM?.start(self.url)
-            douyinDM?.delegate = self
         default:
             break
         }
@@ -206,6 +208,11 @@ class Danmaku: NSObject {
     }
     
     private func sendDM(_ event: DanmakuEvent) {
+        if event.method == .sendDM,
+           let dms = event.dms,
+           dms.count == 0 {
+            return
+        }
         delegate?.send(event, sender: self)
     }
     
@@ -233,44 +240,53 @@ class Danmaku: NSObject {
         timer?.cancel()
         timer = nil
         timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
-        if let timer = timer {
-            timer.schedule(deadline: .now(), repeating: .seconds(30))
-            timer.setEventHandler {
-                do {
-                    switch self.liveSite {
-                    case .biliLive:
-                        let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
-                        try self.socket?.send(data: data)
-                    case .douyu:
-                        //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
-                        let keeplive = "type@=mrkl/"
-                        let data = self.douyuSocketFormatter(keeplive)
-                        try self.socket?.send(data: data)
-                    case .huya:
-                        let result = self.huyaJSContext?.evaluateScript("new Uint8Array(sendHeartBeat());")
-                        let data = Data(result?.toArray() as? [UInt8] ?? [])
-                        self.sendMsg(data)
-                    default:
-                        try self.socket?.sendPing(Data())
-                    }
-                    self.heartBeatCount += 1
-                    if self.heartBeatCount > 5 {
-                        self.stop()
-                        self.loadDM()
-                        Log("HeartBeatCount exceed, restart.")
-                    }
-                } catch let error {
-                    if (error as NSError).code == 2134 {
-                        self.stop()
-                        self.loadDM()
-                        Log("Danmaku Error 2134, restart.")
-                    } else {
-                        Log(error)
-                    }
+        guard let timer = timer else {
+            return
+        }
+        
+        let interval: DispatchTimeInterval = liveSite == .douyin ? .seconds(10) : .seconds(30)
+        
+        timer.schedule(deadline: .now(), repeating: interval)
+        timer.setEventHandler {
+            do {
+                switch self.liveSite {
+                case .biliLive:
+                    let data = self.pack(format: "NnnNN", values: [16, 16, 1, 2, 1]) as Data
+                    try self.socket?.send(data: data)
+                case .douyu:
+                    //                        let keeplive = "type@=keeplive/tick@=\(Int(Date().timeIntervalSince1970))/"
+                    let keeplive = "type@=mrkl/"
+                    let data = self.douyuSocketFormatter(keeplive)
+                    try self.socket?.send(data: data)
+                case .huya:
+                    let result = self.huyaJSContext?.evaluateScript("new Uint8Array(sendHeartBeat());")
+                    let data = Data(result?.toArray() as? [UInt8] ?? [])
+                    self.sendMsg(data)
+                    
+                case .douyin:
+                    var pf = DouYinPushFrame()
+                    pf.payloadType = "hb"
+                    try self.socket?.sendPing(pf.serializedData())
+                default:
+                    try self.socket?.sendPing(Data())
+                }
+                self.heartBeatCount += 1
+                if self.heartBeatCount > 5 {
+                    self.stop()
+                    self.loadDM()
+                    Log("HeartBeatCount exceed, restart.")
+                }
+            } catch let error {
+                if (error as NSError).code == 2134 {
+                    self.stop()
+                    self.loadDM()
+                    Log("Danmaku Error 2134, restart.")
+                } else {
+                    Log(error)
                 }
             }
-            timer.resume()
         }
+        timer.resume()
     }
     
 
@@ -512,26 +528,30 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-            datas.forEach { data in
+            let dms = datas.compactMap { data -> DanmakuComment? in
                 if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
                    let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == s }) {
                     
                     guard let base64 = emoticon.emoticonData?.base64EncodedString(),
-                            base64.count > 0 else { return }
+                            base64.count > 0 else { return nil }
                     
                     let ext = NSString(string: emoticon.url.lastPathComponent).pathExtension
                     
                     let size = Int(emoticon.width / 2) > 125 ? 125 : Int(emoticon.width / 2)
                     
-                    sendDM(.init(
-                        method: .sendDM,
+                    
+                    return DanmakuComment(
                         text: "",
                         imageSrc: "data:image/\(ext);base64," + base64,
-                        imageWidth: size))
+                        imageWidth: size)
                 } else if let s = (try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: data))?.info.compactMap ({ $0.msg }).first {
-                    sendDM(.init(method: .sendDM, text: s))
+                    return DanmakuComment(text: s)
+                } else {
+                    return nil
                 }
             }
+            
+            sendDM(.init(method: .sendDM, text: "", dms: dms))
         case .huya:
             let bytes = [UInt8](data)
             guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
@@ -563,8 +583,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                msg.iUri == 1400,
                msg.iProtocolType == 2,
                !huyaBlockList.contains(where: msg.sMsg.contains) {
-               
-                sendDM(.init(method: .sendDM, text: msg.sMsg))
+                let dm = DanmakuComment(text: msg.sMsg)
+                sendDM(.init(method: .sendDM, text: "", dms: [dm]))
             }
             
             
@@ -674,29 +694,90 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-            msgDatas.compactMap {
-                String(data: $0, encoding: .utf8)
-                }.forEach {
-                    if $0.starts(with: "type@=chatmsg") {
-                        let dm = $0.subString(from: "txt@=", to: "/cid@=")
-                        guard !douyuBlockList.contains(where: dm.contains) else {
-                            return
-                        }
-                        DispatchQueue.main.async {
-                            self.sendDM(.init(method: .sendDM, text: dm))
-                        }
-                    } else if $0.starts(with: "type@=error") {
-                        Log("douyu socket disconnected: \($0)")
-                        self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
-                        socket?.close()
-                    } else if $0.starts(with: "type@=loginres") {
-                        Log("douyu content success")
-                        self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
-                    } else if $0 == "type@=mrkl" {
-                        Log("Danmaku HeartBeatRsp")
-                        heartBeatCount = 0
+            var dms = [DanmakuComment]()
+            
+            msgDatas.forEach {
+                guard let msg = String(data: $0, encoding: .utf8) else { return }
+                if msg.starts(with: "type@=chatmsg") {
+                    let dm = msg.split(separator: "/").filter {
+                        $0.starts(with: "txt@=")
+                    }.filter {
+                        !douyuBlockList.contains(where: $0.contains)
+                    }.first
+                    
+                    if let dm = dm {
+                        dms.append(.init(text: String(dm.dropFirst("txt@=".count))))
                     }
+                } else if msg.starts(with: "type@=error") {
+                    Log("douyu socket disconnected: \(msg)")
+                    self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
+                    socket?.close()
+                } else if msg.starts(with: "type@=loginres") {
+                    Log("douyu content success")
+                    self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
+                } else if msg == "type@=mrkl" {
+                    Log("Danmaku HeartBeatRsp")
+                    heartBeatCount = 0
+                }
             }
+            
+
+            sendDM(.init(method: .sendDM, text: "", dms: dms))
+        case .douyin:
+            do {
+                let re = try DouYinResponse(serializedData: data)
+                let ree = try DouYinDMResponse(serializedData: re.data.gunzipped())
+                
+                let dms = ree.messages.filter {
+                    $0.method == "WebcastChatMessage"
+                }.compactMap {
+                    try? ChatMessage(serializedData: $0.payload)
+                }.map {
+                    DanmakuComment(text: $0.content)
+                }
+                
+                sendDM(.init(method: .sendDM, text: "", dms: dms))
+                
+                guard ree.needAck else { return }
+                
+                var pf = DouYinPushFrame()
+                pf.payloadType = "ack"
+                pf.logid = re.wssPushLogID
+                
+                let payload: [UInt8] = {
+                    var t = [UInt8]()
+                    func push(_ e: UInt32) {
+                        t.append(UInt8(e))
+                    }
+                    
+                    ree.internalExt.unicodeScalars.forEach {
+                        let e = $0.value
+                        switch e {
+                        case _ where e < 128:
+                            push(e)
+                        case _ where e < 2048:
+                            push(192 + (e >> 6))
+                            push(128 + (63 & e))
+                        case _ where e < 65536:
+                            push(224 + (e >> 12))
+                            push(128 + (e >> 6 & 63))
+                            push(128 + (63 & e))
+                        default:
+                            break
+                        }
+                    }
+                    
+                    return t
+                }()
+                
+                pf.data = Data(payload)
+                
+                try? webSocket.send(data: pf.serializedData())
+                
+            } catch let error {
+                Log("\(error)")
+            }
+            
         default:
             break
         }

@@ -165,6 +165,7 @@ class JSPlayerViewController: NSViewController {
         initWebView()
         
         danmakuWS = .init(id: "", site: .local, url: "", webview: webView)
+        danmakuWS.version = 1
     }
     
     func initTrackingAreas() {
