@@ -696,29 +696,33 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             
             var dms = [DanmakuComment]()
             
-            msgDatas.compactMap {
-                String(data: $0, encoding: .utf8)
-                }.forEach {
-                    if $0.starts(with: "type@=chatmsg") {
-                        let dm = $0.subString(from: "txt@=", to: "/cid@=")
-                        guard !douyuBlockList.contains(where: dm.contains) else {
-                            return
-                        }
-                        dms.append(.init(text: dm))
-                    } else if $0.starts(with: "type@=error") {
-                        Log("douyu socket disconnected: \($0)")
-                        self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
-                        socket?.close()
-                    } else if $0.starts(with: "type@=loginres") {
-                        Log("douyu content success")
-                        self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
-                    } else if $0 == "type@=mrkl" {
-                        Log("Danmaku HeartBeatRsp")
-                        heartBeatCount = 0
+            msgDatas.forEach {
+                guard let msg = String(data: $0, encoding: .utf8) else { return }
+                if msg.starts(with: "type@=chatmsg") {
+                    let dm = msg.split(separator: "/").filter {
+                        $0.starts(with: "txt@=")
+                    }.filter {
+                        !douyuBlockList.contains(where: $0.contains)
+                    }.first
+                    
+                    if let dm = dm {
+                        dms.append(.init(text: String(dm.dropFirst("txt@=".count))))
                     }
+                } else if msg.starts(with: "type@=error") {
+                    Log("douyu socket disconnected: \(msg)")
+                    self.delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
+                    socket?.close()
+                } else if msg.starts(with: "type@=loginres") {
+                    Log("douyu content success")
+                    self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
+                } else if msg == "type@=mrkl" {
+                    Log("Danmaku HeartBeatRsp")
+                    heartBeatCount = 0
+                }
             }
             
-            
+
+            sendDM(.init(method: .sendDM, text: "", dms: dms))
         case .douyin:
             do {
                 let re = try DouYinResponse(serializedData: data)
