@@ -121,7 +121,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		013CE8EF2185D09F000271FB /* Copy Web Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = WebFiles;
 			dstSubfolderSpec = 7;
 			files = (
@@ -136,7 +136,7 @@
 				01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */,
 			);
 			name = "Copy Web Files";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		014F541926D9184100B9E82A /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
