@@ -681,8 +681,8 @@ class MainViewController: NSViewController {
                     Log("Open result failed, pluginNotFound.")
                     
                     let alert = NSAlert()
-                    alert.messageText = "You need to install the Danmaku plugin for IINA"
-                    alert.informativeText = "Click OK for detailed installation guide."
+                    alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
+                    alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "Click OK for detailed installation guide.")
                     
                     alert.alertStyle = .warning
                     alert.addButton(withTitle: "OK")
