@@ -159,6 +159,8 @@ class MainViewController: NSViewController {
     
     var bookmarkArrayCountObserver: NSKeyValueObservation?
     
+    var isHoldOption = false
+    
     var isSearching = false {
         didSet {
             DispatchQueue.main.async {
@@ -240,6 +242,16 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
+        NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { event in
+            switch event.keyCode {
+            case 58, 61:
+                self.isHoldOption = !self.isHoldOption
+            default:
+                break
+            }
+            
+            return event
+        }
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
@@ -429,7 +441,10 @@ class MainViewController: NSViewController {
         
         isSearching = true
         progressStatusChanged(true)
-        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        let isHoldingOption = self.isHoldOption
+        if isHoldingOption {
+            NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        }
         var str = url
         
         Processes.shared.videoDecoder.bilibiliUrlFormatter(url).get {
@@ -438,7 +453,7 @@ class MainViewController: NSViewController {
                 str = $0
             }
         }.then {
-            self.decodeUrl($0, directly: directly)
+            self.decodeUrl($0, directly: directly, isHoldingOption: isHoldingOption)
         }.ensure {
             self.isSearching = false
             self.progressStatusChanged(false)
@@ -466,7 +481,7 @@ class MainViewController: NSViewController {
         }
     }
     
-    func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
+    func decodeUrl(_ url: String, directly: Bool = false, isHoldingOption: Bool) -> Promise<()> {
         
         return Promise { resolver in
             let videoGet = Processes.shared.videoDecoder
@@ -481,16 +496,20 @@ class MainViewController: NSViewController {
             func decodeUrl() {
                 videoGet.liveInfo(str, false).get {
                     if !$0.isLiving {
+                        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
                         throw VideoGetError.isNotLiving
                     }
                 }.then { _ in
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
                     if Preferences.shared.autoOpenResult {
-                        self.open(result: $0, row: 0).catch {
-                            Log("Prepare DM file error : \($0)")
+                        if !isHoldingOption {
+                            self.open(result: $0, row: 0).catch {
+                                Log("Prepare DM file error : \($0)")
+                            }
                         }
-                    } else {
+                    }
+                    if isHoldingOption {
                         self.yougetResult = $0
                     }
                     resolver.fulfill(())
