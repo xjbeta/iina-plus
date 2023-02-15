@@ -458,7 +458,7 @@ class MainViewController: NSViewController {
             self.isSearching = false
             self.progressStatusChanged(false)
         }.done {
-            Log("decodeUrl success: \(str)")
+            Log("decodeUrl success: \(str), directly: \(directly)")
         }.catch { error in
             var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
             switch error {
@@ -605,8 +605,12 @@ class MainViewController: NSViewController {
                     if rl.list.count == 0 {
                         decodeUrl()
                     } else {
-                        self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
-                        resolver.fulfill(())
+                        if isHoldingOption {
+                            self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }
                 }.catch {
                     resolver.reject($0)
