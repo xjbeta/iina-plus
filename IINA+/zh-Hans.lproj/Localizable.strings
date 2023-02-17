@@ -31,11 +31,17 @@
 /* CC163 */
 "SupportSites.CC163" = "网易CC";
 
+/* DouYin */
+"SupportSites.DouYin" = "抖音";
+
 /* Douyu */
 "SupportSites.Douyu" = "斗鱼";
 
 /* Huya */
 "SupportSites.Huya" = "虎牙";
+
+/* QQ Live */
+"SupportSites.QQLive" = "企鹅体育";
 
 /* Unsupported */
 "SupportSites.Unsupported" = "不支持";
@@ -58,5 +64,8 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
 
-/* DouYin */
-"SupportSites.DouYin" = "抖音";
+/* Click OK for detailed installation guide. */
+"Danmaku plugin Install Alert informativeText" = "点击确认查看详细的安装指南";
+
+/* You need to install the Danmaku plugin for IINA */
+"Danmaku plugin Install Alert messageText" = "你需要为IINA 安装弹幕插件";

@@ -231,3 +231,9 @@
 
 /* Class = "NSMenuItem"; title = "Copy Url"; ObjectID = "NcK-LD-adN"; */
 "NcK-LD-adN.title" = "复制链接";
+
+/* Class = "NSMenuItem"; title = "Copy Url"; ObjectID = "bIh-Sx-YbC"; */
+"bIh-Sx-YbC.title" = "复制链接";
+
+/* Class = "NSMenuItem"; title = "Decode"; ObjectID = "weJ-8b-ERg"; */
+"weJ-8b-ERg.title" = "解析";

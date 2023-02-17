@@ -94,6 +94,13 @@ class Processes: NSObject {
         return .normal
     }
     
+    func checkDanmakuPlugin() -> Bool {
+        #if DEBUG
+        return false
+        #else
+        return true
+        #endif
+    }
     
     func decodeURL(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in

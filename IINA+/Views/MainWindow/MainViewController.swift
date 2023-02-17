@@ -642,20 +642,19 @@ class MainViewController: NSViewController {
     }
     
     func open(result: YouGetJSON, row: Int) -> Promise<()> {
-        let processes = Processes.shared
-        let preferences = Preferences.shared
+        let proc = Processes.shared
+        let pref = Preferences.shared
         
         var yougetJSON = result
         let uuid = yougetJSON.uuid
         
-        let videoGet = processes.videoDecoder
+        let videoGet = proc.videoDecoder
         
         guard yougetJSON.videos.count > 0 else {
             return .init(error: VideoGetError.notFountData)
         }
         
         let key = yougetJSON.videos[row].key
-        let site = SupportSites(url: self.searchField.stringValue)
         
         return videoGet.prepareVideoUrl(yougetJSON, key).get {
             yougetJSON = $0
@@ -664,7 +663,41 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            processes.openWithPlayer(yougetJSON, key)
+            guard !pref.enableFlvjs,
+                  proc.checkDanmakuPlugin(), // check only release
+                  pref.livePlayer == .iina,
+                  proc.iinaArchiveType() == .plugin else {
+                proc.openWithPlayer(yougetJSON, key)
+                return
+            }
+            
+            do {
+                let v = try PluginSystem.pluginVersion()
+                Log("Open result with plugin version: \(v)")
+                proc.openWithPlayer(yougetJSON, key)
+            } catch let error {
+                switch error {
+                case PluginSystem.PluginError.pluginNotFound:
+                    Log("Open result failed, pluginNotFound.")
+                    
+                    let alert = NSAlert()
+                    alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
+                    alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "Click OK for detailed installation guide.")
+                    
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "OK")
+                    alert.addButton(withTitle: "Cancel")
+                    
+                    switch alert.runModal() {
+                    case .alertFirstButtonReturn:
+                        NSWorkspace.shared.open(.init(string: "https://github.com/xjbeta/iina-plus/wiki/2.-IINA-%E6%8F%92%E4%BB%B6%E7%89%88")!)
+                    default:
+                        break
+                    }
+                default:
+                    return
+                }
+            }
         }
     }
     
