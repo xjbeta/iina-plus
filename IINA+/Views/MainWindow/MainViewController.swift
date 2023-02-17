@@ -442,7 +442,7 @@ class MainViewController: NSViewController {
         isSearching = true
         progressStatusChanged(true)
         let isHoldingOption = self.isHoldOption
-        if isHoldingOption {
+        if isHoldingOption || !Preferences.shared.autoOpenResult {
             NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         }
         var str = url
@@ -509,7 +509,7 @@ class MainViewController: NSViewController {
                             }
                         }
                     }
-                    if isHoldingOption {
+                    if isHoldingOption || !Preferences.shared.autoOpenResult {
                         self.yougetResult = $0
                     }
                     resolver.fulfill(())
