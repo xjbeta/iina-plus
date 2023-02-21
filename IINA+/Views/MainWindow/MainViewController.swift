@@ -39,7 +39,9 @@ class MainViewController: NSViewController {
         guard bookmarkTableView.selectedRow != -1 else { return }
         let url = bookmarks[bookmarkTableView.selectedRow].url
         searchField.stringValue = url
-        startSearchingUrl(url)
+        
+        let autoOpen = NSEvent.modifierFlags.contains(.option)
+        startSearchingUrl(url, autoOpen: autoOpen)
     }
     
     // MARK: - Menu
@@ -414,7 +416,9 @@ class MainViewController: NSViewController {
     }
     
     
-    func startSearchingUrl(_ url: String, directly: Bool = false) {
+    func startSearchingUrl(_ url: String,
+                           directly: Bool = false,
+                           autoOpen: Bool = false) {
         guard url != "" else { return }
         Processes.shared.stopDecodeURL()
         waitingErrorMessage = nil
@@ -438,7 +442,7 @@ class MainViewController: NSViewController {
                 str = $0
             }
         }.then {
-            self.decodeUrl($0, directly: directly)
+            self.decodeUrl($0, directly: directly, autoOpen: autoOpen)
         }.ensure {
             self.isSearching = false
             self.progressStatusChanged(false)
@@ -466,7 +470,9 @@ class MainViewController: NSViewController {
         }
     }
     
-    func decodeUrl(_ url: String, directly: Bool = false) -> Promise<()> {
+    func decodeUrl(_ url: String,
+                   directly: Bool = false,
+                   autoOpen: Bool = false) -> Promise<()> {
         
         return Promise { resolver in
             let videoGet = Processes.shared.videoDecoder
@@ -486,7 +492,7 @@ class MainViewController: NSViewController {
                 }.then { _ in
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
-                    if Preferences.shared.autoOpenResult {
+                    if autoOpen || Preferences.shared.autoOpenResult {
                         self.open(result: $0, row: 0).catch {
                             Log("Prepare DM file error : \($0)")
                         }
@@ -499,7 +505,7 @@ class MainViewController: NSViewController {
                 }
             }
             
-            if directly {
+            if directly || autoOpen {
                 decodeUrl()
             } else if let bUrl = BilibiliUrl(url: str) {
                 let u = bUrl.fUrl
