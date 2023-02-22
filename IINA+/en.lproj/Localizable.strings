@@ -31,11 +31,17 @@
 /* CC163 */
 "SupportSites.CC163" = "CC163";
 
+/* DouYin */
+"SupportSites.DouYin" = "DouYin";
+
 /* Douyu */
 "SupportSites.Douyu" = "Douyu";
 
 /* Huya */
 "SupportSites.Huya" = "Huya";
+
+/* QQ Live */
+"SupportSites.QQLive" = "QQ Live";
 
 /* Unsupported */
 "SupportSites.Unsupported" = "Unsupported";
@@ -58,5 +64,8 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
 
-/* DouYin */
-"SupportSites.DouYin" = "DouYin";
+/* Click OK for detailed installation guide. */
+"Danmaku plugin Install Alert informativeText" = "Click OK for detailed installation guide.";
+
+/* You need to install the Danmaku plugin for IINA */
+"Danmaku plugin Install Alert messageText" = "You need to install the Danmaku plugin for IINA";

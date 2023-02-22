@@ -37,7 +37,19 @@ class DouYinDM: NSObject {
     var requestPrepared: ((URLRequest) -> Void)?
     
     func initWS() {
-        let ws = "d3NzOi8vd2ViY2FzdDMtd3Mtd2ViLWhsLmRvdXlpbi5jb20vd2ViY2FzdC9pbS9wdXNoL3YyLz9hcHBfbmFtZT1kb3V5aW5fd2ViJnZlcnNpb25fY29kZT0xODA4MDAmd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCZ1cGRhdGVfdmVyc2lvbl9jb2RlPTEuMy4wJmNvbXByZXNzPWd6aXAmaG9zdD1odHRwczovL2xpdmUuZG91eWluLmNvbSZhaWQ9NjM4MyZsaXZlX2lkPTEmZGlkX3J1bGU9MyZkZWJ1Zz10cnVlJmVuZHBvaW50PWxpdmVfcGMmc3VwcG9ydF93cmRzPTEmaW1fcGF0aD0vd2ViY2FzdC9pbS9mZXRjaC8mZGV2aWNlX3BsYXRmb3JtPXdlYiZjb29raWVfZW5hYmxlZD10cnVlJmJyb3dzZXJfbGFuZ3VhZ2U9ZW4tVVMmYnJvd3Nlcl9wbGF0Zm9ybT1NYWNJbnRlbCZicm93c2VyX29ubGluZT10cnVlJnR6X25hbWU9QXNpYS9TaGFuZ2hhaSZpZGVudGl0eT1hdWRpZW5jZSZoZWFydGJlYXREdXJhdGlvbj0xMDAwMCZyb29tX2lkPQ==".base64Decode() + "\(roomId)"
+        
+        let scalars = [UnicodeScalar("a").value...UnicodeScalar("z").value,
+                                  UnicodeScalar("A").value...UnicodeScalar("Z").value,
+                                  UnicodeScalar("0").value...UnicodeScalar("9").value]
+            .joined()
+            .map { String(UnicodeScalar($0)!) }
+        let str = scalars.shuffled().joined()
+        let sid = str.dropFirst(str.count - 16)
+        
+        var ws = "d3NzOi8vd2ViY2FzdDMtd3Mtd2ViLWhsLmRvdXlpbi5jb20vd2ViY2FzdC9pbS9wdXNoL3YyLz9hcHBfbmFtZT1kb3V5aW5fd2ViJnZlcnNpb25fY29kZT0xODA4MDAmd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCZ1cGRhdGVfdmVyc2lvbl9jb2RlPTEuMy4wJmNvbXByZXNzPWd6aXAmaG9zdD1odHRwczovL2xpdmUuZG91eWluLmNvbSZhaWQ9NjM4MyZsaXZlX2lkPTEmZGlkX3J1bGU9MyZkZWJ1Zz10cnVlJmVuZHBvaW50PWxpdmVfcGMmc3VwcG9ydF93cmRzPTEmaW1fcGF0aD0vd2ViY2FzdC9pbS9mZXRjaC8mZGV2aWNlX3BsYXRmb3JtPXdlYiZjb29raWVfZW5hYmxlZD10cnVlJmJyb3dzZXJfbGFuZ3VhZ2U9ZW4tVVMmYnJvd3Nlcl9wbGF0Zm9ybT1NYWNJbnRlbCZicm93c2VyX29ubGluZT10cnVlJnR6X25hbWU9QXNpYS9TaGFuZ2hhaSZpZGVudGl0eT1hdWRpZW5jZSZoZWFydGJlYXREdXJhdGlvbj0xMDAwMCZyb29tX2lkPQ==".base64Decode()
+        
+        ws += "\(roomId)"
+        ws += "&signature=\(sid)"
         
         guard let u = URL(string: ws) else { return }
         var req = URLRequest(url: u)

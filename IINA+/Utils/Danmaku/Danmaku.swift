@@ -86,6 +86,8 @@ class Danmaku: NSObject {
 
     let cc163Server = URL(string: "wss://weblink.cc.163.com")
     
+    var socketClosed = false
+    
     var douyinDM: DouYinDM?
     
     
@@ -194,6 +196,7 @@ class Danmaku: NSObject {
                 self.socket?.open()
             }
             douyinDM?.start(self.url)
+            socketClosed = false
         default:
             break
         }
@@ -264,9 +267,16 @@ class Danmaku: NSObject {
                     self.sendMsg(data)
                     
                 case .douyin:
+                    guard let socket = self.socket else { return }
+                    if self.socketClosed {
+                        Log("Reconnect douyin dm")
+                        self.stop()
+                        self.loadDM()
+                        return
+                    }
                     var pf = DouYinPushFrame()
                     pf.payloadType = "hb"
-                    try self.socket?.sendPing(pf.serializedData())
+                    try socket.sendPing(pf.serializedData())
                 default:
                     try self.socket?.sendPing(Data())
                 }
@@ -469,6 +479,8 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         case .biliLive:
             timer?.cancel()
             timer = nil
+        case .douyin:
+            socketClosed = true
         default:
             break
         }

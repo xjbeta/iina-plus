@@ -39,7 +39,9 @@ class MainViewController: NSViewController {
         guard bookmarkTableView.selectedRow != -1 else { return }
         let url = bookmarks[bookmarkTableView.selectedRow].url
         searchField.stringValue = url
-        startSearchingUrl(url)
+
+        let option = NSEvent.modifierFlags.contains(.option)
+        startSearchingUrl(url, with: option)
     }
     
     // MARK: - Menu
@@ -159,8 +161,6 @@ class MainViewController: NSViewController {
     
     var bookmarkArrayCountObserver: NSKeyValueObservation?
     
-    var isHoldOption = false
-    
     var isSearching = false {
         didSet {
             DispatchQueue.main.async {
@@ -242,16 +242,6 @@ class MainViewController: NSViewController {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
-        NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { event in
-            switch event.keyCode {
-            case 58, 61:
-                self.isHoldOption = !self.isHoldOption
-            default:
-                break
-            }
-            
-            return event
-        }
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
@@ -426,7 +416,9 @@ class MainViewController: NSViewController {
     }
     
     
-    func startSearchingUrl(_ url: String, directly: Bool = false) {
+    func startSearchingUrl(_ url: String,
+                           directly: Bool = false,
+                           with option: Bool = false) {
         guard url != "" else { return }
         Processes.shared.stopDecodeURL()
         waitingErrorMessage = nil
@@ -441,8 +433,7 @@ class MainViewController: NSViewController {
         
         isSearching = true
         progressStatusChanged(true)
-        let isHoldingOption = self.isHoldOption
-        if isHoldingOption || !Preferences.shared.autoOpenResult {
+        if option || !Preferences.shared.autoOpenResult {
             NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         }
         var str = url
@@ -453,12 +444,12 @@ class MainViewController: NSViewController {
                 str = $0
             }
         }.then {
-            self.decodeUrl($0, directly: directly, isHoldingOption: isHoldingOption)
+            self.decodeUrl($0, directly: directly, with: option)
         }.ensure {
             self.isSearching = false
             self.progressStatusChanged(false)
         }.done {
-            Log("decodeUrl success: \(str), directly: \(directly)")
+            Log("decodeUrl success: \(str)")
         }.catch { error in
             var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
             switch error {
@@ -481,7 +472,9 @@ class MainViewController: NSViewController {
         }
     }
     
-    func decodeUrl(_ url: String, directly: Bool = false, isHoldingOption: Bool) -> Promise<()> {
+    func decodeUrl(_ url: String,
+                   directly: Bool = false,
+                   with option: Bool = false) -> Promise<()> {
         
         return Promise { resolver in
             let videoGet = Processes.shared.videoDecoder
@@ -502,14 +495,11 @@ class MainViewController: NSViewController {
                 }.then { _ in
                     Processes.shared.decodeURL(str)
                 }.done(on: .main) {
-                    if Preferences.shared.autoOpenResult {
-                        if !isHoldingOption {
-                            self.open(result: $0, row: 0).catch {
-                                Log("Prepare DM file error : \($0)")
-                            }
+                    if Preferences.shared.autoOpenResult && !option {
+                        self.open(result: $0, row: 0).catch {
+                            Log("Prepare DM file error : \($0)")
                         }
-                    }
-                    if isHoldingOption || !Preferences.shared.autoOpenResult {
+                    } else {
                         self.yougetResult = $0
                     }
                     resolver.fulfill(())
@@ -605,7 +595,7 @@ class MainViewController: NSViewController {
                     if rl.list.count == 0 {
                         decodeUrl()
                     } else {
-                        if isHoldingOption {
+                        if option {
                             self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
                             resolver.fulfill(())
                         } else {
@@ -665,20 +655,19 @@ class MainViewController: NSViewController {
     }
     
     func open(result: YouGetJSON, row: Int) -> Promise<()> {
-        let processes = Processes.shared
-        let preferences = Preferences.shared
+        let proc = Processes.shared
+        let pref = Preferences.shared
         
         var yougetJSON = result
         let uuid = yougetJSON.uuid
         
-        let videoGet = processes.videoDecoder
+        let videoGet = proc.videoDecoder
         
         guard yougetJSON.videos.count > 0 else {
             return .init(error: VideoGetError.notFountData)
         }
         
         let key = yougetJSON.videos[row].key
-        let site = SupportSites(url: self.searchField.stringValue)
         
         return videoGet.prepareVideoUrl(yougetJSON, key).get {
             yougetJSON = $0
@@ -687,7 +676,41 @@ class MainViewController: NSViewController {
                 yougetJSON: yougetJSON,
                 id: uuid)
         }.done {
-            processes.openWithPlayer(yougetJSON, key)
+            guard !pref.enableFlvjs,
+                  proc.checkDanmakuPlugin(), // check only release
+                  pref.livePlayer == .iina,
+                  proc.iinaArchiveType() == .plugin else {
+                proc.openWithPlayer(yougetJSON, key)
+                return
+            }
+
+            do {
+                let v = try PluginSystem.pluginVersion()
+                Log("Open result with plugin version: \(v)")
+                proc.openWithPlayer(yougetJSON, key)
+            } catch let error {
+                switch error {
+                case PluginSystem.PluginError.pluginNotFound:
+                    Log("Open result failed, pluginNotFound.")
+
+                    let alert = NSAlert()
+                    alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
+                    alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "Click OK for detailed installation guide.")
+
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "OK")
+                    alert.addButton(withTitle: "Cancel")
+
+                    switch alert.runModal() {
+                    case .alertFirstButtonReturn:
+                        NSWorkspace.shared.open(.init(string: "https://github.com/xjbeta/iina-plus/wiki/2.-IINA-%E6%8F%92%E4%BB%B6%E7%89%88")!)
+                    default:
+                        break
+                    }
+                default:
+                    return
+                }
+            }
         }
     }
     

@@ -189,8 +189,9 @@ class DouYin: NSObject, SupportSiteProtocol {
             $0.domain.contains("douyin")
         }
         
-        return webview.evaluateJavaScript("self.__LOADABLE_LOADED_CHUNKS__.map(x => x[0][0]).length").then { length -> Promise<()> in
-            if let l = length as? Int, l > 10 {
+        return webview.evaluateJavaScript("self.webpackChunkdouyin_live_v2.length").then { length -> Promise<()> in
+//            print("douyin checker, length: \(length)")
+            if let l = length as? Int, l > 30 {
                 dyCookies.forEach {
                     self.cookies[$0.name] = $0.value
                 }
