@@ -18,9 +18,14 @@ class DouYinDM: NSObject {
         proc.videoDecoder.douyin.douyinUA
     }
     
+    var privateKeys: [String] {
+        proc.videoDecoder.douyin.privateKeys
+    }
+    
     var storageDic: [String: String] {
         proc.videoDecoder.douyin.storageDic
     }
+    
     
     var cookies = [String: String]()
     
@@ -28,52 +33,57 @@ class DouYinDM: NSObject {
     
     
     private var webview: WKWebView? = WKWebView()
-    private var requestTimer: Timer?
-    
-    var privateKeys: [String] {
-        proc.videoDecoder.douyin.privateKeys
-    }
-    
     var requestPrepared: ((URLRequest) -> Void)?
     
-    func initWS() {
+    func initWS() -> Promise<URLRequest> {
+        let s = "bGl2ZV9pZD0xLGFpZD02MzgzLHZlcnNpb25fY29kZT0xODA4MDAsd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCxyb29tX2lkPQ==".base64Decode()
+        + roomId
+        + "LHN1Yl9yb29tX2lkPSxzdWJfY2hhbm5lbF9pZD0sZGlkX3J1bGU9Myx1c2VyX3VuaXF1ZV9pZD0sZGV2aWNlX3BsYXRmb3JtPXdlYixkZXZpY2VfdHlwZT0sYWM9LGlkZW50aXR5PWF1ZGllbmNl".base64Decode()
         
-        let scalars = [UnicodeScalar("a").value...UnicodeScalar("z").value,
-                                  UnicodeScalar("A").value...UnicodeScalar("Z").value,
-                                  UnicodeScalar("0").value...UnicodeScalar("9").value]
-            .joined()
-            .map { String(UnicodeScalar($0)!) }
-        let str = scalars.shuffled().joined()
-        let sid = str.dropFirst(str.count - 16)
+        let code = "\("d2luZG93LmJ5dGVkX2FjcmF3bGVyLmZyb250aWVyU2lnbg==".base64Decode())({'\("WC1NUy1TVFVC".base64Decode())':'\(s.md5())'})"
+        guard let webView = webview else {
+            return .init(error: DouYinDMError.deinited)
+        }
         
-        var ws = "d3NzOi8vd2ViY2FzdDMtd3Mtd2ViLWhsLmRvdXlpbi5jb20vd2ViY2FzdC9pbS9wdXNoL3YyLz9hcHBfbmFtZT1kb3V5aW5fd2ViJnZlcnNpb25fY29kZT0xODA4MDAmd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCZ1cGRhdGVfdmVyc2lvbl9jb2RlPTEuMy4wJmNvbXByZXNzPWd6aXAmaG9zdD1odHRwczovL2xpdmUuZG91eWluLmNvbSZhaWQ9NjM4MyZsaXZlX2lkPTEmZGlkX3J1bGU9MyZkZWJ1Zz10cnVlJmVuZHBvaW50PWxpdmVfcGMmc3VwcG9ydF93cmRzPTEmaW1fcGF0aD0vd2ViY2FzdC9pbS9mZXRjaC8mZGV2aWNlX3BsYXRmb3JtPXdlYiZjb29raWVfZW5hYmxlZD10cnVlJmJyb3dzZXJfbGFuZ3VhZ2U9ZW4tVVMmYnJvd3Nlcl9wbGF0Zm9ybT1NYWNJbnRlbCZicm93c2VyX29ubGluZT10cnVlJnR6X25hbWU9QXNpYS9TaGFuZ2hhaSZpZGVudGl0eT1hdWRpZW5jZSZoZWFydGJlYXREdXJhdGlvbj0xMDAwMCZyb29tX2lkPQ==".base64Decode()
-        
-        ws += "\(roomId)"
-        ws += "&signature=\(sid)"
-        
-        guard let u = URL(string: ws) else { return }
-        var req = URLRequest(url: u)
-        let cookieString = cookies.map {
-            "\($0.key)=\($0.value)"
-        }.joined(separator: ";")
-        
-        req.setValue(cookieString, forHTTPHeaderField: "Cookie")
-        req.setValue("https://live.douyin.com", forHTTPHeaderField: "referer")
-        req.setValue(ua, forHTTPHeaderField: "User-Agent")
-        
-        requestPrepared?(req)
+        return webView.evaluateJavaScript(code).map { re -> URLRequest in
+            guard let value = (re as? [String: String])?.first?.value else {
+                throw DouYinDMError.signFailed
+            }
+            
+            var ws = "d3NzOi8vd2ViY2FzdDMtd3Mtd2ViLWhsLmRvdXlpbi5jb20vd2ViY2FzdC9pbS9wdXNoL3YyLz9hcHBfbmFtZT1kb3V5aW5fd2ViJnZlcnNpb25fY29kZT0xODA4MDAmd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCZ1cGRhdGVfdmVyc2lvbl9jb2RlPTEuMy4wJmNvbXByZXNzPWd6aXAmaG9zdD1odHRwczovL2xpdmUuZG91eWluLmNvbSZhaWQ9NjM4MyZsaXZlX2lkPTEmZGlkX3J1bGU9MyZkZWJ1Zz10cnVlJmVuZHBvaW50PWxpdmVfcGMmc3VwcG9ydF93cmRzPTEmaW1fcGF0aD0vd2ViY2FzdC9pbS9mZXRjaC8mZGV2aWNlX3BsYXRmb3JtPXdlYiZjb29raWVfZW5hYmxlZD10cnVlJmJyb3dzZXJfbGFuZ3VhZ2U9ZW4tVVMmYnJvd3Nlcl9wbGF0Zm9ybT1NYWNJbnRlbCZicm93c2VyX29ubGluZT10cnVlJnR6X25hbWU9QXNpYS9TaGFuZ2hhaSZpZGVudGl0eT1hdWRpZW5jZSZoZWFydGJlYXREdXJhdGlvbj0xMDAwMCZyb29tX2lkPQ==".base64Decode()
+            
+            ws += self.roomId
+            ws += "JnNpZ25hdHVyZT0=".base64Decode()
+            ws += value
+            
+            print("dy ws, \(ws)")
+            
+            
+            guard let u = URL(string: ws) else {
+                throw DouYinDMError.signFailed
+            }
+            var req = URLRequest(url: u)
+            let cookieString = self.cookies.map {
+                "\($0.key)=\($0.value)"
+            }.joined(separator: ";")
+            
+            req.setValue(cookieString, forHTTPHeaderField: "Cookie")
+            req.setValue("https://live.douyin.com", forHTTPHeaderField: "referer")
+            req.setValue(self.ua, forHTTPHeaderField: "User-Agent")
+            
+            return req
+        }
     }
     
     
     func start(_ url: String) {
         self.url = url
-        let path = Bundle.main.url(forResource: "douyin", withExtension: "html")!
+        let path = Bundle.main.url(forResource: "douyin", withExtension: "html", subdirectory: "DouYin")!
         DispatchQueue.main.async {
             self.webview?.navigationDelegate = self
             self.webview?.loadFileURL(path, allowingReadAccessTo: path.deletingLastPathComponent())
         }
     }
-    
     
     func getRoomId() -> Promise<()> {
         if roomId != "" {
@@ -87,35 +97,38 @@ class DouYinDM: NSObject {
         }
     }
     
-    func prepareCookies() -> Promise<()> {
-        
-        let kvs = [
-            privateKeys[0].base64Decode(),
-            privateKeys[1].base64Decode()
-        ].compactMap {
-            storageDic[$0] == nil ? nil : ($0, storageDic[$0]!)
-        }
-        
-        guard kvs.count == 2, let webview = self.webview else {
-            return .init(error: DouYinDMError.deinited)
-        }
-        
-        let acts = kvs.map {
-            webview.evaluateJavaScript("window.sessionStorage.setItem('\($0.0)', '\($0.1)')").asVoid()
-        }
-
-        return when(fulfilled: acts)
-    }
-    
     enum DouYinDMError: Error {
+        case signFailed
         case deinited
     }
+    
+    func prepareCookies() -> Promise<()> {
+         
+         let kvs = [
+             privateKeys[0].base64Decode(),
+             privateKeys[1].base64Decode()
+         ].compactMap {
+             storageDic[$0] == nil ? nil : ($0, storageDic[$0]!)
+         }
+         
+         guard kvs.count == 2, let webview = self.webview else {
+             return .init(error: DouYinDMError.deinited)
+         }
+         
+         let acts = kvs.map {
+             webview.evaluateJavaScript("window.sessionStorage.setItem('\($0.0)', '\($0.1)')").asVoid()
+         }
+
+         return when(fulfilled: acts)
+     }
     
     func startRequests() {
         getRoomId().then {
             self.prepareCookies()
-        }.done {
+        }.then {
             self.initWS()
+        }.done {
+            self.requestPrepared?($0)
         }.ensure(on: .main) {
             self.stop()
         }.catch {
@@ -124,11 +137,14 @@ class DouYinDM: NSObject {
     }
     
     func stop() {
-        webview?.navigationDelegate = nil
-        webview?.stopLoading()
-        webview = nil
+        DispatchQueue.main.async {
+            self.webview?.navigationDelegate = nil
+            self.webview?.stopLoading()
+            self.webview = nil
+        }
     }
 }
+
 
 extension DouYinDM: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

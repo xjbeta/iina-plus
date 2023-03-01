@@ -792,8 +792,11 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             
         default:
             break
-        }
-        
+        }   
+    }
+    
+    func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
+        Log(error)
     }
     
     func pack(format: String, values: [Int]) -> NSMutableData {
