@@ -615,9 +615,13 @@ class MainViewController: NSViewController {
                             let id = "\(url.pathComponents[1])"
                             c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
                         }
-                        
-                        self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
-                        resolver.fulfill(())
+
+                        if option {
+                            self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }
                 }.catch {
                     resolver.reject($0)
