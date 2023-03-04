@@ -391,9 +391,9 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: String, infos: [(String, [VideoSelector])], currentItem: Int = 0) {
+    func showSelectVideo(_ videoId: String, infos: [(String, [VideoSelector])], currentItem: Int = 0, with option: Bool = false) -> Bool {
         guard let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first else {
-            return
+            return true
         }
         
         DispatchQueue.main.async {
@@ -403,6 +403,7 @@ class MainViewController: NSViewController {
             selectVideoViewController.currentItem = currentItem
             self.selectTabItem(.selectVideos)
         }
+        return option || !Preferences.shared.autoOpenResult
     }
     
     
@@ -520,8 +521,11 @@ class MainViewController: NSViewController {
                         let list = infos.flatMap({ $0.1 })
                         if list.count > 1 {
                             let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
-                            resolver.fulfill(())
+                            if self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0) {
+                                resolver.fulfill(())
+                            } else {
+                                decodeUrl()
+                            }
                         } else {
                             decodeUrl()
                         }
@@ -538,7 +542,7 @@ class MainViewController: NSViewController {
                                     $0.id == bUrl.id.dropFirst(2)
                                 } ?? 0
                             }
-                            
+
                             self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
                             resolver.fulfill(())
                         }
@@ -577,8 +581,11 @@ class MainViewController: NSViewController {
                         re.enumerated().forEach {
                             re[$0.offset].isLiving = status[$0.element.id] ?? false
                         }
-                        self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
-                        resolver.fulfill(())
+                        if self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }.catch {
                         switch $0 {
                         case VideoGetError.douyuNotFoundSubRooms:
@@ -595,8 +602,7 @@ class MainViewController: NSViewController {
                     if rl.list.count == 0 {
                         decodeUrl()
                     } else {
-                        if option {
-                            self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
+                        if self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0) {
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
@@ -616,8 +622,7 @@ class MainViewController: NSViewController {
                             c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
                         }
 
-                        if option {
-                            self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
+                        if self.showSelectVideo("", infos: [("", $0.1)], currentItem: c) {
                             resolver.fulfill(())
                         } else {
                             decodeUrl()
@@ -640,8 +645,11 @@ class MainViewController: NSViewController {
                                 url: $0.element.channel,
                                 id: "\($0.element.ccid)")
                         }
-                        self.showSelectVideo("", infos: [("", infos)])
-                        resolver.fulfill(())
+                        if self.showSelectVideo("", infos: [("", infos)]) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     } else if let i = $0.info as? CC163Info {
                         str = "https://cc.163.com/ccid/\(i.ccid)"
                         decodeUrl()
