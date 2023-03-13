@@ -331,15 +331,20 @@ class Danmaku: NSObject {
     }
     
     struct BiliLiveEmoticon: Unmarshaling {
-        let emoji: String
-        let url: String
-        let width: Int
-        let height: Int
-        let identity: Int
+		var emoji: String = ""
+        var url: String
+		var width: Int = 0
+		var height: Int = 0
+		var identity: Int = 0
         let emoticonUnique: String
-        let emoticonId: Int
+		var emoticonId: Int = 0
         
         var emoticonData: Data?
+		
+		init(_ emoticonUnique: String, url: String) {
+			self.emoticonUnique = emoticonUnique
+			self.url = url
+		}
         
         init(object: MarshaledObject) throws {
             emoji = try object.value(for: "emoji")
@@ -351,53 +356,76 @@ class Danmaku: NSObject {
             emoticonUnique = try object.value(for: "emoticon_unique")
             emoticonId = try object.value(for: "emoticon_id")
         }
+		
+		func comment() -> DanmakuComment? {
+			guard let base64 = emoticonData?.base64EncodedString(),
+					base64.count > 0 else { return nil }
+			
+			let ext = NSString(string: url.lastPathComponent).pathExtension
+			
+			let size = {
+				switch width {
+				case _ where width > 200:
+					return 200
+				case _ where width < 150:
+					return 150
+				default:
+					return width
+				}
+			}() / 2
+			
+			return DanmakuComment(
+				text: "",
+				imageSrc: "data:image/\(ext);base64," + base64,
+				imageWidth: size)
+		}
     }
     
     
     func bililiveEmoticons(_ rid: String) -> Promise<([BiliLiveEmoticon])> {
-        return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)").response {
-                
-                struct BiliLiveEmoticonData: Unmarshaling {
-                    let emoticons: [BiliLiveEmoticon]
-                    let pkgId: Int
-                    let pkgName: String
-                    init(object: MarshaledObject) throws {
-                        emoticons = try object.value(for: "emoticons")
-                        pkgId = try object.value(for: "pkg_id")
-                        pkgName = try object.value(for: "pkg_name")
-                    }
-                }
-                
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-                    let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
-                    var emoticons = emoticonData.flatMap {
-                        $0.emoticons
-                    }
-                    
-                    when(fulfilled: emoticons.enumerated().map { item -> Promise<()> in
-                        let key = "BiliLive_Emoticons_" + item.element.emoticonUnique
-                        if let image = SDImageCache.shared.imageFromCache(forKey: key) {
-                            emoticons[item.offset].emoticonData = image.sd_imageData()
-                            return .value
-                        } else {
-                            return AF.request(item.element.url).responseData().done {
-                                emoticons[item.offset].emoticonData = $0.data
-                                SDImageCache.shared.store(NSImage(data: $0.data), forKey: key)
-                            }
-                        }
-                    }).done {
-                        resolver.fulfill(emoticons)
-                    }.catch {
-                        resolver.reject($0)
-                    }
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
+		var emoticons = [BiliLiveEmoticon]()
+		
+		return AF.request("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)").responseData().get {
+			
+			struct BiliLiveEmoticonData: Unmarshaling {
+				let emoticons: [BiliLiveEmoticon]
+				let pkgId: Int
+				let pkgName: String
+				init(object: MarshaledObject) throws {
+					emoticons = try object.value(for: "emoticons")
+					pkgId = try object.value(for: "pkg_id")
+					pkgName = try object.value(for: "pkg_name")
+				}
+			}
+			
+			let json = try JSONParser.JSONObjectWithData($0.data)
+			let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
+			emoticons = emoticonData.flatMap {
+				$0.emoticons
+			}
+		}.then { _ in
+			when(fulfilled: emoticons.enumerated().map { e in
+				self.loadBililiveEmoticon(e.element).done {
+					emoticons[e.offset].emoticonData = $0
+				}
+			})
+		}.map {
+			emoticons
+		}
     }
+	
+	func loadBililiveEmoticon(_ emoticon: BiliLiveEmoticon) -> Promise<Data?> {
+		let key = "BiliLive_Emoticons_" + emoticon.emoticonUnique
+		if let image = SDImageCache.shared.imageFromCache(forKey: key) {
+			return .value(image.sd_imageData())
+		} else {
+			return AF.request(emoticon.url).responseData().get {
+				SDImageCache.shared.store(NSImage(data: $0.data), forKey: key)
+			}.map {
+				$0.data
+			}
+		}
+	}
     
     /*
     func testedBilibiliAPI() {
@@ -541,21 +569,41 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             }
             
             let dms = datas.compactMap { data -> DanmakuComment? in
-                if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
+				if let str = String(data: data, encoding: .utf8),
+				   str.contains("emoticon_unique"),
+				   let eu = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
+				   eu != "",
+				   !self.bililiveEmoticons.contains(where: {$0.emoticonUnique == eu}) {
+					
+					let url = str.subString(from: "\"url\":\"", to: "\",").replacingOccurrences(of: "http://", with: "https://")
+					
+					var emoticon = BiliLiveEmoticon(eu, url: url)
+					
+					let height = str.subString(from: "\"height\":", to: ",")
+					let width = str.subString(from: "\"width\":", to: "}")
+					
+					if let hh = Int(height), let ww = Int(width) {
+						emoticon.width = ww
+						emoticon.height = hh
+					}
+					
+					if let image = SDImageCache.shared.imageFromCache(forKey: "BiliLive_Emoticons_" + emoticon.emoticonUnique) {
+						emoticon.emoticonData = image.sd_imageData()
+						self.bililiveEmoticons.append(emoticon)
+						
+						return emoticon.comment()
+					} else {
+						loadBililiveEmoticon(emoticon).done {
+							guard let i = self.bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == eu }) else { return }
+							self.bililiveEmoticons[i].emoticonData = $0
+						}.cauterize()
+						self.bililiveEmoticons.append(emoticon)
+						return nil
+					}
+				} else if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
                    let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == s }) {
                     
-                    guard let base64 = emoticon.emoticonData?.base64EncodedString(),
-                            base64.count > 0 else { return nil }
-                    
-                    let ext = NSString(string: emoticon.url.lastPathComponent).pathExtension
-                    
-                    let size = Int(emoticon.width / 2) > 125 ? 125 : Int(emoticon.width / 2)
-                    
-                    
-                    return DanmakuComment(
-                        text: "",
-                        imageSrc: "data:image/\(ext);base64," + base64,
-                        imageWidth: size)
+					return emoticon.comment()
                 } else if let s = (try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: data))?.info.compactMap ({ $0.msg }).first {
                     return DanmakuComment(text: s)
                 } else {
