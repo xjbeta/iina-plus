@@ -95,6 +95,7 @@
 		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
 		01BC354B29AF2BC000B45577 /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
 		01BC354C29AF2BD700B45577 /* douyin.html in Copy DouYin */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
+		01BC354E29AF369200B45577 /* KuaiShou.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BC354D29AF369200B45577 /* KuaiShou.swift */; };
 		01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */; };
 		01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807727BB5CFD00E87A8C /* Preferences.storyboard */; };
 		01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0807B27BC00EA00E87A8C /* Alamofire */; };
@@ -255,6 +256,7 @@
 		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
 		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
 		01BC354A29AF2BC000B45577 /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
+		01BC354D29AF369200B45577 /* KuaiShou.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KuaiShou.swift; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
@@ -464,6 +466,7 @@
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
+				01BC354D29AF369200B45577 /* KuaiShou.swift */,
 				01C338B428E47B3F004CC0B8 /* MBGA.swift */,
 			);
 			path = VideoDecoder;
@@ -758,6 +761,7 @@
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
 				0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */,
+				01BC354E29AF369200B45577 /* KuaiShou.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
