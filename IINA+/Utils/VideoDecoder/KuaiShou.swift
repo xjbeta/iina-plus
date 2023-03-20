@@ -20,8 +20,12 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		case apiLimited
 	}
 	
+	let initUA = 1000
+	let reloadTimes = 50
+	
 	var cookieStorage = [String: String]()
 	var refererStorage = [String: String]()
+	var uaStorage = [String: Int]()
 	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         getInfo(url).map {
@@ -50,8 +54,13 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			"source": 6
 		]
 		
+
+		if uaStorage[eid] == nil {
+			uaStorage[eid] = initUA
+		}
+		
 		let headers: HTTPHeaders = [
-			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1 EID/\(eid)"),
+			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1 EID/\(eid).\(uaStorage[eid]!)"),
 			.init(name: "Origin", value: "https://livev.m.chenzhongtech.com"),
 			.init(name: "Cookie", value: ""),
 			.init(name: "Accept-Encoding", value: "gzip, deflate, br"),
@@ -80,14 +89,39 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				parameters: pars,
 				encoding: JSONEncoding.default,
 				headers: $0).responseData()
-		}.map {
-			let obj = try JSONParser.JSONObjectWithData($0.data)
-			let result: Int = try obj.value(for: "result")
-			guard result == 1 else {
-				throw KuaiShouError.apiLimited
+		}.then { re in
+			Promise { resolver in
+				let obj = try JSONParser.JSONObjectWithData(re.data)
+				let result: Int = try obj.value(for: "result")
+				guard result == 1 else {
+					if result == 2,
+					   let i = self.uaStorage[eid],
+					   (i % self.reloadTimes) == 0 {
+						
+						self.uaStorage[eid] = i + 1
+						Log("KuaiShou API Limited, try to reinit \(eid)")
+						self.getInfo(url).done {
+							resolver.fulfill($0)
+						}.catch {
+							resolver.reject($0)
+						}
+					} else {
+						Log("KuaiShou API Limited, \(eid)")
+						resolver.reject(KuaiShouError.apiLimited)
+					}
+					return
+				}
+				let info = try KuaiShouInfo(object: obj)
+				resolver.fulfill(info)
 			}
-			let info = try KuaiShouInfo(object: obj)
-			return info
+		}.ensure {
+			let i = (self.uaStorage[eid] ?? self.initUA) + 1
+			self.uaStorage[eid] = i
+			
+			if (i % self.reloadTimes) == 0 {
+				self.cookieStorage[eid] = nil
+				self.refererStorage[eid] = nil
+			}
 		}
     }
 	
