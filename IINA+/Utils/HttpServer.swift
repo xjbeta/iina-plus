@@ -47,8 +47,20 @@ class HttpServer: NSObject, DanmakuDelegate {
         guard let dir = httpFilesURL?.path else { return }
 
         server.POST["/list"] = { request -> HttpResponse in
+            guard let page = Int(request.parameters["page"] ?? "1"),
+                  let pageSize = Int(request.parameters["page_size"] ?? "10")
+            else {
+                return .badRequest(nil)
+            }
             var liveList: [LiveItem] = []
-            for bm in gBookmarks {
+            let startNo = page * pageSize - pageSize
+            let endNo = page * pageSize - 1
+            for (index, bm) in gBookmarks.enumerated() {
+                if index < startNo {
+                    continue
+                } else if index > endNo {
+                    break
+                }
                 guard let cover = bm.cover else {
                     continue
                 }
