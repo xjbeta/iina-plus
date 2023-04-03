@@ -26,8 +26,10 @@ enum DanamkuMethod: String, Encodable {
     
 }
 
+public var gBookmarks: [Bookmark] = []
+
 class HttpServer: NSObject, DanmakuDelegate {
-    
+
     private var server = Swifter.HttpServer()
     
     private var unknownSessions = [WebSocketSession]()
@@ -43,7 +45,20 @@ class HttpServer: NSObject, DanmakuDelegate {
     func start() {
         prepareWebSiteFiles()
         guard let dir = httpFilesURL?.path else { return }
-        
+
+        server.POST["/list"] = { request -> HttpResponse in
+            var liveList: [LiveItem] = []
+            for bm in gBookmarks {
+                guard let cover = bm.cover else {
+                    continue
+                }
+                let item = LiveItem(
+                        cover: cover, liveName: bm.liveName, liveTitle: bm.liveTitle, state: bm.state, url: bm.url)
+                liveList.append(item)
+            }
+            return HttpResponse.ok(.data(try! JSONEncoder().encode(liveList)))
+        }
+
         // Video API
         server.POST["/video/danmakuurl"] = { request -> HttpResponse in
             guard let url = request.parameters["url"],
@@ -220,7 +235,7 @@ class HttpServer: NSObject, DanmakuDelegate {
          }
          */
         
-        server.listenAddressIPv4 = "127.0.0.1"
+        server.listenAddressIPv4 = "0.0.0.0"
         
         let port = Preferences.shared.dmPort
         
@@ -334,6 +349,14 @@ extension HttpRequest {
             return parameters
         }
     }
+}
+
+struct LiveItem: Encodable {
+    var cover: String
+    var liveName: String?
+    var liveTitle: String?
+    var state: Int16?
+    var url: String?
 }
 
 struct DanmakuComment: Encodable {
