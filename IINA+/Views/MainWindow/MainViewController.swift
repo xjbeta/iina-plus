@@ -31,7 +31,9 @@ class MainViewController: NSViewController {
     @IBOutlet var bookmarkArrayController: NSArrayController!
     var bookmarks: [Bookmark] {
         get {
-            return bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
+            let bm = bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
+            gBookmarks = bm
+            return bm
         }
     }
     @objc var context: NSManagedObjectContext
