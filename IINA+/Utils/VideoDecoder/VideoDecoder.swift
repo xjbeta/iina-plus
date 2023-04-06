@@ -23,6 +23,7 @@ class VideoDecoder: NSObject {
     lazy var biliLive = BiliLive()
     lazy var bilibili = Bilibili()
     lazy var qqLive = QQLive()
+    lazy var kuaiShou = KuaiShou()
     
     
     func bilibiliUrlFormatter(_ url: String) -> Promise<String> {
@@ -63,6 +64,8 @@ class VideoDecoder: NSObject {
             return douyin.decodeUrl(url)
         case .qqLive:
             return qqLive.decodeUrl(url)
+        case .kuaiShou:
+            return kuaiShou.decodeUrl(url)
         default:
             return .init(error: VideoGetError.notSupported)
         }
@@ -106,6 +109,8 @@ class VideoDecoder: NSObject {
             return douyin.liveInfo(url)
         case .qqLive:
             return qqLive.liveInfo(url)
+        case .kuaiShou:
+            return kuaiShou.liveInfo(url)
         default:
             if checkSupport {
                 return .init(error: VideoGetError.notSupported)

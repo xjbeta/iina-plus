@@ -72,6 +72,8 @@ class DouYin: NSObject, SupportSiteProtocol {
         
         return AF.request(url, headers: headers).responseString().map {
             guard let json = self.getJSON($0.string) else {
+                Log("notFountData for douyin")
+                
                 throw VideoGetError.notFountData
             }
             
@@ -190,7 +192,7 @@ class DouYin: NSObject, SupportSiteProtocol {
         }
         
         return webview.evaluateJavaScript("self.webpackChunkdouyin_live_v2.length").then { length -> Promise<()> in
-//            print("douyin checker, length: \(length)")
+            print("douyin checker, length: \(length as? Int ?? -9)")
             if let l = length as? Int, l > 30 {
                 dyCookies.forEach {
                     self.cookies[$0.name] = $0.value
