@@ -45,12 +45,16 @@ class HttpServer: NSObject, DanmakuDelegate {
     func start() {
         prepareWebSiteFiles()
         guard let dir = httpFilesURL?.path else { return }
+        let dataManager = DataManager()
 
         server.POST["/list"] = { request -> HttpResponse in
             guard let page = Int(request.parameters["page"] ?? "1"),
                   let pageSize = Int(request.parameters["page_size"] ?? "10")
             else {
                 return .badRequest(nil)
+            }
+            dataManager.requestData().forEach {
+                $0.updateState()
             }
             var liveList: [LiveItem] = []
             let startNo = page * pageSize - pageSize
