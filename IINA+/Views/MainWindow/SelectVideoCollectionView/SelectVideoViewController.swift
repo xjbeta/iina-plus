@@ -100,12 +100,17 @@ extension SelectVideoViewController: NSCollectionViewDataSource, NSCollectionVie
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "SelectVideoCollectionViewItem"), for: indexPath)
+        
         guard let selectVideoItem = item as? SelectVideoCollectionViewItem,
               let info = videoInfo(at: indexPath) else {
             return item
         }
         
-
+        if let view = item.view as? SelectVideoCollectionViewItemView {
+            view.selectColor = NSColor.systemGreen
+            view.isSelected = indexPath.section == 1 && indexPath.item == currentItem
+        }
+        
         var s = ""
         switch info.site {
         case .bilibili:

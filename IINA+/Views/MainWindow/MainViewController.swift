@@ -22,7 +22,7 @@ class MainViewController: NSViewController {
     @IBOutlet weak var mainTabView: NSTabView!
     var mainTabViewOldItem = SidebarItem.none
     @objc dynamic var mainTabViewSelectedIndex = 0
-    
+    var lastListURL: Bookmark?
     var mainWindowController: MainWindowController {
         return view.window?.windowController as! MainWindowController
     }
@@ -41,6 +41,7 @@ class MainViewController: NSViewController {
         searchField.stringValue = url
         
         let option = NSEvent.modifierFlags.contains(.option)
+        self.lastListURL = bookmarks[bookmarkTableView.selectedRow]
         startSearchingUrl(url, with: option)
     }
     
@@ -318,7 +319,6 @@ class MainViewController: NSViewController {
         else {
             return
         }
-        
         switch item {
         case .bookmarks:
             dataManager.requestData().forEach {
@@ -420,6 +420,10 @@ class MainViewController: NSViewController {
                            directly: Bool = false,
                            with option: Bool = false) {
         guard url != "" else { return }
+        if directly, let bookmark = self.lastListURL {
+            bookmark.url = url
+            bookmark.save()
+        }
         Processes.shared.stopDecodeURL()
         waitingErrorMessage = nil
         yougetResult = nil
@@ -674,6 +678,10 @@ class MainViewController: NSViewController {
                   pref.livePlayer == .iina,
                   proc.iinaArchiveType() == .plugin else {
                 proc.openWithPlayer(yougetJSON, key)
+                if let url = self.lastListURL {
+                    self.startSearchingUrl(url.url, with: NSEvent.modifierFlags.contains(.option))
+                    
+                }
                 return
             }
             

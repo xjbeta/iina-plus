@@ -233,6 +233,7 @@ class Processes: NSObject {
                 }
                 args.append("--directly")
             }
+            args.append("--mpv-geometry=50%")
         } else {
             args.append(MPVOption.Terminal.reallyQuiet)
             args = args.map {
