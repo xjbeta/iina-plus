@@ -27,8 +27,14 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 	var refererStorage = [String: String]()
 	var uaStorage = [String: Int]()
 	
+	var reinitLimit = [String: Int]()
+	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        getInfo(url).map {
+		if let eid = getEid(url) {
+			reinitLimit[eid] = nil
+		}
+		
+        return getInfo(url).map {
             $0
         }
     }
@@ -39,13 +45,19 @@ class KuaiShou: NSObject, SupportSiteProtocol {
         }
     }
 	
-    func getInfo(_ url: String) -> Promise<KuaiShouInfo> {
+	func getEid(_ url: String) -> String? {
 		guard let uc = URLComponents(string: url),
 			  uc.path.starts(with: "/u/") else {
-			return .init(error: KuaiShouError.invalidLink)
+			return nil
 		}
 		
-		let eid = String(uc.path.dropFirst(3))
+		return String(uc.path.dropFirst(3))
+	}
+	
+    func getInfo(_ url: String) -> Promise<KuaiShouInfo> {
+		guard let eid = getEid(url) else {
+			return .init(error: KuaiShouError.invalidLink)
+		}
 		
 		let pars: Parameters = [
 			"eid": eid,
@@ -68,6 +80,10 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		]
 		
 		var isInitRequest = false
+		
+		if reinitLimit[eid] == nil {
+			reinitLimit[eid] = -1
+		}
 		
 		return {
 			guard cookieStorage[eid] != nil && refererStorage[eid] != nil else {
@@ -92,6 +108,14 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				parameters: pars,
 				encoding: JSONEncoding.default,
 				headers: $0).responseData()
+		}.ensure {
+			let i = (self.uaStorage[eid] ?? self.initUA) + 1
+			self.uaStorage[eid] = i
+			
+			if (i % self.reloadTimes) == 0 {
+				self.cookieStorage[eid] = nil
+				self.refererStorage[eid] = nil
+			}
 		}.then { re in
 			Promise { resolver in
 				let obj = try JSONParser.JSONObjectWithData(re.data)
@@ -101,9 +125,17 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 					let info = try KuaiShouInfo(object: obj)
 					resolver.fulfill(info)
 				} else if result == 2,
-						  isInitRequest {
+						  isInitRequest,
+						  let limit = self.reinitLimit[eid],
+						  limit < 2 {
 					Log("KuaiShou API Limited, try to reinit \(eid)")
-					self.getInfo(url).done {
+					
+					self.reinitLimit[eid] = limit + 1
+					
+					after(seconds: 1).then {
+						self.getInfo(url)
+					}.done {
+						self.reinitLimit[eid] = -1
 						resolver.fulfill($0)
 					}.catch {
 						resolver.reject($0)
@@ -112,14 +144,6 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 					Log("KuaiShou API Limited, result \(result), \(eid)")
 					resolver.reject(KuaiShouError.apiLimited)
 				}
-			}
-		}.ensure {
-			let i = (self.uaStorage[eid] ?? self.initUA) + 1
-			self.uaStorage[eid] = i
-			
-			if (i % self.reloadTimes) == 0 {
-				self.cookieStorage[eid] = nil
-				self.refererStorage[eid] = nil
 			}
 		}
     }
