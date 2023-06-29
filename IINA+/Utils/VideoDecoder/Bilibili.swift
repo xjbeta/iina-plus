@@ -13,6 +13,9 @@ import PromiseKit
 import PMKAlamofire
 
 class Bilibili: NSObject, SupportSiteProtocol {
+	
+	let bilibiliUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5.1 Safari/605.1.15"
+	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         if SupportSites(url: url) == .bangumi {
             return getBilibiliHTMLDatas(url).map {
@@ -82,7 +85,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getBilibiliHTMLDatas(_ url: String) -> Promise<((playInfoData: Data, initialStateData: Data))> {
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+             "User-Agent": bilibiliUA])
         
         return AF.request(url, headers: headers).responseString().map {
             let playInfoData = $0.string.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
@@ -195,7 +198,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+             "User-Agent": bilibiliUA])
         
         
         return AF.request(u, headers: headers).responseData().map {
