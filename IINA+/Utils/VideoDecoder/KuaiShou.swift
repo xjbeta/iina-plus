@@ -21,22 +21,16 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		case apiLimited
 	}
 	
-	let initUA = 1000
-	let reloadTimes = 50
-	
 	var cookies = ""
 	var prepareTask: Promise<()>?
+	var webView: WKWebView?
+	var webViewLoadingObserver: NSKeyValueObservation?
+	
 	
 	var refererStorage = [String: String]()
-	var uaStorage = [String: Int]()
-	
 	var reinitLimit = [String: Int]()
 	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		if let eid = getEid(url) {
-			reinitLimit[eid] = nil
-		}
-		
 		if cookies.count == 0 {
 			if prepareTask == nil {
 				prepareTask = prepareCookies().ensure {
@@ -57,10 +51,7 @@ class KuaiShou: NSObject, SupportSiteProtocol {
         }
     }
 	
-	var webView: WKWebView?
-	var webViewLoadingObserver: NSKeyValueObservation?
-	
-	
+
 	func prepareCookies() -> Promise<()> {
 		.init { resolver in
 			webView = WKWebView()
@@ -116,12 +107,7 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			"shareMethod": "card",
 			"source": 6
 		]
-		
-
-		if uaStorage[eid] == nil {
-			uaStorage[eid] = initUA
-		}
-		
+	
 		let headers: HTTPHeaders = [
 			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"),
 			.init(name: "Origin", value: "https://livev.m.chenzhongtech.com"),
@@ -131,17 +117,13 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		]
 		
 		var isInitRequest = false
-		
-		if reinitLimit[eid] == nil {
-			reinitLimit[eid] = -1
-		}
-		
+
 		return {
 			guard refererStorage[eid] != nil else {
+				isInitRequest = true
+				self.reinitLimit[eid] = 0
 				return loadReferer(eid, headers: headers)
 			}
-			
-			isInitRequest = true
 			return Promise { resolver in
 				let ref = self.refererStorage[eid]!
 				
@@ -158,13 +140,6 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				parameters: pars,
 				encoding: JSONEncoding.default,
 				headers: $0).responseData()
-		}.ensure {
-			let i = (self.uaStorage[eid] ?? self.initUA) + 1
-			self.uaStorage[eid] = i
-			
-			if (i % self.reloadTimes) == 0 {
-				self.refererStorage[eid] = nil
-			}
 		}.then { re in
 			Promise { resolver in
 				let obj = try JSONParser.JSONObjectWithData(re.data)
@@ -175,16 +150,13 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 					resolver.fulfill(info)
 				} else if result == 2,
 						  isInitRequest,
-						  let limit = self.reinitLimit[eid],
-						  limit < 2 {
+						  self.reinitLimit[eid] == 0 {
 					Log("KuaiShou API Limited, try to reinit \(eid)")
-					
-					self.reinitLimit[eid] = limit + 1
+					self.reinitLimit[eid] = 1
 					
 					after(seconds: 1).then {
 						self.getInfo(url)
 					}.done {
-						self.reinitLimit[eid] = -1
 						resolver.fulfill($0)
 					}.catch {
 						resolver.reject($0)
