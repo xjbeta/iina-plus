@@ -826,32 +826,38 @@ struct BilibiliPlayInfo: Unmarshaling {
         }
         
         var newVideos = [Int: VideoInfo]()
-        
-        var vs = videos.filter {
-            switch Preferences.shared.bilibiliCodec {
-            case 0:
-                return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
-            case 1:
-                return $0.codecs.starts(with: "hev")
-            default:
-                return $0.codecs.starts(with: "avc")
-            }
-        }
-        
-        if vs.count == 0 {
-            vs = videos.filter {
-                $0.codecs.starts(with: "avc")
-            }
-        }
-        
-        vs.enumerated().forEach {
-            var video = $0.element
-            let des = descriptionDic[video.id] ?? "unkonwn"
-            video.index = $0.offset
-            video.description = des
-            newVideos[video.id] = video
-        }
-        
+		
+		let preferVideos = videos.filter {
+			switch Preferences.shared.bilibiliCodec {
+			case 0:
+				return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
+			case 1:
+				return $0.codecs.starts(with: "hev")
+			default:
+				return $0.codecs.starts(with: "avc")
+			}
+		}
+		
+		acceptQuality.forEach { id in
+			let video = preferVideos.first {
+				$0.id == id
+			} ?? videos.filter {
+				$0.id == id
+			}.first {
+				$0.codecs.starts(with: "avc") ||
+				$0.codecs.starts(with: "hev") ||
+				$0.codecs.starts(with: "av01") ||
+				$0.codecs.starts(with: "av1")
+			}
+			guard var video = video else { return }
+			
+			let des = descriptionDic[video.id] ?? "unkonwn"
+			video.index = id
+			video.description = des
+
+			newVideos[id] = video
+		}
+
         self.videos = newVideos.map {
             $0.value
         }
@@ -869,7 +875,7 @@ struct BilibiliPlayInfo: Unmarshaling {
             
             var stream = Stream(url: "")
 //            stream.quality = $0.element.bandwidth
-            stream.quality = 999 - $0.element.index
+            stream.quality = $0.element.index
             
             stream.url = urls.removeFirst()
             stream.src = urls
