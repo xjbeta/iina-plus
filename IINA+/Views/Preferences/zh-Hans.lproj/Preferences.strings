@@ -170,7 +170,7 @@
 "Of0-KI-IUP.title" = "离线";
 
 /* Class = "NSTextFieldCell"; title = "Bilibili Codec:"; ObjectID = "QVl-54-yko"; */
-"QVl-54-yko.title" = "B站解码";
+"QVl-54-yko.title" = "B站编码:";
 
 /* Class = "NSButtonCell"; title = "Auto Open Decode Result"; ObjectID = "hPC-yj-akr"; */
 "hPC-yj-akr.title" = "自动打开解析结果";
@@ -189,3 +189,9 @@
 
 /* Class = "NSTextFieldCell"; title = "Unknown"; ObjectID = "o7B-lQ-AHT"; */
 "o7B-lQ-AHT.title" = "未知";
+
+/* Class = "NSButtonCell"; title = "(Enable if only 720p)"; ObjectID = "SVG-Lw-fck"; */
+"SVG-Lw-fck.title" = "(只有 720p 时启用)";
+
+/* Class = "NSTextFieldCell"; title = "HTML Decoder"; ObjectID = "vR2-ZU-hgL"; */
+"vR2-ZU-hgL.title" = "HTML 解析器";
