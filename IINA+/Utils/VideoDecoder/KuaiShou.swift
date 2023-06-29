@@ -11,6 +11,7 @@ import PromiseKit
 import Alamofire
 import PMKAlamofire
 import Marshal
+import WebKit
 
 class KuaiShou: NSObject, SupportSiteProtocol {
 
@@ -23,7 +24,9 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 	let initUA = 1000
 	let reloadTimes = 50
 	
-	var cookieStorage = [String: String]()
+	var cookies = ""
+	var prepareTask: Promise<()>?
+	
 	var refererStorage = [String: String]()
 	var uaStorage = [String: Int]()
 	
@@ -34,9 +37,18 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			reinitLimit[eid] = nil
 		}
 		
-        return getInfo(url).map {
-            $0
-        }
+		if cookies.count == 0 {
+			if prepareTask == nil {
+				prepareTask = prepareCookies().ensure {
+					self.prepareTask = nil
+				}
+			}
+			return prepareTask!.then {
+				self.getInfo(url).map { $0 }
+			}
+		} else {
+			return self.getInfo(url).map { $0 }
+		}
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
@@ -44,6 +56,45 @@ class KuaiShou: NSObject, SupportSiteProtocol {
             $0.write(to: YouGetJSON(rawUrl: url))
         }
     }
+	
+	var webView: WKWebView?
+	var webViewLoadingObserver: NSKeyValueObservation?
+	
+	
+	func prepareCookies() -> Promise<()> {
+		.init { resolver in
+			webView = WKWebView()
+			
+			
+			webViewLoadingObserver?.invalidate()
+			webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
+				guard !webView.isLoading else { return }
+				
+				self.webView = nil
+				self.webViewLoadingObserver?.invalidate()
+				self.webViewLoadingObserver = nil
+				
+				WKWebsiteDataStore.default().httpCookieStore
+					.getAllCookies().done {
+					
+					
+					let v = $0.filter {
+						$0.domain == ".chenzhongtech.com"
+					}
+					self.cookies = v.map {
+						$0.name + "=" + $0.value
+					}.joined(separator: ";")
+					
+					Log("KuaiShou cookies: \(self.cookies)")
+					resolver.fulfill(())
+				}.catch {
+					resolver.reject($0)
+				}
+			}
+			
+			webView?.load(.init(url: .init(string: "https://livev.m.chenzhongtech.com/about/")!))
+		}
+	}
 	
 	func getEid(_ url: String) -> String? {
 		guard let uc = URLComponents(string: url),
@@ -72,9 +123,9 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		}
 		
 		let headers: HTTPHeaders = [
-			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1 EID/\(eid).\(uaStorage[eid]!)"),
+			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"),
 			.init(name: "Origin", value: "https://livev.m.chenzhongtech.com"),
-			.init(name: "Cookie", value: ""),
+			.init(name: "Cookie", value: self.cookies),
 			.init(name: "Accept-Encoding", value: "gzip, deflate, br"),
 			.init(name: "Accept-Language", value: "zh-Hans;q=1.0")
 		]
@@ -86,17 +137,16 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		}
 		
 		return {
-			guard cookieStorage[eid] != nil && refererStorage[eid] != nil else {
+			guard refererStorage[eid] != nil else {
 				return loadReferer(eid, headers: headers)
 			}
+			
 			isInitRequest = true
 			return Promise { resolver in
-				let cookie = self.cookieStorage[eid]!
 				let ref = self.refererStorage[eid]!
 				
 				var headers = headers
 				
-				headers.add(name: "Cookie", value: cookie)
 				headers.add(name: "Referer", value: ref)
 				
 				resolver.fulfill(headers)
@@ -113,7 +163,6 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			self.uaStorage[eid] = i
 			
 			if (i % self.reloadTimes) == 0 {
-				self.cookieStorage[eid] = nil
 				self.refererStorage[eid] = nil
 			}
 		}.then { re in
@@ -158,26 +207,12 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				throw KuaiShouError.nilReferer
 			}
 			
-			self.saveCookies(response, eid: eid)
-			
 			var headers = headers
-			
-			headers.add(name: "Cookie", value: self.cookieStorage[eid] ?? "")
 			
 			self.refererStorage[eid] = ref
 			headers.add(name: "Referer", value: ref)
 			return headers
 		}
-	}
-	
-	func saveCookies(_ response: HTTPURLResponse?, eid: String) {
-		guard let res = response else { return }
-		let cookie = HTTPCookie.cookies(withResponseHeaderFields: res.headers.dictionary, for: .init(string: "chenzhongtech.com")!)
-			.map {
-			$0.name + "=" + $0.value
-		}.joined(separator: "; ")
-		
-		cookieStorage[eid] = cookie
 	}
 }
 
@@ -197,7 +232,9 @@ struct KuaiShouInfo: Unmarshaling, LiveInfo {
     init(object: Marshal.MarshaledObject) throws {
         name = try object.value(for: "liveStream.user.user_name")
         avatar = try object.value(for: "liveStream.user.headurl")
-        title = try object.value(for: "liveStream.caption")
+		let t: String? = try object.value(for: "liveStream.caption")
+		
+        title = try t ?? object.value(for: "shareInfo.shareSubTitle")
         cover = try object.value(for: "liveStream.coverUrl")
         isLiving = try object.value(for: "liveStream.living")
 		playUrls = try object.value(for: "liveStream.multiResolutionHlsPlayUrls")
