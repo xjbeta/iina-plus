@@ -13,10 +13,20 @@ import PromiseKit
 import PMKAlamofire
 
 class Bilibili: NSObject, SupportSiteProtocol {
+	
+	let bilibiliUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5.1 Safari/605.1.15"
+	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         if SupportSites(url: url) == .bangumi {
-            return getBilibiliHTMLDatas(url).map {
-                try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData))
+			return getBilibiliHTMLDatas(url, isBangumi: true).map {
+// 				decode bangumiData if biliUA
+//				let tt = try JSONParser.JSONObjectWithData($0.bangumiData)
+//				let queries: [JSONObject] = try tt.value(for: "props.pageProps.dehydratedState.queries")
+//				if let obj: JSONObject = try? queries.first?.value(for: "state.data") {
+//					return try BangumiInfo(object: obj)
+//				}
+				
+                return try BangumiInfo(object: try JSONParser.JSONObjectWithData($0.initialStateData))
             }.map {
                 var info = BilibiliInfo()
                 info.site = .bangumi
@@ -67,27 +77,31 @@ class Bilibili: NSObject, SupportSiteProtocol {
         }
         
         return Promise { resolver in
-            r1.done {
-                resolver.fulfill($0)
-            }.catch { error in
-                r2.done {
-                    resolver.fulfill($0)
-                }.catch { _ in
-                    resolver.reject(error)
-                }
-            }
+			let preferHTML = Preferences.shared.bilibiliHTMLDecoder
+			(preferHTML ? r2 : r1).done {
+				resolver.fulfill($0)
+			}.catch { error in
+				(preferHTML ? r1 : r2).done {
+					resolver.fulfill($0)
+				}.catch { _ in
+					resolver.reject(error)
+				}
+			}
         }
     }
     
-    func getBilibiliHTMLDatas(_ url: String) -> Promise<((playInfoData: Data, initialStateData: Data))> {
+	func getBilibiliHTMLDatas(_ url: String, isBangumi: Bool = false) -> Promise<((playInfoData: Data, initialStateData: Data, bangumiData: Data))> {
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
-        
+			 "User-Agent": isBangumi ? "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1" : bilibiliUA])
+
+		
         return AF.request(url, headers: headers).responseString().map {
             let playInfoData = $0.string.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
             let initialStateData = $0.string.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
-            return (playInfoData, initialStateData)
+			let bangumiData = $0.string.subString(from: "<script id=\"__NEXT_DATA__\" type=\"application/json\">", to: "</script>").data(using: .utf8) ?? Data()
+			
+            return (playInfoData, initialStateData, bangumiData)
         }
     }
     
@@ -195,7 +209,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"])
+             "User-Agent": bilibiliUA])
         
         
         return AF.request(u, headers: headers).responseData().map {
@@ -823,32 +837,38 @@ struct BilibiliPlayInfo: Unmarshaling {
         }
         
         var newVideos = [Int: VideoInfo]()
-        
-        var vs = videos.filter {
-            switch Preferences.shared.bilibiliCodec {
-            case 0:
-                return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
-            case 1:
-                return $0.codecs.starts(with: "hev")
-            default:
-                return $0.codecs.starts(with: "avc")
-            }
-        }
-        
-        if vs.count == 0 {
-            vs = videos.filter {
-                $0.codecs.starts(with: "avc")
-            }
-        }
-        
-        vs.enumerated().forEach {
-            var video = $0.element
-            let des = descriptionDic[video.id] ?? "unkonwn"
-            video.index = $0.offset
-            video.description = des
-            newVideos[video.id] = video
-        }
-        
+		
+		let preferVideos = videos.filter {
+			switch Preferences.shared.bilibiliCodec {
+			case 0:
+				return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
+			case 1:
+				return $0.codecs.starts(with: "hev")
+			default:
+				return $0.codecs.starts(with: "avc")
+			}
+		}
+		
+		acceptQuality.forEach { id in
+			let video = preferVideos.first {
+				$0.id == id
+			} ?? videos.filter {
+				$0.id == id
+			}.first {
+				$0.codecs.starts(with: "avc") ||
+				$0.codecs.starts(with: "hev") ||
+				$0.codecs.starts(with: "av01") ||
+				$0.codecs.starts(with: "av1")
+			}
+			guard var video = video else { return }
+			
+			let des = descriptionDic[video.id] ?? "unkonwn"
+			video.index = id
+			video.description = des
+
+			newVideos[id] = video
+		}
+
         self.videos = newVideos.map {
             $0.value
         }
@@ -866,7 +886,7 @@ struct BilibiliPlayInfo: Unmarshaling {
             
             var stream = Stream(url: "")
 //            stream.quality = $0.element.bandwidth
-            stream.quality = 999 - $0.element.index
+            stream.quality = $0.element.index
             
             stream.url = urls.removeFirst()
             stream.src = urls

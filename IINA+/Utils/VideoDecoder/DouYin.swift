@@ -36,6 +36,8 @@ class DouYin: NSObject, SupportSiteProtocol {
         "WC1Cb2d1cw==",
         "X3NpZ25hdHVyZQ=="
     ]
+	
+	private var invalidCookiesCount = 0
     
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         if cookies.count == 0 {
@@ -72,8 +74,13 @@ class DouYin: NSObject, SupportSiteProtocol {
         
         return AF.request(url, headers: headers).responseString().map {
             guard let json = self.getJSON($0.string) else {
-                Log("notFountData for douyin")
-                
+				self.invalidCookiesCount += 1
+				if self.invalidCookiesCount == 5 {
+					self.invalidCookiesCount = 0
+					self.cookies.removeAll()
+					
+					Log("Reload Douyin Cookies")
+				}
                 throw VideoGetError.notFountData
             }
             
