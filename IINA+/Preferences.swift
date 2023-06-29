@@ -178,6 +178,15 @@ class Preferences: NSObject {
             defaultsSet(colorEncode(newValue), forKey: .stateUnknown)
         }
     }
+	
+	@objc dynamic var bilibiliHTMLDecoder: Bool {
+		get {
+			return defaults(.bilibiliHTMLDecoder) as? Bool ?? false
+		}
+		set {
+			defaultsSet(newValue, forKey: .bilibiliHTMLDecoder)
+		}
+	}
     
     @objc dynamic var bilibiliCodec: Int {
         get {
@@ -239,6 +248,7 @@ enum PreferenceKeys: String {
     case stateReplay
     case stateUnknown
     
+	case bilibiliHTMLDecoder
     case bilibiliCodec
     case bililiveHevc
 }

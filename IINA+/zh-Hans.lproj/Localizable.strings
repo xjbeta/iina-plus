@@ -4,6 +4,12 @@
 /* Quit without saves error question message */
 "Could not save changes while quitting. Quit anyway?" = "退出时无法保存更改。 确认退出？";
 
+/* Click OK for detailed installation guide. */
+"Danmaku plugin Install Alert informativeText" = "点击确认查看详细的安装指南";
+
+/* You need to install the Danmaku plugin for IINA */
+"Danmaku plugin Install Alert messageText" = "你需要为IINA 安装弹幕插件";
+
 /* All */
 "LiveSite.All" = "全部";
 
@@ -64,8 +70,5 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
 
-/* Click OK for detailed installation guide. */
-"Danmaku plugin Install Alert informativeText" = "点击确认查看详细的安装指南";
-
-/* You need to install the Danmaku plugin for IINA */
-"Danmaku plugin Install Alert messageText" = "你需要为IINA 安装弹幕插件";
+/* KuaiShou */
+"SupportSites.KuaiShou" = "";
