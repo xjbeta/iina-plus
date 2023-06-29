@@ -31,7 +31,9 @@ class MainViewController: NSViewController {
     @IBOutlet var bookmarkArrayController: NSArrayController!
     var bookmarks: [Bookmark] {
         get {
-            return bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
+            let bm = bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
+            gBookmarks = bm
+            return bm
         }
     }
     @objc var context: NSManagedObjectContext
@@ -39,7 +41,7 @@ class MainViewController: NSViewController {
         guard bookmarkTableView.selectedRow != -1 else { return }
         let url = bookmarks[bookmarkTableView.selectedRow].url
         searchField.stringValue = url
-        
+
         let option = NSEvent.modifierFlags.contains(.option)
         startSearchingUrl(url, with: option)
     }
@@ -391,9 +393,9 @@ class MainViewController: NSViewController {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
     }
     
-    func showSelectVideo(_ videoId: String, infos: [(String, [VideoSelector])], currentItem: Int = 0) {
+    func showSelectVideo(_ videoId: String, infos: [(String, [VideoSelector])], currentItem: Int = 0, with option: Bool = false) -> Bool {
         guard let selectVideoViewController = self.children.compactMap({ $0 as? SelectVideoViewController }).first else {
-            return
+            return true
         }
         
         DispatchQueue.main.async {
@@ -403,6 +405,7 @@ class MainViewController: NSViewController {
             selectVideoViewController.currentItem = currentItem
             self.selectTabItem(.selectVideos)
         }
+        return option || !Preferences.shared.autoOpenResult
     }
     
     
@@ -433,7 +436,9 @@ class MainViewController: NSViewController {
         
         isSearching = true
         progressStatusChanged(true)
-        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        if option || !Preferences.shared.autoOpenResult {
+            NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
+        }
         var str = url
         
         Processes.shared.videoDecoder.bilibiliUrlFormatter(url).get {
@@ -487,6 +492,7 @@ class MainViewController: NSViewController {
             func decodeUrl() {
                 videoGet.liveInfo(str, false).get {
                     if !$0.isLiving {
+                        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
                         throw VideoGetError.isNotLiving
                     }
                 }.then { _ in
@@ -517,8 +523,11 @@ class MainViewController: NSViewController {
                         let list = infos.flatMap({ $0.1 })
                         if list.count > 1 {
                             let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
-                            resolver.fulfill(())
+                            if self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0) {
+                                resolver.fulfill(())
+                            } else {
+                                decodeUrl()
+                            }
                         } else {
                             decodeUrl()
                         }
@@ -535,7 +544,7 @@ class MainViewController: NSViewController {
                                     $0.id == bUrl.id.dropFirst(2)
                                 } ?? 0
                             }
-                            
+
                             self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
                             resolver.fulfill(())
                         }
@@ -574,8 +583,11 @@ class MainViewController: NSViewController {
                         re.enumerated().forEach {
                             re[$0.offset].isLiving = status[$0.element.id] ?? false
                         }
-                        self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
-                        resolver.fulfill(())
+                        if self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }.catch {
                         switch $0 {
                         case VideoGetError.douyuNotFoundSubRooms:
@@ -592,8 +604,11 @@ class MainViewController: NSViewController {
                     if rl.list.count == 0 {
                         decodeUrl()
                     } else {
-                        self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
-                        resolver.fulfill(())
+                        if self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }
                 }.catch {
                     resolver.reject($0)
@@ -608,9 +623,12 @@ class MainViewController: NSViewController {
                             let id = "\(url.pathComponents[1])"
                             c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
                         }
-                        
-                        self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
-                        resolver.fulfill(())
+
+                        if self.showSelectVideo("", infos: [("", $0.1)], currentItem: c) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     }
                 }.catch {
                     resolver.reject($0)
@@ -629,8 +647,11 @@ class MainViewController: NSViewController {
                                 url: $0.element.channel,
                                 id: "\($0.element.ccid)")
                         }
-                        self.showSelectVideo("", infos: [("", infos)])
-                        resolver.fulfill(())
+                        if self.showSelectVideo("", infos: [("", infos)]) {
+                            resolver.fulfill(())
+                        } else {
+                            decodeUrl()
+                        }
                     } else if let i = $0.info as? CC163Info {
                         str = "https://cc.163.com/ccid/\(i.ccid)"
                         decodeUrl()
@@ -676,7 +697,7 @@ class MainViewController: NSViewController {
                 proc.openWithPlayer(yougetJSON, key)
                 return
             }
-            
+
             do {
                 let v = try PluginSystem.pluginVersion()
                 Log("Open result with plugin version: \(v)")
@@ -685,15 +706,15 @@ class MainViewController: NSViewController {
                 switch error {
                 case PluginSystem.PluginError.pluginNotFound:
                     Log("Open result failed, pluginNotFound.")
-                    
+
                     let alert = NSAlert()
                     alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
                     alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "Click OK for detailed installation guide.")
-                    
+
                     alert.alertStyle = .warning
                     alert.addButton(withTitle: "OK")
                     alert.addButton(withTitle: "Cancel")
-                    
+
                     switch alert.runModal() {
                     case .alertFirstButtonReturn:
                         NSWorkspace.shared.open(.init(string: "https://github.com/xjbeta/iina-plus/wiki/2.-IINA-%E6%8F%92%E4%BB%B6%E7%89%88")!)
