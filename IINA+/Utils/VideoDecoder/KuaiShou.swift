@@ -19,9 +19,13 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		case invalidLink
 		case nilReferer
 		case apiLimited
+		case unknown
 	}
 	
+	
 	var cookies = ""
+	var cookiesDate: Date?
+	
 	var prepareTask: Promise<()>?
 	var webView: WKWebView?
 	var webViewLoadingObserver: NSKeyValueObservation?
@@ -31,7 +35,8 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 	var reinitLimit = [String: Int]()
 	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		if cookies.count == 0 {
+		if cookies.count == 0,
+		   cookiesDate == nil {
 			if prepareTask == nil {
 				prepareTask = prepareCookies().ensure {
 					self.prepareTask = nil
@@ -46,40 +51,42 @@ class KuaiShou: NSObject, SupportSiteProtocol {
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        getInfo(url).map {
-            $0.write(to: YouGetJSON(rawUrl: url))
-        }
+		getInfo(url).map {
+			$0.write(to: YouGetJSON(rawUrl: url))
+		}
     }
 	
+	func deleteCookies() {
+		HTTPCookieStorage.shared.cookies?.filter {
+			$0.domain.contains("kuaishou")
+		}.forEach(HTTPCookieStorage.shared.deleteCookie)
+	}
 
 	func prepareCookies() -> Promise<()> {
 		.init { resolver in
 			webView = WKWebView()
-			
+			deleteCookies()
 			
 			webViewLoadingObserver?.invalidate()
 			webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
-				guard !webView.isLoading else { return }
+				guard !webView.isLoading, let url = webView.url else { return }
 				
-				self.webView = nil
-				self.webViewLoadingObserver?.invalidate()
-				self.webViewLoadingObserver = nil
-				
-				WKWebsiteDataStore.default().httpCookieStore
-					.getAllCookies().done {
-					
-					
-					let v = $0.filter {
-						$0.domain == ".chenzhongtech.com"
+				if url.absoluteString.contains("about") {
+					webView.load(.init(url: .init(string: "https://live.kuaishou.com")!))
+				} else {
+					self.webView?.evaluateJavaScript("document.cookie").done {
+						
+						self.cookies = $0 as! String
+						self.cookiesDate = Date()
+						Log("KuaiShou cookies: \(self.cookies)")
+						
+						self.webView = nil
+						self.webViewLoadingObserver?.invalidate()
+						self.webViewLoadingObserver = nil
+						resolver.fulfill(())
+					}.catch {
+						resolver.reject($0)
 					}
-					self.cookies = v.map {
-						$0.name + "=" + $0.value
-					}.joined(separator: ";")
-					
-					Log("KuaiShou cookies: \(self.cookies)")
-					resolver.fulfill(())
-				}.catch {
-					resolver.reject($0)
 				}
 			}
 			
@@ -145,25 +152,59 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				let obj = try JSONParser.JSONObjectWithData(re.data)
 				let result: Int = try obj.value(for: "result")
 				
+				let limit = self.reinitLimit[eid] ?? 0
+				let date = self.cookiesDate ?? Date()
+				
 				if result == 1 {
 					let info = try KuaiShouInfo(object: obj)
 					resolver.fulfill(info)
 				} else if result == 2,
 						  isInitRequest,
-						  self.reinitLimit[eid] == 0 {
+						  
+						  limit < 3,
+						  
+						  let date = self.cookiesDate,
+						  date.timeIntervalSinceNow > -30 {
 					Log("KuaiShou API Limited, try to reinit \(eid)")
-					self.reinitLimit[eid] = 1
+					self.reinitLimit[eid] = limit + 1
 					
 					after(seconds: 1).then {
+						self.getInfo(url)
+					}.done {
+						self.reinitLimit[eid] = 0
+						resolver.fulfill($0)
+					}.catch {
+						resolver.reject($0)
+					}
+				} else if limit < -15 || (limit <= -2 &&
+										  date.timeIntervalSinceNow < -300) {
+					
+					Log("KuaiShou API Limited, reload cookies")
+					self.reinitLimit[eid] = nil
+					
+					if self.prepareTask == nil {
+						self.cookies = ""
+						self.cookiesDate = nil
+						
+						self.prepareTask = self.prepareCookies().ensure {
+							self.prepareTask = nil
+						}
+					}
+					
+					self.prepareTask!.then {
 						self.getInfo(url)
 					}.done {
 						resolver.fulfill($0)
 					}.catch {
 						resolver.reject($0)
 					}
-				} else {
+				} else if result == 2 {
+					self.reinitLimit[eid] = limit - 1
 					Log("KuaiShou API Limited, result \(result), \(eid)")
 					resolver.reject(KuaiShouError.apiLimited)
+				} else {
+					Log("KuaiShou API failed, result \(result), \(eid)")
+					resolver.reject(KuaiShouError.unknown)
 				}
 			}
 		}
