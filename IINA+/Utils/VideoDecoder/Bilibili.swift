@@ -16,6 +16,8 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	
 	let bilibiliUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5.1 Safari/605.1.15"
 	
+	let bangumiUA = "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"
+	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         if SupportSites(url: url) == .bangumi {
 			return getBilibiliHTMLDatas(url, isBangumi: true).map {
@@ -93,7 +95,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	func getBilibiliHTMLDatas(_ url: String, isBangumi: Bool = false) -> Promise<((playInfoData: Data, initialStateData: Data, bangumiData: Data))> {
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-			 "User-Agent": isBangumi ? "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1" : bilibiliUA])
+			 "User-Agent": isBangumi ? bangumiUA : bilibiliUA])
 
 		
         return AF.request(url, headers: headers).responseString().map {
@@ -209,7 +211,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
         
         let headers = HTTPHeaders(
             ["Referer": "https://www.bilibili.com/",
-             "User-Agent": bilibiliUA])
+			 "User-Agent": isBangumi ? bangumiUA : bilibiliUA])
         
         
         return AF.request(u, headers: headers).responseData().map {
@@ -433,7 +435,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
     
     func getBangumiList(_ url: String,
                         initialStateData: Data? = nil) -> Promise<(BangumiList)> {
-        getBilibiliHTMLDatas(url).map {
+        getBilibiliHTMLDatas(url, isBangumi: true).map {
             let stateJson: JSONObject = try JSONParser.JSONObjectWithData($0.initialStateData)
             let state = try BangumiList(object: stateJson)
             return state

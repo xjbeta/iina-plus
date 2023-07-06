@@ -11,6 +11,7 @@ import PromiseKit
 import Alamofire
 import PMKAlamofire
 import Marshal
+import WebKit
 
 class KuaiShou: NSObject, SupportSiteProtocol {
 
@@ -18,32 +19,80 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		case invalidLink
 		case nilReferer
 		case apiLimited
+		case unknown
 	}
 	
-	let initUA = 1000
-	let reloadTimes = 50
 	
-	var cookieStorage = [String: String]()
+	var cookies = ""
+	var cookiesDate: Date?
+	
+	var prepareTask: Promise<()>?
+	var webView: WKWebView?
+	var webViewLoadingObserver: NSKeyValueObservation?
+	
+	
 	var refererStorage = [String: String]()
-	var uaStorage = [String: Int]()
-	
 	var reinitLimit = [String: Int]()
 	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		if let eid = getEid(url) {
-			reinitLimit[eid] = nil
+		if cookies.count == 0,
+		   cookiesDate == nil {
+			if prepareTask == nil {
+				prepareTask = prepareCookies().ensure {
+					self.prepareTask = nil
+				}
+			}
+			return prepareTask!.then {
+				self.getInfo(url).map { $0 }
+			}
+		} else {
+			return self.getInfo(url).map { $0 }
 		}
-		
-        return getInfo(url).map {
-            $0
-        }
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        getInfo(url).map {
-            $0.write(to: YouGetJSON(rawUrl: url))
-        }
+		getInfo(url).map {
+			$0.write(to: YouGetJSON(rawUrl: url))
+		}
     }
+	
+	func deleteCookies() {
+		HTTPCookieStorage.shared.cookies?.filter {
+			$0.domain.contains("kuaishou")
+		}.forEach(HTTPCookieStorage.shared.deleteCookie)
+	}
+
+	func prepareCookies() -> Promise<()> {
+		.init { resolver in
+			webView = WKWebView()
+			deleteCookies()
+			
+			webViewLoadingObserver?.invalidate()
+			webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
+				guard !webView.isLoading, let url = webView.url else { return }
+				
+				if url.absoluteString.contains("about") {
+					webView.load(.init(url: .init(string: "https://live.kuaishou.com")!))
+				} else {
+					self.webView?.evaluateJavaScript("document.cookie").done {
+						
+						self.cookies = $0 as! String
+						self.cookiesDate = Date()
+						Log("KuaiShou cookies: \(self.cookies)")
+						
+						self.webView = nil
+						self.webViewLoadingObserver?.invalidate()
+						self.webViewLoadingObserver = nil
+						resolver.fulfill(())
+					}.catch {
+						resolver.reject($0)
+					}
+				}
+			}
+			
+			webView?.load(.init(url: .init(string: "https://livev.m.chenzhongtech.com/about/")!))
+		}
+	}
 	
 	func getEid(_ url: String) -> String? {
 		guard let uc = URLComponents(string: url),
@@ -65,38 +114,28 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			"shareMethod": "card",
 			"source": 6
 		]
-		
-
-		if uaStorage[eid] == nil {
-			uaStorage[eid] = initUA
-		}
-		
+	
 		let headers: HTTPHeaders = [
-			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1 EID/\(eid).\(uaStorage[eid]!)"),
+			.userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"),
 			.init(name: "Origin", value: "https://livev.m.chenzhongtech.com"),
-			.init(name: "Cookie", value: ""),
+			.init(name: "Cookie", value: self.cookies),
 			.init(name: "Accept-Encoding", value: "gzip, deflate, br"),
 			.init(name: "Accept-Language", value: "zh-Hans;q=1.0")
 		]
 		
 		var isInitRequest = false
-		
-		if reinitLimit[eid] == nil {
-			reinitLimit[eid] = -1
-		}
-		
+
 		return {
-			guard cookieStorage[eid] != nil && refererStorage[eid] != nil else {
+			guard refererStorage[eid] != nil else {
+				isInitRequest = true
+				self.reinitLimit[eid] = 0
 				return loadReferer(eid, headers: headers)
 			}
-			isInitRequest = true
 			return Promise { resolver in
-				let cookie = self.cookieStorage[eid]!
 				let ref = self.refererStorage[eid]!
 				
 				var headers = headers
 				
-				headers.add(name: "Cookie", value: cookie)
 				headers.add(name: "Referer", value: ref)
 				
 				resolver.fulfill(headers)
@@ -108,41 +147,64 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				parameters: pars,
 				encoding: JSONEncoding.default,
 				headers: $0).responseData()
-		}.ensure {
-			let i = (self.uaStorage[eid] ?? self.initUA) + 1
-			self.uaStorage[eid] = i
-			
-			if (i % self.reloadTimes) == 0 {
-				self.cookieStorage[eid] = nil
-				self.refererStorage[eid] = nil
-			}
 		}.then { re in
 			Promise { resolver in
 				let obj = try JSONParser.JSONObjectWithData(re.data)
 				let result: Int = try obj.value(for: "result")
+				
+				let limit = self.reinitLimit[eid] ?? 0
+				let date = self.cookiesDate ?? Date()
 				
 				if result == 1 {
 					let info = try KuaiShouInfo(object: obj)
 					resolver.fulfill(info)
 				} else if result == 2,
 						  isInitRequest,
-						  let limit = self.reinitLimit[eid],
-						  limit < 2 {
+						  
+						  limit < 3,
+						  
+						  let date = self.cookiesDate,
+						  date.timeIntervalSinceNow > -30 {
 					Log("KuaiShou API Limited, try to reinit \(eid)")
-					
 					self.reinitLimit[eid] = limit + 1
 					
 					after(seconds: 1).then {
 						self.getInfo(url)
 					}.done {
-						self.reinitLimit[eid] = -1
+						self.reinitLimit[eid] = 0
 						resolver.fulfill($0)
 					}.catch {
 						resolver.reject($0)
 					}
-				} else {
+				} else if limit < -15 || (limit <= -2 &&
+										  date.timeIntervalSinceNow < -300) {
+					
+					Log("KuaiShou API Limited, reload cookies")
+					self.reinitLimit[eid] = nil
+					
+					if self.prepareTask == nil {
+						self.cookies = ""
+						self.cookiesDate = nil
+						
+						self.prepareTask = self.prepareCookies().ensure {
+							self.prepareTask = nil
+						}
+					}
+					
+					self.prepareTask!.then {
+						self.getInfo(url)
+					}.done {
+						resolver.fulfill($0)
+					}.catch {
+						resolver.reject($0)
+					}
+				} else if result == 2 {
+					self.reinitLimit[eid] = limit - 1
 					Log("KuaiShou API Limited, result \(result), \(eid)")
 					resolver.reject(KuaiShouError.apiLimited)
+				} else {
+					Log("KuaiShou API failed, result \(result), \(eid)")
+					resolver.reject(KuaiShouError.unknown)
 				}
 			}
 		}
@@ -158,26 +220,12 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				throw KuaiShouError.nilReferer
 			}
 			
-			self.saveCookies(response, eid: eid)
-			
 			var headers = headers
-			
-			headers.add(name: "Cookie", value: self.cookieStorage[eid] ?? "")
 			
 			self.refererStorage[eid] = ref
 			headers.add(name: "Referer", value: ref)
 			return headers
 		}
-	}
-	
-	func saveCookies(_ response: HTTPURLResponse?, eid: String) {
-		guard let res = response else { return }
-		let cookie = HTTPCookie.cookies(withResponseHeaderFields: res.headers.dictionary, for: .init(string: "chenzhongtech.com")!)
-			.map {
-			$0.name + "=" + $0.value
-		}.joined(separator: "; ")
-		
-		cookieStorage[eid] = cookie
 	}
 }
 
@@ -197,7 +245,9 @@ struct KuaiShouInfo: Unmarshaling, LiveInfo {
     init(object: Marshal.MarshaledObject) throws {
         name = try object.value(for: "liveStream.user.user_name")
         avatar = try object.value(for: "liveStream.user.headurl")
-        title = try object.value(for: "liveStream.caption")
+		let t: String? = try object.value(for: "liveStream.caption")
+		
+        title = try t ?? object.value(for: "shareInfo.shareSubTitle")
         cover = try object.value(for: "liveStream.coverUrl")
         isLiving = try object.value(for: "liveStream.living")
 		playUrls = try object.value(for: "liveStream.multiResolutionHlsPlayUrls")
