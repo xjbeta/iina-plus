@@ -263,6 +263,7 @@
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
 		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
 		01C248B42A623EC000C92639 /* IINAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IINAApp.swift; sourceTree = "<group>"; };
+		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
@@ -478,6 +479,7 @@
 		019EB39D21453A97000FD123 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */,
 				015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */,
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				013850F9214EA2AA003817CE /* huya.js */,
