@@ -74,7 +74,7 @@ class VideoDecoder: NSObject {
     func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) -> Promise<()> {
         let pref = Preferences.shared
         
-        guard Processes.shared.iinaArchiveType() != .normal,
+		guard Processes.shared.iina.archiveType() != .normal,
               pref.enableDanmaku,
               pref.livePlayer == .iina,
               [.bilibili, .bangumi, .local].contains(yougetJSON.site),

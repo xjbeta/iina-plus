@@ -35,7 +35,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         
         let proc = Processes.shared
         portTextField.isEnabled = pref.enableDanmaku
-        && ((proc.iinaArchiveType() == .danmaku && proc.iinaBuildVersion() > 16) || proc.iinaArchiveType() == .plugin)
+		&& ((proc.iina.archiveType() == .danmaku && proc.iina.buildVersion() > 16) || proc.iina.archiveType() == .plugin)
             
     }
     
@@ -64,7 +64,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         var s = ""
         switch pref.livePlayer {
         case .iina:
-            switch proc.iinaArchiveType() {
+			switch proc.iina.archiveType() {
             case .danmaku:
                 s = "danmaku"
             case .plugin:

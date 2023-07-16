@@ -672,7 +672,7 @@ class MainViewController: NSViewController {
             guard !pref.enableFlvjs,
                   proc.checkDanmakuPlugin(), // check only release
                   pref.livePlayer == .iina,
-                  proc.iinaArchiveType() == .plugin else {
+				  proc.iina.archiveType() == .plugin else {
                 proc.openWithPlayer(yougetJSON, key)
                 return
             }
