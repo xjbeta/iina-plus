@@ -10,11 +10,15 @@ import Cocoa
 
 class IINAApp: NSObject {
 	
+	let internalPluginVersion = "0.1.7"
+	let internalPluginBuild = "4"
+	
+	
 	enum IINAError: Error {
 		case cannotUnpackage
 		case onlyDevPlugin
+		case missingPluginFile
 	}
-	
 	
 	struct PluginInfo: Decodable {
 		let name: String
@@ -79,13 +83,7 @@ class IINAApp: NSObject {
 		}
 	}
 	
-	func uninstallPlugins() throws {
-		let plugins = try listPlugins()
-		if plugins.count == 1,
-		   plugins[0].isDev {
-			throw IINAError.onlyDevPlugin
-		}
-		
+	func uninstallPlugins(_ plugins: [PluginInfo]) {
 		plugins.filter {
 			!$0.isDev
 		}.forEach {
@@ -94,40 +92,48 @@ class IINAApp: NSObject {
 	}
 	
 	func installPlugin() throws {
-		guard let path = Bundle.main.path(forResource: "iina-plugin-danmaku", ofType: "iinaplgz") else { return }
+		guard let path = Bundle.main.path(forResource: "iina-plugin-danmaku", ofType: "iinaplgz"),
+			  FileManager.default.fileExists(atPath: path) else {
+			throw IINAError.missingPluginFile
+		}
 		
 		// IINA create(fromPackageURL url: URL)
 		
 		Log("Installing plugin from file: \(path)")
-
+		
 		let pluginsRoot = try pluginFolder()
 		let tempFolder = ".temp.\(UUID().uuidString)"
 		let tempZipFile = "\(tempFolder).zip"
 		let tempDecompressDir = "\(tempFolder)-1"
-
+		
 		defer {
-		  [tempZipFile, tempDecompressDir].forEach { item in
-			try? FileManager.default.removeItem(atPath: pluginsRoot + item)
-		  }
+			[tempZipFile, tempDecompressDir].forEach { item in
+				try? FileManager.default.removeItem(atPath: pluginsRoot + item)
+			}
 		}
-
+		
 		func removeTempPluginFolder() {
-		  try? FileManager.default.removeItem(atPath: pluginsRoot + tempFolder)
+			try? FileManager.default.removeItem(atPath: pluginsRoot + tempFolder)
 		}
 		
 		let cmd = [
-		  "cp '\(path)' '\(tempZipFile)'",
-		  "mkdir '\(tempFolder)' '\(tempDecompressDir)'",
-		  "unzip '\(tempZipFile)' -d '\(tempDecompressDir)'",
-		  "mv '\(tempDecompressDir)'/* '\(tempFolder)'/"
+			"cp '\(path)' '\(tempZipFile)'",
+			"mkdir '\(tempFolder)' '\(tempDecompressDir)'",
+			"unzip '\(tempZipFile)' -d '\(tempDecompressDir)'",
+			"mv '\(tempDecompressDir)'/* '\(tempFolder)'/"
 		].joined(separator: " && ")
 		let (process, stdout, stderr) = Process.run(["/bin/bash", "-c", cmd], at: .init(fileURLWithPath: pluginsRoot))
-
+		
 		guard process.terminationStatus == 0 else {
-		  let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-		  let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-		  removeTempPluginFolder()
+			let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
+			let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
+			
+			Log("\(outText), \(errText)")
+			
+			removeTempPluginFolder()
 			throw IINAError.cannotUnpackage
 		}
+		
+		try FileManager.default.moveItem(atPath: pluginsRoot + tempFolder, toPath: pluginsRoot + "com.xjbeta.danmaku.iinaplugin")
 	}
 }
