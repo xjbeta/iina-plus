@@ -99,8 +99,13 @@ class IINAApp: NSObject {
 	
 	func pluginFolder() throws -> String {
 //		/Users/xxx/Library/Application Support/com.colliderli.iina/plugins
-		let url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+		let fm = FileManager.default
+		let url = try fm.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 		let path = url.path + "/com.colliderli.iina/plugins/"
+		
+		if !fm.fileExists(atPath: path) {
+			try fm.createDirectory(atPath: path, withIntermediateDirectories: true)
+		}
 		return path
 	}
 	
