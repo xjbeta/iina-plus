@@ -44,10 +44,8 @@ jobs:
       - name: Prepare create-dmg
         run: npm install --global create-dmg
 
-      - name: Prepare WebFiles Dependencies
-        run: |
-          cd IINA+/WebFiles/
-          npm install
+      - name: Prepare Dependencies
+        run: bash InstallDeps.sh
 
       - name: SPM
         run: xcodebuild -resolvePackageDependencies
