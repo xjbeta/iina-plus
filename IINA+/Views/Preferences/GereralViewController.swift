@@ -10,7 +10,8 @@ import Cocoa
 
 class GereralViewController: NSViewController, NSMenuDelegate {
     
-    @IBOutlet var fontSelectorButton: NSButton!
+	@IBOutlet weak var pluginButton: NSButton!
+	@IBOutlet var fontSelectorButton: NSButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet var playerTextField: NSTextField!
     
@@ -37,6 +38,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         portTextField.isEnabled = pref.enableDanmaku
 		&& ((proc.iina.archiveType() == .danmaku && proc.iina.buildVersion() > 16) || proc.iina.archiveType() == .plugin)
             
+		initPluginInfo()
     }
     
     func menuDidClose(_ menu: NSMenu) {
@@ -58,6 +60,29 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             break
         }
     }
+	
+	func initPluginInfo() {
+		let iina = Processes.shared.iina
+		let pluginState = iina.pluginState()
+		
+		switch pluginState {
+		case .ok(let version):
+			pluginButton.title = version
+		case .needsUpdate(let version):
+			pluginButton.title = "Update to \(version)"
+		case .needsInstall:
+			pluginButton.title = "Install"
+		case .newer(let plugin):
+			pluginButton.title = "\(plugin.version) is newer"
+		case .isDev:
+			pluginButton.title = "DEV"
+		case .multiple:
+			pluginButton.title = "Update"
+		case .error(let error):
+			Log("list all plugins error \(error)")
+			pluginButton.title = "Error"
+		}
+	}
     
     func initPlayerVersion() {
         let proc = Processes.shared

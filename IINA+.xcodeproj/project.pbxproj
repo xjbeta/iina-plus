@@ -83,6 +83,7 @@
 		01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8BD20EE108B001406E8 /* Processes.swift */; };
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
+		01B331C72A640D9000AB380C /* PluginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B331C62A640D9000AB380C /* PluginViewController.swift */; };
 		01B53B5E27B64FD20051F7B4 /* flv.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5827B64F270051F7B4 /* flv.min.js */; };
 		01B53B5F27B64FD20051F7B4 /* style.min.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5C27B64F420051F7B4 /* style.min.css */; };
 		01B53B6027B64FD20051F7B4 /* CommentCoreLibrary.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5A27B64F370051F7B4 /* CommentCoreLibrary.min.js */; };
@@ -249,6 +250,7 @@
 		01AEC8BD20EE108B001406E8 /* Processes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processes.swift; sourceTree = "<group>"; };
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
+		01B331C62A640D9000AB380C /* PluginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginViewController.swift; sourceTree = "<group>"; };
 		01B53B5227B64E190051F7B4 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		01B53B5327B64E1A0051F7B4 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
 		01B53B5427B64E1A0051F7B4 /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
@@ -586,6 +588,7 @@
 				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				0189533E279FBC470011BAAC /* ColorPickButton.swift */,
+				01B331C62A640D9000AB380C /* PluginViewController.swift */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -785,6 +788,7 @@
 				018F4F6128126FFD0045B67C /* Huya.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
+				01B331C72A640D9000AB380C /* PluginViewController.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
 				0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */,

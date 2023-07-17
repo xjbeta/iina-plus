@@ -11,8 +11,17 @@ import Cocoa
 class IINAApp: NSObject {
 	
 	let internalPluginVersion = "0.1.7"
-	let internalPluginBuild = "4"
+	let internalPluginBuild = 4
 	
+	enum PluginState {
+		case ok(String)
+		case needsUpdate(String)
+		case needsInstall
+		case newer(PluginInfo)
+		case isDev
+		case multiple
+		case error(Error)
+	}
 	
 	enum IINAError: Error {
 		case cannotUnpackage
@@ -55,6 +64,35 @@ class IINAApp: NSObject {
 			return .plugin
 		}
 		return .normal
+	}
+	
+	func pluginState() -> PluginState {
+		do {
+			let plugins = try listPlugins()
+			switch plugins.count {
+			case 0:
+				return .needsInstall
+			case 1 where plugins[0].isDev:
+				return .isDev
+			case 1 where !plugins[0].isDev:
+				let plugin = plugins[0]
+				if plugin.ghVersion == internalPluginBuild {
+					return .ok(internalPluginVersion)
+				} else if plugin.ghVersion < internalPluginBuild {
+					return .needsUpdate(internalPluginVersion)
+				} else if plugin.ghVersion > internalPluginBuild {
+					return .newer(plugin)
+				} else {
+					return .needsInstall
+				}
+			case _ where plugins.count > 1:
+				return .multiple
+			default:
+				return .needsInstall
+			}
+		} catch let error {
+			return .error(error)
+		}
 	}
 	
 	func pluginFolder() throws -> String {
