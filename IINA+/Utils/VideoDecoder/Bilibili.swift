@@ -65,7 +65,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getBilibili(_ url: String) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
         
-        let isDM = Processes.shared.iinaArchiveType() != .normal
+		let isDM = Processes.shared.iina.archiveType() != .normal
         
         let r1 = bilibiliPrepareID(url).then {
             self.bilibiliPlayUrl(yougetJson: $0, isDM)
@@ -242,7 +242,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getBangumi(_ url: String) -> Promise<(YouGetJSON)> {
         setBilibiliQuality()
         
-        let isDM = Processes.shared.iinaArchiveType() != .normal
+		let isDM = Processes.shared.iina.archiveType() != .normal
         return bilibiliPrepareID(url).then {
             self.bilibiliPlayUrl(yougetJson: $0, isDM, true)
         }

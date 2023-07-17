@@ -5,7 +5,7 @@
 "Could not save changes while quitting. Quit anyway?" = "Could not save changes while quitting. Quit anyway?";
 
 /* Click OK for detailed installation guide. */
-"Danmaku plugin Install Alert informativeText" = "Click OK for detailed installation guide.";
+"Danmaku plugin Install Alert informativeText" = "Open IINA-PLUS Preferences to install.";
 
 /* You need to install the Danmaku plugin for IINA */
 "Danmaku plugin Install Alert messageText" = "You need to install the Danmaku plugin for IINA";

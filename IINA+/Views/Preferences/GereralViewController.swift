@@ -10,7 +10,8 @@ import Cocoa
 
 class GereralViewController: NSViewController, NSMenuDelegate {
     
-    @IBOutlet var fontSelectorButton: NSButton!
+	@IBOutlet weak var pluginButton: NSButton!
+	@IBOutlet var fontSelectorButton: NSButton!
     @IBOutlet weak var playerPopUpButton: NSPopUpButton!
     @IBOutlet var playerTextField: NSTextField!
     
@@ -35,8 +36,9 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         
         let proc = Processes.shared
         portTextField.isEnabled = pref.enableDanmaku
-        && ((proc.iinaArchiveType() == .danmaku && proc.iinaBuildVersion() > 16) || proc.iinaArchiveType() == .plugin)
+		&& ((proc.iina.archiveType() == .danmaku && proc.iina.buildVersion() > 16) || proc.iina.archiveType() == .plugin)
             
+		initPluginInfo()
     }
     
     func menuDidClose(_ menu: NSMenu) {
@@ -58,15 +60,40 @@ class GereralViewController: NSViewController, NSMenuDelegate {
             break
         }
     }
+	
+	func initPluginInfo() {
+		let iina = Processes.shared.iina
+		let pluginState = iina.pluginState()
+		
+		switch pluginState {
+		case .ok(let version):
+			pluginButton.title = version
+		case .needsUpdate(let plugin):
+			pluginButton.title = "Update \(plugin.version) to \(iina.internalPluginVersion)"
+		case .needsInstall:
+			pluginButton.title = "Install"
+		case .newer(let plugin):
+			pluginButton.title = "\(plugin.version) is newer"
+		case .isDev:
+			pluginButton.title = "DEV"
+		case .multiple:
+			pluginButton.title = "Update"
+		case .error(let error):
+			Log("list all plugins error \(error)")
+			pluginButton.title = "Error"
+		}
+	}
     
     func initPlayerVersion() {
         let proc = Processes.shared
         var s = ""
         switch pref.livePlayer {
         case .iina:
-            switch proc.iinaArchiveType() {
+			switch proc.iina.archiveType() {
             case .danmaku:
                 s = "danmaku"
+			case .plugin where proc.iina.buildVersion() >= proc.iina.minIINABuild:
+				s = "official"
             case .plugin:
                 s = "plugin"
             case .normal:

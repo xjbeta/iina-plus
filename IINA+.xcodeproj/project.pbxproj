@@ -19,7 +19,6 @@
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
-		011C98AE29017757004EB553 /* PluginSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011C98AD29017757004EB553 /* PluginSystem.swift */; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
 		0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */; };
@@ -56,6 +55,7 @@
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
+		017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */ = {isa = PBXBuildFile; fileRef = 01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */; };
 		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
 		0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */; };
 		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
@@ -82,6 +82,7 @@
 		01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8BD20EE108B001406E8 /* Processes.swift */; };
 		01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C120EFBCCF001406E8 /* MPVOption.swift */; };
 		01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8C820F1081C001406E8 /* Identifiers.swift */; };
+		01B331C72A640D9000AB380C /* PluginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B331C62A640D9000AB380C /* PluginViewController.swift */; };
 		01B53B5E27B64FD20051F7B4 /* flv.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5827B64F270051F7B4 /* flv.min.js */; };
 		01B53B5F27B64FD20051F7B4 /* style.min.css in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5C27B64F420051F7B4 /* style.min.css */; };
 		01B53B6027B64FD20051F7B4 /* CommentCoreLibrary.min.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01B53B5A27B64F370051F7B4 /* CommentCoreLibrary.min.js */; };
@@ -109,6 +110,7 @@
 		01C0809727BC074000E87A8C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809627BC074000E87A8C /* SDWebImage */; };
 		01C0809A27BC079200E87A8C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809927BC079200E87A8C /* Sparkle */; };
 		01C0809D27BC0BC400E87A8C /* SocketRocket in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809C27BC0BC400E87A8C /* SocketRocket */; };
+		01C248B52A623EC000C92639 /* IINAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C248B42A623EC000C92639 /* IINAApp.swift */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
 		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
@@ -177,7 +179,6 @@
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
-		011C98AD29017757004EB553 /* PluginSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSystem.swift; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		0120932827A3B441002C7FD3 /* flvplayer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = flvplayer.css; sourceTree = "<group>"; };
 		0120932927A3B441002C7FD3 /* flvplayer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = flvplayer.js; sourceTree = "<group>"; };
@@ -247,6 +248,7 @@
 		01AEC8BD20EE108B001406E8 /* Processes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processes.swift; sourceTree = "<group>"; };
 		01AEC8C120EFBCCF001406E8 /* MPVOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPVOption.swift; sourceTree = "<group>"; };
 		01AEC8C820F1081C001406E8 /* Identifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identifiers.swift; sourceTree = "<group>"; };
+		01B331C62A640D9000AB380C /* PluginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginViewController.swift; sourceTree = "<group>"; };
 		01B53B5227B64E190051F7B4 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		01B53B5327B64E1A0051F7B4 /* default.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = default.css; sourceTree = "<group>"; };
 		01B53B5427B64E1A0051F7B4 /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = index.htm; sourceTree = "<group>"; };
@@ -261,6 +263,8 @@
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
 		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
+		01C248B42A623EC000C92639 /* IINAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IINAApp.swift; sourceTree = "<group>"; };
+		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
@@ -385,13 +389,13 @@
 				01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */,
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
+				01C248B42A623EC000C92639 /* IINAApp.swift */,
 				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				011E4D3221E99CA300997633 /* Log.swift */,
 				01E40FEA22C304E800864118 /* ImageLoader.swift */,
 				016D772327B0CD4300358E2F /* WaitTimer.swift */,
 				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
-				011C98AD29017757004EB553 /* PluginSystem.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -475,6 +479,7 @@
 		019EB39D21453A97000FD123 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */,
 				015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */,
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				013850F9214EA2AA003817CE /* huya.js */,
@@ -580,6 +585,7 @@
 				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				0189533E279FBC470011BAAC /* ColorPickButton.swift */,
+				01B331C62A640D9000AB380C /* PluginViewController.swift */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -687,6 +693,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */,
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
 				01D8762927D459C5001140DD /* crypto-js.js in Resources */,
@@ -765,6 +772,7 @@
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
+				01C248B52A623EC000C92639 /* IINAApp.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
@@ -777,6 +785,7 @@
 				018F4F6128126FFD0045B67C /* Huya.swift in Sources */,
 				01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */,
 				014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */,
+				01B331C72A640D9000AB380C /* PluginViewController.swift in Sources */,
 				01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */,
 				015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */,
 				0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */,
@@ -787,7 +796,6 @@
 				010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */,
 				014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */,
 				01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */,
-				011C98AE29017757004EB553 /* PluginSystem.swift in Sources */,
 				01010131211E987D002F0F7F /* SuggestionsTableCellView.swift in Sources */,
 				010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */,
 				01010132211E987D002F0F7F /* WaitingTableCellView.swift in Sources */,
@@ -985,7 +993,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.27;
+				MARKETING_VERSION = 0.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1010,7 +1018,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.6.27;
+				MARKETING_VERSION = 0.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

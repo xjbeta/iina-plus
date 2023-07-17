@@ -16,6 +16,7 @@ class Processes: NSObject {
     static let shared = Processes()
     let videoDecoder = VideoDecoder()
     let httpServer = HttpServer()
+	let iina = IINAApp()
     
     var decodeTask: Process?
     var videoGetTasks: [(Promise<YouGetJSON>, cancel: () -> Void)] = []
@@ -75,33 +76,7 @@ class Processes: NSObject {
         return ""   
     }
     
-    func iinaBuildVersion() -> Int {
-        let b = Bundle(path: "/Applications/IINA.app")
-        let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
-        return Int(build) ?? 0
-    }
-    
-    func iinaArchiveType() -> IINAUrlType {
-        let b = Bundle(path: "/Applications/IINA.app")
-        guard let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String else {
-            return .none
-        }
-        if version.contains("Danmaku") {
-            return .danmaku
-        } else if version.contains("plugin") {
-            return .plugin
-        }
-        return .normal
-    }
-    
-    func checkDanmakuPlugin() -> Bool {
-        #if DEBUG
-        return false
-        #else
-        return true
-        #endif
-    }
-    
+	
     func decodeURL(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in
             videoGetTasks.append(decodeUrlWithVideoGet(url))
@@ -161,10 +136,10 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardInput = pipe
         
-        let type = iinaArchiveType()
-        let buildVersion = iinaBuildVersion()
+		let type = iina.archiveType()
+		let buildVersion = iina.buildVersion()
         
-
+		
         guard let u = json.videoUrl(key),
               u != "",
               let iinaUrl = json.iinaUrl(key, type: type) else {
@@ -201,7 +176,7 @@ class Processes: NSObject {
     
     func openWithYtdl(_ url: String) {
         // Use IINA's ytdl to open the raw url
-        let buildVersion = iinaBuildVersion()
+		let buildVersion = iina.buildVersion()
         guard let v = url.addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return }
         if buildVersion >= 90 {
             let u = "iina://open?url=\(v)"
@@ -222,7 +197,7 @@ class Processes: NSObject {
         task.standardInput = pipe
         task.launchPath = isIINA ? livePlayer.rawValue : self.which(livePlayer.rawValue).first ?? ""
         if isIINA {
-            let type = iinaArchiveType()
+			let type = iina.archiveType()
             args = args.map {
                 "--mpv-" + $0
             }
@@ -253,4 +228,33 @@ class Processes: NSObject {
         Log("openWithURLScheme \(url).")
         NSWorkspace.shared.open(u)
     }
+}
+
+
+extension Process {
+  @discardableResult
+  static func run(_ cmd: [String], at currentDir: URL? = nil) -> (process: Process, stdout: Pipe, stderr: Pipe) {
+	guard cmd.count > 0 else {
+	  fatalError("Process.launch: the command should not be empty")
+	}
+
+	let (stdout, stderr) = (Pipe(), Pipe())
+	let process = Process()
+	if #available(macOS 10.13, *) {
+	  process.executableURL = URL(fileURLWithPath: cmd[0])
+	  process.currentDirectoryURL = currentDir
+	} else {
+	  process.launchPath = cmd[0]
+	  if let path = currentDir?.path {
+		process.currentDirectoryPath = path
+	  }
+	}
+	process.arguments = [String](cmd.dropFirst())
+	process.standardOutput = stdout
+	process.standardError = stderr
+	process.launch()
+	process.waitUntilExit()
+
+	return (process, stdout, stderr)
+  }
 }
