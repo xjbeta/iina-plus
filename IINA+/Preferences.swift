@@ -204,6 +204,15 @@ class Preferences: NSObject {
             defaultsSet(newValue, forKey: .bililiveHevc)
         }
     }
+	
+	var updateInfo070: Bool {
+		get {
+			return defaults(.updateInfo070) as? Bool ?? false
+		}
+		set {
+			defaultsSet(newValue, forKey: .updateInfo070)
+		}
+	}
     
     private func colorEncode(_ color: NSColor) -> Data {
         (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
@@ -250,4 +259,6 @@ enum PreferenceKeys: String {
 	case bilibiliHTMLDecoder
     case bilibiliCodec
     case bililiveHevc
+	
+	case updateInfo070
 }
