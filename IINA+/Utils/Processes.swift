@@ -77,14 +77,6 @@ class Processes: NSObject {
     }
     
 	
-    func checkDanmakuPlugin() -> Bool {
-        #if DEBUG
-        return false
-        #else
-        return true
-        #endif
-    }
-    
     func decodeURL(_ url: String) -> Promise<YouGetJSON> {
         return Promise { resolver in
             videoGetTasks.append(decodeUrlWithVideoGet(url))

@@ -68,8 +68,8 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 		switch pluginState {
 		case .ok(let version):
 			pluginButton.title = version
-		case .needsUpdate(let version):
-			pluginButton.title = "Update to \(version)"
+		case .needsUpdate(let plugin):
+			pluginButton.title = "Update \(plugin.version) to \(iina.internalPluginVersion)"
 		case .needsInstall:
 			pluginButton.title = "Install"
 		case .newer(let plugin):

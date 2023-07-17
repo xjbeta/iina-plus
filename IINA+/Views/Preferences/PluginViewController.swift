@@ -102,8 +102,9 @@ class PluginViewController: NSViewController {
 			installPluginButton.title = "Install"
 			installPluginButton.isEnabled = false
 			installState = true
-		case .needsUpdate(let version):
-			installPluginButton.title = "Update to \(version)"
+			
+		case .needsUpdate(let plugin):
+			installPluginButton.title = "Update \(plugin.version) to \(iina.internalPluginVersion)"
 			installPluginButton.isEnabled = true
 		case .needsInstall:
 			installPluginButton.title = "Install"

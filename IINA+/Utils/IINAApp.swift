@@ -15,7 +15,7 @@ class IINAApp: NSObject {
 	
 	enum PluginState {
 		case ok(String)
-		case needsUpdate(String)
+		case needsUpdate(PluginInfo)
 		case needsInstall
 		case newer(PluginInfo)
 		case isDev
@@ -79,7 +79,7 @@ class IINAApp: NSObject {
 				if plugin.ghVersion == internalPluginBuild {
 					return .ok(internalPluginVersion)
 				} else if plugin.ghVersion < internalPluginBuild {
-					return .needsUpdate(internalPluginVersion)
+					return .needsUpdate(plugin)
 				} else if plugin.ghVersion > internalPluginBuild {
 					return .newer(plugin)
 				} else {
