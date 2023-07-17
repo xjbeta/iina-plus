@@ -108,16 +108,21 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        guard let vc = segue.destinationController as? FontSelectorViewController else { return }
-        checkFontWeight()
-        
-        let name = pref.danmukuFontFamilyName
-        vc.delegate = self
-        vc.families = NSFontManager.shared.availableFontFamilies
-        vc.family = name
-        vc.styles = fontWeights(ofFontFamily: name)
-        vc.style = pref.danmukuFontWeight
-        vc.size = pref.danmukuFontSize
+		if let vc = segue.destinationController as? FontSelectorViewController {
+			checkFontWeight()
+			
+			let name = pref.danmukuFontFamilyName
+			vc.delegate = self
+			vc.families = NSFontManager.shared.availableFontFamilies
+			vc.family = name
+			vc.styles = fontWeights(ofFontFamily: name)
+			vc.style = pref.danmukuFontWeight
+			vc.size = pref.danmukuFontSize
+		} else if let vc = segue.destinationController as? PluginViewController {
+			vc.updatePlugin = {
+				self.initPluginInfo()
+			}
+		}
     }
     
     func fontWeights(ofFontFamily name: String) -> [String] {
