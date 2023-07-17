@@ -13,6 +13,8 @@ class IINAApp: NSObject {
 	let internalPluginVersion = "0.1.7"
 	let internalPluginBuild = 4
 	
+	let minIINABuild = 135
+	
 	enum PluginState {
 		case ok(String)
 		case needsUpdate(PluginInfo)
@@ -60,7 +62,7 @@ class IINAApp: NSObject {
 			return .danmaku
 		} else if version.contains("plugin") {
 			return .plugin
-		} else if build >= 135 {
+		} else if build >= minIINABuild {
 			return .plugin
 		}
 		return .normal

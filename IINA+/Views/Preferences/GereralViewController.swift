@@ -92,7 +92,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 			switch proc.iina.archiveType() {
             case .danmaku:
                 s = "danmaku"
-			case .plugin where proc.iina.buildVersion() >= 135:
+			case .plugin where proc.iina.buildVersion() >= proc.iina.minIINABuild:
 				s = "official"
             case .plugin:
                 s = "plugin"
