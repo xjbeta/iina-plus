@@ -28,7 +28,9 @@ class PluginViewController: NSViewController {
 		} catch let error {
 			Log(error)
 		}
+		
 		initStates()
+		updatePlugin?()
 	}
 	
 	@IBOutlet weak var enableDanmakuState: NSButton!
@@ -41,7 +43,7 @@ class PluginViewController: NSViewController {
 	
 	@IBOutlet weak var tapsTextField: NSTextField!
 	
-	
+	var updatePlugin: (() -> Void)?
 	let iina = Processes.shared.iina
 	
 	enum PlistKeys: String {
