@@ -347,8 +347,10 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
         let bitRateInfos: [BitRateInfo] = try object.value(for: "roomInfo.tLiveInfo.tLiveStreamInfo.vBitRateInfo.value")
         
         let urls = streamInfos.sorted { i1, i2 -> Bool in
-            i1.sCdnType == defaultCDN
-        }.compactMap {
+			i1.sCdnType == defaultCDN
+		}.sorted { i1, i2 -> Bool in
+			!i1.sFlvUrl.contains("txdirect.flv.huya.com")
+		}.compactMap {
             $0.url
         }
         
