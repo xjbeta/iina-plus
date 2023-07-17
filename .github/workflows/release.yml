@@ -44,8 +44,18 @@ jobs:
       - name: Prepare create-dmg
         run: npm install --global create-dmg
 
-      - name: Prepare Dependencies
-        run: bash InstallDeps.sh
+      - name: Prepare WebFiles Dependencies
+        run: |
+          cd IINA+/WebFiles/
+          npm install
+
+      - name: Download Plugin
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: 'xjbeta/iina-plugin-danmaku'
+          tag: "0.1.7"
+          fileName: "iina-plugin-danmaku.iinaplgz"
+          out-file-path: "IINA+"
 
       - name: SPM
         run: xcodebuild -resolvePackageDependencies
