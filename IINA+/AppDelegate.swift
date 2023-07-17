@@ -75,9 +75,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		alert.informativeText = """
 🎉
 
-IINA-Plus 弹幕插件已经和原版IINA 兼容
+IINA-Plus 弹幕插件已经和原版IINA v1.3.2+ 兼容
 请安装原版IINA 后进入IINA-Plus 设置 安装/更新 插件
-The IINA-Plus danmaku plugin is compatible with the official IINA.
+The IINA-Plus danmaku plugin is compatible with the official IINA v1.3.2+.
 Please go to IINA-Plus settings after installing official IINA to install/update the plugin.
 
 IINA official website
