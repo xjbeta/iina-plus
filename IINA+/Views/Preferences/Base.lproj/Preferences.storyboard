@@ -46,6 +46,7 @@
                             <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" rowSpacing="8" columnSpacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="8JG-4H-VGf">
                                 <rect key="frame" x="20" y="30" width="325" height="314"/>
                                 <constraints>
+                                    <constraint firstItem="vhg-D5-huj" firstAttribute="leading" secondItem="8JG-4H-VGf" secondAttribute="leading" id="Brg-K3-CUk"/>
                                     <constraint firstItem="C7e-7Z-3S2" firstAttribute="leading" secondItem="8JG-4H-VGf" secondAttribute="leading" id="ZUV-Ew-RX6"/>
                                 </constraints>
                                 <rows>
@@ -184,8 +185,8 @@
                                     </gridCell>
                                     <gridCell row="mel-OT-CCk" column="lFS-Rc-hJd" id="EgL-WY-gBh"/>
                                     <gridCell row="udk-ij-1PE" column="hdQ-Zx-TIH" headOfMergedCell="Oti-I2-mmZ" id="Oti-I2-mmZ">
-                                        <box key="contentView" verticalHuggingPriority="750" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="vhg-D5-huj">
-                                            <rect key="frame" x="225" y="198" width="100" height="5"/>
+                                        <box key="contentView" verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="vhg-D5-huj">
+                                            <rect key="frame" x="0.0" y="198" width="325" height="5"/>
                                         </box>
                                     </gridCell>
                                     <gridCell row="udk-ij-1PE" column="AqI-Gj-PAA" headOfMergedCell="Oti-I2-mmZ" id="ETD-mM-CMf"/>
