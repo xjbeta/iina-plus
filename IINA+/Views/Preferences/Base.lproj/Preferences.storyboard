@@ -1074,7 +1074,7 @@ Gw
                                 </connections>
                             </button>
                             <gridView xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="7" columnSpacing="19" translatesAutoresizingMaskIntoConstraints="NO" id="W4U-8X-v6e">
-                                <rect key="frame" x="58" y="83" width="196" height="170"/>
+                                <rect key="frame" x="55" y="83" width="203" height="170"/>
                                 <rows>
                                     <gridRow yPlacement="center" height="18" id="nhF-7G-sK2"/>
                                     <gridRow id="ukF-GM-ifa"/>
@@ -1092,8 +1092,8 @@ Gw
                                 <gridCells>
                                     <gridCell row="nhF-7G-sK2" column="12r-12-uEc" headOfMergedCell="VLt-oD-KgM" id="VLt-oD-KgM">
                                         <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ug6-9u-DA0">
-                                            <rect key="frame" x="-2" y="153" width="167" height="16"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="1. enable IINA plugin sytem" id="naV-oK-pw1">
+                                            <rect key="frame" x="-2" y="153" width="174" height="16"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="1. enable IINA plugin system" id="naV-oK-pw1">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1103,7 +1103,7 @@ Gw
                                     <gridCell row="nhF-7G-sK2" column="9NM-OA-5MB" headOfMergedCell="VLt-oD-KgM" id="D33-dq-EMQ"/>
                                     <gridCell row="nhF-7G-sK2" column="8EP-Kj-sKu" id="ZBh-kf-bae">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9BC-xL-zzE">
-                                            <rect key="frame" x="180" y="152" width="18" height="18"/>
+                                            <rect key="frame" x="187" y="152" width="18" height="18"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="9WO-2I-hup">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1137,7 +1137,7 @@ Gw
                                     <gridCell row="50M-uK-fKz" column="9NM-OA-5MB" headOfMergedCell="ffG-xf-UGh" id="hnj-Jx-Bu1"/>
                                     <gridCell row="50M-uK-fKz" column="8EP-Kj-sKu" id="qC8-2g-HhN">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UFV-Gf-IpC">
-                                            <rect key="frame" x="180" y="100" width="18" height="18"/>
+                                            <rect key="frame" x="187" y="100" width="18" height="18"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="psv-kb-Ewj">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1171,7 +1171,7 @@ Gw
                                     <gridCell row="DBM-7j-7rO" column="9NM-OA-5MB" headOfMergedCell="aEw-VR-rOe" id="y8d-0J-RjR"/>
                                     <gridCell row="DBM-7j-7rO" column="8EP-Kj-sKu" id="Xwh-8n-Gst">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TpG-oQ-PiJ">
-                                            <rect key="frame" x="180" y="48" width="18" height="18"/>
+                                            <rect key="frame" x="187" y="48" width="18" height="18"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="vit-WP-FZr">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
