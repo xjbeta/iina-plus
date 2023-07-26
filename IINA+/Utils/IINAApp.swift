@@ -10,8 +10,8 @@ import Cocoa
 
 class IINAApp: NSObject {
 	
-	let internalPluginVersion = "0.1.7"
-	let internalPluginBuild = 4
+	let internalPluginVersion = "0.1.8"
+	let internalPluginBuild = 5
 	
 	let minIINABuild = 135
 	
