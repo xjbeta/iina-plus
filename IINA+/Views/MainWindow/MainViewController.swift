@@ -494,7 +494,7 @@ class MainViewController: NSViewController {
                 }.done(on: .main) {
                     if Preferences.shared.autoOpenResult && !option {
                         self.open(result: $0, row: 0).catch {
-                            Log("Prepare DM file error : \($0)")
+                            Log("Open YouGetJSON error : \($0)")
                         }
                     } else {
                         self.yougetResult = $0

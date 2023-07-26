@@ -347,10 +347,15 @@ struct BiliLivePlayUrl: Unmarshaling {
             }
         }
         
-        // FLV AVC
         if let codec = streams.first(where: { $0.protocolName == "http_stream" })?.formats.first(where: { $0.formatName == "flv" })?.codecs.first(where: { $0.codecName == "avc" }) {
+			
+			// FLV AVC
             write(codec)
-        }
+        } else if let codec = streams.first(where: { $0.protocolName == "http_hls" })?.formats.first(where: { $0.formatName == "fmp4" })?.codecs.first(where: { $0.codecName == "avc" }) {
+			
+			// fmp4 AVC
+			write(codec)
+		}
         
         // M3U8 HEVC
         if Preferences.shared.bililiveHevc,
