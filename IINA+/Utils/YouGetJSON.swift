@@ -193,6 +193,7 @@ struct YouGetJSON: Unmarshaling, Codable {
         let u = "iina://open?"
         
         var args = [
+			"new_window=1",
             "url=-",
             "mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)"
         ]
