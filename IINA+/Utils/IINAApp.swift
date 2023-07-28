@@ -167,13 +167,11 @@ class IINAApp: NSObject {
 			"unzip '\(tempZipFile)' -d '\(tempDecompressDir)'",
 			"mv '\(tempDecompressDir)'/* '\(tempFolder)'/"
 		].joined(separator: " && ")
-		let (process, stdout, stderr) = Process.run(["/bin/bash", "-c", cmd], at: .init(fileURLWithPath: pluginsRoot))
+		let (process, outText, errText) = Process.run(["/bin/bash", "-c", cmd], at: .init(fileURLWithPath: pluginsRoot))
 		
 		guard process.terminationStatus == 0 else {
-			let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-			let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-			
-			Log("\(outText), \(errText)")
+			Log("outText: \(outText ?? "none")")
+			Log("errText: \(errText ?? "none")")
 			
 			removeTempPluginFolder()
 			throw IINAError.cannotUnpackage

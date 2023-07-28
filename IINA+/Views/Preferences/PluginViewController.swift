@@ -161,17 +161,14 @@ class PluginViewController: NSViewController {
 	}
 	
 	func defaultsRead(_ key: PlistKeys) -> String? {
-		let (process, stdout, stderr) = Process.run(["/bin/bash", "-c", "defaults read \(key.domain) \(key.rawValue)"])
+		let (process, outText, errText) = Process.run(["/bin/bash", "-c", "defaults read \(key.domain) \(key.rawValue)"])
 		
-		guard process.terminationStatus == 0,
-			  let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") else {
-			
-			let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-			
-			Log(errText)
+		guard process.terminationStatus == 0, let out = outText else {
+			Log("outText: \(outText ?? "none")")
+			Log("errText: \(errText ?? "none")")
 			return nil
 		}
 		
-		return outText
+		return out.replacingOccurrences(of: "\n", with: "")
 	}
 }
