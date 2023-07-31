@@ -297,7 +297,7 @@
                                             </buttonCell>
                                             <connections>
                                                 <binding destination="TML-sv-8uG" name="enabled" keyPath="self.enableDanmaku" id="Lmo-zy-KwV"/>
-                                                <segue destination="Brw-sj-A4k" kind="popover" popoverBehavior="applicationDefined" preferredEdge="minX" id="4n2-GK-cSQ"/>
+                                                <segue destination="Brw-sj-A4k" kind="popover" popoverAnchorView="WTj-XT-rbC" popoverBehavior="t" preferredEdge="maxX" id="4n2-GK-cSQ"/>
                                             </connections>
                                         </button>
                                     </gridCell>
@@ -1219,8 +1219,7 @@ Gw
                     <connections>
                         <outlet property="enableDanmakuButton" destination="v4w-4b-ROg" id="kli-Pc-PVE"/>
                         <outlet property="enableDanmakuState" destination="TpG-oQ-PiJ" id="cc7-Ff-k5f"/>
-                        <outlet property="enablePluginSystem" destination="lDI-eW-bUs" id="NgB-x2-WxW"/>
-                        <outlet property="enablePluginSystemButton" destination="lDI-eW-bUs" id="Jqm-7R-Ltd"/>
+                        <outlet property="enablePluginSystemButton" destination="lDI-eW-bUs" id="IKl-RA-JiS"/>
                         <outlet property="installPluginButton" destination="DI7-5E-UuO" id="w5h-u0-mtw"/>
                         <outlet property="pluginInstallState" destination="UFV-Gf-IpC" id="KaD-eq-kUE"/>
                         <outlet property="pluginSystemState" destination="9BC-xL-zzE" id="zcb-Fm-T81"/>
