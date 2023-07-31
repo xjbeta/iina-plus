@@ -16,7 +16,7 @@ class BilibiliLoginViewController: NSViewController {
     @IBOutlet weak var viewForWeb: NSView!
     @IBOutlet weak var waitProgressIndicator: NSProgressIndicator!
     var webView: WKWebView!
-    var dismiss: (() -> Void)?
+	var dismiss: (((Bool, String)?) -> Void)?
     let bilibili = Processes.shared.videoDecoder.bilibili
     @IBAction func tryAgain(_ sender: Any) {
         loadWebView()
@@ -34,7 +34,7 @@ class BilibiliLoginViewController: NSViewController {
         super.keyUp(with: event)
         switch event.keyCode {
         case 53:
-            dismiss?()
+            dismiss?(nil)
         default:
             break
         }
@@ -105,7 +105,7 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
                 Log("islogin \($0.0), \($0.1)")
                 
                 if $0.0 {
-                    self.dismiss?()
+                    self.dismiss?($0)
                 } else {
                     self.tabView.selectTabViewItem(at: 1)
                 }
