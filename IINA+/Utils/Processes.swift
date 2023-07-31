@@ -247,15 +247,9 @@ extension Process {
 		
 		let (stdout, stderr) = (Pipe(), Pipe())
 		let process = Process()
-		if #available(macOS 10.13, *) {
-			process.executableURL = URL(fileURLWithPath: cmd[0])
-			process.currentDirectoryURL = currentDir
-		} else {
-			process.launchPath = cmd[0]
-			if let path = currentDir?.path {
-				process.currentDirectoryPath = path
-			}
-		}
+		process.executableURL = URL(fileURLWithPath: cmd[0])
+		process.currentDirectoryURL = currentDir ?? Bundle.main.resourceURL
+		
 		process.arguments = [String](cmd.dropFirst())
 		process.standardOutput = stdout
 		process.standardError = stderr
