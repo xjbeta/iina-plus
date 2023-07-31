@@ -125,46 +125,47 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 		}
     }
     
-    func fontWeights(ofFontFamily name: String) -> [String] {
-        guard let members = NSFontManager.shared.availableMembers(ofFontFamily: name) else { return [] }
-        
-        let names = members.filter {
-            $0.count == 4
-        }.compactMap {
-            $0[1] as? String
-        }
-        
-        return names
-    }
-    
-    func initFontSelector() {
-        checkFontWeight()
-        
-        let name = pref.danmukuFontFamilyName
-        let weight = pref.danmukuFontWeight
-        
-//        let size = pref.danmukuFontSize
-//        fontSelectorButton.title = "\(name) - \(weight) \(size)px"
-        fontSelectorButton.title = "\(name) - \(weight)"
-    }
-    
-    func checkFontWeight() {
-        
-        let name = pref.danmukuFontFamilyName
-        let weight = pref.danmukuFontWeight
-        let weights = fontWeights(ofFontFamily: name)
-        if !weights.contains(weight),
-           let w = weights.first {
-            pref.danmukuFontWeight = w
-        }
-    }
-    
 }
 
 extension GereralViewController: FontSelectorDelegate {
     func fontDidUpdated() {
         initFontSelector()
     }
+	
+	
+	func fontWeights(ofFontFamily name: String) -> [String] {
+		guard let members = NSFontManager.shared.availableMembers(ofFontFamily: name) else { return [] }
+		
+		let names = members.filter {
+			$0.count == 4
+		}.compactMap {
+			$0[1] as? String
+		}
+		
+		return names
+	}
+	
+	func initFontSelector() {
+		checkFontWeight()
+		
+		let name = pref.danmukuFontFamilyName
+		let weight = pref.danmukuFontWeight
+		
+//        let size = pref.danmukuFontSize
+//        fontSelectorButton.title = "\(name) - \(weight) \(size)px"
+		fontSelectorButton.title = "\(name) - \(weight)"
+	}
+	
+	func checkFontWeight() {
+		
+		let name = pref.danmukuFontFamilyName
+		let weight = pref.danmukuFontWeight
+		let weights = fontWeights(ofFontFamily: name)
+		if !weights.contains(weight),
+		   let w = weights.first {
+			pref.danmukuFontWeight = w
+		}
+	}
 }
 
 

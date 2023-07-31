@@ -1057,7 +1057,7 @@
             <objects>
                 <viewController id="QTN-8J-ekT" customClass="PluginViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="Y5C-Kz-4ua">
-                        <rect key="frame" x="0.0" y="0.0" width="312" height="278"/>
+                        <rect key="frame" x="0.0" y="0.0" width="312" height="292"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5Cx-X9-Apf">
@@ -1074,8 +1074,9 @@ Gw
                                 </connections>
                             </button>
                             <gridView xPlacement="leading" yPlacement="top" rowAlignment="none" rowSpacing="7" columnSpacing="19" translatesAutoresizingMaskIntoConstraints="NO" id="W4U-8X-v6e">
-                                <rect key="frame" x="55" y="83" width="203" height="170"/>
+                                <rect key="frame" x="71" y="74" width="170" height="193"/>
                                 <rows>
+                                    <gridRow id="vJv-vg-c6w"/>
                                     <gridRow yPlacement="center" height="18" id="nhF-7G-sK2"/>
                                     <gridRow id="ukF-GM-ifa"/>
                                     <gridRow yPlacement="center" height="18" id="50M-uK-fKz"/>
@@ -1087,9 +1088,18 @@ Gw
                                 <columns>
                                     <gridColumn width="0.0" id="12r-12-uEc"/>
                                     <gridColumn id="9NM-OA-5MB"/>
-                                    <gridColumn id="8EP-Kj-sKu"/>
                                 </columns>
                                 <gridCells>
+                                    <gridCell row="vJv-vg-c6w" column="12r-12-uEc" headOfMergedCell="4nO-Aj-KNb" xPlacement="fill" id="4nO-Aj-KNb">
+                                        <levelIndicator key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wcT-zs-sjB">
+                                            <rect key="frame" x="0.0" y="175" width="170" height="18"/>
+                                            <levelIndicatorCell key="cell" alignment="left" doubleValue="3" maxValue="3" warningValue="2" id="EnR-SM-O8F"/>
+                                            <connections>
+                                                <binding destination="QTN-8J-ekT" name="value" keyPath="self.stepValue" id="kmL-Rz-y7V"/>
+                                            </connections>
+                                        </levelIndicator>
+                                    </gridCell>
+                                    <gridCell row="vJv-vg-c6w" column="9NM-OA-5MB" headOfMergedCell="4nO-Aj-KNb" id="vMG-aN-xxd"/>
                                     <gridCell row="nhF-7G-sK2" column="12r-12-uEc" headOfMergedCell="VLt-oD-KgM" id="VLt-oD-KgM">
                                         <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ug6-9u-DA0">
                                             <rect key="frame" x="-2" y="153" width="174" height="16"/>
@@ -1101,15 +1111,6 @@ Gw
                                         </textField>
                                     </gridCell>
                                     <gridCell row="nhF-7G-sK2" column="9NM-OA-5MB" headOfMergedCell="VLt-oD-KgM" id="D33-dq-EMQ"/>
-                                    <gridCell row="nhF-7G-sK2" column="8EP-Kj-sKu" id="ZBh-kf-bae">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9BC-xL-zzE">
-                                            <rect key="frame" x="187" y="152" width="18" height="18"/>
-                                            <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="9WO-2I-hup">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                        </button>
-                                    </gridCell>
                                     <gridCell row="ukF-GM-ifa" column="12r-12-uEc" id="gf0-Py-iKq"/>
                                     <gridCell row="ukF-GM-ifa" column="9NM-OA-5MB" id="eMN-u4-QiQ">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lDI-eW-bUs">
@@ -1120,10 +1121,10 @@ Gw
                                             </buttonCell>
                                             <connections>
                                                 <action selector="enablePluginSystem:" target="QTN-8J-ekT" id="A0y-ZH-Lt0"/>
+                                                <binding destination="QTN-8J-ekT" name="enabled" keyPath="self.enablePluginSystemButton" id="b5k-uH-ApM"/>
                                             </connections>
                                         </button>
                                     </gridCell>
-                                    <gridCell row="ukF-GM-ifa" column="8EP-Kj-sKu" id="yaq-bD-mtH"/>
                                     <gridCell row="50M-uK-fKz" column="12r-12-uEc" headOfMergedCell="ffG-xf-UGh" id="ffG-xf-UGh">
                                         <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CFA-xM-jjl">
                                             <rect key="frame" x="-2" y="101" width="154" height="16"/>
@@ -1135,15 +1136,6 @@ Gw
                                         </textField>
                                     </gridCell>
                                     <gridCell row="50M-uK-fKz" column="9NM-OA-5MB" headOfMergedCell="ffG-xf-UGh" id="hnj-Jx-Bu1"/>
-                                    <gridCell row="50M-uK-fKz" column="8EP-Kj-sKu" id="qC8-2g-HhN">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UFV-Gf-IpC">
-                                            <rect key="frame" x="187" y="100" width="18" height="18"/>
-                                            <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="psv-kb-Ewj">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                        </button>
-                                    </gridCell>
                                     <gridCell row="COV-kY-cTg" column="12r-12-uEc" id="3RB-cD-lkB"/>
                                     <gridCell row="COV-kY-cTg" column="9NM-OA-5MB" id="bNu-8t-cwn">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DI7-5E-UuO">
@@ -1154,10 +1146,11 @@ Gw
                                             </buttonCell>
                                             <connections>
                                                 <action selector="installPlugin:" target="QTN-8J-ekT" id="ES2-il-2Dz"/>
+                                                <binding destination="QTN-8J-ekT" name="enabled" keyPath="self.enableInstallPluginButton" id="qWj-eE-Oqn"/>
+                                                <binding destination="QTN-8J-ekT" name="title" keyPath="self.installPluginTitle" id="752-3b-Zcj"/>
                                             </connections>
                                         </button>
                                     </gridCell>
-                                    <gridCell row="COV-kY-cTg" column="8EP-Kj-sKu" id="Xmk-Ki-5gn"/>
                                     <gridCell row="DBM-7j-7rO" column="12r-12-uEc" headOfMergedCell="aEw-VR-rOe" id="aEw-VR-rOe">
                                         <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x7W-Yf-Ayg">
                                             <rect key="frame" x="-2" y="49" width="159" height="16"/>
@@ -1169,15 +1162,6 @@ Gw
                                         </textField>
                                     </gridCell>
                                     <gridCell row="DBM-7j-7rO" column="9NM-OA-5MB" headOfMergedCell="aEw-VR-rOe" id="y8d-0J-RjR"/>
-                                    <gridCell row="DBM-7j-7rO" column="8EP-Kj-sKu" id="Xwh-8n-Gst">
-                                        <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TpG-oQ-PiJ">
-                                            <rect key="frame" x="187" y="48" width="18" height="18"/>
-                                            <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" state="on" allowsMixedState="YES" inset="2" id="vit-WP-FZr">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                        </button>
-                                    </gridCell>
                                     <gridCell row="laG-KC-cuj" column="12r-12-uEc" id="Yq9-sL-6CJ"/>
                                     <gridCell row="laG-KC-cuj" column="9NM-OA-5MB" id="77u-lg-8K5">
                                         <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="v4w-4b-ROg">
@@ -1188,10 +1172,10 @@ Gw
                                             </buttonCell>
                                             <connections>
                                                 <action selector="enableDanmaku:" target="QTN-8J-ekT" id="73s-6p-bZH"/>
+                                                <binding destination="QTN-8J-ekT" name="enabled" keyPath="self.enableDanmakuButton" id="lFv-8f-aeB"/>
                                             </connections>
                                         </button>
                                     </gridCell>
-                                    <gridCell row="laG-KC-cuj" column="8EP-Kj-sKu" id="Hh8-iu-xeR"/>
                                     <gridCell row="Vg1-S2-EAA" column="12r-12-uEc" headOfMergedCell="6Nx-a1-Ene" id="6Nx-a1-Ene">
                                         <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="0pa-Ju-l0B">
                                             <rect key="frame" x="-2" y="0.0" width="104" height="14"/>
@@ -1200,10 +1184,12 @@ Gw
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <binding destination="QTN-8J-ekT" name="value" keyPath="self.tipsTitle" id="buo-H5-28P"/>
+                                            </connections>
                                         </textField>
                                     </gridCell>
                                     <gridCell row="Vg1-S2-EAA" column="9NM-OA-5MB" headOfMergedCell="6Nx-a1-Ene" id="bfF-3C-uW6"/>
-                                    <gridCell row="Vg1-S2-EAA" column="8EP-Kj-sKu" headOfMergedCell="6Nx-a1-Ene" id="6Hq-tp-Qrz"/>
                                 </gridCells>
                             </gridView>
                         </subviews>
@@ -1216,19 +1202,11 @@ Gw
                             <constraint firstItem="W4U-8X-v6e" firstAttribute="top" secondItem="Y5C-Kz-4ua" secondAttribute="top" constant="25" id="mX9-cv-59Q"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="enableDanmakuButton" destination="v4w-4b-ROg" id="kli-Pc-PVE"/>
-                        <outlet property="enableDanmakuState" destination="TpG-oQ-PiJ" id="cc7-Ff-k5f"/>
-                        <outlet property="enablePluginSystemButton" destination="lDI-eW-bUs" id="IKl-RA-JiS"/>
-                        <outlet property="installPluginButton" destination="DI7-5E-UuO" id="w5h-u0-mtw"/>
-                        <outlet property="pluginInstallState" destination="UFV-Gf-IpC" id="KaD-eq-kUE"/>
-                        <outlet property="pluginSystemState" destination="9BC-xL-zzE" id="zcb-Fm-T81"/>
-                        <outlet property="tapsTextField" destination="0pa-Ju-l0B" id="sma-3X-AS9"/>
-                    </connections>
                 </viewController>
                 <customObject id="GCS-EF-X9S" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController representsSharedInstance="YES" id="TSV-fi-J6e"/>
             </objects>
-            <point key="canvasLocation" x="1041" y="1512"/>
+            <point key="canvasLocation" x="1041" y="1518"/>
         </scene>
         <!--Bilibili Login View Controller-->
         <scene sceneID="6aq-q8-ArF">
