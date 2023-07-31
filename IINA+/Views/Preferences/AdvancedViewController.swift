@@ -8,6 +8,7 @@
 
 import Cocoa
 import SDWebImage
+import WebKit
 
 class AdvancedViewController: NSViewController, NSMenuDelegate {
     
@@ -21,6 +22,8 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     @IBAction func cleanUpCache(_ sender: NSButton) {
         SDImageCache.shared.clearDisk(onCompletion: nil)
         initCacheSize()
+		
+		WKWebsiteDataStore.default().removeData(ofTypes: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache], modifiedSince: Date(timeIntervalSince1970: 0), completionHandler:{ })
     }
     
     var blockTypeButtons: [NSButton: String] = [:]
