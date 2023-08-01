@@ -213,6 +213,15 @@ class Preferences: NSObject {
 			defaultsSet(newValue, forKey: .updateInfo070)
 		}
 	}
+	
+	var customMpvPath: String {
+		get {
+			return defaults(.customMpvPath) as? String ?? ""
+		}
+		set {
+			defaultsSet(newValue, forKey: .customMpvPath)
+		}
+	}
     
     private func colorEncode(_ color: NSColor) -> Data {
         (try? NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: false)) ?? Data()
@@ -261,4 +270,6 @@ enum PreferenceKeys: String {
     case bililiveHevc
 	
 	case updateInfo070
+	
+	case customMpvPath
 }

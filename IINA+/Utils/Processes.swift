@@ -38,6 +38,11 @@ class Processes: NSObject {
         // which you-get
         // command -v you-get
         // type -P you-get
+		
+		guard Preferences.shared.customMpvPath == "" else {
+			return [Preferences.shared.customMpvPath]
+		}
+		
 		let (process, outText, errText) = Process.run([
 			"/bin/bash", "-l", "-c", "which mpv"
 		])
@@ -54,6 +59,11 @@ class Processes: NSObject {
     func mpvVersion() -> String {
 		
 		var cmd = "mpv -V"
+		
+		if Preferences.shared.customMpvPath != "" {
+			cmd = Preferences.shared.customMpvPath + " -V"
+		}
+		
 		let (process, outText, errText) = Process.run([
 			"/bin/bash", "-l", "-c", cmd
 		])
