@@ -118,6 +118,8 @@
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
+		01EDCCA72A791EB5001DC138 /* test.htm in Resources */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
+		01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 /* End PBXBuildFile section */
@@ -129,6 +131,7 @@
 			dstPath = WebFiles;
 			dstSubfolderSpec = 7;
 			files = (
+				01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */,
 				01B53B5E27B64FD20051F7B4 /* flv.min.js in Copy Web Files */,
 				01B53B5F27B64FD20051F7B4 /* style.min.css in Copy Web Files */,
 				01B53B6027B64FD20051F7B4 /* CommentCoreLibrary.min.js in Copy Web Files */,
@@ -272,6 +275,7 @@
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		01E40FF922C39E7700864118 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
+		01EDCCA62A791EB5001DC138 /* test.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.htm; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -556,6 +560,7 @@
 		01B53B5127B64E0B0051F7B4 /* Danmaku */ = {
 			isa = PBXGroup;
 			children = (
+				01EDCCA62A791EB5001DC138 /* test.htm */,
 				01B53B5327B64E1A0051F7B4 /* default.css */,
 				01B53B5427B64E1A0051F7B4 /* index.htm */,
 				01B53B5227B64E190051F7B4 /* main.js */,
@@ -705,6 +710,7 @@
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
 				01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
+				01EDCCA72A791EB5001DC138 /* test.htm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

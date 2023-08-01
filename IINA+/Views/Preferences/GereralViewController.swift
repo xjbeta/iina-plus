@@ -19,7 +19,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     
     @IBAction func testInBrowser(_ sender: NSButton) {
         let port = pref.dmPort
-        let u = "http://127.0.0.1:\(port)/danmaku/index.htm"
+        let u = "http://127.0.0.1:\(port)/danmaku/test.htm"
         guard let url = URL(string: u) else { return }
         
         NSWorkspace.shared.open(url)
