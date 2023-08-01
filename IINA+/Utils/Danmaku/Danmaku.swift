@@ -117,26 +117,6 @@ class Danmaku: NSObject {
         douyinDM?.stop()
         douyinDM = nil
     }
-    
-    func prepareBlockList() throws {
-        guard let resourcePath = Bundle.main.resourcePath else { return }
-        let targetPath = resourcePath + "/Danmaku/iina-plus-blockList.xml"
-        if FileManager.default.fileExists(atPath: targetPath) {
-            try FileManager.default.removeItem(atPath: targetPath)
-        }
-        switch Preferences.shared.dmBlockList.type {
-        case .none:
-            return
-        case .basic:
-            let basicList = resourcePath + "/Block-List-Basic.xml"
-            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
-        case .plus:
-            let basicList = resourcePath + "/Block-List-Plus.xml"
-            try FileManager.default.copyItem(atPath: basicList, toPath: targetPath)
-        case .custom:
-            FileManager.default.createFile(atPath: targetPath, contents: Preferences.shared.dmBlockList.customBlockListData, attributes: nil)
-        }
-    }
 
     
     func loadDM() {

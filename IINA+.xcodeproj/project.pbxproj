@@ -113,7 +113,6 @@
 		01C248B52A623EC000C92639 /* IINAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C248B42A623EC000C92639 /* IINAApp.swift */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
-		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
@@ -267,7 +266,6 @@
 		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
-		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
@@ -582,7 +580,6 @@
 				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
 				01683DDD211924160016A886 /* BilibiliViewController.swift */,
 				0196CB6321214B4200BCD29E /* AdvancedViewController.swift */,
-				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				0189533E279FBC470011BAAC /* ColorPickButton.swift */,
 				01B331C62A640D9000AB380C /* PluginViewController.swift */,
@@ -753,7 +750,6 @@
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
-				01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,

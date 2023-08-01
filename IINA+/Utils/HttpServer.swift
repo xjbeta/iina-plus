@@ -415,11 +415,11 @@ struct DanmakuWS {
     }
     
     func loadFilters() {
-        var types = Preferences.shared.dmBlockType
-        if Preferences.shared.dmBlockList.type != .none {
-            types.append("List")
-        }
-        send(.init(method: .dmBlockList, text: types.joined(separator: ", ")))
+//        var types = Preferences.shared.dmBlockType
+//        if Preferences.shared.dmBlockList.type != .none {
+//            types.append("List")
+//        }
+//        send(.init(method: .dmBlockList, text: types.joined(separator: ", ")))
     }
     
     func loadXMLDM() {

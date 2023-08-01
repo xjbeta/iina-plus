@@ -62,20 +62,6 @@ class Preferences: NSObject {
         }
     }
     
-    var dmBlockList: BlockList {
-        get {
-            if let data = defaults(.dmBlockList) as? Data,
-                let dmBlockList = BlockList(data: data) {
-                return dmBlockList
-            } else {
-                return BlockList()
-            }
-        }
-        set {
-            defaultsSet(newValue.encode(), forKey: .dmBlockList)
-        }
-    }
-    
     @objc var danmukuFontFamilyName: String {
         get {
             return defaults(.danmukuFontFamilyName) as? String ?? "SimHei"
