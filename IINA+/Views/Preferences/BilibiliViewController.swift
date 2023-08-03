@@ -43,9 +43,10 @@ class BilibiliViewController: NSViewController {
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         if let vc = segue.destinationController as? BilibiliLoginViewController {
-            vc.dismiss = {
+            vc.dismiss = { isLogin in
                 self.dismiss(vc)
-                self.initStatus()
+				guard let isLogin = isLogin else { return }
+                self.updateStatus(isLogin)
             }
         }
     }
@@ -53,18 +54,22 @@ class BilibiliViewController: NSViewController {
     func initStatus() {
         selectTabViewItem(.progress)
         bilibili.isLogin().done(on: .main) {
-            if $0.0 {
-                self.selectTabViewItem(.info)
-            } else {
-                self.selectTabViewItem(.login)
-            }
-            self.userNameTextField.stringValue = $0.1
+			self.updateStatus($0)
             }.catch { error in
                 Log("Init bilibili status error: \(error)")
                 self.selectTabViewItem(.error)
         }
     }
     
+	func updateStatus(_ isLogin: (Bool, String)) {
+		if isLogin.0 {
+			self.selectTabViewItem(.info)
+		} else {
+			self.selectTabViewItem(.login)
+		}
+		self.userNameTextField.stringValue = isLogin.1
+	}
+	
     func selectTabViewItem(_ tab: BiliBiliTabs) {
         DispatchQueue.main.async {
             if tab == .progress {

@@ -113,12 +113,13 @@
 		01C248B52A623EC000C92639 /* IINAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C248B42A623EC000C92639 /* IINAApp.swift */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
-		01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01CEA849264255EF0021A645 /* FontSelectorViewController.swift */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
 		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
 		01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */; };
+		01EDCCA72A791EB5001DC138 /* test.htm in Resources */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
+		01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 /* End PBXBuildFile section */
@@ -130,6 +131,7 @@
 			dstPath = WebFiles;
 			dstSubfolderSpec = 7;
 			files = (
+				01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */,
 				01B53B5E27B64FD20051F7B4 /* flv.min.js in Copy Web Files */,
 				01B53B5F27B64FD20051F7B4 /* style.min.css in Copy Web Files */,
 				01B53B6027B64FD20051F7B4 /* CommentCoreLibrary.min.js in Copy Web Files */,
@@ -267,13 +269,13 @@
 		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
-		01CEA849264255EF0021A645 /* FontSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSelectorViewController.swift; sourceTree = "<group>"; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		01E40FF922C39E7700864118 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
+		01EDCCA62A791EB5001DC138 /* test.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.htm; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
@@ -558,6 +560,7 @@
 		01B53B5127B64E0B0051F7B4 /* Danmaku */ = {
 			isa = PBXGroup;
 			children = (
+				01EDCCA62A791EB5001DC138 /* test.htm */,
 				01B53B5327B64E1A0051F7B4 /* default.css */,
 				01B53B5427B64E1A0051F7B4 /* index.htm */,
 				01B53B5227B64E190051F7B4 /* main.js */,
@@ -582,7 +585,6 @@
 				01F46CA02102EF4600FE9DAD /* GereralViewController.swift */,
 				01683DDD211924160016A886 /* BilibiliViewController.swift */,
 				0196CB6321214B4200BCD29E /* AdvancedViewController.swift */,
-				01CEA849264255EF0021A645 /* FontSelectorViewController.swift */,
 				01683DD8211869AE0016A886 /* BilibiliLoginViewController.swift */,
 				0189533E279FBC470011BAAC /* ColorPickButton.swift */,
 				01B331C62A640D9000AB380C /* PluginViewController.swift */,
@@ -708,6 +710,7 @@
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
 				01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
+				01EDCCA72A791EB5001DC138 /* test.htm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -753,7 +756,6 @@
 				012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */,
 				01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
-				01CEA84A264255EF0021A645 /* FontSelectorViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
@@ -993,7 +995,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.2;
+				MARKETING_VERSION = 0.7.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1018,7 +1020,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.2;
+				MARKETING_VERSION = 0.7.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

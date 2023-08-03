@@ -8,18 +8,25 @@
 
 import Cocoa
 
-class PluginViewController: NSViewController {
 
-	@IBOutlet weak var pluginSystemState: NSButton!
+class PluginViewController: NSViewController {
 	
-	@IBOutlet weak var enablePluginSystemButton: NSButton!
+
+	@objc dynamic var stepValue = 0
+	
+	@objc dynamic var enablePluginSystemButton = false
+	@objc dynamic var enableInstallPluginButton = false
+	@objc dynamic var enableDanmakuButton = false
+	
+	@objc dynamic var installPluginTitle = "Install"
+	@objc dynamic var tipsTitle = ""
+	
+	
 	@IBAction func enablePluginSystem(_ sender: NSButton) {
 		defaultsWrite(.systemEnable, boolValue: true)
 		initStates()
 	}
 	
-	@IBOutlet weak var pluginInstallState: NSButton!
-	@IBOutlet weak var installPluginButton: NSButton!
 	@IBAction func installPlugin(_ sender: NSButton) {
 		do {
 			let plugins = try iina.listPlugins()
@@ -33,15 +40,12 @@ class PluginViewController: NSViewController {
 		updatePlugin?()
 	}
 	
-	@IBOutlet weak var enableDanmakuState: NSButton!
-	@IBOutlet weak var enableDanmakuButton: NSButton!
 	@IBAction func enableDanmaku(_ sender: NSButton) {
 		defaultsWrite(.pluginEnable, boolValue: true)
 		defaultsWrite(.parseEnable, stringValue: "1")
 		initStates()
 	}
 	
-	@IBOutlet weak var tapsTextField: NSTextField!
 	
 	var updatePlugin: (() -> Void)?
 	let iina = Processes.shared.iina
@@ -72,25 +76,23 @@ class PluginViewController: NSViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
+		
 		initStates()
     }
 	
 	func initStates() {
 		// reset
-		pluginSystemState.state = .mixed
-		pluginInstallState.state = .mixed
-		enableDanmakuState.state = .mixed
+		enablePluginSystemButton = false
+		enableInstallPluginButton = false
+		enableDanmakuButton = false
 		
-		enablePluginSystemButton.isEnabled = false
-		installPluginButton.isEnabled = false
-		enableDanmakuButton.isEnabled = false
-		
-		tapsTextField.stringValue = ""
+		installPluginTitle = ""
+		tipsTitle = ""
+		stepValue = 0
 		
 		// plugin system
 		let systemState = getPluginSystemState()
-		pluginSystemState.state = systemState ? .on : .off
-		enablePluginSystemButton.isEnabled = systemState ? false : true
+		enablePluginSystemButton = !systemState
 		
 		guard systemState else { return }
 		
@@ -101,44 +103,43 @@ class PluginViewController: NSViewController {
 		
 		switch pluginState {
 		case .ok(_):
-			installPluginButton.title = "Install"
-			installPluginButton.isEnabled = false
+			installPluginTitle = "Install"
+			enableInstallPluginButton = false
 			installState = true
 			
 		case .needsUpdate(let plugin):
-			installPluginButton.title = "Update \(plugin.version) to \(iina.internalPluginVersion)"
-			installPluginButton.isEnabled = true
+			installPluginTitle = "Update \(plugin.version) to \(iina.internalPluginVersion)"
+			enableInstallPluginButton = true
 		case .needsInstall:
-			installPluginButton.title = "Install"
-			installPluginButton.isEnabled = true
+			installPluginTitle = "Install"
+			enableInstallPluginButton = true
 		case .newer(let plugin):
-			installPluginButton.title = "\(plugin.version) is newer"
-			installPluginButton.isEnabled = true
+			installPluginTitle = "\(plugin.version) is newer"
+			enableInstallPluginButton = true
 		case .isDev:
-			installPluginButton.title = "DEV"
-			installPluginButton.isEnabled = false
+			installPluginTitle = "DEV"
+			enableInstallPluginButton = false
 			installState = true
 		case .multiple:
-			installPluginButton.title = "Update"
-			installPluginButton.isEnabled = true
+			installPluginTitle = "Update"
+			enableInstallPluginButton = true
 		case .error(let error):
 			Log("list all plugins error \(error)")
-			installPluginButton.title = "Error"
+			installPluginTitle = "Error"
 		}
-		
-		pluginInstallState.state = installState ? .on : .off
+		stepValue = 1
 		guard installState else { return }
 		
 		// enable danmaku plugin
 		let danmakuState = getDanmakuState()
 		
-		enableDanmakuState.state = danmakuState ? .on : .off
-		enableDanmakuButton.isEnabled = danmakuState ? false : true
-		
+		enableDanmakuButton = danmakuState ? false : true
+		stepValue = 2
 		guard danmakuState else { return }
 		
+		stepValue = 3
 		// tips
-		tapsTextField.stringValue = "\nEverything OK  ✅\nRestart IINA to take effect"
+		tipsTitle = "\nEverything OK  ✅\nRestart IINA to take effect"
 	}
 	
 	func getPluginSystemState() -> Bool {
@@ -161,17 +162,14 @@ class PluginViewController: NSViewController {
 	}
 	
 	func defaultsRead(_ key: PlistKeys) -> String? {
-		let (process, stdout, stderr) = Process.run(["/bin/bash", "-c", "defaults read \(key.domain) \(key.rawValue)"])
+		let (process, outText, errText) = Process.run(["/bin/bash", "-c", "defaults read \(key.domain) \(key.rawValue)"])
 		
-		guard process.terminationStatus == 0,
-			  let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") else {
-			
-			let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? "None"
-			
-			Log(errText)
+		guard process.terminationStatus == 0, let out = outText else {
+			Log("outText: \(outText ?? "none")")
+			Log("errText: \(errText ?? "none")")
 			return nil
 		}
 		
-		return outText
+		return out.replacingOccurrences(of: "\n", with: "")
 	}
 }

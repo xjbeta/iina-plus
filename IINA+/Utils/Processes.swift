@@ -38,42 +38,49 @@ class Processes: NSObject {
         // which you-get
         // command -v you-get
         // type -P you-get
-        
-        let task = Process()
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.launchPath = "/bin/bash"
-        task.arguments  = ["-l", "-c", "which \(str)"]
-        
-        task.launch()
-        task.waitUntilExit()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        if let output = String(data: data, encoding: .utf8) {
-            return output.components(separatedBy: "\n").filter({ $0 != "" })
-        }
-        return []
+		
+		guard Preferences.shared.customMpvPath == "" else {
+			return [Preferences.shared.customMpvPath]
+		}
+		
+		let (process, outText, errText) = Process.run([
+			"/bin/bash", "-l", "-c", "which mpv"
+		])
+		
+		guard process.terminationStatus == 0, let out = outText else {
+			Log("outText: \(outText ?? "none")")
+			Log("errText: \(errText ?? "none")")
+			return []
+		}
+		
+		return out.components(separatedBy: "\n").filter({ $0 != "" })
     }
 
     func mpvVersion() -> String {
-        let task = Process()
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.launchPath = "/bin/bash"
-        task.arguments  = ["-l", "-c", "mpv -V"]
-        
-        task.launch()
-        task.waitUntilExit()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        if let output = String(data: data, encoding: .utf8) {
-            let str = output.components(separatedBy: "\n").filter {
-                $0 != ""
-                && $0.starts(with: "mpv")
-                && $0.contains("Copyright")
-            }.first ?? ""
-            
-            return str.subString(from: "mpv", to: "Copyright").replacingOccurrences(of: " ", with: "")
-        }
-        return ""   
+		
+		var cmd = "mpv -V"
+		
+		if Preferences.shared.customMpvPath != "" {
+			cmd = Preferences.shared.customMpvPath + " -V"
+		}
+		
+		let (process, outText, errText) = Process.run([
+			"/bin/bash", "-l", "-c", cmd
+		])
+		
+		guard process.terminationStatus == 0, let out = outText else {
+			Log("outText: \(outText ?? "none")")
+			Log("errText: \(errText ?? "none")")
+			return "unknown"
+		}
+		
+		let str = out.components(separatedBy: "\n").filter {
+			$0 != ""
+			&& $0.starts(with: "mpv")
+			&& $0.contains("Copyright")
+		}.first ?? ""
+		
+		return str.subString(from: "mpv", to: "Copyright").replacingOccurrences(of: " ", with: "")
     }
     
 	
@@ -192,10 +199,7 @@ class Processes: NSObject {
         let livePlayer = Preferences.shared.livePlayer
         let isIINA = livePlayer == .iina
         var args = args
-        let task = Process()
-        let pipe = Pipe()
-        task.standardInput = pipe
-        task.launchPath = isIINA ? livePlayer.rawValue : self.which(livePlayer.rawValue).first ?? ""
+		
         if isIINA {
 			let type = iina.archiveType()
             args = args.map {
@@ -210,14 +214,27 @@ class Processes: NSObject {
             }
         } else {
             args.append(MPVOption.Terminal.reallyQuiet)
+			args.append(MPVOption.Terminal.noTerminal)
             args = args.map {
                 "--" + $0
             }
         }
         args.insert(url, at: 0)
+		
+		let launchPath = isIINA ? livePlayer.rawValue : "\(self.which(livePlayer.rawValue).first ?? "")"
+		
+		guard launchPath != "" else {
+			Log("Not found launchPath")
+			return
+		}
+		
+		
+		args.insert(launchPath, at: 0)
+		
         Log("Player arguments: \(args)")
-        task.arguments = args
-        task.launch()
+		
+		let _ = Process.run(args, wait: false)
+		
     }
     
     func openWithURLScheme(_ url: String) {
@@ -232,29 +249,31 @@ class Processes: NSObject {
 
 
 extension Process {
-  @discardableResult
-  static func run(_ cmd: [String], at currentDir: URL? = nil) -> (process: Process, stdout: Pipe, stderr: Pipe) {
-	guard cmd.count > 0 else {
-	  fatalError("Process.launch: the command should not be empty")
+	@discardableResult
+	static func run(_ cmd: [String], at currentDir: URL? = nil, wait: Bool = true) -> (process: Process, outText: String?, errText: String?) {
+		guard cmd.count > 0 else {
+			fatalError("Process.launch: the command should not be empty")
+		}
+		
+		let (stdout, stderr) = (Pipe(), Pipe())
+		let process = Process()
+		process.executableURL = URL(fileURLWithPath: cmd[0])
+		process.currentDirectoryURL = currentDir ?? Bundle.main.resourceURL
+		
+		process.arguments = [String](cmd.dropFirst())
+		process.standardOutput = stdout
+		process.standardError = stderr
+		process.launch()
+	
+		guard wait else {
+			return (process, nil, nil)
+		}
+		
+		process.waitUntilExit()
+		
+		let outText = String(data: stdout.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+		let errText = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+		
+		return (process, outText, errText)
 	}
-
-	let (stdout, stderr) = (Pipe(), Pipe())
-	let process = Process()
-	if #available(macOS 10.13, *) {
-	  process.executableURL = URL(fileURLWithPath: cmd[0])
-	  process.currentDirectoryURL = currentDir
-	} else {
-	  process.launchPath = cmd[0]
-	  if let path = currentDir?.path {
-		process.currentDirectoryPath = path
-	  }
-	}
-	process.arguments = [String](cmd.dropFirst())
-	process.standardOutput = stdout
-	process.standardError = stderr
-	process.launch()
-	process.waitUntilExit()
-
-	return (process, stdout, stderr)
-  }
 }
