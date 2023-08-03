@@ -53,7 +53,7 @@ jobs:
         uses: robinraju/release-downloader@v1.8
         with:
           repository: 'xjbeta/iina-plugin-danmaku'
-          tag: "0.1.7"
+          tag: "0.1.8"
           fileName: "iina-plugin-danmaku.iinaplgz"
           out-file-path: "IINA+"
 
