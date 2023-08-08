@@ -108,13 +108,24 @@ class DouYin: NSObject, SupportSiteProtocol {
         cookies.removeAll()
         storageDic.removeAll()
         deleteDouYinCookies()
+		
+		var dyFinished = false
         
         return Promise { resolver in
             dyFinishNitification = NotificationCenter.default.addObserver(forName: .finishLoadDY, object: nil, queue: .main) { _ in
+				guard !dyFinished else { return }
+				Log("Douyin dyFinished")
+				dyFinished = true
+				
                 if let n = self.dyFinishNitification {
                     NotificationCenter.default.removeObserver(n)
                 }
-                resolver.fulfill(())
+				
+				self.loadCookies().done {
+					resolver.fulfill_()
+				}.catch {
+					resolver.reject($0)
+				}
             }
             webView = WKWebView()
             
@@ -130,30 +141,91 @@ class DouYin: NSObject, SupportSiteProtocol {
                         self.webViewLoadingObserver?.invalidate()
                         self.webViewLoadingObserver = nil
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
-                            guard self?.cookies.count == 0,
-                                  let webview = self?.webView else {
-                                return
-                            }
-                            
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in
+							guard let self = self, !dyFinished else { return }
+							
                             Log("DouYin Cookies timeout, Reload.")
-                            webview.load(.init(url: self!.douyinEmptyURL))
+							self.webView?.load(.init(url: self.douyinEmptyURL))
                         }
                     } else if s.contains("验证") {
+						Log("Douyin reload init url")
                         self.deleteCookies().done {
                             self.webView?.load(.init(url: self.douyinEmptyURL))
                         }.catch({ _ in })
                     }
                 }
             }
-            
-            WKWebsiteDataStore.default().httpCookieStore.remove(self)
-            WKWebsiteDataStore.default().httpCookieStore.add(self)
-            
+			
+			registerHack()
             webView?.load(.init(url: douyinEmptyURL))
         }
     }
     
+	func registerHack() {
+		// https://stackoverflow.com/a/75482806
+		guard let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol else { return }
+		
+		Log("Douyin registerHack")
+		
+		let selector = Selector(("registerSchemeForCustomProtocol:"))
+		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "http")
+		}
+		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "https")
+		}
+		URLProtocol.registerClass(DouYinURLProtocol.self)
+	}
+	
+	func loadCookies() -> Promise<()> {
+		guard let webview = webView else {
+			return .init(error: VideoGetError.douyuSignError)
+		}
+		let cid = "dHRjaWQ=".base64Decode()
+		
+		return getAllWKCookies().get {
+			Log("Douyin getAllWKCookies")
+			$0.filter {
+				$0.domain.contains("douyin")
+			}.forEach {
+				self.cookies[$0.name] = $0.value
+			}
+		}.then { _ in
+			when(fulfilled: [
+				webview.evaluateJavaScript("localStorage.\(cid)"),
+				webview.evaluateJavaScript("window.navigator.userAgent")
+			])
+		}.get {
+			Log("Douyin cid UA")
+			guard let id = $0[0] as? String,
+				  let ua = $0[1] as? String else {
+				throw CookiesError.invalid
+			}
+			self.cookies[cid] = id
+			self.douyinUA = ua
+		}.then { _ in
+			webview.evaluateJavaScript(
+				"localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
+		}.compactMap { re -> [String: String]? in
+			
+			Log("Douyin privateKeys")
+			guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
+			return [
+				self.privateKeys[0].base64Decode(): values[0],
+				self.privateKeys[1].base64Decode(): values[1]
+			]
+		}.done {
+			Log("Douyin deinit webview")
+			
+			self.webView?.stopLoading()
+			self.webView?.removeFromSuperview()
+			self.webView = nil
+			self.storageDic = $0
+		}
+	}
+	
     func deleteCookies() -> Promise<()> {
         getAllWKCookies().then {
             when(fulfilled: $0.map(self.deleteWKCookie))
@@ -190,82 +262,8 @@ class DouYin: NSObject, SupportSiteProtocol {
         prepareTask = nil
     }
     
-    func checkDouYinCookies(_ webview: WKWebView, _ cookies: [HTTPCookie]) -> Promise<()> {
-        
-        let cid = "dHRjaWQ=".base64Decode()
-        
-        let dyCookies = cookies.filter {
-            $0.domain.contains("douyin")
-        }
-        
-        return webview.evaluateJavaScript("self.webpackChunkdouyin_live_v2.length").then { length -> Promise<()> in
-            print("douyin checker, length: \(length as? Int ?? -9)")
-            if let l = length as? Int, l > 30 {
-                dyCookies.forEach {
-                    self.cookies[$0.name] = $0.value
-                }
-                
-                Log("Douyin webview chatroom___item inited.")
-                return .value(())
-            } else {
-                throw CookiesError.waintingForCookies
-            }
-        }.then {
-            when(fulfilled: [
-                webview.evaluateJavaScript("localStorage.\(cid)"),
-                webview.evaluateJavaScript("window.navigator.userAgent")
-            ])
-        }.done {
-            guard let id = $0[0] as? String,
-                  let ua = $0[1] as? String else {
-                throw CookiesError.invalid
-            }
-            self.cookies[cid] = id
-            self.douyinUA = ua
-        }
-    }
-    
     enum CookiesError: Error {
         case invalid, waintingForCookies
-    }
-}
-
-extension DouYin: WKHTTPCookieStoreObserver {
-    func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
-        guard webViewLoadingObserver == nil,
-              let webView = webView,
-              cookies.count == 0 else {
-            return
-        }
-        
-        cookieStore.getAllCookies().then {
-            self.checkDouYinCookies(webView, $0)
-        }.then {
-            webView.evaluateJavaScript(
-                "localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
-        }.compactMap { re -> [String: String]? in
-            guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
-            return [
-                self.privateKeys[0].base64Decode(): values[0],
-                self.privateKeys[1].base64Decode(): values[1]
-            ]
-        }.done {
-            self.webView?.stopLoading()
-            self.webView?.removeFromSuperview()
-            self.webView = nil
-            WKWebsiteDataStore.default().httpCookieStore.remove(self)
-            self.storageDic = $0
-            NotificationCenter.default.post(name: .finishLoadDY, object: nil)
-        }.catch {
-            switch $0 {
-            case DouYin.CookiesError.invalid:
-                break
-            case DouYin.CookiesError.waintingForCookies:
-                break
-            default:
-                Log($0)
-            }
-        }
     }
 }
 
@@ -328,4 +326,15 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
         
         return json
     }
+}
+
+
+class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
+	override class func canInit(with request: URLRequest) -> Bool {
+		if let str = request.url?.absoluteString,
+		   str.starts(with: "https://live.douyin.com/webcast/im/fetch/") {
+			NotificationCenter.default.post(name: .finishLoadDY, object: nil)
+		}
+		return false
+	}
 }
