@@ -332,7 +332,7 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
 class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
 	override class func canInit(with request: URLRequest) -> Bool {
 		if let str = request.url?.absoluteString,
-		   str.starts(with: "https://live.douyin.com/webcast/im/fetch/") {
+		   str.starts(with: "https://mssdk.bytedance.com/websdk/v1/getInfo") {
 			NotificationCenter.default.post(name: .finishLoadDY, object: nil)
 		}
 		return false
