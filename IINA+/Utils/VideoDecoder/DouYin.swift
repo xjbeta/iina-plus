@@ -109,21 +109,28 @@ class DouYin: NSObject, SupportSiteProtocol {
         storageDic.removeAll()
         deleteDouYinCookies()
 		
-		var dyFinished = false
-        
+		enum DYState {
+			case none
+			case checking
+			case finish
+		}
+		
+		var state = DYState.none
+		
         return Promise { resolver in
-            dyFinishNitification = NotificationCenter.default.addObserver(forName: .finishLoadDY, object: nil, queue: .main) { _ in
-				guard !dyFinished else { return }
-				Log("Douyin dyFinished")
-				dyFinished = true
+            dyFinishNitification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: .main) { _ in
+				guard state == .none else { return }
+				state = .checking
 				
                 if let n = self.dyFinishNitification {
                     NotificationCenter.default.removeObserver(n)
                 }
 				
 				self.loadCookies().done {
+					state = .finish
 					resolver.fulfill_()
 				}.catch {
+					state = .none
 					resolver.reject($0)
 				}
             }
@@ -142,7 +149,8 @@ class DouYin: NSObject, SupportSiteProtocol {
                         self.webViewLoadingObserver = nil
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in
-							guard let self = self, !dyFinished else { return }
+							guard let self = self,
+								  state != .finish else { return }
 							
                             Log("DouYin Cookies timeout, Reload.")
 							self.webView?.load(.init(url: self.douyinEmptyURL))
@@ -170,12 +178,9 @@ class DouYin: NSObject, SupportSiteProtocol {
 		let selector = Selector(("registerSchemeForCustomProtocol:"))
 		
 		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "http")
+			_ = contextController.perform(selector, with: "wss")
 		}
 		
-		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "https")
-		}
 		URLProtocol.registerClass(DouYinURLProtocol.self)
 	}
 	
@@ -216,13 +221,17 @@ class DouYin: NSObject, SupportSiteProtocol {
 				self.privateKeys[0].base64Decode(): values[0],
 				self.privateKeys[1].base64Decode(): values[1]
 			]
-		}.done {
+		}.get {
+			self.storageDic = $0
+		}.then { _ in
+			self.getContent(self.douyinEmptyURL.absoluteString)
+		}.done { info in
+			Log("Douyin test info \(info.title)")
 			Log("Douyin deinit webview")
 			
 			self.webView?.stopLoading()
 			self.webView?.removeFromSuperview()
 			self.webView = nil
-			self.storageDic = $0
 		}
 	}
 	
@@ -332,8 +341,8 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
 class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
 	override class func canInit(with request: URLRequest) -> Bool {
 		if let str = request.url?.absoluteString,
-		   str.starts(with: "https://mssdk.bytedance.com/websdk/v1/getInfo") {
-			NotificationCenter.default.post(name: .finishLoadDY, object: nil)
+		   str.contains("webcast/im/push/v2") {
+			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
 		}
 		return false
 	}

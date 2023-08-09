@@ -214,7 +214,11 @@ class Preferences: NSObject {
 			return defaults(.kuaiShouCookiesDate) as? Date
 		}
 		set {
-			defaultsSet(newValue, forKey: .kuaiShouCookiesDate)
+			if let v = newValue {
+				defaultsSet(v, forKey: .kuaiShouCookiesDate)
+			} else {
+				prefs.removeObject(forKey: PreferenceKeys.kuaiShouCookiesDate.rawValue)
+			}
 		}
 	}
 	
