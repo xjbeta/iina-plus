@@ -108,6 +108,8 @@ class Danmaku: NSObject {
     }
     
     func stop() {
+		Log("Stop Danmaku")
+		
         socket?.close()
         socket = nil
         timer?.cancel()

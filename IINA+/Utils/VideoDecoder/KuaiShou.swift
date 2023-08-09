@@ -22,6 +22,13 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 		case unknown
 	}
 	
+	override init() {
+		super.init()
+		
+		cookies = Preferences.shared.kuaiShouCookies
+		cookiesDate = Preferences.shared.kuaiShouCookiesDate
+	}
+	
 	
 	var cookies = ""
 	var cookiesDate: Date?
@@ -78,6 +85,8 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 						
 						self.cookies = $0 as! String
 						self.cookiesDate = Date()
+						self.saveToPrefs()
+						
 						Log("KuaiShou cookies: \(self.cookies)")
 						
 						self.webView = nil
@@ -185,6 +194,7 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 					if self.prepareTask == nil {
 						self.cookies = ""
 						self.cookiesDate = nil
+						self.saveToPrefs()
 						
 						self.prepareTask = self.prepareCookies().ensure {
 							self.prepareTask = nil
@@ -226,6 +236,11 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			headers.add(name: "Referer", value: ref)
 			return headers
 		}
+	}
+	
+	func saveToPrefs() {
+		Preferences.shared.kuaiShouCookies = cookies
+		Preferences.shared.kuaiShouCookiesDate = cookiesDate
 	}
 }
 
