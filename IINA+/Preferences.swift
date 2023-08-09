@@ -200,6 +200,24 @@ class Preferences: NSObject {
 		}
 	}
 	
+	var kuaiShouCookies: String {
+		get {
+			return defaults(.kuaiShouCookies) as? String ?? ""
+		}
+		set {
+			defaultsSet(newValue, forKey: .kuaiShouCookies)
+		}
+	}
+	
+	var kuaiShouCookiesDate: Date? {
+		get {
+			return defaults(.kuaiShouCookiesDate) as? Date
+		}
+		set {
+			defaultsSet(newValue, forKey: .kuaiShouCookiesDate)
+		}
+	}
+	
 	var customMpvPath: String {
 		get {
 			return defaults(.customMpvPath) as? String ?? ""
@@ -254,6 +272,9 @@ enum PreferenceKeys: String {
 	case bilibiliHTMLDecoder
     case bilibiliCodec
     case bililiveHevc
+	
+	case kuaiShouCookies
+	case kuaiShouCookiesDate
 	
 	case updateInfo070
 	
