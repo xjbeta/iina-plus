@@ -91,6 +91,15 @@
       }
     },
     {
+      "identity" : "swiftbrotli",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/f-meloni/SwiftBrotli",
+      "state" : {
+        "revision" : "101cedff527d7177c0f93a40b664f1f1475839f0",
+        "version" : "0.1.0"
+      }
+    },
+    {
       "identity" : "swifter",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/httpswift/swifter",

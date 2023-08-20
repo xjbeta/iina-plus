@@ -16,6 +16,7 @@
 		01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01010136211EFA75002F0F7F /* SuggestionsTableView.swift */; };
 		0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */; };
 		0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */; };
+		010CE8C92A911011002FA130 /* SwiftBrotli in Frameworks */ = {isa = PBXBuildFile; productRef = 010CE8C82A911011002FA130 /* SwiftBrotli */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
@@ -54,6 +55,8 @@
 		01683DDB2118905D0016A886 /* Bilibili.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDA2118905D0016A886 /* Bilibili.swift */; };
 		01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01683DDD211924160016A886 /* BilibiliViewController.swift */; };
 		0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0169097F21CF472F008CDF0E /* SideBarImageView.swift */; };
+		016A71ED2A91AA48007B4CA3 /* DanmakuBiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */; };
+		016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
 		017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */ = {isa = PBXBuildFile; fileRef = 01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */; };
 		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
@@ -220,6 +223,8 @@
 		01683DDA2118905D0016A886 /* Bilibili.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bilibili.swift; sourceTree = "<group>"; };
 		01683DDD211924160016A886 /* BilibiliViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliViewController.swift; sourceTree = "<group>"; };
 		0169097F21CF472F008CDF0E /* SideBarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarImageView.swift; sourceTree = "<group>"; };
+		016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuBiliLive.swift; sourceTree = "<group>"; };
+		016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BiliLiveDMv2.pb.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
@@ -296,6 +301,7 @@
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
 				018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */,
+				010CE8C92A911011002FA130 /* SwiftBrotli in Frameworks */,
 				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
@@ -538,11 +544,13 @@
 			isa = PBXGroup;
 			children = (
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
+				016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */,
 				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
 				0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */,
 				0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */,
 				01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */,
 				01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */,
+				016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */,
 			);
 			path = Danmaku;
 			sourceTree = "<group>";
@@ -625,6 +633,7 @@
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
 				018F4F632812BFC60045B67C /* PMKAlamofire */,
+				010CE8C82A911011002FA130 /* SwiftBrotli */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -680,6 +689,7 @@
 				01C0809827BC079200E87A8C /* XCRemoteSwiftPackageReference "Sparkle" */,
 				01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */,
 				018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */,
+				010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -772,9 +782,11 @@
 				0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */,
 				01BC354E29AF369200B45577 /* KuaiShou.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
+				016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01C248B52A623EC000C92639 /* IINAApp.swift in Sources */,
+				016A71ED2A91AA48007B4CA3 /* DanmakuBiliLive.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
@@ -1054,6 +1066,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/f-meloni/SwiftBrotli";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/PromiseKit/PMKAlamofire";
@@ -1153,6 +1173,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		010CE8C82A911011002FA130 /* SwiftBrotli */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */;
+			productName = SwiftBrotli;
+		};
 		018F4F632812BFC60045B67C /* PMKAlamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */;
