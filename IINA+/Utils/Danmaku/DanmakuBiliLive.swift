@@ -194,11 +194,14 @@ extension Danmaku {
 			do {
 				let re = try BilibiliDm_Community_Service_Dm_Live_Dm(serializedData: data)
 				
+				if re.bizScene == .survive {
+					return nil
+				}
+				
 				if re.dmType == .emoticon,
 				   let emoticon = re.emoticons.first {
 					return biliLiveEmoticonDM(emoticon)
 				}
-				
 				return DanmakuComment(text: re.text)
 			} catch let error {
 				print(error)
