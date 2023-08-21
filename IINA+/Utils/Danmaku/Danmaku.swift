@@ -17,6 +17,7 @@ import PromiseKit
 import PMKAlamofire
 import Marshal
 import SDWebImage
+import SwiftBrotli
 
 protocol DanmakuDelegate {
     func send(_ event: DanmakuEvent, sender: Danmaku)
@@ -35,20 +36,9 @@ class Danmaku: NSObject {
     
     private var heartBeatCount = 0
     
-    let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com/sub")
+    let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com:443/sub")
     var biliLiveIDs = (rid: "", token: "")
     var bililiveEmoticons = [BiliLiveEmoticon]()
-    
-    struct BiliLiveDanmuMsg: Decodable {
-        struct ResultObj: Decodable {
-            let msg: String?
-            init(from decoder: Decoder) throws {
-                let unkeyedContainer = try decoder.singleValueContainer()
-                msg = try? unkeyedContainer.decode(String.self)
-            }
-        }
-        var info: [ResultObj]
-    }
     
     let douyuBlockList = [
         "#挑战666#",
@@ -281,169 +271,6 @@ class Danmaku: NSObject {
         timer.resume()
     }
     
-
-    
-    
-    func bililiveRid(_ roomID: String) -> Promise<(String)> {
-        return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-                    let id: Int = try json.value(for: "data.room_id")
-                    resolver.fulfill("\(id)")
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    func bililiveToken(_ rid: String) -> Promise<(String)> {
-        return Promise { resolver in
-            AF.request("https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=\(rid)&type=0").response {
-                do {
-                    let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-                    let token: String = try json.value(for: "data.token")
-                    resolver.fulfill(token)
-                } catch let error {
-                    resolver.reject(error)
-                }
-            }
-        }
-    }
-    
-    struct BiliLiveEmoticon: Unmarshaling {
-		var emoji: String = ""
-        var url: String
-		var width: Int = 0
-		var height: Int = 0
-		var identity: Int = 0
-        let emoticonUnique: String
-		var emoticonId: Int = 0
-        
-        var emoticonData: Data?
-		
-		init(_ emoticonUnique: String, url: String) {
-			self.emoticonUnique = emoticonUnique
-			self.url = url
-		}
-        
-        init(object: MarshaledObject) throws {
-            emoji = try object.value(for: "emoji")
-            let u: String = try object.value(for: "url")
-            url = u.replacingOccurrences(of: "http://", with: "https://")
-            width = try object.value(for: "width")
-            height = try object.value(for: "height")
-            identity = try object.value(for: "identity")
-            emoticonUnique = try object.value(for: "emoticon_unique")
-            emoticonId = try object.value(for: "emoticon_id")
-        }
-		
-		func comment() -> DanmakuComment? {
-			guard let base64 = emoticonData?.base64EncodedString(),
-					base64.count > 0 else { return nil }
-			
-			let ext = NSString(string: url.lastPathComponent).pathExtension
-			
-			let size = {
-				switch width {
-				case _ where width > 200:
-					return 200
-				case _ where width < 150:
-					return 150
-				default:
-					return width
-				}
-			}() / 2
-			
-			return DanmakuComment(
-				text: "",
-				imageSrc: "data:image/\(ext);base64," + base64,
-				imageWidth: size)
-		}
-    }
-    
-    
-    func bililiveEmoticons(_ rid: String) -> Promise<([BiliLiveEmoticon])> {
-		var emoticons = [BiliLiveEmoticon]()
-		
-		return AF.request("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)").responseData().get {
-			
-			struct BiliLiveEmoticonData: Unmarshaling {
-				let emoticons: [BiliLiveEmoticon]
-				let pkgId: Int
-				let pkgName: String
-				init(object: MarshaledObject) throws {
-					emoticons = try object.value(for: "emoticons")
-					pkgId = try object.value(for: "pkg_id")
-					pkgName = try object.value(for: "pkg_name")
-				}
-			}
-			
-			let json = try JSONParser.JSONObjectWithData($0.data)
-			let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
-			emoticons = emoticonData.flatMap {
-				$0.emoticons
-			}
-		}.then { _ in
-			when(fulfilled: emoticons.enumerated().map { e in
-				self.loadBililiveEmoticon(e.element).done {
-					emoticons[e.offset].emoticonData = $0
-				}
-			})
-		}.map {
-			emoticons
-		}
-    }
-	
-	func loadBililiveEmoticon(_ emoticon: BiliLiveEmoticon) -> Promise<Data?> {
-		let key = "BiliLive_Emoticons_" + emoticon.emoticonUnique
-		if let image = SDImageCache.shared.imageFromCache(forKey: key) {
-			return .value(image.sd_imageData())
-		} else {
-			return AF.request(emoticon.url).responseData().get {
-				SDImageCache.shared.store(NSImage(data: $0.data), forKey: key)
-			}.map {
-				$0.data
-			}
-		}
-	}
-    
-    /*
-    func testedBilibiliAPI() {
-        let p = ["aid": 31027408,
-                 "appkey": "1d8b6e7d45233436",
-                 "build": 5310000,
-                 "mobi_app": "android",
-                 "oid": 54186450,
-                 "plat":2,
-                 "platform": "android",
-                 "ps": 0,
-                 "ts": 1536407932,
-                 "type": 1,
-                 "sign": 0] as [String : Any]
-        AF.request("https://api.bilibili.com/x/v2/dm/list.so", parameters: p).response { re in
-            let data = re.data
-            let head = data.subdata(in: 0..<4)
-            let endIndex = Int(CFSwapInt32(head.withUnsafeBytes { (ptr: UnsafePointer<UInt32>) in ptr.pointee })) + 4
-            let d1 = data.subdata(in: 4..<endIndex)
-            
-            let d2 = data.subdata(in: endIndex..<data.endIndex)
-            
-            let d3 = try! d2.gunzipped()
-            
-            let str1 = String(data: d1, encoding: .utf8)
-            let str2 = String(data: d3, encoding: .utf8)
-            
-            //            FileManager.default.createFile(atPath: "/Users/xjbeta/Downloads/d1", contents: d1, attributes: nil)
-            //
-            //            FileManager.default.createFile(atPath: "/Users/xjbeta/Downloads/d2", contents: d3, attributes: nil)
-            
-        }
-    }
- 
-     */
-    
 }
 
 
@@ -453,9 +280,11 @@ extension Danmaku: SRWebSocketDelegate {
 
         switch liveSite {
         case .biliLive:
-            let json = """
-            {"uid":0,"roomid":\(biliLiveIDs.rid),"protover":2,"platform":"web","clientver":"1.14.0","type":2,"key":"\(biliLiveIDs.token)"}
-            """
+			let buvid = UUID().uuidString + "\(Int.random(in: 10000...90000))" + "infoc"
+			let key = biliLiveIDs.token
+			
+			let json = "{\"uid\":0,\"roomid\":\(biliLiveIDs.rid),\"protover\":3,\"buvid\":\"\(buvid)\",\"platform\":\"web\",\"type\":2,\"key\":\"\(key)\"}"
+						
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
             data.append(json.data(using: .utf8)!)
@@ -521,10 +350,10 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                     return nil
                 }
                 d = d.subdata(in: 16..<count)
+				
                 do {
-                    d = try d.gunzipped()
-                    return d
-                }  catch let error {
+					return try Brotli().decompress(d).get()
+                } catch let error {
                     if let str = String(data: data, encoding: .utf8), str.contains("cmd") {
                         return nil
                     } else if let str = String(data: d, encoding: .utf8), str.contains("cmd") {
@@ -535,7 +364,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
                 return nil
             }
-            
+			
             
             var datas: [Data] = []
             guard var d = checkIntegrity(data) else { return }
@@ -550,50 +379,10 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-            let dms = datas.compactMap { data -> DanmakuComment? in
-				if let str = String(data: data, encoding: .utf8),
-				   str.contains("emoticon_unique"),
-				   let eu = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
-				   eu != "",
-				   !self.bililiveEmoticons.contains(where: {$0.emoticonUnique == eu}) {
-					
-					let url = str.subString(from: "\"url\":\"", to: "\",").replacingOccurrences(of: "http://", with: "https://")
-					
-					var emoticon = BiliLiveEmoticon(eu, url: url)
-					
-					let height = str.subString(from: "\"height\":", to: ",")
-					let width = str.subString(from: "\"width\":", to: "}")
-					
-					if let hh = Int(height), let ww = Int(width) {
-						emoticon.width = ww
-						emoticon.height = hh
-					}
-					
-					if let image = SDImageCache.shared.imageFromCache(forKey: "BiliLive_Emoticons_" + emoticon.emoticonUnique) {
-						emoticon.emoticonData = image.sd_imageData()
-						self.bililiveEmoticons.append(emoticon)
-						
-						return emoticon.comment()
-					} else {
-						loadBililiveEmoticon(emoticon).done {
-							guard let i = self.bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == eu }) else { return }
-							self.bililiveEmoticons[i].emoticonData = $0
-						}.cauterize()
-						self.bililiveEmoticons.append(emoticon)
-						return nil
-					}
-				} else if let s = String(data: data, encoding: .utf8)?.subString(from: "\"emoticon_unique\":\"", to: "\","),
-                   let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == s }) {
-                    
-					return emoticon.comment()
-                } else if let s = (try? JSONDecoder().decode(BiliLiveDanmuMsg.self, from: data))?.info.compactMap ({ $0.msg }).first {
-                    return DanmakuComment(text: s)
-                } else {
-                    return nil
-                }
-            }
-            
-            sendDM(.init(method: .sendDM, text: "", dms: dms))
+			let dms = datas.compactMap(decodeBiliLiveDM(_:))
+			if dms.count > 0 {
+				sendDM(.init(method: .sendDM, text: "", dms: dms))
+			}
         case .huya:
             let bytes = [UInt8](data)
             guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),

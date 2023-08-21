@@ -4,41 +4,29 @@
 
 ![](https://i.loli.net/2018/10/30/5bd83a7952437.gif)
 
-## Install a player
 
-- [IINA](https://lhc70000.github.io/iina/)
-- [IINA-Danmaku](https://github.com/xjbeta/iina-danmaku/releases)
-- [mpv](https://mpv.io/)
+## Download & Guide
 
-## Check your preferences
+- ### [IINA-plus Releases](https://github.com/xjbeta/iina-plus/releases)
+- ### [Danmaku Guide](https://github.com/xjbeta/iina-plus/wiki/1.-%E6%97%A0%E8%84%91%E6%95%99%E7%A8%8B)
 
-![](https://i.loli.net/2018/10/30/5bd83ae6985bd.jpeg)
 
 ## Support Status
 
 <!--https://www.tablesgenerator.com/markdown_tables#-->
 
-| website  | live status | video decode | danmaku |
-| -------- | ----------- | ------------ | ------- |
-| bilibili | ∙           | ✓            | ✓       |
-| bangumi  | ∙           | ✓            | ✓       |
-| bililive | ✓           | ✓            | ✓       |
-| douyu    | ✓           | ✓            | ✓       |
-| huya     | ✓           | ✓            | ✓       |
-| cc.163   | ✓           | ✓            | ✕       |
-| douyin   | ✓           | ✓            | ✓       |
+| website       | live status | video decode | danmaku |
+|---------------|-------------|--------------|---------|
+| bilibili      | -           | ✓            | ✓       |
+| bangumi       | -           | ✓            | ✓       |
+| bililive      | ✓           | ✓            | ✓       |
+| douyu         | ✓           | ✓            | ✓       |
+| huya          | ✓           | ✓            | ✓       |
+| cc.163        | ✓           | ✓            | ✕       |
+| douyin        | ✓           | ✓            | ✓       |
+| live.kuaishou | ✓           | ✓            | ✕       |
 
-## Danmaku
 
-##### You should install the [IINA with Danmaku support](https://github.com/xjbeta/iina-danmaku/releases).
-
-##### Check [wiki](https://github.com/xjbeta/iina-plus/wiki) for more info.
-
-## Download
-
-##### IINA-plus [DMG or ZIP](https://github.com/xjbeta/iina-plus/releases)
-
-#### IINA-Danmaku [DMG or ZIP](https://github.com/xjbeta/iina-danmaku/releases)
 
 ## Build
 
@@ -67,7 +55,7 @@ Open `IINA+.xcodeproj` with Xcode.
 - [SDWebImage](https://github.com/SDWebImage/SDWebImage)
 - [Sparkle](https://github.com/sparkle-project/Sparkle)
 - [SocketRocket with SPM patch](https://github.com/xjbeta/SocketRocket)
-
+- [SwiftBrotli](https://github.com/f-meloni/SwiftBrotli)
 
 ### Web Librarys
 
