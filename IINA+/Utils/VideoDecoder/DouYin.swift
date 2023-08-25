@@ -181,6 +181,10 @@ class DouYin: NSObject, SupportSiteProtocol {
 			_ = contextController.perform(selector, with: "wss")
 		}
 		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "https")
+		}
+		
 		URLProtocol.registerClass(DouYinURLProtocol.self)
 	}
 	
@@ -340,8 +344,11 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
 
 class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
 	override class func canInit(with request: URLRequest) -> Bool {
-		if let str = request.url?.absoluteString,
-		   str.contains("webcast/im/push/v2") {
+		guard let str = request.url?.absoluteString else { return false }
+		if str.contains("webcast/im/push/v2") {
+			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		} else if str.contains("live.douyin.com/webcast/im/fetch"),
+				  str.contains("last_rtt=-1") {
 			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
 		}
 		return false
