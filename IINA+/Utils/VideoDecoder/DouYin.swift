@@ -72,8 +72,10 @@ class DouYin: NSObject, SupportSiteProtocol {
             "Cookie": cookieString
         ])
         
-        return AF.request(url, headers: headers).responseString().map {
-            guard let json = self.getJSON($0.string) else {
+		return AF.request(url, headers: headers).responseString().map(on: .global()) {
+			self.getJSON($0.string)
+		}.map {
+			guard let json = $0 else {
 				self.invalidCookiesCount += 1
 				if self.invalidCookiesCount == 5 {
 					self.invalidCookiesCount = 0
