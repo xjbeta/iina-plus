@@ -354,6 +354,10 @@ class MainViewController: NSViewController {
     }
     
     func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
+		guard canLoadMoreBilibiliCards else { return }
+		canLoadMoreBilibiliCards = false
+		progressStatusChanged(!canLoadMoreBilibiliCards)
+		
         var dynamicID = -1
         
         switch action {
@@ -363,9 +367,7 @@ class MainViewController: NSViewController {
             dynamicID = bilibiliCards.first?.dynamicId ?? -1
         default: break
         }
-        
-        canLoadMoreBilibiliCards = false
-        progressStatusChanged(!canLoadMoreBilibiliCards)
+	
         bilibili.getUid().then {
             self.bilibili.dynamicList($0, action, dynamicID)
             }.done(on: .main) { cards in
