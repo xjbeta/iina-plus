@@ -129,10 +129,10 @@ class DouYin: NSObject, SupportSiteProtocol {
                 }
 				
 				self.loadCookies().done {
-					state = .finish
 					resolver.fulfill_()
+				}.ensure {
+					state = .finish
 				}.catch {
-					state = .none
 					resolver.reject($0)
 				}
             }
@@ -150,12 +150,10 @@ class DouYin: NSObject, SupportSiteProtocol {
                         self.webViewLoadingObserver?.invalidate()
                         self.webViewLoadingObserver = nil
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in
-							guard let self = self,
-								  state != .finish else { return }
-							
-                            Log("DouYin Cookies timeout, Reload.")
-							self.webView?.load(.init(url: self.douyinEmptyURL))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
+							guard state == .none else { return }
+                            Log("DouYin Cookies timeout, check cookies.")
+							NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
                         }
                     } else if s.contains("验证") {
 						Log("Douyin reload init url")
