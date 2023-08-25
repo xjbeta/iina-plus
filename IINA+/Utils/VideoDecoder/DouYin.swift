@@ -72,8 +72,10 @@ class DouYin: NSObject, SupportSiteProtocol {
             "Cookie": cookieString
         ])
         
-        return AF.request(url, headers: headers).responseString().map {
-            guard let json = self.getJSON($0.string) else {
+		return AF.request(url, headers: headers).responseString().map(on: .global()) {
+			self.getJSON($0.string)
+		}.map {
+			guard let json = $0 else {
 				self.invalidCookiesCount += 1
 				if self.invalidCookiesCount == 5 {
 					self.invalidCookiesCount = 0
@@ -127,10 +129,10 @@ class DouYin: NSObject, SupportSiteProtocol {
                 }
 				
 				self.loadCookies().done {
-					state = .finish
 					resolver.fulfill_()
+				}.ensure {
+					state = .finish
 				}.catch {
-					state = .none
 					resolver.reject($0)
 				}
             }
@@ -148,12 +150,10 @@ class DouYin: NSObject, SupportSiteProtocol {
                         self.webViewLoadingObserver?.invalidate()
                         self.webViewLoadingObserver = nil
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in
-							guard let self = self,
-								  state != .finish else { return }
-							
-                            Log("DouYin Cookies timeout, Reload.")
-							self.webView?.load(.init(url: self.douyinEmptyURL))
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
+							guard state == .none else { return }
+                            Log("DouYin Cookies timeout, check cookies.")
+							NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
                         }
                     } else if s.contains("验证") {
 						Log("Douyin reload init url")
@@ -179,6 +179,10 @@ class DouYin: NSObject, SupportSiteProtocol {
 		
 		if contextController.responds(to: selector) {
 			_ = contextController.perform(selector, with: "wss")
+		}
+		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "https")
 		}
 		
 		URLProtocol.registerClass(DouYinURLProtocol.self)
@@ -340,8 +344,11 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
 
 class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
 	override class func canInit(with request: URLRequest) -> Bool {
-		if let str = request.url?.absoluteString,
-		   str.contains("webcast/im/push/v2") {
+		guard let str = request.url?.absoluteString else { return false }
+		if str.contains("webcast/im/push/v2") {
+			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		} else if str.contains("live.douyin.com/webcast/im/fetch"),
+				  str.contains("last_rtt=-1") {
 			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
 		}
 		return false

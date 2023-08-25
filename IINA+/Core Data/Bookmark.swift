@@ -22,6 +22,7 @@ public class Bookmark: NSManagedObject {
     @objc dynamic var image: NSImage?
     
     private var inited = false
+	private var updating = false
     
     func updateState(_ force: Bool = false) {
         if site == .unsupported {
@@ -33,7 +34,9 @@ public class Bookmark: NSManagedObject {
         let limitSec: CGFloat = [.bangumi, .bilibili, .unsupported].contains(site) ? 300 : 20
         
         if let d = updateDate?.timeIntervalSince1970,
-           (Date().timeIntervalSince1970 - d) < limitSec, inited {
+           (Date().timeIntervalSince1970 - d) < limitSec,
+		   inited,
+		   updating {
             return
         }
         
@@ -45,16 +48,18 @@ public class Bookmark: NSManagedObject {
             state = LiveState.none.raw
         }
          */
-        
+		updating = true
         Processes.shared.videoDecoder.liveInfo(url).done(on: .main) {
             self.setInfo($0)
-            }.catch(on: .main) {
-                let s = "Get live status error: \($0) \n - \(self.url)"
-                Log(s)
-                self.liveTitle = self.url
-                self.state = LiveState.none.raw
-                self.save()
-        }
+		}.ensure {
+			self.updating = false
+		}.catch(on: .main) {
+			let s = "Get live status error: \($0) \n - \(self.url)"
+			Log(s)
+			self.liveTitle = self.url
+			self.state = LiveState.none.raw
+			self.save()
+		}
     }
     
     private func setInfo(_ info: LiveInfo) {

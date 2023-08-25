@@ -29,6 +29,9 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
               !w.isMainWindow
         else { return }
         NotificationCenter.default.post(name: .reloadMainWindowTableView, object: nil)
+		Processes.shared.videoDecoder.bilibili.isLogin()
+			.done{_ in}
+			.catch{_ in}
     }
 }
 

@@ -8,10 +8,13 @@
 
 import Cocoa
 import SDWebImage
+import Sparkle
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
+	let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+	
     lazy var logUrl: URL? = {
         do {
             var logPath = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -32,6 +35,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+		
+		#if DEBUG
+		updaterController.updater.automaticallyChecksForUpdates = false
+		#endif
+		
         deleteUselessFiles()
         Log("App did finish launch")
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
