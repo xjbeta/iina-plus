@@ -33,13 +33,16 @@ public class Bookmark: NSManagedObject {
         
         let limitSec: CGFloat = [.bangumi, .bilibili, .unsupported].contains(site) ? 300 : 20
         
-        if let d = updateDate?.timeIntervalSince1970,
-           (Date().timeIntervalSince1970 - d) < limitSec,
-		   inited,
-		   updating {
-            return
-        }
-        
+		if inited {
+			if updating {
+				return
+			}
+			if let d = updateDate?.timeIntervalSince1970,
+			   (Date().timeIntervalSince1970 - d) < limitSec {
+				return
+			}
+		}
+		
         inited = true
         
         /*
@@ -52,13 +55,14 @@ public class Bookmark: NSManagedObject {
         Processes.shared.videoDecoder.liveInfo(url).done(on: .main) {
             self.setInfo($0)
 		}.ensure {
+			self.updateDate = Date()
 			self.updating = false
+			self.save()
 		}.catch(on: .main) {
 			let s = "Get live status error: \($0) \n - \(self.url)"
 			Log(s)
 			self.liveTitle = self.url
 			self.state = LiveState.none.raw
-			self.save()
 		}
     }
     
@@ -84,10 +88,6 @@ public class Bookmark: NSManagedObject {
         } else {
             state = LiveState.none.raw
         }
-        
-        updateDate = Date()
-        
-        save()
     }
     
     private func updateImage() {
