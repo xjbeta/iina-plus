@@ -169,6 +169,7 @@ class Danmaku: NSObject {
             }
             douyinDM?.start(self.url)
             socketClosed = false
+			startTimer()
         default:
             break
         }
@@ -616,6 +617,14 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
     
     func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
         Log(error)
+
+		let err = error as NSError
+		
+		if err.domain == SRWebSocketErrorDomain,
+		err.code == 2133,
+		liveSite == .douyin {
+			socketClosed = true
+		}
     }
     
     func pack(format: String, values: [Int]) -> NSMutableData {
