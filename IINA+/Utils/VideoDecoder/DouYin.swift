@@ -97,14 +97,56 @@ class DouYin: NSObject, SupportSiteProtocol {
         }
     }
     
-    func getJSON(_ text: String) -> Data? {
-        try? SwiftSoup
-            .parse(text)
-            .getElementById("RENDER_DATA")?
-            .data()
-            .removingPercentEncoding?
-            .data(using: .utf8)
-    }
+	func getJSON(_ text: String) -> Data? {
+		if text.contains("RENDER_DATA") {
+//			return try? SwiftSoup
+//				.parse(text)
+//				.getElementById("RENDER_DATA")?
+//				.data()
+//				.removingPercentEncoding?
+//				.data(using: .utf8)
+
+			return text.subString(
+				from: "<script id=\"RENDER_DATA\" type=\"application/json\">",
+				to: "</script>")
+			.removingPercentEncoding?
+			.data(using: .utf8)
+		} else {
+			guard let s = text.split(separator: "\n").map(String.init).last else {
+				return nil
+			}
+			
+			var re = s.components(separatedBy: "self.__pace_f.push")
+				.map {
+					$0.subString(to: "</script>")
+				}
+				.compactMap { str -> String? in
+					var s = str
+					guard let f = s.firstIndex(of: "{"),
+						  let e = s.lastIndex(of: "}")
+					else { return nil }
+					
+					s.removeSubrange(e..<s.endIndex)
+					s.removeSubrange(s.startIndex..<f)
+					s += "}"
+					
+					s = s.replacingOccurrences(of: "\\\"", with: "\"")
+					s = s.replacingOccurrences(of: "\\\"", with: "\"")
+					if let sRange = s.range(of: "\"state\"") {
+						s.replaceSubrange(sRange, with: "\"initialState\"")
+					}
+					return s
+				}
+			
+			guard re.count > 0 else { return nil }
+			
+			re = re.filter {
+				$0.contains("web_rid")
+			}
+
+			return re.first?.data(using: .utf8)
+		}
+	}
     
     func prepareArgs() -> Promise<()> {
         cookies.removeAll()

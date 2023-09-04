@@ -79,7 +79,7 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				guard !webView.isLoading, let url = webView.url else { return }
 				
 				if url.absoluteString.contains("about") {
-					webView.load(.init(url: .init(string: "https://live.kuaishou.com/u/123")!))
+					webView.load(.init(url: .init(string: "https://live.kuaishou.com/match")!))
 				} else {
 					self.webView?.evaluateJavaScript("document.cookie").done {
 						
