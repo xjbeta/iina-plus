@@ -47,19 +47,64 @@ class DouYin: NSObject, SupportSiteProtocol {
                 }
             }
             return prepareTask!.then {
-                self.getContent(url)
+                self.getEnterContent(url)
             }
         } else {
-            return self.getContent(url)
+            return self.getEnterContent(url)
         }
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
         liveInfo(url).compactMap {
-            ($0 as? DouYinInfo)?.write(to: YouGetJSON(rawUrl: url))
+			var json = YouGetJSON(rawUrl: url)
+			
+			if let info = $0 as? DouYinEnterData.DouYinLiveInfo {
+				json = info.write(to: json)
+			} else if let info = $0 as? DouYinInfo {
+				json = info.write(to: json)
+			} else {
+				return nil
+			}
+			
+			return json
         }
     }
     
+	
+	func getEnterContent(_ url: String) -> Promise<LiveInfo> {
+		let cookieString = cookies.map {
+			"\($0.key)=\($0.value)"
+		}.joined(separator: ";")
+		
+		let headers = HTTPHeaders([
+			"User-Agent": douyinUA,
+			"referer": url,
+			"Cookie": cookieString
+		])
+		
+		guard let pc = NSURL(string: url)?.pathComponents,
+			  pc.count >= 2,
+			  pc[0] == "/" else {
+			return .init(error: VideoGetError.invalidLink)
+		}
+		
+		let rid = pc[1]
+		
+		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=\(rid)&enter_source=&is_need_double_stream=true"
+		
+		
+		return AF.request(u, headers: headers).responseData().map {
+			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+			let enterData = try DouYinEnterData(object: jsonObj)
+			
+			if let info = enterData.infos.first {
+				return info
+			} else {
+				throw VideoGetError.notFountData
+			}
+		}
+	}
+	
     
     func getContent(_ url: String) -> Promise<LiveInfo> {
         let cookieString = cookies.map {
@@ -270,7 +315,7 @@ class DouYin: NSObject, SupportSiteProtocol {
 		}.get {
 			self.storageDic = $0
 		}.then { _ in
-			self.getContent(self.douyinEmptyURL.absoluteString)
+			self.getEnterContent(self.douyinEmptyURL.absoluteString)
 		}.done { info in
 			Log("Douyin test info \(info.title)")
 			Log("Douyin deinit webview")
@@ -381,6 +426,78 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
         
         return json
     }
+}
+
+struct DouYinEnterData: Unmarshaling {
+	var infos: [DouYinLiveInfo]
+	
+	struct DouYinLiveInfo: Unmarshaling, LiveInfo {
+		var title: String
+		var name: String
+		var avatar: String
+		var cover: String
+		var isLiving: Bool
+		var site = SupportSites.douyin
+		
+		var urls: [String: String]
+		var roomId: String
+		
+		init(object: MarshaledObject) throws {
+			title = try object.value(for: "title")
+			
+			name = (try? object.value(for: "owner.nickname")) ?? ""
+			let avatars: [String] = (try? object.value(for: "owner.avatar_thumb.url_list")) ?? []
+			avatar = avatars.first ?? ""
+			let covers: [String] = (try? object.value(for: "cover.url_list")) ?? []
+			cover = covers.first ?? ""
+			
+			
+			let status: Int = try object.value(for: "status")
+			isLiving = status == 2
+						
+			roomId = try object.value(for: "id_str")
+
+			urls = (try? object.value(for: "stream_url.flv_pull_url")) ?? [:]
+//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
+		}
+		
+		func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+			var json = yougetJson
+			json.title = title
+
+
+			urls.map {
+				($0.key, $0.value.replacingOccurrences(of: "http://", with: "https://"))
+			}.sorted { v0, v1 in
+				v0.0 < v1.0
+			}.enumerated().forEach {
+				var stream = Stream(url: $0.element.1)
+				stream.quality = 999 - $0.offset
+				json.streams[$0.element.0] = stream
+			}
+
+			return json
+		}
+	}
+	
+	
+	init(object: MarshaledObject) throws {
+		infos = try object.value(for: "data.data")
+		
+		let name: String = try object.value(for: "data.user.nickname")
+		let avatars: [String] = try object.value(for: "data.user.avatar_thumb.url_list")
+		let avatar = avatars.first ?? ""
+		
+		self.infos = infos.map {
+			var info = $0
+			if !info.isLiving {
+				info.name = name
+				info.avatar = avatar
+			}
+			return info
+		}
+		
+	}
 }
 
 
