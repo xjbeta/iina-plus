@@ -68,6 +68,15 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 			$0.domain.contains("kuaishou")
 		}.forEach(HTTPCookieStorage.shared.deleteCookie)
 	}
+	
+	func getAllWKCookies() -> Promise<[HTTPCookie]> {
+		Promise { resolver in
+			WKWebsiteDataStore.default().httpCookieStore.getAllCookies {
+				let cookies = $0.filter({ $0.domain.contains("kuaishou") })
+				resolver.fulfill(cookies)
+			}
+		}
+	}
 
 	func prepareCookies() -> Promise<()> {
 		.init { resolver in
@@ -81,17 +90,20 @@ class KuaiShou: NSObject, SupportSiteProtocol {
 				if url.absoluteString.contains("about") {
 					webView.load(.init(url: .init(string: "https://live.kuaishou.com/match")!))
 				} else {
-					self.webView?.evaluateJavaScript("document.cookie").done {
-						
-						self.cookies = $0 as! String
+					self.getAllWKCookies().done {
+						self.cookies = $0.map {
+							$0.name + "=" + $0.value
+						}.joined(separator: "; ")
 						self.cookiesDate = Date()
 						self.saveToPrefs()
+
 						
 						Log("KuaiShou cookies: \(self.cookies)")
-						
+
 						self.webView = nil
 						self.webViewLoadingObserver?.invalidate()
 						self.webViewLoadingObserver = nil
+						
 						resolver.fulfill(())
 					}.catch {
 						resolver.reject($0)
