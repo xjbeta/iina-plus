@@ -88,7 +88,11 @@ class DouYinDM: NSObject {
 			let dy = proc.videoDecoder.douyin
 			return dy.liveInfo(url).done {
 				self.cookies = dy.cookies
-				self.roomId = ($0 as! DouYinInfo).roomId
+				if let rid = ($0 as? DouYinEnterData.DouYinLiveInfo)?.roomId {
+					self.roomId = rid
+				} else {
+					self.roomId = ($0 as! DouYinInfo).roomId
+				}
 			}
 		}
 	}

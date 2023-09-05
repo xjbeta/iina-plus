@@ -110,8 +110,14 @@ class Danmaku: NSObject {
         douyinDM = nil
     }
 
+	func loadDM() {
+		DispatchQueue.main.async {
+			self.loadDanmaku()
+		}
+	}
+	
     
-    func loadDM() {
+    func loadDanmaku() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
         let videoDecoder = Processes.shared.videoDecoder
@@ -220,7 +226,7 @@ class Danmaku: NSObject {
             return
         }
         
-        let interval: DispatchTimeInterval = liveSite == .douyin ? .seconds(10) : .seconds(30)
+        let interval: DispatchTimeInterval = liveSite == .douyin ? .seconds(15) : .seconds(30)
         
         timer.schedule(deadline: .now(), repeating: interval)
         timer.setEventHandler {
@@ -326,6 +332,21 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
         }
         delegate?.send(.init(method: .liveDMServer, text: "error"), sender: self)
     }
+	
+	func webSocket(_ webSocket: SRWebSocket, didReceivePong pongData: Data?) {
+		switch liveSite {
+		case .douyin:
+			guard let data = pongData,
+				  let str = String(data: data, encoding: .utf8),
+				  str.hasSuffix("hb") else {
+				return
+			}
+			
+			heartBeatCount = 0
+		default:
+			break
+		}
+	}
     
     func webSocket(_ webSocket: SRWebSocket, didReceiveMessageWith data: Data) {
         switch liveSite {
