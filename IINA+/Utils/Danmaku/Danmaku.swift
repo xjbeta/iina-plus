@@ -110,8 +110,14 @@ class Danmaku: NSObject {
         douyinDM = nil
     }
 
+	func loadDM() {
+		DispatchQueue.main.async {
+			self.loadDanmaku()
+		}
+	}
+	
     
-    func loadDM() {
+    func loadDanmaku() {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
         let videoDecoder = Processes.shared.videoDecoder
