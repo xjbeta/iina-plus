@@ -132,6 +132,10 @@ extension String {
         self.data(using: .utf8)?.toHexString() ?? ""
     }
     
+	func base64Encode() -> String {
+		Data(self.utf8).base64EncodedString()
+	}
+	
     func base64Decode() -> String {
         guard let data = Data(base64Encoded: self), let s = String(data: data, encoding: .utf8) else {
             return ""

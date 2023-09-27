@@ -23,7 +23,7 @@ class QQLive: NSObject, SupportSiteProtocol {
         roomInfo(url).map {
             var re = YouGetJSON(rawUrl: url)
             re.title = $0.title
-            re.streams["Default"] = .init(url: $0.url)
+			re.streams["Default"] = .init(url: $0.url.replacingOccurrences(of: "http://", with: "https://"))
             return re
         }
     }

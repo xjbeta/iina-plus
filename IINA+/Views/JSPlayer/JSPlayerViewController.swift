@@ -274,7 +274,7 @@ class JSPlayerViewController: NSViewController {
             
             self.initControllers()
             let u = urls[0]
-			self.url = HackUrl.encode(u)
+			self.url = HackUrl.encode(u, site: re.site)
             
             self.evaluateJavaScript("initContent();")
             self.evaluateJavaScript("window.openUrl('\(self.url)');")

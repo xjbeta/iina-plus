@@ -76,7 +76,7 @@ enum SupportSites: String {
     }
 	
 	func supportWebPlayer() -> Bool {
-		[.biliLive, .cc163, .douyu, .huya, .douyin, .kuaiShou].contains(self)
+		![.bilibili, .bangumi, .b23, .local].contains(self)
 	}
 }
 

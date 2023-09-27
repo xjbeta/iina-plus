@@ -26,10 +26,8 @@ class HackURLProtocol: URLProtocol {
 		}
 		
 		// webPlayer
-		if origin == "file://" {
-			if str.contains(HackUrl.key) {
-				return true
-			}
+		if str.contains(HackUrl.key) {
+			return true
 		}
 		
 		// douyin init
@@ -64,19 +62,28 @@ class HackURLProtocol: URLProtocol {
 	
 	override func startLoading() {
 		guard let url = request.url?.absoluteString,
-			  let origin = request.urlRequest?.allHTTPHeaderFields?["Origin"],
-			  origin == "file://",
+			  url.contains(HackUrl.key),
 			  let newRequest = ((request as NSURLRequest).mutableCopy() as? NSMutableURLRequest)
 		else { return }
 		
 		print("URLProtocol", "startLoading")
-		print(url)
 		
-		newRequest.url = .init(string: HackUrl.decode(url))
+		let hackUrl = HackUrl.decode(url)
+		newRequest.url = .init(string: hackUrl.url)
 		
-		if url.contains("live-bvc") {
+		
+		switch hackUrl.site {
+		case .biliLive:
 			newRequest.setValue("https://live.bilibili.com", forHTTPHeaderField: "Referer")
 			newRequest.setValue("https://live.bilibili.com", forHTTPHeaderField: "Origin")
+		case .qqLive:
+			newRequest.setValue("https://live.qq.com", forHTTPHeaderField: "Referer")
+			newRequest.setValue("https://live.qq.com", forHTTPHeaderField: "Origin")
+			newRequest.setValue("bytes=0-", forHTTPHeaderField: "Range")
+			newRequest.setValue("1", forHTTPHeaderField: "Icy-MetaData")
+			newRequest.setValue("libmpv", forHTTPHeaderField: "User-Agent")
+		default:
+			break
 		}
 		
 		HackURLProtocol.setProperty(true, forKey: WebViewPlayerProtocolHandledKey, in: newRequest)
@@ -138,13 +145,45 @@ extension HackURLProtocol: URLSessionDelegate, URLSessionDataDelegate {
 
 
 class HackUrl: NSObject {
-	static let key = "iina/plus/hack/key"
+	static let key = "https://hack.iina-plus.key/webplayer/live.flv"
 	
-	static func encode(_ url: String) -> String {
-		url.replacingOccurrences(of: "://", with: "://" + key)
+	static func encode(_ url: String, site: SupportSites) -> String {
+		guard var uc = URLComponents(string: key),
+			  let site = site.rawValue.base64Encode().addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
+			  let url = url.base64Encode().addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
+		else {
+			fatalError("HackUrl encode \(url) \(site.rawValue)")
+		}
+				
+		uc.queryItems = [
+			.init(name: "site", value: site),
+			.init(name: "url", value: url)
+		]
+		
+		return uc.url?.absoluteString ?? key
 	}
 	
-	static func decode(_ url: String) -> String {
-		url.replacingOccurrences(of: key, with: "")
+	static func decode(_ url: String) -> (url: String, site: SupportSites) {
+		let uc = URLComponents(string: url)
+
+		var url = ""
+		var site = ""
+		
+		uc?.queryItems?.forEach {
+			switch $0.name {
+			case "site":
+				site = $0.value?.removingPercentEncoding?.base64Decode() ?? ""
+			case "url":
+				url = $0.value?.removingPercentEncoding?.base64Decode() ?? ""
+			default:
+				break
+			}
+		}
+		
+		guard !url.isEmpty, let site = SupportSites(rawValue: site) else {
+			fatalError("HackUrl decode \(url)")
+		}
+		
+		return (url, site)
 	}
 }
