@@ -28,7 +28,7 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var reloadButton: NSButton!
     @IBAction func reloadVideo(_ sender: NSButton) {
         startLoading()
-        evaluateJavaScript("flv_destroy();")
+        evaluateJavaScript("playerDestroy();")
         danmaku?.stop()
         openLive()
     }
@@ -36,14 +36,14 @@ class JSPlayerViewController: NSViewController {
     @IBOutlet var volumeBox: NSBox!
     @IBOutlet var volumeButton: NSButton!
     @IBAction func mute(_ sender: NSButton) {
-        evaluateJavaScript("flvPlayer.muted = !flvPlayer.muted;")
+        evaluateJavaScript("player.muted = !player.muted;")
         playerMuted = !playerMuted
         initVolumeButton()
     }
     
     @IBOutlet var volumeSlider: NSSlider!
     @IBAction func volumeChanged(_ sender: NSSlider) {
-        evaluateJavaScript("flvPlayer.volume = \(sender.doubleValue);")
+        evaluateJavaScript("player.volume = \(sender.doubleValue);")
         initVolumeButton()
     }
      
@@ -277,8 +277,8 @@ class JSPlayerViewController: NSViewController {
 			self.url = HackUrl.encode(u)
             
             self.evaluateJavaScript("initContent();")
-            self.evaluateJavaScript("flvPlayer.muted = \(self.playerMuted);")
             self.evaluateJavaScript("window.openUrl('\(self.url)');")
+            self.evaluateJavaScript("player.muted = \(self.playerMuted);")
             
             switch re.site {
             case .douyu, .biliLive, .huya, .douyin:
@@ -363,8 +363,7 @@ class JSPlayerViewController: NSViewController {
     }
     
     func deinitWebView() {
-        evaluateJavaScript("flv_destroy();")
-        
+        evaluateJavaScript("playerDestroy();")
         webView.stopLoading()
 		
 		if !url.isEmpty {
