@@ -273,12 +273,12 @@ class JSPlayerViewController: NSViewController {
             }
             
             self.initControllers()
-            
-            let url = urls[0]
+            let u = urls[0]
+			self.url = HackUrl.encode(u)
             
             self.evaluateJavaScript("initContent();")
-            self.evaluateJavaScript("window.openUrl('\(url)');")
             self.evaluateJavaScript("flvPlayer.muted = \(self.playerMuted);")
+            self.evaluateJavaScript("window.openUrl('\(self.url)');")
             
             switch re.site {
             case .douyu, .biliLive, .huya, .douyin:
@@ -366,6 +366,14 @@ class JSPlayerViewController: NSViewController {
         evaluateJavaScript("flv_destroy();")
         
         webView.stopLoading()
+		
+		if !url.isEmpty {
+			NotificationCenter.default.post(
+				name: .webPlayerWindowClosed,
+				object: nil,
+				userInfo: ["url": url])
+		}
+
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
         }

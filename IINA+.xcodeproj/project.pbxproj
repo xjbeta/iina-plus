@@ -115,6 +115,7 @@
 		01C248B52A623EC000C92639 /* IINAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C248B42A623EC000C92639 /* IINAApp.swift */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
+		01D828272AC3CE76003A73BA /* HackURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D828262AC3CE76003A73BA /* HackURLProtocol.swift */; };
 		01D828292AC3E1A6003A73BA /* mpegts.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D828282AC3E1A6003A73BA /* mpegts.js */; };
 		01D8282A2AC3E1D6003A73BA /* mpegts.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01D828282AC3E1A6003A73BA /* mpegts.js */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
@@ -274,6 +275,7 @@
 		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		01D828262AC3CE76003A73BA /* HackURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackURLProtocol.swift; sourceTree = "<group>"; };
 		01D828282AC3E1A6003A73BA /* mpegts.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = mpegts.js; path = "IINA+/WebFiles/node_modules/mpegts.js/dist/mpegts.js"; sourceTree = SOURCE_ROOT; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 				01E40FEA22C304E800864118 /* ImageLoader.swift */,
 				016D772327B0CD4300358E2F /* WaitTimer.swift */,
 				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
+				01D828262AC3CE76003A73BA /* HackURLProtocol.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -769,6 +772,7 @@
 				01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */,
 				01010127211DCAE8002F0F7F /* SidebarViewController.swift in Sources */,
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
+				01D828272AC3CE76003A73BA /* HackURLProtocol.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
 				0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */,
