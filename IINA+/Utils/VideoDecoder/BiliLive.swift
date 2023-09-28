@@ -359,6 +359,7 @@ struct BiliLivePlayUrl: Unmarshaling {
         
         // M3U8 HEVC
         if Preferences.shared.bililiveHevc,
+		   !Preferences.shared.enableFlvjs,
            let codec = streams.first(where: { $0.protocolName == "http_hls" })?.formats.first(where: { $0.formatName == "fmp4" })?.codecs.first(where: { $0.codecName == "hevc" }) {
             write(codec)
         }
