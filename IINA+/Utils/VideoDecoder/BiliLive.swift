@@ -363,6 +363,14 @@ struct BiliLivePlayUrl: Unmarshaling {
            let codec = streams.first(where: { $0.protocolName == "http_hls" })?.formats.first(where: { $0.formatName == "fmp4" })?.codecs.first(where: { $0.codecName == "hevc" }) {
             write(codec)
         }
+		
+		json.streams.forEach {
+			if $0.value.url == nil,
+			   $0.value.src.count == 0 {
+				json.streams[$0.key] = nil
+			}
+		}
+		
         return json
     }
 }
