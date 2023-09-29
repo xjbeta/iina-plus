@@ -109,6 +109,7 @@ class JSPlayerViewController: NSViewController {
     
 // MARK: - Video Values
     var url = ""
+	var hackUrl = ""
     var result: YouGetJSON?
     var videoKey: String? {
         didSet {
@@ -274,10 +275,11 @@ class JSPlayerViewController: NSViewController {
             
             self.initControllers()
             let u = urls[0]
-			self.url = HackUrl.encode(u, site: re.site)
+			
+			self.hackUrl = HackUrl.encode(u, site: re.site)
             
             self.evaluateJavaScript("initContent();")
-            self.evaluateJavaScript("window.openUrl('\(self.url)');")
+            self.evaluateJavaScript("window.openUrl('\(self.hackUrl)');")
             self.evaluateJavaScript("player.muted = \(self.playerMuted);")
             
             switch re.site {
@@ -366,11 +368,11 @@ class JSPlayerViewController: NSViewController {
         evaluateJavaScript("playerDestroy();")
         webView.stopLoading()
 		
-		if !url.isEmpty {
+		if !hackUrl.isEmpty {
 			NotificationCenter.default.post(
 				name: .webPlayerWindowClosed,
 				object: nil,
-				userInfo: ["url": url])
+				userInfo: ["url": hackUrl])
 		}
 
         ScriptMessageKeys.allCases.forEach {
