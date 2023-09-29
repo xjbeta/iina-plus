@@ -37,7 +37,7 @@ class Danmaku: NSObject {
     private var heartBeatCount = 0
     
     let biliLiveServer = URL(string: "wss://broadcastlv.chat.bilibili.com:443/sub")
-    var biliLiveIDs = (rid: "", token: "")
+	var biliLiveIDs = (rid: "", token: "", uid: 1)
     var bililiveEmoticons = [BiliLiveEmoticon]()
     
     let douyuBlockList = [
@@ -129,11 +129,16 @@ class Danmaku: NSObject {
             bililiveRid(roomID).get {
                 self.biliLiveIDs.rid = $0
             }.then {
-                when(fulfilled: self.bililiveToken($0),
-                     self.bililiveEmoticons($0))
+				when(fulfilled:
+						self.bililiveToken($0),
+					self.bililiveEmoticons($0),
+					Bilibili().getUid()
+				)
             }.done {
                 self.biliLiveIDs.token = $0.0
                 self.bililiveEmoticons = $0.1
+				self.biliLiveIDs.uid = $0.2
+				
                 self.socket?.open()
             }.catch {
                 Log("can't find bilibili ids \($0).")
@@ -290,7 +295,7 @@ extension Danmaku: SRWebSocketDelegate {
 			let buvid = UUID().uuidString + "\(Int.random(in: 10000...90000))" + "infoc"
 			let key = biliLiveIDs.token
 			
-			let json = "{\"uid\":0,\"roomid\":\(biliLiveIDs.rid),\"protover\":3,\"buvid\":\"\(buvid)\",\"platform\":\"web\",\"type\":2,\"key\":\"\(key)\"}"
+			let json = "{\"uid\":\(biliLiveIDs.uid),\"roomid\":\(biliLiveIDs.rid),\"protover\":3,\"buvid\":\"\(buvid)\",\"platform\":\"web\",\"type\":2,\"key\":\"\(key)\"}"
 						
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])

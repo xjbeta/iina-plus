@@ -5,7 +5,7 @@ var isLiving = true;
 var defWidth = 680;
 var uuid = '';
 
-var flvPlayer;
+var player;
 var videoDuration;
 
 
@@ -13,27 +13,27 @@ function print(text) {
     window.webkit.messageHandlers.print.postMessage(text);
 };
 
-var flvjsLog = function(type, str) {
+var playerLogListener = function(type, str) {
     print(str);
 };
 
-function flv_destroy() {
-    flvPlayer.pause();
-    flvPlayer.unload();
-    flvPlayer.detachMediaElement();
-    flvPlayer.destroy();
-    flvPlayer = null;
-    flvjs.LoggingControl.removeLogListener(flvjsLog);
+function playerDestroy() {
+    player.pause();
+    player.unload();
+    player.detachMediaElement();
+    player.destroy();
+    player = null;
+    mpegts.LoggingControl.removeLogListener(playerLogListener);
 
     document.getElementById('videoElement').replaceWith(document.getElementById('videoElement').cloneNode());
 };
 
 window.openUrl = function(url) {
-    if (flvPlayer != null) {
-        flv_destroy();
+    if (player != null) {
+        playerDestroy();
     };
 
-    if (flvjs.isSupported()) {
+	if (mpegts.isSupported()) {
         var videoElement = document.getElementById('videoElement');
 
         var mediaDataSource = {
@@ -45,13 +45,13 @@ window.openUrl = function(url) {
             url: url
         };
 
-        flvPlayer = flvjs.createPlayer(mediaDataSource, {
+        player = mpegts.createPlayer(mediaDataSource, {
             enableWorker: false,
             lazyLoadMaxDuration: 3 * 60,
             seekType: 'range',
         });
 
-        flvjs.LoggingControl.addLogListener(flvjsLog);
+        mpegts.LoggingControl.addLogListener(playerLogListener);
 
         videoElement.addEventListener("loadeddata", function(e) {
             print("loadeddata");
@@ -78,10 +78,10 @@ window.openUrl = function(url) {
             };
         });
 
-        flvPlayer.attachMediaElement(videoElement);
+        player.attachMediaElement(videoElement);
 
-        flvPlayer.load();
-        flvPlayer.play();
+        player.load();
+        player.play();
 
     }
 };
@@ -317,5 +317,5 @@ function initContent(){
     // Block unknown types.
     // https://github.com/jabbany/CommentCoreLibrary/issues/97
     cm.filter.allowUnknownTypes = false;
-    console.log('initContent', id);
+    console.log('initContent');
 }

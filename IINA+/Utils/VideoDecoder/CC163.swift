@@ -139,9 +139,9 @@ class CC163: NSObject, SupportSiteProtocol {
             return .value((pcs[3]))
         } else {
             return getCC163Info(url).compactMap {
-                $0 as? CC163Info
+                $0 as? CC163ChannelInfo
             }.map {
-                $0.ccid
+                "\($0.ccid)"
             }
         }
     }

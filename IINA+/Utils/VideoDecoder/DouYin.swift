@@ -251,29 +251,12 @@ class DouYin: NSObject, SupportSiteProtocol {
                 }
             }
 			
-			registerHack()
+			
             webView?.load(.init(url: douyinEmptyURL))
         }
     }
     
-	func registerHack() {
-		// https://stackoverflow.com/a/75482806
-		guard let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol else { return }
-		
-		Log("Douyin registerHack")
-		
-		let selector = Selector(("registerSchemeForCustomProtocol:"))
-		
-		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "wss")
-		}
-		
-		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "https")
-		}
-		
-		URLProtocol.registerClass(DouYinURLProtocol.self)
-	}
+
 	
 	func loadCookies() -> Promise<()> {
 		guard let webview = webView else {
@@ -501,15 +484,3 @@ struct DouYinEnterData: Unmarshaling {
 }
 
 
-class DouYinURLProtocol: URLProtocol, URLSessionDelegate {
-	override class func canInit(with request: URLRequest) -> Bool {
-		guard let str = request.url?.absoluteString else { return false }
-		if str.contains("webcast/im/push/v2") {
-			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
-		} else if str.contains("live.douyin.com/webcast/im/fetch"),
-				  str.contains("last_rtt=-1") {
-			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
-		}
-		return false
-	}
-}

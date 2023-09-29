@@ -42,4 +42,6 @@ extension Notification.Name {
     
 
     static let douyinWebcastUpdated = Notification.Name("com.xjbeta.iina+.douyin.WebcastUpdated")
+	
+	static let webPlayerWindowClosed = Notification.Name("com.xjbeta.iina+.kuaishou.CookiesUpdated")
 }

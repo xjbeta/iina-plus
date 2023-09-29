@@ -56,7 +56,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Processes.shared.httpServer.start()
 		
 		showUpdateAlert()
+		
+		registerHack()
     }
+	
+	
+	func registerHack() {
+		// https://stackoverflow.com/a/75482806
+		guard let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol else { return }
+		
+		Log("Register Hack")
+		
+		let selector = Selector(("registerSchemeForCustomProtocol:"))
+		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "wss")
+		}
+		
+		if contextController.responds(to: selector) {
+			_ = contextController.perform(selector, with: "https")
+		}
+		
+		URLProtocol.registerClass(HackURLProtocol.self)
+	}
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
