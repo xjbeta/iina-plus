@@ -74,7 +74,11 @@ class BiliLive: NSObject, SupportSiteProtocol {
         let result = yougetJSON
         let roomID = result.id
         
-        
+		var apiType = self.apiType
+		if Preferences.shared.enableFlvjs {
+			apiType = .playUrl
+		}
+		
         switch apiType {
         case .playUrl:
             let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"

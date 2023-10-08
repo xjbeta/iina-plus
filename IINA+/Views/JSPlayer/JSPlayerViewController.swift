@@ -267,6 +267,10 @@ class JSPlayerViewController: NSViewController {
                 urls.insert(u, at: 0)
             }
             
+			urls = urls.filter {
+				!$0.isEmpty
+			}
+			
             guard urls.count > 0 else { return }
             
             if urls.count <= self.videoLine {
