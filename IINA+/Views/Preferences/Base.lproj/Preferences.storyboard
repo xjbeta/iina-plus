@@ -1014,7 +1014,7 @@ Gw
 </string>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="dismissController:" target="Byl-sf-v9N" id="k7d-Mz-EB1"/>
+                                    <action selector="cancel:" target="Byl-sf-v9N" id="sg2-54-zxn"/>
                                 </connections>
                             </button>
                         </subviews>

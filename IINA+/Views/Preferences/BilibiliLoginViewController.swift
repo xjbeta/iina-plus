@@ -21,7 +21,10 @@ class BilibiliLoginViewController: NSViewController {
     @IBAction func tryAgain(_ sender: Any) {
         loadWebView()
     }
-    
+	@IBAction func cancel(_ sender: NSButton) {
+		dismiss?(nil)
+	}
+	
     var webviewObserver: NSKeyValueObservation?
     
     override func viewDidLoad() {
