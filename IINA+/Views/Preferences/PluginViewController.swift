@@ -139,7 +139,7 @@ class PluginViewController: NSViewController {
 		
 		stepValue = 3
 		// tips
-		tipsTitle = "\nEverything OK  ✅\nRestart IINA to take effect"
+		tipsTitle = NSLocalizedString("PluginInstaller.tips", comment: "")
 	}
 	
 	func getPluginSystemState() -> Bool {

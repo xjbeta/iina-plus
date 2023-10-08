@@ -1,14 +1,5 @@
-/* Class = "NSTextFieldCell"; title = "Size:"; ObjectID = "1Xd-Ja-yrK"; */
-"1Xd-Ja-yrK.title" = "大小:";
-
-/* Class = "NSMenuItem"; title = "BilibiliBlockList-Basic"; ObjectID = "3EN-Ik-e5i"; */
-"3EN-Ik-e5i.title" = "BilibiliBlockList-Basic";
-
 /* Class = "NSButtonCell"; title = "Clean up"; ObjectID = "56d-bd-mk7"; */
 "56d-bd-mk7.title" = "清理";
-
-/* Class = "NSMenuItem"; title = "Custom"; ObjectID = "5Pc-Ad-Clg"; */
-"5Pc-Ad-Clg.title" = "自定义";
 
 /* Class = "NSButtonCell"; title = "Try again"; ObjectID = "6g4-C2-AIh"; */
 "6g4-C2-AIh.title" = "重试";
@@ -22,23 +13,11 @@
 /* Class = "NSTabViewItem"; label = "Item 3"; ObjectID = "EJW-PI-j48"; */
 "EJW-PI-j48.label" = "Item 3";
 
-/* Class = "NSTextFieldCell"; title = "Speed:"; ObjectID = "ERX-47-CUe"; */
-"ERX-47-CUe.title" = "速度:";
-
 /* Class = "NSButtonCell"; title = "Test In Browser"; ObjectID = "FbN-8d-UIb"; */
 "FbN-8d-UIb.title" = "在浏览器中测试";
 
 /* Class = "NSTabViewItem"; label = "Advanced"; ObjectID = "Fty-Mk-miB"; */
 "Fty-Mk-miB.label" = "高级";
-
-/* Class = "NSMenuItem"; title = "None"; ObjectID = "GMz-Kk-3mx"; */
-"GMz-Kk-3mx.title" = "无";
-
-/* Class = "NSButtonCell"; title = "Top"; ObjectID = "HLC-I1-tOA"; */
-"HLC-I1-tOA.title" = "顶部";
-
-/* Class = "NSTextFieldCell"; title = "Style:"; ObjectID = "Hge-8w-n9y"; */
-"Hge-8w-n9y.title" = "样式:";
 
 /* Class = "NSTextFieldCell"; title = "Can't Connect to BiliBili."; ObjectID = "HyX-XU-Dxf"; */
 "HyX-XU-Dxf.title" = "无法连接到 BiliBili.";
@@ -49,14 +28,8 @@
 /* Class = "NSTextFieldCell"; title = "tips"; ObjectID = "O4b-8P-C13"; */
 "O4b-8P-C13.title" = "tips";
 
-/* Class = "NSTextFieldCell"; title = "Block List:"; ObjectID = "OSe-eo-ngK"; */
-"OSe-eo-ngK.title" = "屏蔽列表:";
-
 /* Class = "NSTabViewItem"; label = "connectError"; ObjectID = "PCK-kI-8rJ"; */
 "PCK-kI-8rJ.label" = "连接错误";
-
-/* Class = "NSTextFieldCell"; title = "Fast"; ObjectID = "Q84-E5-26S"; */
-"Q84-E5-26S.title" = "快";
 
 /* Class = "NSTabViewItem"; label = "View"; ObjectID = "QhA-nB-s4n"; */
 "QhA-nB-s4n.label" = "View";
@@ -67,17 +40,8 @@
 /* Class = "NSTextFieldCell"; title = "Cache:"; ObjectID = "Rpn-D1-AxI"; */
 "Rpn-D1-AxI.title" = "缓存:";
 
-/* Class = "NSButtonCell"; title = "System-Regular"; ObjectID = "SYA-qC-XOz"; */
-"SYA-qC-XOz.title" = "System-Regular";
-
-/* Class = "NSTextFieldCell"; title = "1.0"; ObjectID = "ShH-u3-Ijy"; */
-"ShH-u3-Ijy.title" = "1.0";
-
 /* Class = "NSMenuItem"; title = "IINA"; ObjectID = "Tcc-b4-Nna"; */
 "Tcc-b4-Nna.title" = "IINA";
-
-/* Class = "NSMenuItem"; title = "BilibiliBlockList-Plus"; ObjectID = "ULn-nW-1rg"; */
-"ULn-nW-1rg.title" = "BilibiliBlockList-Plus";
 
 /* Class = "NSButtonCell"; title = "Logout"; ObjectID = "Uo2-li-KKl"; */
 "Uo2-li-KKl.title" = "注销";
@@ -85,32 +49,14 @@
 /* Class = "NSTextFieldCell"; title = "UserName"; ObjectID = "VcX-14-PGH"; */
 "VcX-14-PGH.title" = "用户名";
 
-/* Class = "NSButtonCell"; title = "Advanced"; ObjectID = "X8x-Ru-91F"; */
-"X8x-Ru-91F.title" = "高级";
-
 /* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "XkE-pd-vDk"; */
 "XkE-pd-vDk.label" = "Tab";
-
-/* Class = "NSTextFieldCell"; title = "0"; ObjectID = "YaA-mk-XoO"; */
-"YaA-mk-XoO.title" = "0";
 
 /* Class = "NSTextFieldCell"; placeholderString = "19080"; ObjectID = "a06-8f-w17"; */
 "a06-8f-w17.placeholderString" = "19080";
 
-/* Class = "NSButtonCell"; title = "Color"; ObjectID = "ap6-fC-Lye"; */
-"ap6-fC-Lye.title" = "彩色";
-
-/* Class = "NSTextFieldCell"; title = "Family:"; ObjectID = "b3t-kp-Zzf"; */
-"b3t-kp-Zzf.title" = "字体:";
-
 /* Class = "NSTextFieldCell"; title = "N/A"; ObjectID = "d61-I7-JrQ"; */
 "d61-I7-JrQ.title" = "N/A";
-
-/* Class = "NSButtonCell"; title = "Bottom"; ObjectID = "dPJ-PT-il0"; */
-"dPJ-PT-il0.title" = "底部";
-
-/* Class = "NSTextFieldCell"; title = "Font:"; ObjectID = "dcE-tt-9Ed"; */
-"dcE-tt-9Ed.title" = "字体:";
 
 /* Class = "NSWindow"; title = "Preferences"; ObjectID = "i7K-2y-wpV"; */
 "i7K-2y-wpV.title" = "设置";
@@ -118,17 +64,8 @@
 /* Class = "NSTabViewItem"; label = "webView"; ObjectID = "iH3-v0-a3N"; */
 "iH3-v0-a3N.label" = "webView";
 
-/* Class = "NSTextFieldCell"; title = "Block Damaku Type:"; ObjectID = "iHw-Yk-8kI"; */
-"iHw-Yk-8kI.title" = "屏蔽弹幕类型:";
-
 /* Class = "NSButtonCell"; title = "Play live with internal flv.js"; ObjectID = "nYK-y9-7tF"; */
 "nYK-y9-7tF.title" = "使用内置的flv.js 播放直播";
-
-/* Class = "NSTextFieldCell"; title = "Opacity:"; ObjectID = "p2d-6F-LRi"; */
-"p2d-6F-LRi.title" = "透明度:";
-
-/* Class = "NSButtonCell"; title = "Scroll"; ObjectID = "pVF-i4-H1O"; */
-"pVF-i4-H1O.title" = "滚动";
 
 /* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "qqF-RM-1Ix"; */
 "qqF-RM-1Ix.label" = "Item 2";
@@ -141,9 +78,6 @@
 
 /* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "vqC-dg-3ai"; */
 "vqC-dg-3ai.title" = "退出";
-
-/* Class = "NSTextFieldCell"; title = "Slow"; ObjectID = "wRI-LI-sDV"; */
-"wRI-LI-sDV.title" = "慢";
 
 /* Class = "NSTextFieldCell"; title = "Danmaku:"; ObjectID = "wRZ-RD-AEu"; */
 "wRZ-RD-AEu.title" = "弹幕:";
@@ -195,3 +129,30 @@
 
 /* Class = "NSTextFieldCell"; title = "HTML Decoder"; ObjectID = "vR2-ZU-hgL"; */
 "vR2-ZU-hgL.title" = "HTML 解析器";
+
+/* Class = "NSButtonCell"; title = "Enable"; ObjectID = "OSx-Ln-aqZ"; */
+"OSx-Ln-aqZ.title" = "开启";
+
+/* Class = "NSTextFieldCell"; title = "2. install danmaku plugin"; ObjectID = "UsF-Nh-nOS"; */
+"UsF-Nh-nOS.title" = "2. 安装弹幕插件";
+
+/* Class = "NSButtonCell"; title = "Enable"; ObjectID = "VgB-qp-s9y"; */
+"VgB-qp-s9y.title" = "启用";
+
+/* Class = "NSTextFieldCell"; title = "Plugin:"; ObjectID = "ajR-RS-oZ6"; */
+"ajR-RS-oZ6.title" = "插件:";
+
+/* Class = "NSButtonCell"; title = "Install"; ObjectID = "cgt-Fm-5UC"; */
+"cgt-Fm-5UC.title" = "安装";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "evl-uc-gOc"; */
+"evl-uc-gOc.title" = "退出";
+
+/* Class = "NSButtonCell"; title = "Install"; ObjectID = "i16-zu-aE9"; */
+"i16-zu-aE9.title" = "安装";
+
+/* Class = "NSTextFieldCell"; title = "3. enable danmaku plugin"; ObjectID = "kHc-Ut-v2Y"; */
+"kHc-Ut-v2Y.title" = "3. 启用弹幕插件";
+
+/* Class = "NSTextFieldCell"; title = "1. enable IINA plugin system"; ObjectID = "naV-oK-pw1"; */
+"naV-oK-pw1.title" = "1. 开启IINA 插件系统";
