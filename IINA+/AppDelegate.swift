@@ -34,6 +34,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }()
     
+	var hackSchemes: [String] {
+		return ["wss", "https"]
+	}
+	
+	var hackRegistered = false
+	
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 		
 		#if DEBUG
@@ -60,24 +66,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		registerHack()
     }
 	
-	
+
 	func registerHack() {
 		// https://stackoverflow.com/a/75482806
-		guard let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol else { return }
-		
-		Log("Register Hack")
-		
-		let selector = Selector(("registerSchemeForCustomProtocol:"))
-		
-		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "wss")
+		guard !hackRegistered else { return }
+		defer {
+			hackRegistered = true
+			Log("Register Hack")
 		}
 		
-		if contextController.responds(to: selector) {
-			_ = contextController.perform(selector, with: "https")
+		let selector = Selector(("registerSchemeForCustomProtocol:"))
+		hackSchemes.forEach {
+			if let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol,
+			   contextController.responds(to: selector) {
+				_ = contextController.perform(selector, with: $0)
+			}
 		}
 		
 		URLProtocol.registerClass(HackURLProtocol.self)
+	}
+	
+	func unregisterHack() {
+		guard hackRegistered else { return }
+		defer {
+			hackRegistered = false
+			Log("Unregister Hack")
+		}
+		
+		let selector = Selector(("unregisterSchemeForCustomProtocol:"))
+		hackSchemes.forEach {
+			if let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol,
+			   contextController.responds(to: selector) {
+				_ = contextController.perform(selector, with: $0)
+			}
+		}
+		URLProtocol.unregisterClass(HackURLProtocol.self)
 	}
 
     func applicationWillTerminate(_ aNotification: Notification) {

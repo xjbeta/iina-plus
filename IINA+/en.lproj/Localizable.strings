@@ -71,4 +71,7 @@
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
 
 /* KuaiShou */
-"SupportSites.KuaiShou" = "";
+"SupportSites.KuaiShou" = "KuaiShou";
+
+/* plugin install finish */
+"PluginInstaller.tips" = "\nEverything OK  ✅\nRestart IINA to take effect";
