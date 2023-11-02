@@ -37,6 +37,42 @@ class DouYin: NSObject, SupportSiteProtocol {
         "X3NpZ25hdHVyZQ=="
     ]
 	
+	lazy var webviewConfig: WKWebViewConfiguration = {
+		// https://gist.github.com/genecyber/e4a5f7c6f92eaef9ccb5
+		let script = """
+function addXMLRequestCallback(callback) {
+	var oldSend, i;
+	if (XMLHttpRequest.callbacks) {
+		XMLHttpRequest.callbacks.push(callback);
+	} else {
+		XMLHttpRequest.callbacks = [callback];
+		oldSend = XMLHttpRequest.prototype.send;
+		XMLHttpRequest.prototype.send = function () {
+			for (i = 0; i < XMLHttpRequest.callbacks.length; i++) {
+				XMLHttpRequest.callbacks[i](this);
+			}
+			oldSend.apply(this, arguments);
+		}
+	}
+}
+
+addXMLRequestCallback(function (xhr) {
+	window.webkit.messageHandlers.fetch.postMessage(xhr._url);
+});
+"""
+		
+		let scriptInjection = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+		
+		let config = WKWebViewConfiguration()
+		let contentController = WKUserContentController()
+		contentController.add(self, name: "fetch")
+		contentController.addUserScript(scriptInjection)
+		config.userContentController = contentController
+		
+		return config
+	}()
+	
+	
 	private var invalidCookiesCount = 0
     
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
@@ -223,7 +259,8 @@ class DouYin: NSObject, SupportSiteProtocol {
 					resolver.reject($0)
 				}
             }
-            webView = WKWebView()
+			
+			webView = WKWebView(frame: .zero, configuration: webviewConfig)
             
             webViewLoadingObserver?.invalidate()
             webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
@@ -348,6 +385,19 @@ class DouYin: NSObject, SupportSiteProtocol {
     enum CookiesError: Error {
         case invalid, waintingForCookies
     }
+}
+
+extension DouYin: WKScriptMessageHandler {
+	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+		guard let msg = message.body as? String else { return }
+		
+		if msg.contains("webcast/im/push/v2") {
+			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		} else if msg.contains("live.douyin.com/webcast/im/fetch"),
+				  msg.contains("last_rtt=-1") {
+			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		}
+	}
 }
 
 struct DouYinInfo: Unmarshaling, LiveInfo {

@@ -62,46 +62,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Processes.shared.httpServer.start()
 		
 		showUpdateAlert()
-		
-		registerHack()
     }
-	
 
-	func registerHack() {
-		// https://stackoverflow.com/a/75482806
-		guard !hackRegistered else { return }
-		defer {
-			hackRegistered = true
-			Log("Register Hack")
-		}
-		
-		let selector = Selector(("registerSchemeForCustomProtocol:"))
-		hackSchemes.forEach {
-			if let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol,
-			   contextController.responds(to: selector) {
-				_ = contextController.perform(selector, with: $0)
-			}
-		}
-		
-		URLProtocol.registerClass(HackURLProtocol.self)
-	}
-	
-	func unregisterHack() {
-		guard hackRegistered else { return }
-		defer {
-			hackRegistered = false
-			Log("Unregister Hack")
-		}
-		
-		let selector = Selector(("unregisterSchemeForCustomProtocol:"))
-		hackSchemes.forEach {
-			if let contextController = NSClassFromString("WKBrowsingContextController") as? NSObjectProtocol,
-			   contextController.responds(to: selector) {
-				_ = contextController.perform(selector, with: $0)
-			}
-		}
-		URLProtocol.unregisterClass(HackURLProtocol.self)
-	}
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application

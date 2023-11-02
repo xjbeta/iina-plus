@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -36,13 +35,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="860" height="484"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QBH-lg-R4B" customClass="JSPlayerWebView" customModule="IINA_" customModuleProvider="target">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="OII-k7-WVz">
                                 <rect key="frame" x="0.0" y="0.0" width="860" height="484"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" video="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
+                            </customView>
                             <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q3d-da-hps" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
                                 <rect key="frame" x="12" y="12" width="251" height="31"/>
                                 <subviews>
@@ -177,11 +172,11 @@
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSe-yc-qYo">
                                                     <rect key="frame" x="12" y="2" width="71" height="140"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="7k4-lH-8k6">
-                                                        <rect key="frame" x="0.0" y="0.0" width="71" height="140"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="71" height="125"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" columnSelection="YES" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="24" viewBased="YES" id="6So-Mt-rQe">
-                                                                <rect key="frame" x="0.0" y="0.0" width="80" height="140"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="80" height="125"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -243,7 +238,7 @@
                                                         <constraint firstAttribute="height" constant="140" id="qJM-NN-NcQ"/>
                                                     </constraints>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="vld-IN-y1M">
-                                                        <rect key="frame" x="0.0" y="124" width="71" height="16"/>
+                                                        <rect key="frame" x="0.0" y="125" width="71" height="15"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="fE8-rq-u4e">
@@ -387,18 +382,18 @@
                             </box>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="QBH-lg-R4B" secondAttribute="bottom" id="1ch-fr-N79"/>
-                            <constraint firstAttribute="trailing" secondItem="QBH-lg-R4B" secondAttribute="trailing" id="36g-Gy-zPb"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="V00-Sg-zdq" secondAttribute="bottom" id="3OO-rs-CHB"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="58q-ki-cTb" secondAttribute="bottom" id="42s-KS-eFa"/>
                             <constraint firstItem="V00-Sg-zdq" firstAttribute="centerX" secondItem="Cg1-Ai-cln" secondAttribute="centerX" id="BnR-wF-C6i"/>
                             <constraint firstAttribute="bottom" secondItem="Q3d-da-hps" secondAttribute="bottom" constant="12" id="DQG-9d-mOY"/>
                             <constraint firstItem="58q-ki-cTb" firstAttribute="centerX" secondItem="dOA-Qd-GsD" secondAttribute="centerX" id="GKs-2V-SF6"/>
+                            <constraint firstAttribute="bottom" secondItem="OII-k7-WVz" secondAttribute="bottom" id="IYy-hw-SaF"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" constant="12" id="QI7-df-s64"/>
+                            <constraint firstAttribute="trailing" secondItem="OII-k7-WVz" secondAttribute="trailing" id="cHp-ea-vt7"/>
                             <constraint firstItem="LJd-y3-Ngp" firstAttribute="centerX" secondItem="Awz-S7-3hO" secondAttribute="centerX" id="cTi-cs-x3a"/>
-                            <constraint firstItem="QBH-lg-R4B" firstAttribute="top" secondItem="tOy-S4-hL0" secondAttribute="top" id="eyN-98-j2y"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="LJd-y3-Ngp" secondAttribute="bottom" id="h9v-UR-Zri"/>
-                            <constraint firstItem="QBH-lg-R4B" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" id="vSA-ON-YkQ"/>
+                            <constraint firstItem="OII-k7-WVz" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" id="jLH-uD-nx0"/>
+                            <constraint firstItem="OII-k7-WVz" firstAttribute="top" secondItem="tOy-S4-hL0" secondAttribute="top" id="pl0-RJ-kNf"/>
                         </constraints>
                     </view>
                     <connections>
@@ -416,10 +411,10 @@
                         <outlet property="quailtyTableView" destination="6So-Mt-rQe" id="P0h-iG-4vQ"/>
                         <outlet property="reloadButton" destination="dqz-eP-LFr" id="Vz4-ZH-WMa"/>
                         <outlet property="speedSlider" destination="8xK-9v-zUp" id="YbS-he-kSZ"/>
+                        <outlet property="viewForWeb" destination="OII-k7-WVz" id="f8X-9L-9iX"/>
                         <outlet property="volumeBox" destination="58q-ki-cTb" id="TfG-jz-NWL"/>
                         <outlet property="volumeButton" destination="dOA-Qd-GsD" id="iae-EF-tDE"/>
                         <outlet property="volumeSlider" destination="nUX-RS-Z83" id="CB2-cE-iLp"/>
-                        <outlet property="webView" destination="QBH-lg-R4B" id="Pqv-me-EwD"/>
                     </connections>
                 </viewController>
                 <customObject id="9uD-mB-xHs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

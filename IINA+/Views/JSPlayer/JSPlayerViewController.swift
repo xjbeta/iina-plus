@@ -13,7 +13,8 @@ import WebKit
 class JSPlayerViewController: NSViewController {
     
 // MARK: - WebView
-    @IBOutlet var webView: WKWebView!
+	@IBOutlet var viewForWeb: NSView!
+    var webView: JSPlayerWebView!
 
 // MARK: - Player Controllers
     enum PlayerController: Int {
@@ -280,7 +281,7 @@ class JSPlayerViewController: NSViewController {
             self.initControllers()
             let u = urls[0]
 			
-			self.hackUrl = HackUrl.encode(u, site: re.site)
+			self.hackUrl = JSPlayerURL.encode(u, site: re.site)
             
             self.evaluateJavaScript("initContent();")
             self.evaluateJavaScript("window.openUrl('\(self.hackUrl)');")
@@ -353,31 +354,36 @@ class JSPlayerViewController: NSViewController {
             withExtension: "htm",
             subdirectory: "WebFiles") else { return }
         
+		let config = WKWebViewConfiguration()
+		
+		ScriptMessageKeys.allCases.forEach {
+			config.userContentController.add(self, name: $0.rawValue)
+		}
+		
+		let handler = JSPlayerURLSchemeHandler()
+		
+		config.setURLSchemeHandler(handler, forURLScheme: JSPlayerURLSchemeHandler.schemeName)
+		
+		config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+		
+		viewForWeb.subviews.removeAll()
+		webView = .init(frame: viewForWeb.frame, configuration: config)
+		viewForWeb.addSubview(webView)
+		webView.autoresizingMask = [.height, .width]
+		
+		webView.navigationDelegate = self
+		
         // Background Color
         view.wantsLayer = true
         view.layer?.backgroundColor = .black
         webView.setValue(false, forKey: "drawsBackground")
 
-        webView.navigationDelegate = self
-        ScriptMessageKeys.allCases.forEach {
-            webView.configuration.userContentController.add(self, name: $0.rawValue)
-        }
-        
-        webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-        
         webView.loadFileURL(playerUrl, allowingReadAccessTo: playerUrl.deletingLastPathComponent())
     }
     
     func deinitWebView() {
         evaluateJavaScript("playerDestroy();")
         webView.stopLoading()
-		
-		if !hackUrl.isEmpty {
-			NotificationCenter.default.post(
-				name: .webPlayerWindowClosed,
-				object: nil,
-				userInfo: ["url": hackUrl])
-		}
 
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
