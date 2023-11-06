@@ -97,7 +97,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           cp archive/IINA+.xcarchive/Products/Applications/IINA*.zip AppUpdaterAppcasts/IINA-Plus/
-          cp archive/IINA+.xcarchive/Products/Applications/IINA*.dmg AppUpdaterAppcasts/IINA-Plus/
           Sparkle/bin/generate_appcast AppUpdaterAppcasts/IINA-Plus/ -s ${{ secrets.SUPRIVATEEDKEY }}
 
           git config --global user.name "github-actions[bot]"
@@ -106,5 +105,5 @@ jobs:
           cd AppUpdaterAppcasts
           # git checkout -b ci-test
           git add -A
-          git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
+          git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.zip zip)"
           git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git

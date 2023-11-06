@@ -38,15 +38,17 @@ window.openUrl = function(url) {
 
         var mediaDataSource = {
             type: 'flv',
+			enableWorker: true,
             hasAudio: true,
             hasVideo: true,
             isLive: true,
             withCredentials: false,
+			lazyLoad: false,
+			rangeLoadZeroStart: true,
             url: url
         };
 
         player = mpegts.createPlayer(mediaDataSource, {
-            enableWorker: false,
             lazyLoadMaxDuration: 3 * 60,
             seekType: 'range',
         });
