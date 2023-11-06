@@ -60,7 +60,7 @@ Open `IINA+.xcodeproj` with Xcode.
 ### Web Librarys
 
 - [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary)
-- [flv.js](https://github.com/bilibili/flv.js)
+- [mpegts.js](https://github.com/xqq/mpegts.js)
 
 ### Bilibili block list
 
