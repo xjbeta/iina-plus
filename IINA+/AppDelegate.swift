@@ -33,12 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return nil
         }
     }()
-    
-	var hackSchemes: [String] {
-		return ["wss", "https"]
-	}
-	
-	var hackRegistered = false
 	
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 		
