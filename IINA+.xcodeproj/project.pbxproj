@@ -17,7 +17,6 @@
 		0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0101013821200DC5002F0F7F /* LiveUrlTableCellView.swift */; };
 		0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0102924527ACF8AB00CB74B5 /* ControllersVisualEffectView.swift */; };
 		0106179D2AF34EFF005C7877 /* JSPlayerURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0106179C2AF34EFF005C7877 /* JSPlayerURL.swift */; };
-		010CE8C92A911011002FA130 /* SwiftBrotli in Frameworks */ = {isa = PBXBuildFile; productRef = 010CE8C82A911011002FA130 /* SwiftBrotli */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
 		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
@@ -303,7 +302,6 @@
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
 				018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */,
-				010CE8C92A911011002FA130 /* SwiftBrotli in Frameworks */,
 				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
@@ -636,7 +634,6 @@
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
 				018F4F632812BFC60045B67C /* PMKAlamofire */,
-				010CE8C82A911011002FA130 /* SwiftBrotli */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -1177,11 +1174,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		010CE8C82A911011002FA130 /* SwiftBrotli */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */;
-			productName = SwiftBrotli;
-		};
 		018F4F632812BFC60045B67C /* PMKAlamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */;

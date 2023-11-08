@@ -55,7 +55,6 @@ Open `IINA+.xcodeproj` with Xcode.
 - [SDWebImage](https://github.com/SDWebImage/SDWebImage)
 - [Sparkle](https://github.com/sparkle-project/Sparkle)
 - [SocketRocket with SPM patch](https://github.com/xjbeta/SocketRocket)
-- [SwiftBrotli](https://github.com/f-meloni/SwiftBrotli)
 
 ### Web Librarys
 
