@@ -21,6 +21,19 @@ extension Danmaku {
 		}
 	}
 	
+	struct BiliLiveInteractiveGameMsg: Unmarshaling {
+		static let cmdString = "LIVE_INTERACTIVE_GAME"
+		
+		
+		let cmd: String
+		let dm: String?
+		
+		init(object: MarshaledObject) throws {
+			cmd = try object.value(for: "cmd")
+			dm = try? object.value(for: "data.msg")
+		}
+	}
+	
 	struct BiliLiveEmoticon: Unmarshaling {
 		var emoji: String = ""
 		var url: String
@@ -186,7 +199,6 @@ extension Danmaku {
 	func decodeBiliLiveDM(_ data: Data) -> DanmakuComment? {
 		let decoder = JSONDecoder()
 		
-
 		
 		if let msg = try? decoder.decode(BiliLiveMsgV2.self, from: data) {
 			guard let data = Data(base64Encoded: msg.dm) else { return nil }
@@ -206,6 +218,11 @@ extension Danmaku {
 			} catch let error {
 				print(error)
 			}
+		} else if let obj = try? JSONParser.JSONObjectWithData(data),
+				  let msg = try? BiliLiveInteractiveGameMsg(object: obj),
+				  msg.cmd == BiliLiveInteractiveGameMsg.cmdString,
+				  let dm = msg.dm {
+			return DanmakuComment(text: dm)
 		} else {
 			/*
 			 guard let s = String(data: data, encoding: .utf8) else {
@@ -224,6 +241,7 @@ extension Danmaku {
 				 "ONLINE_RANK_V2",
 				 "ONLINE_RANK_TOP3",
 				 "AREA_RANK_CHANGED",
+				 "WIDGET_GIFT_STAR_PROCESS",
 			 ].contains(where: s.contains) {
 				 return nil
 			 }
