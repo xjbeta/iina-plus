@@ -24,7 +24,6 @@ extension Danmaku {
 	struct BiliLiveInteractiveGameMsg: Unmarshaling {
 		static let cmdString = "LIVE_INTERACTIVE_GAME"
 		
-		
 		let cmd: String
 		let dm: String?
 		
@@ -34,12 +33,25 @@ extension Danmaku {
 		}
 	}
 	
+	struct BiliLiveExtraMsg: Unmarshaling {
+		let content: String
+		let emots: [String: BiliLiveEmoticon]
+		let emoticonUnique: String?
+		
+		init(object: MarshaledObject) throws {
+			content = try object.value(for: "content")
+			let ems: [String: BiliLiveEmoticon]? = try? object.value(for: "emots")
+			emots = ems ?? [:]
+			emoticonUnique = try? object.value(for: "emoticon_unique")
+		}
+	}
+	
 	struct BiliLiveEmoticon: Unmarshaling {
 		var emoji: String = ""
 		var url: String
 		var width: Int = 0
 		var height: Int = 0
-		var identity: Int = 0
+//		var identity: Int = 0
 		let emoticonUnique: String
 		var emoticonId: Int = 0
 		
@@ -56,7 +68,7 @@ extension Danmaku {
 			url = u.replacingOccurrences(of: "http://", with: "https://")
 			width = try object.value(for: "width")
 			height = try object.value(for: "height")
-			identity = try object.value(for: "identity")
+//			identity = try object.value(for: "identity")
 			emoticonUnique = try object.value(for: "emoticon_unique")
 			emoticonId = try object.value(for: "emoticon_id")
 		}
@@ -71,8 +83,8 @@ extension Danmaku {
 				switch width {
 				case _ where width > 200:
 					return 200
-				case _ where width < 150:
-					return 150
+//				case _ where width < 150:
+//					return 150
 				default:
 					return width
 				}
@@ -133,8 +145,19 @@ extension Danmaku {
 			
 			let json = try JSONParser.JSONObjectWithData($0.data)
 			let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
-			emoticons = emoticonData.flatMap {
-				$0.emoticons
+			
+			emoticonData.forEach {
+				if $0.pkgName == "emoji" {
+					let emojis = $0.emoticons.map {
+						var emot = $0
+						emot.width = 75
+						emot.height = 75
+						return emot
+					}
+					emoticons.append(contentsOf: emojis)
+				} else {
+					emoticons.append(contentsOf: $0.emoticons)
+				}
 			}
 		}.then { _ in
 			when(fulfilled: emoticons.enumerated().map { e in
@@ -199,9 +222,9 @@ extension Danmaku {
 	func decodeBiliLiveDM(_ data: Data) -> DanmakuComment? {
 		let decoder = JSONDecoder()
 		
-		
-		if let msg = try? decoder.decode(BiliLiveMsgV2.self, from: data) {
-			guard let data = Data(base64Encoded: msg.dm) else { return nil }
+		if let msg = try? decoder.decode(BiliLiveMsgV2.self, from: data),
+		   msg.dm != "",
+		   let data = Data(base64Encoded: msg.dm) {
 			
 			do {
 				let re = try BilibiliDm_Community_Service_Dm_Live_Dm(serializedData: data)
@@ -211,18 +234,36 @@ extension Danmaku {
 				}
 				
 				if re.dmType == .emoticon,
-				   let emoticon = re.emoticons.first {
-					return biliLiveEmoticonDM(emoticon)
+				   let emoticon = re.emoticons.first?.value {
+					//		emoticons {
+					//		  key: "哇"
+					//		  value {
+					//			unique: "room_47867_14602"
+					//			url: "http://i0.hdslb.com/bfs/garb/b2836ddf5c7e2bbcb9d7e80a84ae17ac102003eb.png"
+					//			is_dynamic: true
+					//			in_player_area: 1
+					//			bulge_display: 1
+					//			height: 162
+					//			width: 162
+					//		  }
+					//		}
+					return biliLiveEmoticonDM(
+						url: emoticon.url,
+						unique: emoticon.unique,
+						width: .init(emoticon.width),
+						height: .init(emoticon.height))
 				}
 				return DanmakuComment(text: re.text)
 			} catch let error {
 				print(error)
 			}
-		} else if let obj = try? JSONParser.JSONObjectWithData(data),
-				  let msg = try? BiliLiveInteractiveGameMsg(object: obj),
-				  msg.cmd == BiliLiveInteractiveGameMsg.cmdString,
-				  let dm = msg.dm {
-			return DanmakuComment(text: dm)
+		} else if let dm = biliLiveDM(data) {
+			return dm
+//		} else if let obj = try? JSONParser.JSONObjectWithData(data),
+//				  let msg = try? BiliLiveInteractiveGameMsg(object: obj),
+//				  msg.cmd == BiliLiveInteractiveGameMsg.cmdString,
+//				  let dm = msg.dm {
+//			return DanmakuComment(text: dm)
 		} else {
 			/*
 			 guard let s = String(data: data, encoding: .utf8) else {
@@ -242,6 +283,7 @@ extension Danmaku {
 				 "ONLINE_RANK_TOP3",
 				 "AREA_RANK_CHANGED",
 				 "WIDGET_GIFT_STAR_PROCESS",
+				 "LIVE_INTERACTIVE_GAME"
 			 ].contains(where: s.contains) {
 				 return nil
 			 }
@@ -253,32 +295,76 @@ extension Danmaku {
 		return nil
 	}
 	
+	func biliLiveDM(_ data: Data) -> DanmakuComment? {
+		guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+			  let cmd = json["cmd"] as? String,
+			  cmd.starts(with: "DANMU_MSG")
+		else {
+			return nil
+		}
+		
+		guard let info = json["info"] as? [Any],
+			  info.count > 0,
+			  let dms = info[0] as? [Any],
+			  dms.count > 15 else {
+			return nil
+		}
+		
+		if let dm = dms[13] as? [String: Any],
+		   let unique = dm["emoticon_unique"] as? String,
+//		   let width = dm["width"] as? Int,
+//		   let height = dm["height"] as? Int,
+		   let url = dm["url"] as? String {
+			
+			return biliLiveEmoticonDM(
+				url: url,
+				unique: unique,
+				width: 180,
+				height: 180)
+		} else if let dm = dms[15] as? [String: Any],
+		   let extra = dm["extra"],
+		   let str = extra as? String,
+		   let data = str.data(using: .utf8),
+		   let obj = try? JSONParser.JSONObjectWithData(data),
+		   let msg = try? BiliLiveExtraMsg(object: obj) {
+			
+			guard !msg.emots.isEmpty else {
+				if let unique = msg.emoticonUnique,
+				   let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == unique }) {
+					return emoticon.comment()
+				} else {
+					return DanmakuComment(text: msg.content)
+				}
+			}
+			
+			let emot = msg.emots.values.first!
+			
+			return biliLiveEmoticonDM(
+				url: emot.url,
+				unique: emot.emoticonUnique,
+				width: emot.width,
+				height: emot.height)
+		} else if let msg = info[1] as? String {
+			return DanmakuComment(text: msg)
+		} else {
+			return nil
+		}
+	}
 	
-	func biliLiveEmoticonDM(_ emot: BilibiliDm_Community_Service_Dm_Live_emots) -> DanmakuComment? {
+	func biliLiveEmoticonDM(url: String,
+							unique: String,
+							width: Int,
+							height: Int) -> DanmakuComment? {
 		
-//		emoticons {
-//		  key: "哇"
-//		  value {
-//			unique: "room_47867_14602"
-//			url: "http://i0.hdslb.com/bfs/garb/b2836ddf5c7e2bbcb9d7e80a84ae17ac102003eb.png"
-//			is_dynamic: true
-//			in_player_area: 1
-//			bulge_display: 1
-//			height: 162
-//			width: 162
-//		  }
-//		}
-		
-		
-		if let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == emot.value.unique }) {
+		if let emoticon = self.bililiveEmoticons.first(where: { $0.emoticonUnique == unique }) {
 			return emoticon.comment()
 		}
 		
-		let url = emot.value.url.replacingOccurrences(of: "http://", with: "https://")
-		var emoticon = BiliLiveEmoticon(emot.value.unique, url: url)
+		let url = url.replacingOccurrences(of: "http://", with: "https://")
+		var emoticon = BiliLiveEmoticon(unique, url: url)
 		
-		emoticon.width = Int(emot.value.width)
-		emoticon.height = Int(emot.value.height)
+		emoticon.width = width
+		emoticon.height = height
 		
 		if let image = SDImageCache.shared.imageFromCache(forKey: "BiliLive_Emoticons_" + emoticon.emoticonUnique) {
 			emoticon.emoticonData = image.sd_imageData()
@@ -287,7 +373,7 @@ extension Danmaku {
 			return emoticon.comment()
 		} else {
 			loadBililiveEmoticon(emoticon).done {
-				guard let i = self.bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == emot.value.unique }) else { return }
+				guard let i = self.bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == unique }) else { return }
 				self.bililiveEmoticons[i].emoticonData = $0
 			}.cauterize()
 			self.bililiveEmoticons.append(emoticon)
