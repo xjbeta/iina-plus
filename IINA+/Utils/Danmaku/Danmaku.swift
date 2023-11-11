@@ -17,7 +17,6 @@ import PromiseKit
 import PMKAlamofire
 import Marshal
 import SDWebImage
-import SwiftBrotli
 
 protocol DanmakuDelegate {
     func send(_ event: DanmakuEvent, sender: Danmaku)
@@ -295,7 +294,7 @@ extension Danmaku: SRWebSocketDelegate {
 			let buvid = UUID().uuidString + "\(Int.random(in: 10000...90000))" + "infoc"
 			let key = biliLiveIDs.token
 			
-			let json = "{\"uid\":\(biliLiveIDs.uid),\"roomid\":\(biliLiveIDs.rid),\"protover\":3,\"buvid\":\"\(buvid)\",\"platform\":\"web\",\"type\":2,\"key\":\"\(key)\"}"
+			let json = "{\"uid\":\(biliLiveIDs.uid),\"roomid\":\(biliLiveIDs.rid),\"protover\":2,\"buvid\":\"\(buvid)\",\"platform\":\"web\",\"type\":2,\"key\":\"\(key)\"}"
 						
             //0000 0060 0010 0001 0000 0007 0000 0001
             let data = pack(format: "NnnNN", values: [json.count + 16, 16, 1, 7, 1])
@@ -379,7 +378,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 d = d.subdata(in: 16..<count)
 				
                 do {
-					return try Brotli().decompress(d).get()
+					return try d.gunzipped()
                 } catch let error {
                     if let str = String(data: data, encoding: .utf8), str.contains("cmd") {
                         return nil
