@@ -42,7 +42,10 @@ jobs:
         run: xcodebuild -showsdks
 
       - name: Prepare create-dmg
-        run: npm install --global create-dmg
+        run: |
+          brew install node
+          npm install -g node-gyp 
+          npm install -g create-dmg
 
       - name: Prepare WebFiles Dependencies
         run: |
