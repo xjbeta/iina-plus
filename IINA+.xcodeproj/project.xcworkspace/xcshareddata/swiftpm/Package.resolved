@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage",
       "state" : {
-        "revision" : "fd1950de05a5ad77cb252fd88576c1e1809ee50d",
-        "version" : "5.18.4"
+        "revision" : "1b9a2e902cbde5fdf362faa0f4fd76ea74d74305",
+        "version" : "5.18.5"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "07f7f26ded8df9645c072f220378879c4642e063",
-        "version" : "1.25.1"
+        "revision" : "65e8f29b2d63c4e38e736b25c27b83e012159be8",
+        "version" : "1.25.2"
       }
     },
     {
