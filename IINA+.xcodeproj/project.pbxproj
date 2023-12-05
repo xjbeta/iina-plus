@@ -390,6 +390,7 @@
 		012601722119BA6D00C9C639 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				01BAD2AD2B13960600A64D55 /* Extensions */,
 				018F4F5F280D89BB0045B67C /* VideoDecoder */,
 				01B090A6281CFF1B00E305B7 /* Danmaku */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
@@ -398,7 +399,6 @@
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
 				01C248B42A623EC000C92639 /* IINAApp.swift */,
-				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				011E4D3221E99CA300997633 /* Log.swift */,
 				01E40FEA22C304E800864118 /* ImageLoader.swift */,
@@ -575,6 +575,14 @@
 				01B53B5227B64E190051F7B4 /* main.js */,
 			);
 			path = Danmaku;
+			sourceTree = "<group>";
+		};
+		01BAD2AD2B13960600A64D55 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				01010124211DBC27002F0F7F /* StringExtension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		01BC354929AF2BC000B45577 /* DouYin */ = {
