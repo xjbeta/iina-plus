@@ -118,9 +118,85 @@ class JSPlayerViewController: NSViewController {
         }
     }
     var videoLine = 0
+	
+	@IBOutlet var playerStateTextField: NSTextField!
+	
+	enum PlayerState {
+		case loadingWebView
+		case opening
+		case playing
+		case stuckChecking
+		case reopening
+		case error(PlayerError)
+	}
+	
+	enum PlayerError {
+		case openFailed
+		case notLiving
+		case unknown
+		
+		func string() -> String {
+			switch self {
+			case .notLiving:
+				return "Not Living"
+			case .openFailed:
+				return "Open Failed"
+			case .unknown:
+				return "Unknown"
+			}
+		}
+	}
+	
+	var playerState: PlayerState = .loadingWebView {
+		didSet {
+			guard let stateTF = playerStateTextField else { return }
+			
+			switch playerState {
+			case .loadingWebView, .stuckChecking, .opening:
+				stateTF.stringValue = "Loading..."
+				stateTF.isHidden = false
+			case .error(let err):
+				stateTF.stringValue = err.string()
+				stateTF.isHidden = false
+			default:
+				stateTF.isHidden = true
+			}
+		}
+	}
     
 // MARK: - Other Value
-    
+
+	var playerReloadDate: Date?
+	var playerReloadTimer: Timer?
+	
+	var decodedFrames = 0 {
+		willSet {
+			guard stuckChecker != -1 else { return }
+			
+			if newValue == decodedFrames {
+				stuckChecker += 1
+			} else {
+				stuckChecker = 0
+			}
+		}
+	}
+	
+	var stuckChecker = 0 {
+		didSet {
+			if stuckChecker >= 12 {
+				stuckChecker = -1
+				Log("stuckChecker: reload")
+				openLive()
+			} else if stuckChecker > 5 {
+				playerState = .stuckChecking
+				startLoading(stop: false)
+			} else if stuckChecker == 0 {
+				playerState = .playing
+				startLoading(stop: true)
+			}
+		}
+	}
+	
     var webViewFinishLoaded = false
     
     var windowSizeInited = false
@@ -146,7 +222,11 @@ class JSPlayerViewController: NSViewController {
              
              error,
              loadingComplete,
-             recoveredEarlyEof
+             recoveredEarlyEof,
+			 
+			 metaData,
+			 mediaInfo,
+			 stuckChecker
     }
     
     override func viewDidLoad() {
@@ -222,6 +302,8 @@ class JSPlayerViewController: NSViewController {
     
     
     func startLoading(stop: Bool = false) {
+		guard reloadButton.isHidden == stop else { return }
+		
         reloadButton.isHidden = !stop
         loadingProgressIndicator.isHidden = stop
         
@@ -233,11 +315,33 @@ class JSPlayerViewController: NSViewController {
         
         updateControllersState()
     }
+	
+	func tryToReconnect() {
+		guard let date = playerReloadDate else {
+			openLive()
+			return
+		}
+		let limit = Double(5)
+		let sinceLimit = date.timeIntervalSinceNow + limit
+		if sinceLimit > 0 {
+			guard playerReloadTimer == nil else { return }
+			playerReloadTimer = Timer.scheduledTimer(withTimeInterval: sinceLimit, repeats: false) { [weak self] timer in
+				self?.openLive()
+			}
+		} else {
+			openLive()
+		}
+	}
     
     func openLive() {
-        proc.stopDecodeURL()
-        proc.videoDecoder.liveInfo(url, false).get {
+		playerState = .opening
+		playerReloadDate = .init()
+		playerReloadTimer?.invalidate()
+		playerReloadTimer = nil
+		
+        proc.videoDecoder.liveInfo(url, true).get {
             if !$0.isLiving {
+				self.playerState = .error(.notLiving)
                 throw VideoGetError.isNotLiving
             }
         }.then { _ in
@@ -261,6 +365,7 @@ class JSPlayerViewController: NSViewController {
             guard let stream = re.videos.first(where: {
                 $0.key == self.videoKey
             })?.value else {
+				self.playerState = .error(.openFailed)
                 return
             }
             var urls = stream.src
@@ -272,7 +377,10 @@ class JSPlayerViewController: NSViewController {
 				!$0.isEmpty
 			}
 			
-            guard urls.count > 0 else { return }
+			guard urls.count > 0 else {
+				self.playerState = .error(.openFailed)
+				return
+			}
             
             if urls.count <= self.videoLine {
                 self.videoLine = 0
@@ -280,6 +388,11 @@ class JSPlayerViewController: NSViewController {
             
             self.initControllers()
             let u = urls[0]
+			
+			guard u.count > 0 else {
+				self.playerState = .error(.openFailed)
+				return
+			}
 			
 			self.hackUrl = JSPlayerURL.encode(u, site: re.site)
             
@@ -296,7 +409,7 @@ class JSPlayerViewController: NSViewController {
                 break
             }
         }.catch(on: .main, policy: .allErrors) {
-            print($0)
+            Log($0)
         }
     }
     
@@ -603,15 +716,15 @@ extension JSPlayerViewController: WKScriptMessageHandler {
         switch key {
         case .print:
             print("Player, ", message.body)
-            if let msg = message.body as? String,
-               msg.contains("Playback seems stuck") {
+			guard let msg = message.body as? String else { return }
+            if msg.contains("Playback seems stuck") {
                 
                 print("==========================================")
                 print("==========================================")
                 print("===========Playback seems stuck===========")
                 print("==========================================")
                 print("==========================================")
-            }
+			}
         case .duration:
             let d = message.body as? Int ?? 0
             durationButton.title = durationFormatter.string(from: .init(d)) ?? "00:00"
@@ -651,17 +764,27 @@ extension JSPlayerViewController: WKScriptMessageHandler {
                 self.windowSizeInited = true
             }
             self.startLoading(stop: true)
-            
+			stuckChecker = 0
         case .end:
-            print("==========================================")
-            print("==================Ended===================")
-            print("==========================================")
+			Log("player.end")
+			tryToReconnect()
         case .loadingComplete:
-            break
+			Log("player.loadingComplete")
+			tryToReconnect()
         case .recoveredEarlyEof:
-            break
+			Log("player.recoveredEarlyEof")
         case .error:
-            break
+			Log("player.error \(message.body)")
+			tryToReconnect()
+		case .metaData:
+//			Log(message.body)
+			break
+		case .mediaInfo:
+//			Log(message.body)
+			break
+		case .stuckChecker:
+			guard let df = message.body as? Int else { return }
+			decodedFrames = df
         }
     }
 }

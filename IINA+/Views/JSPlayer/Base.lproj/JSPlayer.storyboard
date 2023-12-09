@@ -286,10 +286,10 @@
                                     <constraint firstAttribute="width" constant="130" id="QNU-XC-1Pe"/>
                                 </constraints>
                             </box>
-                            <box misplaced="YES" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V00-Sg-zdq">
-                                <rect key="frame" x="341" y="185" width="236" height="180"/>
+                            <box title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V00-Sg-zdq">
+                                <rect key="frame" x="95" y="39" width="177" height="157"/>
                                 <view key="contentView" id="Ip4-0U-egp">
-                                    <rect key="frame" x="4" y="5" width="228" height="172"/>
+                                    <rect key="frame" x="4" y="5" width="169" height="149"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ewv-UV-ySC" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
@@ -380,8 +380,21 @@
                                     </constraints>
                                 </view>
                             </box>
+                            <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hO9-Dn-LIM">
+                                <rect key="frame" x="368" y="227" width="125" height="31"/>
+                                <shadow key="shadow" blurRadius="1">
+                                    <size key="offset" width="1" height="1"/>
+                                    <color key="color" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </shadow>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Loading..." id="Fns-6s-teh">
+                                    <font key="font" size="26" name=".PingFangSC-Regular"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="hO9-Dn-LIM" firstAttribute="centerX" secondItem="tOy-S4-hL0" secondAttribute="centerX" id="1qx-u9-gN2"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="V00-Sg-zdq" secondAttribute="bottom" id="3OO-rs-CHB"/>
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="58q-ki-cTb" secondAttribute="bottom" id="42s-KS-eFa"/>
                             <constraint firstItem="V00-Sg-zdq" firstAttribute="centerX" secondItem="Cg1-Ai-cln" secondAttribute="centerX" id="BnR-wF-C6i"/>
@@ -394,6 +407,7 @@
                             <constraint firstItem="Q3d-da-hps" firstAttribute="top" secondItem="LJd-y3-Ngp" secondAttribute="bottom" id="h9v-UR-Zri"/>
                             <constraint firstItem="OII-k7-WVz" firstAttribute="leading" secondItem="tOy-S4-hL0" secondAttribute="leading" id="jLH-uD-nx0"/>
                             <constraint firstItem="OII-k7-WVz" firstAttribute="top" secondItem="tOy-S4-hL0" secondAttribute="top" id="pl0-RJ-kNf"/>
+                            <constraint firstItem="hO9-Dn-LIM" firstAttribute="centerY" secondItem="tOy-S4-hL0" secondAttribute="centerY" id="xzR-Yk-ERZ"/>
                         </constraints>
                     </view>
                     <connections>
@@ -405,6 +419,7 @@
                         <outlet property="linesPopUpButton" destination="G4f-6J-d9g" id="5RT-8f-OKT"/>
                         <outlet property="loadingProgressIndicator" destination="oXz-0Y-eDT" id="pcE-Ui-eSf"/>
                         <outlet property="opacitySlider" destination="sg5-LJ-uVm" id="zAW-0O-4ww"/>
+                        <outlet property="playerStateTextField" destination="hO9-Dn-LIM" id="SFT-RX-J4H"/>
                         <outlet property="qlBox" destination="LJd-y3-Ngp" id="FOk-Qa-LhP"/>
                         <outlet property="qlButton" destination="Awz-S7-3hO" id="eYx-ma-xfH"/>
                         <outlet property="quailtyHeightLayoutConstraint" destination="qJM-NN-NcQ" id="1ZI-cc-0g6"/>
