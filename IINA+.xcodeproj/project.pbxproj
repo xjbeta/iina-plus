@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -60,6 +60,7 @@
 		017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */ = {isa = PBXBuildFile; fileRef = 01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */; };
 		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
 		0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */; };
+		0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0184D7112B2025FF00C7901A /* DateExtension.swift */; };
 		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
 		0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189533E279FBC470011BAAC /* ColorPickButton.swift */; };
@@ -229,6 +230,7 @@
 		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
 		0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinPushFrame.pb.swift; sourceTree = "<group>"; };
+		0184D7112B2025FF00C7901A /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
 		0189533E279FBC470011BAAC /* ColorPickButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickButton.swift; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 		012601722119BA6D00C9C639 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				01BAD2AD2B13960600A64D55 /* Extensions */,
 				018F4F5F280D89BB0045B67C /* VideoDecoder */,
 				01B090A6281CFF1B00E305B7 /* Danmaku */,
 				013CE8F52185D992000271FB /* HttpServer.swift */,
@@ -398,7 +401,6 @@
 				01AEC8BB20EDFFBD001406E8 /* YouGetJSON.swift */,
 				01AEC8BD20EE108B001406E8 /* Processes.swift */,
 				01C248B42A623EC000C92639 /* IINAApp.swift */,
-				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				01AEC8C120EFBCCF001406E8 /* MPVOption.swift */,
 				011E4D3221E99CA300997633 /* Log.swift */,
 				01E40FEA22C304E800864118 /* ImageLoader.swift */,
@@ -577,6 +579,15 @@
 			path = Danmaku;
 			sourceTree = "<group>";
 		};
+		01BAD2AD2B13960600A64D55 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				01010124211DBC27002F0F7F /* StringExtension.swift */,
+				0184D7112B2025FF00C7901A /* DateExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		01BC354929AF2BC000B45577 /* DouYin */ = {
 			isa = PBXGroup;
 			children = (
@@ -645,8 +656,9 @@
 		01AEC89F20EDFD01001406E8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 0940;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = xjbeta;
 				TargetAttributes = {
 					01AEC8A620EDFD01001406E8 = {
@@ -792,6 +804,7 @@
 				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
+				0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */,
 				011E4D3321E99CA400997633 /* Log.swift in Sources */,
 				018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */,
 				018F4F662812C3EB0045B67C /* Douyu.swift in Sources */,
@@ -879,6 +892,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -911,9 +925,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -941,6 +957,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -973,9 +990,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -998,7 +1017,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = "IINA+/Info.plist";
@@ -1008,7 +1029,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.15;
+				MARKETING_VERSION = 0.7.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1024,7 +1045,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "IINA+/Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -1033,7 +1056,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.15;
+				MARKETING_VERSION = 0.7.16;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

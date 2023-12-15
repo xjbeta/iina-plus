@@ -51,6 +51,9 @@ window.openUrl = function(url) {
         player = mpegts.createPlayer(mediaDataSource, {
             lazyLoadMaxDuration: 3 * 60,
             seekType: 'range',
+            liveBufferLatencyChasing: true,
+            liveBufferLatencyMaxLatency: 8,
+            liveBufferLatencyMinRemain: 0.5,
         });
 
         mpegts.LoggingControl.addLogListener(playerLogListener);
@@ -59,15 +62,7 @@ window.openUrl = function(url) {
             print("loadeddata");
             window.webkit.messageHandlers.size.postMessage([videoElement.videoWidth, videoElement.videoHeight]);
         });
-        videoElement.addEventListener("loadedmetadata", function(e) {
-            print("loadedmetadata");
-        });
-        videoElement.addEventListener("ended", function(e) {
-            window.webkit.messageHandlers.end.postMessage();
-        });
-        videoElement.addEventListener("error", function(e) {
-            print("error");
-        });
+        
         videoElement.addEventListener("resize", function(e) {
             window.webkit.messageHandlers.size.postMessage([videoElement.videoWidth, videoElement.videoHeight]);
         });
@@ -84,6 +79,43 @@ window.openUrl = function(url) {
 
         player.load();
         player.play();
+
+
+        player.on(mpegts.Events.Error, function(data) {
+            window.webkit.messageHandlers.error.postMessage(data);
+        });
+
+        player.on(mpegts.Events.LOADING_COMPLETE, function(data) {
+            window.webkit.messageHandlers.loadingComplete.postMessage(data);
+        });
+
+        player.on(mpegts.Events.RECOVERED_EARLY_EOF, function(data) {
+            window.webkit.messageHandlers.recoveredEarlyEof.postMessage(data);
+        });
+
+        player.on(mpegts.Events.MEDIA_INFO, function(data) {
+            window.webkit.messageHandlers.mediaInfo.postMessage(data);
+        });
+
+        // player.on(mpegts.Events.METADATA_ARRIVED, function(data) {
+        //     print(data);
+        //     print('METADATA_ARRIVED');
+        // });
+
+        
+        player.on(mpegts.Events.SCRIPTDATA_ARRIVED, function(data) {
+            window.webkit.messageHandlers.metaData.postMessage(data.onMetaData);
+        });
+
+        // stuckChecker
+        player.on(mpegts.Events.STATISTICS_INFO, function(data) {
+            window.webkit.messageHandlers.stuckChecker.postMessage(data.decodedFrames);
+        });
+
+        player.on(mpegts.Events.DESTROYING, function(data) {
+            print(data);
+            print('DESTROYING');
+        });
 
     }
 };

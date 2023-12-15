@@ -556,6 +556,12 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             msgDatas.forEach {
                 guard let msg = String(data: $0, encoding: .utf8) else { return }
                 if msg.starts(with: "type@=chatmsg") {
+					
+					if !msg.contains("dms@=") {
+						// filter strange dm
+						return
+					}
+					
                     let dm = msg.split(separator: "/").filter {
                         $0.starts(with: "txt@=")
                     }.filter {

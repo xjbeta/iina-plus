@@ -37,8 +37,9 @@ public class Bookmark: NSManagedObject {
 			if updating {
 				return
 			}
-			if let d = updateDate?.timeIntervalSince1970,
-			   (Date().timeIntervalSince1970 - d) < limitSec {
+			
+			if let s = updateDate?.secondsSinceNow,
+			   s < limitSec {
 				return
 			}
 		}
