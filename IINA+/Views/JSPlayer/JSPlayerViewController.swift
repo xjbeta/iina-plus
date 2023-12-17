@@ -138,7 +138,7 @@ class JSPlayerViewController: NSViewController {
 		func string() -> String {
 			switch self {
 			case .notLiving:
-				return "Not Living"
+				return NSLocalizedString("VideoGetError.isNotLiving" , comment: "isNotLiving")
 			case .openFailed:
 				return "Open Failed"
 			case .unknown:
@@ -153,7 +153,7 @@ class JSPlayerViewController: NSViewController {
 			
 			switch playerState {
 			case .loadingWebView, .stuckChecking, .opening:
-				stateTF.stringValue = "Loading..."
+				stateTF.stringValue = NSLocalizedString("Loading..." , comment: "Loading...")
 				stateTF.isHidden = false
 			case .error(let err):
 				stateTF.stringValue = err.string()

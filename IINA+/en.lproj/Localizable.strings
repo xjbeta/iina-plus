@@ -19,6 +19,9 @@
 /* No comment provided by engineer. */
 "mainMenu.view.reloadLiveStatus" = "Reload Live Status";
 
+/* plugin install finish */
+"PluginInstaller.tips" = "\nEverything OK  ✅\nRestart IINA to take effect";
+
 /* Quit anyway button title */
 "Quit anyway" = "Quit anyway";
 
@@ -46,6 +49,9 @@
 /* Huya */
 "SupportSites.Huya" = "Huya";
 
+/* KuaiShou */
+"SupportSites.KuaiShou" = "KuaiShou";
+
 /* QQ Live */
 "SupportSites.QQLive" = "QQ Live";
 
@@ -70,8 +76,5 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
 
-/* KuaiShou */
-"SupportSites.KuaiShou" = "KuaiShou";
-
-/* plugin install finish */
-"PluginInstaller.tips" = "\nEverything OK  ✅\nRestart IINA to take effect";
+/* Loading... */
+"Loading..." = "Loading...";
