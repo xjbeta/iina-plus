@@ -400,11 +400,19 @@ extension DouYin: WKScriptMessageHandler {
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 		guard let msg = message.body as? String else { return }
 		
-		if msg.contains("webcast/im/push/v2") {
+		func post() {
 			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		}
+		
+		if msg.contains("webcast/im/push/v2") {
+			post()
 		} else if msg.contains("live.douyin.com/webcast/im/fetch"),
 				  msg.contains("last_rtt=-1") {
-			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+			post()
+		} else if msg.contains("live.douyin.com/aweme/v1/web/emoji/list") {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+				post()
+			}
 		}
 	}
 }
