@@ -692,6 +692,9 @@ extension JSPlayerViewController: NSWindowDelegate {
         videoKey = nil
         videoLine = 0
         
+		hideOSCTimer?.stop()
+		hideOSCTimer = nil
+		
         danmaku?.stop()
         danmaku = nil
         deinitWebView()
