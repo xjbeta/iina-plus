@@ -241,11 +241,14 @@ addXMLRequestCallback(function (xhr) {
 		}
 		
 		var state = DYState.none
+		var timerStarted = false
 		
         return Promise { resolver in
             dyFinishNitification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: .main) { _ in
 				guard state == .none else { return }
 				state = .checking
+				
+				Log("Douyin WebcastUpdated")
 				
                 if let n = self.dyFinishNitification {
                     NotificationCenter.default.removeObserver(n)
@@ -273,12 +276,6 @@ addXMLRequestCallback(function (xhr) {
                     if s.contains("抖音直播") {
                         self.webViewLoadingObserver?.invalidate()
                         self.webViewLoadingObserver = nil
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
-							guard state == .none else { return }
-                            Log("DouYin Cookies timeout, check cookies.")
-							NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
-                        }
                     } else if s.contains("验证") {
 						Log("Douyin reload init url")
                         self.deleteCookies().done {
@@ -286,8 +283,15 @@ addXMLRequestCallback(function (xhr) {
                         }.catch({ _ in })
                     }
                 }
+				
+				guard !timerStarted else { return }
+				timerStarted = true
+				DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
+					guard state == .none else { return }
+					Log("DouYin Cookies timeout, check cookies.")
+					NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+				}
             }
-			
 			
             webView?.load(.init(url: douyinEmptyURL))
         }
