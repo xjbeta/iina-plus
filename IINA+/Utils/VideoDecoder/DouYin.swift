@@ -342,12 +342,17 @@ addXMLRequestCallback(function (xhr) {
 			self.getEnterContent(self.douyinEmptyURL.absoluteString)
 		}.done { info in
 			Log("Douyin test info \(info.title)")
-			Log("Douyin deinit webview")
-			
-			self.webView?.stopLoading()
-			self.webView?.removeFromSuperview()
-			self.webView = nil
+			self.deinitWebView()
 		}
+	}
+	
+	func deinitWebView() {
+		Log("Douyin deinit webview")
+		
+		self.webView?.stopLoading()
+		self.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "fetch")
+		self.webView?.removeFromSuperview()
+		self.webView = nil
 	}
 	
     func deleteCookies() -> Promise<()> {
