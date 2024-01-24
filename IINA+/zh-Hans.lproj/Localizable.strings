@@ -75,3 +75,6 @@
 
 /* plugin install finish */
 "PluginInstaller.tips" = "\n准备就绪  ✅\n重启 IINA 以生效";
+
+/* Loading... */
+"Loading..." = "加载中....";

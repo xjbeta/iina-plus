@@ -241,11 +241,14 @@ addXMLRequestCallback(function (xhr) {
 		}
 		
 		var state = DYState.none
+		var timerStarted = false
 		
         return Promise { resolver in
             dyFinishNitification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: .main) { _ in
 				guard state == .none else { return }
 				state = .checking
+				
+				Log("Douyin WebcastUpdated")
 				
                 if let n = self.dyFinishNitification {
                     NotificationCenter.default.removeObserver(n)
@@ -273,12 +276,6 @@ addXMLRequestCallback(function (xhr) {
                     if s.contains("抖音直播") {
                         self.webViewLoadingObserver?.invalidate()
                         self.webViewLoadingObserver = nil
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
-							guard state == .none else { return }
-                            Log("DouYin Cookies timeout, check cookies.")
-							NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
-                        }
                     } else if s.contains("验证") {
 						Log("Douyin reload init url")
                         self.deleteCookies().done {
@@ -286,8 +283,15 @@ addXMLRequestCallback(function (xhr) {
                         }.catch({ _ in })
                     }
                 }
+				
+				guard !timerStarted else { return }
+				timerStarted = true
+				DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
+					guard state == .none else { return }
+					Log("DouYin Cookies timeout, check cookies.")
+					NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+				}
             }
-			
 			
             webView?.load(.init(url: douyinEmptyURL))
         }
@@ -338,12 +342,17 @@ addXMLRequestCallback(function (xhr) {
 			self.getEnterContent(self.douyinEmptyURL.absoluteString)
 		}.done { info in
 			Log("Douyin test info \(info.title)")
-			Log("Douyin deinit webview")
-			
-			self.webView?.stopLoading()
-			self.webView?.removeFromSuperview()
-			self.webView = nil
+			self.deinitWebView()
 		}
+	}
+	
+	func deinitWebView() {
+		Log("Douyin deinit webview")
+		
+		self.webView?.stopLoading()
+		self.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "fetch")
+		self.webView?.removeFromSuperview()
+		self.webView = nil
 	}
 	
     func deleteCookies() -> Promise<()> {
@@ -391,11 +400,19 @@ extension DouYin: WKScriptMessageHandler {
 	func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 		guard let msg = message.body as? String else { return }
 		
-		if msg.contains("webcast/im/push/v2") {
+		func post() {
 			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+		}
+		
+		if msg.contains("webcast/im/push/v2") {
+			post()
 		} else if msg.contains("live.douyin.com/webcast/im/fetch"),
 				  msg.contains("last_rtt=-1") {
-			NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
+			post()
+		} else if msg.contains("live.douyin.com/aweme/v1/web/emoji/list") {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+				post()
+			}
 		}
 	}
 }

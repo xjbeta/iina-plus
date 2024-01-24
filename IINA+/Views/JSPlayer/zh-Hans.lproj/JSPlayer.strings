@@ -39,3 +39,6 @@
 
 /* Class = "NSBox"; title = "Box"; ObjectID = "V00-Sg-zdq"; */
 "V00-Sg-zdq.title" = "";
+
+/* Class = "NSTextFieldCell"; title = "Loading..."; ObjectID = "Fns-6s-teh"; */
+"Fns-6s-teh.title" = "加载中...";
