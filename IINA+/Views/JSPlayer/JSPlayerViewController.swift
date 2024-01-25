@@ -501,6 +501,10 @@ class JSPlayerViewController: NSViewController {
         ScriptMessageKeys.allCases.forEach {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
         }
+		
+		if let handler = webView.configuration.urlSchemeHandler(forURLScheme: JSPlayerURLSchemeHandler.schemeName) as? JSPlayerURLSchemeHandler {
+			handler.stop()
+		}
         
         webView.navigationDelegate = nil
         webView.uiDelegate = nil
