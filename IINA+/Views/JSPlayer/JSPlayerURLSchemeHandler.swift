@@ -59,6 +59,14 @@ class JSPlayerURLSchemeHandler: NSObject, WKURLSchemeHandler {
 		map[task] = nil
 		task.cancel()
 	}
+	
+	func stop() {
+		session?.invalidateAndCancel()
+		map.forEach {
+			$0.key.cancel()
+		}
+		map = [:]
+	}
 }
 
 extension JSPlayerURLSchemeHandler: URLSessionDelegate, URLSessionDataDelegate {
