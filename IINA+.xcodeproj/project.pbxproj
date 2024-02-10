@@ -622,10 +622,10 @@
 				01AEC8A320EDFD01001406E8 /* Sources */,
 				01AEC8A420EDFD01001406E8 /* Frameworks */,
 				01AEC8A520EDFD01001406E8 /* Resources */,
-				019BFF5D212485B900E715CC /* ShellScript */,
 				013CE8EF2185D09F000271FB /* Copy Web Files */,
 				014F541926D9184100B9E82A /* Embed Frameworks */,
 				0152EF4329ACED2700F89E2A /* Copy DouYin */,
+				01003E712B771D9100A152ED /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -739,9 +739,9 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		019BFF5D212485B900E715CC /* ShellScript */ = {
+		01003E712B771D9100A152ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -752,7 +752,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\nBUILD_NUMBER=`date +%y%m%d%H`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
 		};
