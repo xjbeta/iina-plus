@@ -95,7 +95,8 @@ class Huya: NSObject, SupportSiteProtocol {
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
 			let info = try HuyaStream(object: jsonObj)
 			
-			let yougetJson = YouGetJSON(rawUrl: url)
+			var yougetJson = YouGetJSON(rawUrl: url)
+			yougetJson.title = info.data.first?.liveInfo.roomName ?? ""
 			
 			return info.write(to: yougetJson, uid: self.huyaUid)
 			
