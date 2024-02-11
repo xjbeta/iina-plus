@@ -31,11 +31,14 @@ class Huya: NSObject, SupportSiteProtocol {
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		getHuyaInfoM(url).map {
-			var yougetJson = YouGetJSON(rawUrl: url)
-			yougetJson.title = $0.title
-			return $0.write(to: yougetJson, uid: self.huyaUid)
-		}
+		getHuyaInfo(url)
+		/*
+		 getHuyaInfoM(url).map {
+			 var yougetJson = YouGetJSON(rawUrl: url)
+			 yougetJson.title = $0.title
+			 return $0.write(to: yougetJson, uid: self.huyaUid)
+		 }
+		 */
     }
     
     // MARK: - Huya
@@ -95,7 +98,8 @@ class Huya: NSObject, SupportSiteProtocol {
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
 			let info = try HuyaStream(object: jsonObj)
 			
-			let yougetJson = YouGetJSON(rawUrl: url)
+			var yougetJson = YouGetJSON(rawUrl: url)
+			yougetJson.title = info.data.first?.liveInfo.roomName ?? ""
 			
 			return info.write(to: yougetJson, uid: self.huyaUid)
 			
@@ -117,6 +121,7 @@ class Huya: NSObject, SupportSiteProtocol {
     }
 }
 
+/*
 struct HuyaInfo: Unmarshaling, LiveInfo {
     var title: String = ""
     var name: String = ""
@@ -144,6 +149,7 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
         isSeeTogetherRoom = gameHostName == "seeTogether"
     }
 }
+ */
 
 
 struct HuyaStream: Unmarshaling {
@@ -215,7 +221,16 @@ struct HuyaStream: Unmarshaling {
 		
 		init(object: MarshaledObject) throws {
 			roomName = try object.value(for: "roomName")
-			uid = try object.value(for: "uid")
+			
+			if let uid: Int = try? object.value(for: "uid") {
+				self.uid = uid
+			} else if let uid: String = try? object.value(for: "uid"),
+					  let iuid = Int(uid) {
+				self.uid = iuid
+			} else {
+				throw MarshalError.keyNotFound(key: "huya.GameLiveInfo.uid")
+			}
+			
 			isSecret = try object.value(for: "isSecret")
 			screenshot = try object.value(for: "screenshot")
 			nick = try object.value(for: "nick")
@@ -325,6 +340,9 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
 	
 	func write(to yougetJson: YouGetJSON, uid: Int) -> YouGetJSON {
 		var yougetJson = yougetJson
+		
+		// HuyaUrl.format not work for m
+		return yougetJson
 		
 		let urls = streamInfos.sorted { i1, i2 -> Bool in
 			i1.sCdnType == defaultCDN
