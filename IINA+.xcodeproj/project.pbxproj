@@ -78,6 +78,7 @@
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
 		019F584F2AF1450800235BAE /* JSPlayerURLSchemeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019F584E2AF1450800235BAE /* JSPlayerURLSchemeHandler.swift */; };
+		01A183DB2B789728006FA874 /* HuyaUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A183DA2B789728006FA874 /* HuyaUrl.swift */; };
 		01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */; };
 		01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AEC8AC20EDFD01001406E8 /* MainViewController.swift */; };
 		01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01AEC8AE20EDFD02001406E8 /* Assets.xcassets */; };
@@ -248,6 +249,7 @@
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
 		019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.3.xcdatamodel"; sourceTree = "<group>"; };
 		019F584E2AF1450800235BAE /* JSPlayerURLSchemeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerURLSchemeHandler.swift; sourceTree = "<group>"; };
+		01A183DA2B789728006FA874 /* HuyaUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuyaUrl.swift; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* IINA+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IINA+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01AEC8AC20EDFD01001406E8 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
+				01A183DA2B789728006FA874 /* HuyaUrl.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
@@ -622,10 +625,10 @@
 				01AEC8A320EDFD01001406E8 /* Sources */,
 				01AEC8A420EDFD01001406E8 /* Frameworks */,
 				01AEC8A520EDFD01001406E8 /* Resources */,
-				019BFF5D212485B900E715CC /* ShellScript */,
 				013CE8EF2185D09F000271FB /* Copy Web Files */,
 				014F541926D9184100B9E82A /* Embed Frameworks */,
 				0152EF4329ACED2700F89E2A /* Copy DouYin */,
+				01003E712B771D9100A152ED /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -739,9 +742,9 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		019BFF5D212485B900E715CC /* ShellScript */ = {
+		01003E712B771D9100A152ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -752,7 +755,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\nBUILD_NUMBER=`date +%y%m%d%H`\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUILD_NUMBER\" \"${TARGET_BUILD_DIR}\"/\"${INFOPLIST_PATH}\"\n";
 		};
@@ -765,6 +768,7 @@
 			files = (
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
 				01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */,
+				01A183DB2B789728006FA874 /* HuyaUrl.swift in Sources */,
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
 				0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */,
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
@@ -1029,7 +1033,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.18;
+				MARKETING_VERSION = 0.7.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1056,7 +1060,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.18;
+				MARKETING_VERSION = 0.7.19;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
