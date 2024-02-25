@@ -156,6 +156,14 @@ struct HuyaStream: Unmarshaling {
 	var data: [HuyaInfoData]
 	var vMultiStreamInfo: [StreamInfo]
 	
+	private let bitrateMap = [
+		4100: 17200,
+		4200: 17100,
+		4300: 17300,
+		14100: 14200,
+		20100: 19200
+	]
+	
 	init(object: MarshaledObject) throws {
 		data = try object.value(for: "data")
 		vMultiStreamInfo = try object.value(for: "vMultiStreamInfo")
@@ -171,8 +179,13 @@ struct HuyaStream: Unmarshaling {
 				$0.url(uid)
 			}
 			
-			vMultiStreamInfo.forEach {
-				let rate = $0.iBitRate
+			vMultiStreamInfo.enumerated().forEach {
+				var rate = $0.element.iBitRate
+				
+				let isFakeHdr = 16384 == (16384 & $0.element.iCompatibleFlag)
+				if isFakeHdr {
+					rate = bitrateMap[rate] ?? rate
+				}
 				
 				var us = urls.map {
 					$0.replacingOccurrences(of: "&ratio=0", with: "&ratio=\(rate)")
@@ -180,8 +193,8 @@ struct HuyaStream: Unmarshaling {
 				
 				var s = Stream(url: us.removeFirst())
 				s.src = us
-				s.quality = rate == 0 ? 9999999 : rate
-				yougetJson.streams[$0.sDisplayName] = s
+				s.quality = 9999 - $0.offset
+				yougetJson.streams[$0.element.sDisplayName] = s
 			}
 		}
 		
@@ -191,11 +204,15 @@ struct HuyaStream: Unmarshaling {
 	struct StreamInfo: Unmarshaling {
 		var sDisplayName: String
 		var iBitRate: Int
+		var iCodecType: Int
+		var iCompatibleFlag: Int
 		var iHEVCBitRate: Int
 		
 		init(object: MarshaledObject) throws {
 			sDisplayName = try object.value(for: "sDisplayName")
 			iBitRate = try object.value(for: "iBitRate")
+			iCodecType = try object.value(for: "iCodecType")
+			iCompatibleFlag = try object.value(for: "iCompatibleFlag")
 			iHEVCBitRate = try object.value(for: "iHEVCBitRate")
 		}
 	}
@@ -220,7 +237,10 @@ struct HuyaStream: Unmarshaling {
 		let avatar180: String
 		
 		init(object: MarshaledObject) throws {
-			roomName = try object.value(for: "roomName")
+			let name1: String = try object.value(for: "roomName")
+			let name2: String = try object.value(for: "introduction")
+			
+			roomName = name1 == "" ? name2 : name1
 			
 			if let uid: Int = try? object.value(for: "uid") {
 				self.uid = uid
