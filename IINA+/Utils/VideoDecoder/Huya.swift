@@ -188,7 +188,11 @@ struct HuyaStream: Unmarshaling {
 				}
 				
 				var us = urls.map {
-					$0.replacingOccurrences(of: "&ratio=0", with: "&ratio=\(rate)")
+					if rate != 0 {
+						$0.replacingOccurrences(of: "&ratio=0", with: "&ratio=\(rate)")
+					} else {
+						$0.replacingOccurrences(of: "&ratio=0", with: "")
+					}
 				}
 				
 				var s = Stream(url: us.removeFirst())
