@@ -95,6 +95,12 @@ struct YouGetJSON: Unmarshaling, Codable {
                     "\(MPVOption.ProgramBehavior.ytdl)=no",
                     "\(MPVOption.Network.referrer)=https://live.bilibili.com/"
                 ])
+			case .huya:
+				args.append(contentsOf: [
+					"\(MPVOption.ProgramBehavior.ytdl)=no",
+					"\(MPVOption.Network.referrer)=https://www.huya.com/",
+					"\(MPVOption.Network.userAgent)=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15"
+				])
             default:
                 args.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
             }

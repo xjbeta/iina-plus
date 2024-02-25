@@ -156,6 +156,14 @@ struct HuyaStream: Unmarshaling {
 	var data: [HuyaInfoData]
 	var vMultiStreamInfo: [StreamInfo]
 	
+	private let bitrateMap = [
+		4100: 17200,
+		4200: 17100,
+		4300: 17300,
+		14100: 14200,
+		20100: 19200
+	]
+	
 	init(object: MarshaledObject) throws {
 		data = try object.value(for: "data")
 		vMultiStreamInfo = try object.value(for: "vMultiStreamInfo")
@@ -172,7 +180,12 @@ struct HuyaStream: Unmarshaling {
 			}
 			
 			vMultiStreamInfo.enumerated().forEach {
-				let rate = $0.element.iBitRate
+				var rate = $0.element.iBitRate
+				
+				let isFakeHdr = 16384 == (16384 & $0.element.iCompatibleFlag)
+				if isFakeHdr {
+					rate = bitrateMap[rate] ?? rate
+				}
 				
 				var us = urls.map {
 					$0.replacingOccurrences(of: "&ratio=0", with: "&ratio=\(rate)")
@@ -191,11 +204,15 @@ struct HuyaStream: Unmarshaling {
 	struct StreamInfo: Unmarshaling {
 		var sDisplayName: String
 		var iBitRate: Int
+		var iCodecType: Int
+		var iCompatibleFlag: Int
 		var iHEVCBitRate: Int
 		
 		init(object: MarshaledObject) throws {
 			sDisplayName = try object.value(for: "sDisplayName")
 			iBitRate = try object.value(for: "iBitRate")
+			iCodecType = try object.value(for: "iCodecType")
+			iCompatibleFlag = try object.value(for: "iCompatibleFlag")
 			iHEVCBitRate = try object.value(for: "iHEVCBitRate")
 		}
 	}
