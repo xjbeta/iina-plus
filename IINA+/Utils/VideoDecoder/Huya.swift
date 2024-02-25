@@ -171,8 +171,8 @@ struct HuyaStream: Unmarshaling {
 				$0.url(uid)
 			}
 			
-			vMultiStreamInfo.forEach {
-				let rate = $0.iBitRate
+			vMultiStreamInfo.enumerated().forEach {
+				let rate = $0.element.iBitRate
 				
 				var us = urls.map {
 					$0.replacingOccurrences(of: "&ratio=0", with: "&ratio=\(rate)")
@@ -180,8 +180,8 @@ struct HuyaStream: Unmarshaling {
 				
 				var s = Stream(url: us.removeFirst())
 				s.src = us
-				s.quality = rate == 0 ? 9999999 : rate
-				yougetJson.streams[$0.sDisplayName] = s
+				s.quality = 9999 - $0.offset
+				yougetJson.streams[$0.element.sDisplayName] = s
 			}
 		}
 		
