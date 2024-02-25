@@ -220,7 +220,10 @@ struct HuyaStream: Unmarshaling {
 		let avatar180: String
 		
 		init(object: MarshaledObject) throws {
-			roomName = try object.value(for: "roomName")
+			let name1: String = try object.value(for: "roomName")
+			let name2: String = try object.value(for: "introduction")
+			
+			roomName = name1 == "" ? name2 : name1
 			
 			if let uid: Int = try? object.value(for: "uid") {
 				self.uid = uid
