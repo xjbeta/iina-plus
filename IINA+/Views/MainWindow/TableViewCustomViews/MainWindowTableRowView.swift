@@ -10,12 +10,41 @@ import Cocoa
 
 class MainWindowTableRowView: NSTableRowView {
     
+	var isContextualMenuTarget: Bool = false {
+		didSet {
+			needsDisplay = true
+		}
+	}
+	
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+		
+		if isContextualMenuTarget {
+			
+			let i: CGFloat = 2
+			
+			let rect = NSMakeRect(dirtyRect.origin.x + i,
+								  dirtyRect.origin.y + i,
+								  dirtyRect.width - i*2,
+								  dirtyRect.height - i*2)
+			
+			let border = NSBezierPath(roundedRect: rect, xRadius: 3, yRadius: 3)
+			border.lineWidth = 2
+			
+			if isSelected, isEmphasized {
+				NSColor.white.setStroke()
+			} else {
+				NSColor.systemBlue.setStroke()
+			}
+			
+			border.stroke()
+		}
     }
     
-    override func drawSelection(in dirtyRect: NSRect) {
-        isEmphasized ? NSColor.systemBlue.setFill() : NSColor.secondarySelectedControlColor.setFill()
-        NSBezierPath(roundedRect: dirtyRect, xRadius: 5, yRadius: 5).fill()
-    }
+	override func drawSelection(in dirtyRect: NSRect) {
+		isEmphasized ? NSColor.systemBlue.setFill() : NSColor.secondarySelectedControlColor.setFill()
+
+		NSBezierPath(roundedRect: dirtyRect, xRadius: 5, yRadius: 5).fill()
+	}
+	
 }

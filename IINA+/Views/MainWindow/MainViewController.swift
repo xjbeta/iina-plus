@@ -27,7 +27,7 @@ class MainViewController: NSViewController {
         return view.window?.windowController as! MainWindowController
     }
     // MARK: - Bookmarks Tab Item
-    @IBOutlet weak var bookmarkTableView: NSTableView!
+    @IBOutlet weak var bookmarkTableView: MainWindowTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
     var bookmarks: [Bookmark] {
         get {
@@ -126,7 +126,7 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Bilibili Tab Item
-    @IBOutlet weak var bilibiliTableView: NSTableView!
+    @IBOutlet weak var bilibiliTableView: MainWindowTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Processes.shared.videoDecoder.bilibili

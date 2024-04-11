@@ -31,6 +31,7 @@
 		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
+		013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
 		013CE8E021854813000271FB /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoDecoder.swift */; };
 		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
@@ -201,6 +202,7 @@
 		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
+		013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableView.swift; sourceTree = "<group>"; };
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
 		013CE8DF21854813000271FB /* VideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
 		013CE8F52185D992000271FB /* HttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
@@ -329,6 +331,7 @@
 		01010133211E9AA1002F0F7F /* TableViewCustomViews */ = {
 			isa = PBXGroup;
 			children = (
+				013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */,
 				01398986210F58E500B7042F /* MainWindowTableRowView.swift */,
 				01F515192109F002007C7153 /* LiveStatusTableCellView.swift */,
 				0189534727A0F5A90011BAAC /* LiveStateTextField.swift */,
@@ -788,6 +791,7 @@
 				0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
+				013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */,
 				0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
 				0199489E2742852E00C71708 /* SupportSites.swift in Sources */,
