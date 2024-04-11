@@ -474,7 +474,7 @@ class BilibiliCard: NSObject, Unmarshaling {
             aid = try json.value(for: "aid")
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
-            self.picUrl = picUrl
+			self.picUrl = picUrl.replacingOccurrences(of: "http://", with: "https://")
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")
