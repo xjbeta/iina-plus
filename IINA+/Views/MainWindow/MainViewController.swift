@@ -27,7 +27,7 @@ class MainViewController: NSViewController {
         return view.window?.windowController as! MainWindowController
     }
     // MARK: - Bookmarks Tab Item
-    @IBOutlet weak var bookmarkTableView: NSTableView!
+    @IBOutlet weak var bookmarkTableView: MainWindowTableView!
     @IBOutlet var bookmarkArrayController: NSArrayController!
     var bookmarks: [Bookmark] {
         get {
@@ -126,7 +126,7 @@ class MainViewController: NSViewController {
     }
     
     // MARK: - Bilibili Tab Item
-    @IBOutlet weak var bilibiliTableView: NSTableView!
+    @IBOutlet weak var bilibiliTableView: MainWindowTableView!
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Processes.shared.videoDecoder.bilibili
@@ -948,7 +948,10 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             }
         case bilibiliTableView:
             if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
-                view.imageBoxView.aid = bilibiliCards[row].aid
+				view.imageView?.image = nil
+				let aid = bilibiliCards[row].aid
+				
+                view.imageBoxView.aid = aid
                 view.imageBoxView.imageView?.image = nil
                 view.imageBoxView.pic = nil
                 view.imageBoxView.updatePreview(.stop)
@@ -958,6 +961,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 
                 if let imageView = view.imageView {
                     SDWebImageManager.shared.loadImage(with: .init(string: url), progress: nil) { img,_,_,_,_,_ in
+						guard view.imageBoxView.aid == aid else { return }
                         view.imageBoxView.pic = img
                         imageView.image = img
                     }
