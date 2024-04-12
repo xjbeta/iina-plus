@@ -15,7 +15,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Clone AppUpdaterAppcasts
         run: git clone https://github.com/xjbeta/AppUpdaterAppcasts
@@ -53,7 +53,7 @@ jobs:
           npm install
 
       - name: Download Plugin
-        uses: robinraju/release-downloader@v1.8
+        uses: robinraju/release-downloader@v1.10
         with:
           repository: 'xjbeta/iina-plugin-danmaku'
           tag: "0.1.8"
@@ -64,7 +64,7 @@ jobs:
         run: xcodebuild -resolvePackageDependencies
 
       - name: Archive
-        run: xcodebuild archive -project IINA+.xcodeproj -scheme IINA+ -archivePath archive/IINA+.xcarchive -showBuildTimingSummary -allowProvisioningUpdates
+        run: xcodebuild archive -project IINA+.xcodeproj -scheme IINA+ -destination 'generic/platform=macOS' -archivePath archive/IINA+.xcarchive -showBuildTimingSummary -allowProvisioningUpdates
 
       - name: CodeSign And Package
         shell: zsh {0}
@@ -87,7 +87,7 @@ jobs:
             archive/IINA+.xcarchive/Products/Applications/*.dmg
             
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           generate_release_notes: true
