@@ -9,7 +9,7 @@ on:
 
 jobs:
   release-osx:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
