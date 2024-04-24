@@ -375,10 +375,16 @@ class MainViewController: NSViewController {
                 case .init😅:
                     self.bilibiliCards = cards
                 case .history:
-                    self.bilibiliCards.append(contentsOf: cards)
+					let appends = cards.filter { card in
+						!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+                    self.bilibiliCards.append(contentsOf: appends)
                 case .new:
-                    if cards.count > 0 {
-                        self.bilibiliCards.insert(contentsOf: cards, at: 0)
+					let appends = cards.filter { card in
+						!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+                    if appends.count > 0 {
+                        self.bilibiliCards.insert(contentsOf: appends, at: 0)
                     }
                 }
             }.ensure(on: .main) {
