@@ -34,6 +34,9 @@ class MainViewController: NSViewController {
             return bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
         }
     }
+	var bookmarkLoaderSemaphore = DispatchSemaphore(value: 1)
+	var bookmarkLoaderTimer: Date?
+	
     @objc var context: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
         guard bookmarkTableView.selectedRow != -1 else { return }
@@ -353,47 +356,59 @@ class MainViewController: NSViewController {
         }
     }
     
-    func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
+	func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
 		guard canLoadMoreBilibiliCards else { return }
+		
+		if let date = bookmarkLoaderTimer,
+		   date.secondsSinceNow < 5 {
+			Log("ignore load more")
+			return
+		}
+		
+		bookmarkLoaderSemaphore.wait()
+		let uuid = UUID().uuidString
 		canLoadMoreBilibiliCards = false
 		progressStatusChanged(!canLoadMoreBilibiliCards)
 		
-        var dynamicID = -1
-        
-        switch action {
-        case .history:
-            dynamicID = bilibiliCards.last?.dynamicId ?? -1
-        case .new:
-            dynamicID = bilibiliCards.first?.dynamicId ?? -1
-        default: break
-        }
-	
-        bilibili.getUid().then {
-            self.bilibili.dynamicList($0, action, dynamicID)
-            }.done(on: .main) { cards in
-                switch action {
-                case .init😅:
-                    self.bilibiliCards = cards
-                case .history:
-					let appends = cards.filter { card in
-						!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
-					}
-                    self.bilibiliCards.append(contentsOf: appends)
-                case .new:
-					let appends = cards.filter { card in
-						!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
-					}
-                    if appends.count > 0 {
-                        self.bilibiliCards.insert(contentsOf: appends, at: 0)
-                    }
-                }
-            }.ensure(on: .main) {
-                self.canLoadMoreBilibiliCards = true
-                self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
-            }.catch { error in
-                Log("Get bilibili dynamicList error: \(error)")
-        }
-    }
+		var dynamicID = -1
+		
+		switch action {
+		case .history:
+			dynamicID = bilibiliCards.last?.dynamicId ?? -1
+		case .new:
+			dynamicID = bilibiliCards.first?.dynamicId ?? -1
+		default: break
+		}
+		Log("\(uuid), start, \(dynamicID)")
+		bilibili.getUid().then {
+			self.bilibili.dynamicList($0, action, dynamicID)
+		}.done(on: .main) { cards in
+			switch action {
+			case .init😅:
+				self.bilibiliCards = cards
+			case .history:
+				let appends = cards.filter { card in
+					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+				}
+				self.bilibiliCards.append(contentsOf: appends)
+			case .new:
+				let appends = cards.filter { card in
+					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+				}
+				if appends.count > 0 {
+					self.bilibiliCards.insert(contentsOf: appends, at: 0)
+				}
+			}
+		}.ensure(on: .main) {
+			self.canLoadMoreBilibiliCards = true
+			self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
+			self.bookmarkLoaderTimer = Date()
+			self.bookmarkLoaderSemaphore.signal()
+			Log("\(uuid), finish, \(dynamicID)")
+		}.catch { error in
+			Log("Get bilibili dynamicList error: \(error)")
+		}
+	}
     
     func progressStatusChanged(_ inProgress: Bool) {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
