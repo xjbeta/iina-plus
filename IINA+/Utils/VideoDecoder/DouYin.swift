@@ -131,9 +131,12 @@ addXMLRequestCallback(function (xhr) {
 		
 		return AF.request(u, headers: headers).responseData().map {
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
+			
 			let enterData = try DouYinEnterData(object: jsonObj)
 			
 			if let info = enterData.infos.first {
+				return info
+			} else if let info = try? DouYinEnterData2(object: jsonObj) {
 				return info
 			} else {
 				throw VideoGetError.notFountData
@@ -557,3 +560,22 @@ struct DouYinEnterData: Unmarshaling {
 }
 
 
+struct DouYinEnterData2: Unmarshaling, LiveInfo {
+	var title: String
+	var name: String
+	var avatar: String
+	var cover: String
+	var isLiving: Bool
+	var site = SupportSites.douyin
+	
+	init(object: MarshaledObject) throws {
+		title = "直播已结束"
+		name = try object.value(for: "data.user.nickname")
+		
+		let avatars: [String] = (try? object.value(for: "data.user.avatar_thumb.url_list")) ?? []
+		
+		avatar = avatars.first ?? ""
+		cover = ""
+		isLiving = false
+	}
+}
