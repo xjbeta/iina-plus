@@ -257,6 +257,7 @@ addXMLRequestCallback(function (xhr) {
 				self.loadCookies().done {
 					resolver.fulfill_()
 				}.ensure {
+					self.deinitWebView()
 					state = .finish
 				}.catch {
 					resolver.reject($0)
@@ -264,7 +265,13 @@ addXMLRequestCallback(function (xhr) {
             }
 			
 			webView = WKWebView(frame: .zero, configuration: webviewConfig)
-            
+			
+#if DEBUG
+			if #available(macOS 13.3, *) {
+				webView?.isInspectable = true
+			}
+#endif
+	       
             webViewLoadingObserver?.invalidate()
             webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
                 guard !webView.isLoading else { return }
@@ -319,8 +326,8 @@ addXMLRequestCallback(function (xhr) {
 			])
 		}.get {
 			Log("Douyin cid UA")
-			guard let id = $0[0] as? String,
-				  let ua = $0[1] as? String else {
+			let id = $0[0] as? String
+			guard let ua = $0[1] as? String else {
 				throw CookiesError.invalid
 			}
 			self.cookies[cid] = id
@@ -342,7 +349,6 @@ addXMLRequestCallback(function (xhr) {
 			self.getEnterContent(self.douyinEmptyURL.absoluteString)
 		}.done { info in
 			Log("Douyin test info \(info.title)")
-			self.deinitWebView()
 		}
 	}
 	

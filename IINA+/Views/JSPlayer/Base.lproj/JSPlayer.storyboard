@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -197,7 +197,7 @@
                                                                                 <rect key="frame" x="0.0" y="0.0" width="80" height="24"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
-                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BoA-Ug-ZQm">
+                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BoA-Ug-ZQm">
                                                                                         <rect key="frame" x="6" y="4" width="68" height="16"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="Lz2-R0-mki">
                                                                                             <font key="font" usesAppearanceFont="YES"/>
@@ -324,7 +324,7 @@
                                                             </button>
                                                         </gridCell>
                                                         <gridCell row="hcf-Ao-HZM" column="DcH-xJ-0gT" id="rea-7u-Uaf">
-                                                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
+                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
                                                                 <rect key="frame" x="-2" y="73" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Speed:" id="0dj-e7-0em">
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -343,7 +343,7 @@
                                                             </slider>
                                                         </gridCell>
                                                         <gridCell row="HjC-Z2-jtc" column="DcH-xJ-0gT" id="f6w-tp-Uf4">
-                                                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
+                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
                                                                 <rect key="frame" x="-2" y="26" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Opacity:" id="K36-Zb-kEo">
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -380,14 +380,14 @@
                                     </constraints>
                                 </view>
                             </box>
-                            <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hO9-Dn-LIM">
-                                <rect key="frame" x="368" y="227" width="125" height="31"/>
+                            <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hO9-Dn-LIM">
+                                <rect key="frame" x="374" y="227" width="113" height="30"/>
                                 <shadow key="shadow" blurRadius="1">
                                     <size key="offset" width="1" height="1"/>
                                     <color key="color" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </shadow>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Loading..." id="Fns-6s-teh">
-                                    <font key="font" size="26" name=".PingFangSC-Regular"/>
+                                    <font key="font" metaFont="system" size="26"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>

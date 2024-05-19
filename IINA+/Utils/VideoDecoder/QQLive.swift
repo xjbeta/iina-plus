@@ -13,6 +13,13 @@ import PMKAlamofire
 import Marshal
 
 class QQLive: NSObject, SupportSiteProtocol {
+	lazy var pSession: Session = {
+		let configuration = URLSessionConfiguration.af.default
+		let ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
+		configuration.headers.add(.userAgent(ua))
+		return Session(configuration: configuration)
+	}()
+	
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
         roomInfo(url).map {
             $0 as LiveInfo
@@ -29,15 +36,16 @@ class QQLive: NSObject, SupportSiteProtocol {
     }
     
     func roomInfo(_ url: String) -> Promise<QQLiveInfo> {
-        // https://github.com/streamlink/streamlink/blob/master/src/streamlink/plugins/qq.py
-        guard url.pathComponents.count > 2 else {
-            return .init(error: VideoGetError.notSupported)
-        }
-        
-        return AF.request("https://live.qq.com/api/h5/room?room_id=\(url.pathComponents[2])").responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            return try QQLiveInfo(object: json)
-        }
+		let url = url.replacingOccurrences(of: "https://live.qq.com", with: "https://m.live.qq.com")
+		
+		return pSession.request(url).responseString().map {
+			$0.string.subString(from: "window.$ROOM_INFO = ", to: ";</script>")
+		}.map {
+			guard let data = $0.data(using: .utf8) else { throw VideoGetError.notFountData }
+			
+			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+			return try QQLiveInfo(object: json)
+		}
     }
 
 }
@@ -50,14 +58,22 @@ struct QQLiveInfo: Unmarshaling, LiveInfo {
     var cover: String = ""
     var site: SupportSites = .qqLive
     
+	var roomID: String = ""
+	
     var url: String
     
     init(object: MarshaledObject) throws {
-        title = try object.value(for: "data.room_name")
-        name = try object.value(for: "data.nickname")
-        avatar = try object.value(for: "data.owner_avatar")
-        isLiving = "\(try object.any(for: "data.show_status"))" == "1"
-        cover = try object.value(for: "data.room_src_square")
-        url = try object.value(for: "data.rtmp_url") + "/" + object.value(for: "data.rtmp_live")
+		
+		
+		
+        title = try object.value(for: "room_name")
+        name = try object.value(for: "nickname")
+        isLiving = "\(try object.any(for: "show_status"))" == "1"
+        cover = try object.value(for: "room_src")
+		roomID = try object.value(for: "room_id")
+		
+		avatar = try object.value(for: "owner_avatar")
+		
+        url = try object.value(for: "rtmp_url") + "/" + object.value(for: "rtmp_live")
     }
 }
