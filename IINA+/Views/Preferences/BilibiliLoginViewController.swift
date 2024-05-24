@@ -57,8 +57,7 @@ class BilibiliLoginViewController: NSViewController {
         
         let url = URL(string: "https://passport.bilibili.com/login")
         let script = """
-document.getElementsByClassName("sns")[0].remove();
-document.getElementsByClassName("btn btn-reg")[0].remove()
+document.getElementsByClassName("v-navbar__back")[0].remove();
 """
         // WebView Config
         let contentController = WKUserContentController()
@@ -73,6 +72,8 @@ document.getElementsByClassName("btn btn-reg")[0].remove()
         webView.navigationDelegate = self
         viewForWeb.subviews.removeAll()
         viewForWeb.addSubview(webView)
+		webView.autoresizingMask = [.height, .width, .minXMargin, .minYMargin, .maxXMargin, .maxYMargin]
+
         webView.isHidden = false
         
         let request = URLRequest(url: url!)
