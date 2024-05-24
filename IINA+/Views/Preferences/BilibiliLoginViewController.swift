@@ -55,6 +55,7 @@ class BilibiliLoginViewController: NSViewController {
     func loadWebView() {
         tabView.selectTabViewItem(at: 0)
         
+		//	https://passport.bilibili.com/ajax/miniLogin/minilogin
         let url = URL(string: "https://passport.bilibili.com/login")
         let script = """
 document.getElementsByClassName("v-navbar__back")[0].remove();
