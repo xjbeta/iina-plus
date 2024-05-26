@@ -944,7 +944,7 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
             case .unsupported:
                 return 23
             default:
-                return 55
+                return 57
             }
         case bilibiliTableView:
             return tableView.rowHeight
