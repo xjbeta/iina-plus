@@ -123,17 +123,26 @@ class BiliLive: NSObject, SupportSiteProtocol {
             guard let data = s.data(using: .utf8),
                   let json: JSONObject = try? JSONParser.JSONObjectWithData(data) else { return [] }
             
-            let list: [BiliLiveRoomList] = try json.value(for: "live-non-revenue-player")
-            
-            re = list.first?.roomList.enumerated().map {
-                BiliLiveVideoSelector(
-                    id: $0.element.roomId,
-                    sid: "",
-                    index: $0.offset,
-                    title: $0.element.tabText,
-                    url: "")
-            } ?? []
-            return re
+			if let list: [BiliLiveRoomList] = try? json.value(for: "live-non-revenue-player") {
+				re = list.first?.roomList.enumerated().map {
+					BiliLiveVideoSelector(
+						id: $0.element.roomId,
+						sid: "",
+						index: $0.offset,
+						title: $0.element.tabText,
+						url: "")
+				} ?? []
+			} else {
+				re = self.findAllRoomIds(s).enumerated().map {
+					BiliLiveVideoSelector(
+						id: $0.element,
+						sid: "",
+						index: $0.offset,
+						title: "",
+						url: "")
+				}
+			}
+			return re
         }.then {
             self.liveInfos($0.compactMap({ Int($0.id) }))
         }.map {
@@ -172,6 +181,22 @@ class BiliLive: NSObject, SupportSiteProtocol {
         
         return AF.request(u).responseData().map({ $0.data })
     }
+	
+	private func findAllRoomIds(_ str: String) -> [String] {
+		let key = #""roomId":""#
+		var re = [String]()
+		
+		var ss = str
+		while ss.contains(key) {
+			ss = ss.subString(from: key)
+			let rid = ss.subString(to: "\"")
+			if let _ = Int(rid) {
+				re.append(rid)
+			}
+		}
+		
+		return re
+	}
 }
 
 struct BiliLiveInfo: Unmarshaling, LiveInfo {
