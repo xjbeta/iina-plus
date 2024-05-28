@@ -14,6 +14,7 @@
                         <tabViewItem label="General" identifier="" image="NSPreferencesGeneral" id="xCo-Sy-9Sy"/>
                         <tabViewItem label="Bilibili" identifier="" image="NSUserAccounts" id="xkE-Je-aYL"/>
                         <tabViewItem label="Advanced" identifier="" image="NSAdvanced" id="Fty-Mk-miB"/>
+                        <tabViewItem label="About" image="NSInfo" id="Mei-9r-Dcc"/>
                     </tabViewItems>
                     <viewControllerTransitionOptions key="transitionOptions"/>
                     <tabView key="tabView" drawsBackground="NO" type="noTabsNoBorder" id="XQq-Vb-Fsp">
@@ -29,6 +30,7 @@
                         <segue destination="4vc-uy-6qh" kind="relationship" relationship="tabItems" id="6QM-LR-7Qh"/>
                         <segue destination="2Zp-SK-RIm" kind="relationship" relationship="tabItems" id="F59-qV-uqy"/>
                         <segue destination="kNk-l6-zqS" kind="relationship" relationship="tabItems" id="Pkk-wf-egJ"/>
+                        <segue destination="uFr-Mt-jba" kind="relationship" relationship="tabItems" id="36W-ZB-QmW"/>
                     </connections>
                 </tabViewController>
                 <customObject id="4i1-yX-upb" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -774,6 +776,33 @@
             </objects>
             <point key="canvasLocation" x="2554" y="929.5"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="sDh-Tn-TXW">
+            <objects>
+                <viewController id="uFr-Mt-jba" sceneMemberID="viewController">
+                    <view key="view" id="jwQ-Sv-3nB">
+                        <rect key="frame" x="0.0" y="0.0" width="380" height="360"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="0or-kP-ieJ">
+                                <rect key="frame" x="40" y="40" width="300" height="300"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="0or-kP-ieJ" secondAttribute="height" id="8BM-AV-dTT"/>
+                                    <constraint firstAttribute="width" constant="300" id="jrl-wo-Fzy"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WX_Payment" id="xCL-23-bed"/>
+                            </imageView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="0or-kP-ieJ" firstAttribute="centerX" secondItem="jwQ-Sv-3nB" secondAttribute="centerX" id="OrY-09-gP9"/>
+                            <constraint firstItem="0or-kP-ieJ" firstAttribute="top" secondItem="jwQ-Sv-3nB" secondAttribute="top" constant="20" symbolic="YES" id="UX4-kD-uYx"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <customObject id="gxI-Lz-oEw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3030.5" y="1031"/>
+        </scene>
         <!--Plugin View Controller-->
         <scene sceneID="dqq-mH-b6s">
             <objects>
@@ -1066,7 +1095,9 @@ Gw
     </scenes>
     <resources>
         <image name="NSAdvanced" width="32" height="32"/>
+        <image name="NSInfo" width="32" height="32"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
         <image name="NSUserAccounts" width="32" height="32"/>
+        <image name="WX_Payment" width="1037" height="1037"/>
     </resources>
 </document>
