@@ -776,10 +776,10 @@
             </objects>
             <point key="canvasLocation" x="2554" y="929.5"/>
         </scene>
-        <!--View Controller-->
+        <!--About View Controller-->
         <scene sceneID="sDh-Tn-TXW">
             <objects>
-                <viewController id="uFr-Mt-jba" sceneMemberID="viewController">
+                <viewController id="uFr-Mt-jba" customClass="AboutViewController" customModule="IINA_" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="jwQ-Sv-3nB">
                         <rect key="frame" x="0.0" y="0.0" width="380" height="360"/>
                         <autoresizingMask key="autoresizingMask"/>

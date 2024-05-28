@@ -10,7 +10,6 @@ import Cocoa
 
 class PreferencesTabViewController: NSTabViewController {
     
-    lazy var baiduItem = NSTabViewItem()
     var originalSizes = [String: CGSize]()
     
     override func viewDidLoad() {
@@ -28,14 +27,13 @@ class PreferencesTabViewController: NSTabViewController {
     }
     
     func autoResizeWindow(_ tabViewItem: NSTabViewItem?, animate: Bool) {
-        if let title = tabViewItem?.label {
-            if !originalSizes.keys.contains(title) {
-                originalSizes[title] = tabViewItem?.view?.frame.size
-            }
-            if let size = originalSizes[title], let window = view.window {
-                window.autoResize(toFill: size, animate: animate)
-            }
-        }
+		guard let title = tabViewItem?.label else { return }
+		if !originalSizes.keys.contains(title) {
+			originalSizes[title] = tabViewItem?.view?.frame.size
+		}
+		if let size = originalSizes[title], let window = view.window {
+			window.autoResize(toFill: size, animate: animate)
+		}
     }
     
     deinit {
