@@ -34,7 +34,7 @@ class MainWindowTableRowView: NSTableRowView {
 			if isSelected, isEmphasized {
 				NSColor.white.setStroke()
 			} else {
-				NSColor.systemBlue.setStroke()
+				NSColor.controlAccentColor.setStroke()
 			}
 			
 			border.stroke()
@@ -42,9 +42,9 @@ class MainWindowTableRowView: NSTableRowView {
     }
     
 	override func drawSelection(in dirtyRect: NSRect) {
-		isEmphasized ? NSColor.systemBlue.setFill() : NSColor.secondarySelectedControlColor.setFill()
-
-		NSBezierPath(roundedRect: dirtyRect, xRadius: 5, yRadius: 5).fill()
+		let color = isEmphasized ? NSColor.controlAccentColor : NSColor.secondarySelectedControlColor
+		
+		color.setFill()
+		NSBezierPath(roundedRect: frame, xRadius: 5, yRadius: 5).fill()
 	}
-	
 }
