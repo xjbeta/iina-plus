@@ -45,6 +45,6 @@ class MainWindowTableRowView: NSTableRowView {
 		let color = isEmphasized ? NSColor.controlAccentColor : NSColor.secondarySelectedControlColor
 		
 		color.setFill()
-		NSBezierPath(roundedRect: frame, xRadius: 5, yRadius: 5).fill()
+		NSBezierPath(roundedRect: bounds, xRadius: 5, yRadius: 5).fill()
 	}
 }
