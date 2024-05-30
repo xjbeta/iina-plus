@@ -73,13 +73,16 @@ class Huya: NSObject, SupportSiteProtocol {
 	
 	func getHuyaInfo(_ url: String) -> Promise<HuyaStream.GameLiveInfo> {
 		getPlayerConfig(url).map {
-			let info = try HuyaStream(object: $0)
+			let stream = try HuyaStream(object: $0)
 			
-			guard let re = info.data.first?.liveInfo else {
+			
+			guard let data = stream.data.first else {
 				throw VideoGetError.notFountData
 			}
+			var info = data.liveInfo
+			info.isLiving = data.streamInfoList.count > 0
 			
-			return re
+			return info
 		}
 	}
     
@@ -267,9 +270,6 @@ struct HuyaStream: Unmarshaling {
 			
 			title = name1 == "" ? name2 : name1
 			name = try object.value(for: "nick")
-			
-			let liveId: String = try object.value(for: "liveId")
-			isLiving = Int(liveId) != 0
 			
 			avatar = try object.value(for: "avatar180")
 			rid = try object.value(for: "profileRoom")
