@@ -25,13 +25,13 @@ class Huya: NSObject, SupportSiteProtocol {
 	private let huyaUid = Int.random(in: Int(1e12)..<Int(1e13))
     
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		getHuyaInfoM(url).map {
+		getHuyaInfo(url).map {
 			$0
 		}
     }
     
     func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		getHuyaInfo(url)
+		getHuyaVideos(url)
 		/*
 		 getHuyaInfoM(url).map {
 			 var yougetJson = YouGetJSON(rawUrl: url)
@@ -70,14 +70,35 @@ class Huya: NSObject, SupportSiteProtocol {
             return re
         }
     }
+	
+	func getHuyaInfo(_ url: String) -> Promise<HuyaStream.GameLiveInfo> {
+		getPlayerConfig(url).map {
+			let info = try HuyaStream(object: $0)
+			
+			guard let re = info.data.first?.liveInfo else {
+				throw VideoGetError.notFountData
+			}
+			
+			return re
+		}
+	}
     
-    func getHuyaInfo(_ url: String) -> Promise<YouGetJSON> {
-        AF.request(url).responseString().map {
-
-            let text = $0.string
-            
-            let hyPlayerConfigStr: String? = {
-                var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
+    func getHuyaVideos(_ url: String) -> Promise<YouGetJSON> {
+		getPlayerConfig(url).map {
+			let info = try HuyaStream(object: $0)
+			
+			var yougetJson = YouGetJSON(rawUrl: url)
+			return info.write(to: yougetJson, uid: self.huyaUid)
+		}
+    }
+	
+	func getPlayerConfig(_ url: String) -> Promise<JSONObject> {
+		AF.request(url).responseString().map {
+			
+			let text = $0.string
+			
+			let hyPlayerConfigStr: String? = {
+				var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
 				
 				if let range = str.range(of: "stream:") {
 					str.removeSubrange(str.startIndex..<range.upperBound)
@@ -88,23 +109,17 @@ class Huya: NSObject, SupportSiteProtocol {
 						str = String(str[str.startIndex...c2[c1.count-1]])
 					}
 				}
-                return str
-            }()
+				return str
+			}()
 			
 			guard let data = hyPlayerConfigStr?.data(using: .utf8) else {
 				throw VideoGetError.notFountData
 			}
-            
+			
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
-			let info = try HuyaStream(object: jsonObj)
-			
-			var yougetJson = YouGetJSON(rawUrl: url)
-			yougetJson.title = info.data.first?.liveInfo.roomName ?? ""
-			
-			return info.write(to: yougetJson, uid: self.huyaUid)
-			
-        }
-    }
+			return jsonObj
+		}
+	}
     
     func getHuyaInfoM(_ url: String) -> Promise<HuyaInfoM> {
         pSession.request(url).responseString().map {
@@ -173,7 +188,7 @@ struct HuyaStream: Unmarshaling {
 		var yougetJson = yougetJson
 		
 		if let infoData = data.first {
-			yougetJson.title = infoData.liveInfo.roomName
+			yougetJson.title = infoData.liveInfo.title
 			
 			let urls = infoData.streamInfoList.map {
 				$0.url(uid)
@@ -231,20 +246,34 @@ struct HuyaStream: Unmarshaling {
 		}
 	}
 	
-	struct GameLiveInfo: Unmarshaling {
+	struct GameLiveInfo: Unmarshaling, LiveInfo {
 		
-		let roomName: String
+		var title: String = ""
+		var name: String = ""
+		var isLiving = false
+		var avatar: String
+		var rid: Int
+		var cover: String = ""
+		var site: SupportSites = .huya
 		let uid: Int
+		
+		var isSeeTogetherRoom = false
 		let isSecret: Int
-		let screenshot: String
-		let nick: String
-		let avatar180: String
+		
 		
 		init(object: MarshaledObject) throws {
 			let name1: String = try object.value(for: "roomName")
 			let name2: String = try object.value(for: "introduction")
 			
-			roomName = name1 == "" ? name2 : name1
+			title = name1 == "" ? name2 : name1
+			name = try object.value(for: "nick")
+			
+			let liveId: String = try object.value(for: "liveId")
+			isLiving = Int(liveId) != 0
+			
+			avatar = try object.value(for: "avatar180")
+			rid = try object.value(for: "profileRoom")
+			cover = try object.value(for: "screenshot")
 			
 			if let uid: Int = try? object.value(for: "uid") {
 				self.uid = uid
@@ -256,9 +285,8 @@ struct HuyaStream: Unmarshaling {
 			}
 			
 			isSecret = try object.value(for: "isSecret")
-			screenshot = try object.value(for: "screenshot")
-			nick = try object.value(for: "nick")
-			avatar180 = try object.value(for: "avatar180")
+			let gameHostName: String = try object.value(for: "gameHostName")
+			isSeeTogetherRoom = gameHostName == "seeTogether"
 		}
 	}
 	
