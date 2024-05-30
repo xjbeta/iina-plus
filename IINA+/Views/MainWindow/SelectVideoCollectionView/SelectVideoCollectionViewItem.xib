@@ -18,7 +18,7 @@
             <rect key="frame" x="0.0" y="0.0" width="118" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QEQ-A6-bdZ">
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="QEQ-A6-bdZ">
                     <rect key="frame" x="6" y="8" width="106" height="16"/>
                     <textFieldCell key="cell" lineBreakMode="charWrapping" truncatesLastVisibleLine="YES" title="Multiline Label" id="5bp-5w-F86">
                         <font key="font" usesAppearanceFont="YES"/>

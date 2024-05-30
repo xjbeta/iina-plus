@@ -148,7 +148,7 @@ class Preferences: NSObject {
     
     @objc dynamic var stateReplay: NSColor {
         get {
-            return colorDecode(defaults(.stateReplay)) ?? .systemBlue
+            return colorDecode(defaults(.stateReplay)) ?? .controlAccentColor
         }
         set {
             defaultsSet(colorEncode(newValue), forKey: .stateReplay)

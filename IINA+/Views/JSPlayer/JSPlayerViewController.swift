@@ -166,6 +166,8 @@ class JSPlayerViewController: NSViewController {
     
 // MARK: - Other Value
 
+	var napActivity = ProcessInfo.processInfo.beginActivity(options: .userInitiated, reason: "JSPlayer is playing")
+	
 	var playerReloadDate: Date?
 	var playerReloadTimer: Timer?
 	
@@ -680,7 +682,6 @@ extension JSPlayerViewController: WKNavigationDelegate {
         Log("Finish")
         webViewFinishLoaded = true
         guard url != "", result == nil else { return }
-        
         openLive()
     }
 }
@@ -702,6 +703,8 @@ extension JSPlayerViewController: NSWindowDelegate {
         danmaku?.stop()
         danmaku = nil
         deinitWebView()
+		
+		ProcessInfo.processInfo.endActivity(napActivity)
     }
     
     func windowWillEnterFullScreen(_ notification: Notification) {

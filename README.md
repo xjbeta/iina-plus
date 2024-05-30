@@ -22,10 +22,10 @@
 | bililive      | ✓           | ✓            | ✓       |
 | douyu         | ✓           | ✓            | ✓       |
 | huya          | ✓           | ✓            | ✓       |
-| cc.163        | ✓           | ✓            | ✕       |
 | douyin        | ✓           | ✓            | ✓       |
-| live.kuaishou | ✓           | ✓            | ✕       |
-
+| cc.163        | ✓           | ✓            | ✕       |
+| live.qq       | ✓           | ✓            | ✕       |
+| live.kuaishou | 🛠           | 🛠            | ✕       |
 
 
 ## Build
@@ -45,26 +45,30 @@ Open `IINA+.xcodeproj` with Xcode.
 ### Librarys
 
 - [Alamofire](https://github.com/Alamofire/Alamofire)
-- [swifter](https://github.com/httpswift/swifter)
-- [SwiftSoup](https://github.com/scinfu/SwiftSoup)
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
+- [GzipSwift](https://github.com/1024jp/GzipSwift)
 - [Marshal](https://github.com/utahiosmac/Marshal)
 - [PromiseKit](https://github.com/mxcl/PromiseKit)
-- [GzipSwift](https://github.com/1024jp/GzipSwift)
-- [swift-protobuf](https://github.com/apple/swift-protobuf)
 - [SDWebImage](https://github.com/SDWebImage/SDWebImage)
-- [Sparkle](https://github.com/sparkle-project/Sparkle)
 - [SocketRocket with SPM patch](https://github.com/xjbeta/SocketRocket)
+- [Sparkle](https://github.com/sparkle-project/Sparkle)
+- [SwiftBrotli](https://github.com/f-meloni/SwiftBrotli)
+- [swifter](https://github.com/httpswift/swifter)
+- [swift-protobuf](https://github.com/apple/swift-protobuf)
+- [SwiftSoup](https://github.com/scinfu/SwiftSoup)
+
+
 
 ### Web Librarys
 
 - [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary)
 - [mpegts.js](https://github.com/xqq/mpegts.js)
 
-### Bilibili block list
-
-- [Bilibili-Block-List](https://github.com/jnxyp/Bilibili-Block-List)
 
 ### Sidebar Icons
 
 - [@freepik](https://www.flaticon.com/authors/freepik)
+
+
+## Donate
+<img src="IINA+/Assets/Assets.xcassets/WX_Payment.imageset/WX_Payment.jpg" width="320"/>
