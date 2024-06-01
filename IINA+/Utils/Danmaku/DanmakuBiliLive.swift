@@ -65,7 +65,7 @@ extension Danmaku {
 		init(object: MarshaledObject) throws {
 			emoji = try object.value(for: "emoji")
 			let u: String = try object.value(for: "url")
-			url = u.replacingOccurrences(of: "http://", with: "https://")
+			url = u.https()
 			width = try object.value(for: "width")
 			height = try object.value(for: "height")
 //			identity = try object.value(for: "identity")
@@ -360,7 +360,7 @@ extension Danmaku {
 			return emoticon.comment()
 		}
 		
-		let url = url.replacingOccurrences(of: "http://", with: "https://")
+		let url = url.https()
 		var emoticon = BiliLiveEmoticon(unique, url: url)
 		
 		emoticon.width = width

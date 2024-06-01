@@ -175,7 +175,7 @@ struct CC163Info: Unmarshaling, LiveInfo {
         title = try object.value(for: "props.pageProps.roomInfoInitData.live.title")
         name = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.nickname")
         avatar = try object.value(for: "props.pageProps.roomInfoInitData.micfirst.purl")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+		avatar = avatar.https()
         cover = avatar
         let living: Bool? = try? object.value(for: "props.pageProps.roomInfoInitData.is_show_live_rcm")
         
@@ -248,9 +248,9 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
         if isLiving {
             title = try object.value(for: "title")
             cover = try object.value(for: "cover")
-            cover = cover.replacingOccurrences(of: "http://", with: "https://")
+            cover = cover.https()
             avatar = (try? object.value(for: "purl")) ?? ""
-            avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+            avatar = avatar.https()
         } else {
             title = (try? object.value(for: "title")) ?? name
             cover = ""

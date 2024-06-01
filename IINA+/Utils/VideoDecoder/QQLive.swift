@@ -30,7 +30,7 @@ class QQLive: NSObject, SupportSiteProtocol {
         mInfo(url).map {
             var re = YouGetJSON(rawUrl: url)
             re.title = $0.title
-			re.streams["Default"] = .init(url: $0.url.replacingOccurrences(of: "http://", with: "https://"))
+			re.streams["Default"] = .init(url: $0.url.https())
             return re
         }
     }

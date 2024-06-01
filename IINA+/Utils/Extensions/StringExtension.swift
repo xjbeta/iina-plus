@@ -142,6 +142,10 @@ extension String {
         }
         return s
     }
+	
+	func https() -> String {
+		self.replacingOccurrences(of: "http://", with: "https://")
+	}
 }
 
 

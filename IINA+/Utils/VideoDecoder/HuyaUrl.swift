@@ -51,7 +51,7 @@ class HuyaUrl: NSObject {
 		
 		let example = "https://qvodlive-va.huya.com/src/1394575534-1394575534-5989656310331736064-2789274524-10057-A-0-1.flv?wsSecret=b9636212d1ad30223c157f5ac678d7c5&wsTime=665aaef2&seqid=7784383132214&ctype=huya_live&ver=1&txyp=o%3An4%3B&fs=bgct&sphdcdn=al_7-tx_3-js_3-ws_7-bd_2-hw_2&sphdDC=huya&sphd=264_*-265_*&exsphd=264_500,264_2000,264_4000,264_6000,264_8000,&ratio=500&&https=1&dMod=mseh-32&sdkPcdn=1_1&u=6065176706463&t=100&sv=2405220949&sdk_sid=1717219065187&a_block=0"
 		
-		var url = sFlvUrl.replacingOccurrences(of: "http://", with: "https://")
+		var url = sFlvUrl.https()
 		+ "/"
 		+ sStreamName
 		+ "."

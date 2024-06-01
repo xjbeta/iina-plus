@@ -44,7 +44,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
                 var info = BilibiliInfo()
                 info.title = try initialStateJson.value(for: "videoData.title")
                 info.cover = try initialStateJson.value(for: "videoData.pic")
-                info.cover = info.cover.replacingOccurrences(of: "http://", with: "https://")
+                info.cover = info.cover.https()
                 info.name = try initialStateJson.value(for: "videoData.owner.name")
                 info.isLiving = true
                 return info
@@ -474,7 +474,7 @@ class BilibiliCard: NSObject, Unmarshaling {
             aid = try json.value(for: "aid")
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
-			self.picUrl = picUrl.replacingOccurrences(of: "http://", with: "https://")
+			self.picUrl = picUrl.https()
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")
@@ -503,7 +503,7 @@ struct BilibiliPvideo: Unmarshaling {
     init(object: MarshaledObject) throws {
         let imageStrs: [String] = try object.value(for: "data.image")
 //        images = imageStrs.compactMap { str -> NSImage? in
-//            if let url = URL(string: str.replacingOccurrences(of: "http://", with: "https://")) {
+//            if let url = URL(string: str.https()) {
 //                return NSImage(contentsOf: url)
 //            } else {
 //                return nil

@@ -153,10 +153,10 @@ struct HuyaInfo: Unmarshaling, LiveInfo {
         title = try object.value(for: "introduction")
         name = try object.value(for: "nick")
         avatar = try object.value(for: "avatar")
-        avatar = avatar.replacingOccurrences(of: "http://", with: "https://")
+        avatar = avatar.https()
         isLiving = "\(try object.any(for: "isOn"))" == "1"
         cover = try object.value(for: "screenshot")
-        cover = cover.replacingOccurrences(of: "http://", with: "https://")
+        cover = cover.https()
         
 		rid = try object.value(for: "profileRoom")
 		
@@ -270,8 +270,10 @@ struct HuyaStream: Unmarshaling {
 			name = try object.value(for: "nick")
 			
 			avatar = try object.value(for: "avatar180")
+			avatar = avatar.https()
 			rid = try object.value(for: "profileRoom")
 			cover = try object.value(for: "screenshot")
+			cover = cover.https()
 			
 			if let uid: Int = try? object.value(for: "uid") {
 				self.uid = uid
@@ -359,8 +361,8 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
     init(object: MarshaledObject) throws {
         name = try object.value(for: "roomInfo.tProfileInfo.sNick")
         
-        let ava: String = try object.value(for: "roomInfo.tProfileInfo.sAvatar180")
-        avatar = ava.replacingOccurrences(of: "http://", with: "https://")
+		avatar = try object.value(for: "roomInfo.tProfileInfo.sAvatar180")
+        avatar = avatar.https()
         
         let state: Int = try object.value(for: "roomInfo.eLiveStatus")
         isLiving = state == 2
