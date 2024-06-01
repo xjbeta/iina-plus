@@ -21,39 +21,56 @@ class HuyaUrl: NSObject {
 	
 		let seqid = uid + now()
 		let sid = now()
+		var parameters = [String: String]()
+		
+		sFlvAntiCode.split(separator: "&").map {
+			$0.split(separator: "=", maxSplits: 1).map(String.init)
+		}.filter {
+			$0.count == 2
+		}.forEach {
+			parameters[$0[0]] = $0[1]
+		}
 		
 		guard let convertUid = rotUid(uid),
 			  let wsSecret = wsSecret(sFlvAntiCode, convertUid: convertUid, seqid: seqid, streamName: sStreamName) else { return "" }
 		
-		let newAntiCode: String = {
-			var s = sFlvAntiCode.split(separator: "&")
-				.filter {
-					!$0.contains("fm=") &&
-					!$0.contains("wsSecret=")
-				}
-			s.append("wsSecret=\(wsSecret)")
-			return s.joined(separator: "&")
-		}()
+		parameters["u"] = "\(convertUid)"
+		parameters["wsSecret"] = wsSecret
 		
+//		parameters["fm"] = nil
+		parameters["seqid"] = "\(seqid)"
+		parameters["sdk_sid"] = "\(sid)"
+		parameters["sv"] = "2405220949"
 		
-		return sFlvUrl.replacingOccurrences(of: "http://", with: "https://")
+		parameters["sdkPcdn"] = "1_1"
+		parameters["t"] = "100"
+		parameters["a_block"] = "0"
+		parameters["ver"] = "1"
+		parameters["ratio"] = "0"
+		parameters["dMod"] = "mseh-32"
+		
+		let example = "https://qvodlive-va.huya.com/src/1394575534-1394575534-5989656310331736064-2789274524-10057-A-0-1.flv?wsSecret=b9636212d1ad30223c157f5ac678d7c5&wsTime=665aaef2&seqid=7784383132214&ctype=huya_live&ver=1&txyp=o%3An4%3B&fs=bgct&sphdcdn=al_7-tx_3-js_3-ws_7-bd_2-hw_2&sphdDC=huya&sphd=264_*-265_*&exsphd=264_500,264_2000,264_4000,264_6000,264_8000,&ratio=500&&https=1&dMod=mseh-32&sdkPcdn=1_1&u=6065176706463&t=100&sv=2405220949&sdk_sid=1717219065187&a_block=0"
+		
+		var url = sFlvUrl.replacingOccurrences(of: "http://", with: "https://")
 		+ "/"
 		+ sStreamName
 		+ "."
 		+ sFlvUrlSuffix
 		+ "?"
-		+ newAntiCode
-		+ "&ver=1"
-		+ "&seqid=\(seqid)"
-		+ "&ratio=0"
-		+ "&dMod=mseh-32"
-		+ "&sdkPcdn=1_1"
-		+ "&u=\(convertUid)"
-		+ "&t=100"
-		+ "&sv=2401310322"
-		+ "&sdk_sid=\(sid)"
-		+ "&https=1"
-//			+ "&codec=av1"
+		
+		let pars = URLComponents(string: example)!.queryItems!.compactMap {
+			let key = $0.name
+			if let value = parameters[key] {
+				return key + "=" + value
+			} else {
+				Log("Huya parameters missing key, \($0.description)")
+				return nil
+			}
+		}
+		
+		url += pars.joined(separator: "&")
+		
+		return url
 	}
 	
 	private static func turnStr(_ e: Int, _ t: Int, _ i: Int) -> String {
@@ -101,7 +118,8 @@ class HuyaUrl: NSObject {
 			  let ctype = d["ctype"] else { return nil }
 		
 		let s = "\(seqid)|\(ctype)|100".md5()
-		 
+		
+//		let o = this[Mt].replace(Xt, r).replace($t, this[Kt]).replace(Zt, s).replace(te, this[Bt]);
 		u = u.replacingOccurrences(of: "$0", with: "\(convertUid)")
 		u = u.replacingOccurrences(of: "$1", with: streamName)
 		u = u.replacingOccurrences(of: "$2", with: s)
