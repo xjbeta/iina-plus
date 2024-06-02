@@ -14,13 +14,13 @@ class HuyaUrl: NSObject {
 					   sFlvUrl: String,
 					   sFlvUrlSuffix: String,
 					   sFlvAntiCode: String) -> String {
-		
+
 		func now() -> Int {
 			Int(Date().timeIntervalSince1970 * 1000)
 		}
-	
-		let seqid = uid + now()
+		
 		let sid = now()
+		
 		var parameters = [String: String]()
 		
 		sFlvAntiCode.split(separator: "&").map {
@@ -30,6 +30,9 @@ class HuyaUrl: NSObject {
 		}.forEach {
 			parameters[$0[0]] = $0[1]
 		}
+		
+		// (seqid - uid) > sid
+		let seqid = uid + now()
 		
 		guard let convertUid = rotUid(uid),
 			  let wsSecret = wsSecret(sFlvAntiCode, convertUid: convertUid, seqid: seqid, streamName: sStreamName) else { return "" }
@@ -49,7 +52,7 @@ class HuyaUrl: NSObject {
 		parameters["ratio"] = "0"
 		parameters["dMod"] = "mseh-32"
 		
-		let example = "https://qvodlive-va.huya.com/src/1394575534-1394575534-5989656310331736064-2789274524-10057-A-0-1.flv?wsSecret=b9636212d1ad30223c157f5ac678d7c5&wsTime=665aaef2&seqid=7784383132214&ctype=huya_live&ver=1&txyp=o%3An4%3B&fs=bgct&sphdcdn=al_7-tx_3-js_3-ws_7-bd_2-hw_2&sphdDC=huya&sphd=264_*-265_*&exsphd=264_500,264_2000,264_4000,264_6000,264_8000,&ratio=500&&https=1&dMod=mseh-32&sdkPcdn=1_1&u=6065176706463&t=100&sv=2405220949&sdk_sid=1717219065187&a_block=0"
+		let example = "https://hw.flv.huya.com/src/1394575534-1394575534-5989656310331736064-2789274524-10057-A-0-1.flv?wsSecret=4b1ac7c8b5b3792b756f419bd6db09f8&wsTime=665aeff5&seqid=1750435781966&ctype=huya_webh5&ver=1&txyp=o%3An4%3B&fs=bgct&sphdcdn=al_7-tx_3-js_3-ws_7-bd_2-hw_2&sphdDC=huya&sphd=264_*-265_*&exsphd=264_500,264_2000,264_4000,264_6000,264_8000,&ratio=2000&dMod=mseh-32&sdkPcdn=1_1&u=33818100666&t=100&sv=2405220949&sdk_sid=1717235700093&a_block=0"
 		
 		var url = sFlvUrl.https()
 		+ "/"
@@ -111,9 +114,7 @@ class HuyaUrl: NSObject {
 			return r
 		}
 		
-		guard let fm = d["fm"]?.removingPercentEncoding,
-			  let fmData = Data(base64Encoded: fm),
-			  var u = String(data: fmData, encoding: .utf8),
+		guard var u = d["fm"]?.removingPercentEncoding?.base64Decode(),
 			  let l = d["wsTime"],
 			  let ctype = d["ctype"] else { return nil }
 		

@@ -22,6 +22,9 @@ class Huya: NSObject, SupportSiteProtocol {
         return Session(configuration: configuration)
     }()
 	
+	// T.a.uid
+	private let huyaUid = (Int(Date().timeIntervalSince1970 * 1000) % Int(1e10) * Int(1e3) + Int.random(in: Int(1e2)..<Int(1e3))) % 4294967295
+    
     func liveInfo(_ url: String) -> Promise<LiveInfo> {
 		getHuyaInfo(url).map {
 			$0
@@ -89,7 +92,7 @@ class Huya: NSObject, SupportSiteProtocol {
 			let info = try HuyaStream(object: $0)
 			
 			var yougetJson = YouGetJSON(rawUrl: url)
-			return info.write(to: yougetJson)
+			return info.write(to: yougetJson, uid: self.huyaUid)
 		}
     }
 	
@@ -185,14 +188,14 @@ struct HuyaStream: Unmarshaling {
 		vMultiStreamInfo = try object.value(for: "vMultiStreamInfo")
 	}
 	
-	func write(to yougetJson: YouGetJSON) -> YouGetJSON {
+	func write(to yougetJson: YouGetJSON, uid: Int) -> YouGetJSON {
 		var yougetJson = yougetJson
 		
 		if let infoData = data.first {
 			yougetJson.title = infoData.liveInfo.title
 			
 			let urls = infoData.streamInfoList.map {
-				$0.url()
+				$0.url(uid)
 			}
 			
 			vMultiStreamInfo.enumerated().forEach {
@@ -295,18 +298,16 @@ struct HuyaStream: Unmarshaling {
 		var sFlvUrl: String
 		var sFlvUrlSuffix: String
 		var sFlvAntiCode: String
-		var lPresenterUid: Int
 		
 		init(object: MarshaledObject) throws {
 			sStreamName = try object.value(for: "sStreamName")
 			sFlvUrl = try object.value(for: "sFlvUrl")
 			sFlvUrlSuffix = try object.value(for: "sFlvUrlSuffix")
 			sFlvAntiCode = try object.value(for: "sFlvAntiCode")
-			lPresenterUid = try object.value(for: "lPresenterUid")
 		}
 		
-		func url() -> String {
-			HuyaUrl.format(lPresenterUid, sStreamName: sStreamName, sFlvUrl: sFlvUrl, sFlvUrlSuffix: sFlvUrlSuffix, sFlvAntiCode: sFlvAntiCode)
+		func url(_ uid: Int) -> String {
+			HuyaUrl.format(uid, sStreamName: sStreamName, sFlvUrl: sFlvUrl, sFlvUrlSuffix: sFlvUrlSuffix, sFlvAntiCode: sFlvAntiCode)
 		}
 	}
 }
