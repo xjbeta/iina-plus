@@ -755,12 +755,22 @@ extension JSPlayerViewController: WKScriptMessageHandler {
             var newFrame = NSRect(origin: .zero, size: size)
             
             if !windowSizeInited,
-                var frame = NSScreen.main?.frame {
-                let newH = frame.width / size.width * size.height
-                frame.origin.y = frame.height - newH
-                frame.size.height = newH
-                
-                newFrame = frame
+			   let frame = NSScreen.main?.visibleFrame ?? NSScreen.main?.frame {
+				
+				let aspectRatio = size.width / size.height
+				
+				if aspectRatio >= frame.width / frame.height {
+					let w = frame.width
+					let h = w / aspectRatio
+					newFrame.size = .init(width: w, height: h)
+				} else {
+					let h = frame.height
+					let w = h * aspectRatio
+					newFrame.size = .init(width: w, height: h)
+				}
+				
+				newFrame.origin.x = (frame.width - newFrame.width) / 2
+				newFrame.origin.y = frame.height - newFrame.height
             } else {
                 var f = window.frame
                 f.size.height = f.width / size.width * size.height

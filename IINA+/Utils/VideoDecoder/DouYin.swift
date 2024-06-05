@@ -474,7 +474,7 @@ struct DouYinInfo: Unmarshaling, LiveInfo {
         
         
         urls.map {
-            ($0.key, $0.value.replacingOccurrences(of: "http://", with: "https://"))
+            ($0.key, $0.value.https())
         }.sorted { v0, v1 in
             v0.0 < v1.0
         }.enumerated().forEach {
@@ -526,7 +526,7 @@ struct DouYinEnterData: Unmarshaling {
 
 
 			urls.map {
-				($0.key, $0.value.replacingOccurrences(of: "http://", with: "https://"))
+				($0.key, $0.value.https())
 			}.sorted { v0, v1 in
 				v0.0 < v1.0
 			}.enumerated().forEach {
