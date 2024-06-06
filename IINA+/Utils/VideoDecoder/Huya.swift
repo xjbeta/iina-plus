@@ -141,7 +141,17 @@ class Huya: NSObject, SupportSiteProtocol {
 		}
 		let rid = ucs[2]
 		
-		return pSession.request("https://mp.huya.com/cache.php?m=Live&do=profileRoom&roomid=\(rid)").responseData().map {
+		if let rid = Int(rid) {
+			return getHuyaInfoMP(rid)
+		} else {
+			return getHuyaInfo(url).then {
+				self.getHuyaInfoMP($0.rid)
+			}
+		}
+	}
+	
+	func getHuyaInfoMP(_ rid: Int) -> Promise<HuyaInfoMP> {
+		pSession.request("https://mp.huya.com/cache.php?m=Live&do=profileRoom&roomid=\(rid)").responseData().map {
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
 			return try HuyaInfoMP(object: jsonObj)
 		}
