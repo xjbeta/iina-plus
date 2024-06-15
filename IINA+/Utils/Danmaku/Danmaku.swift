@@ -140,12 +140,15 @@ class Danmaku: NSObject {
         case .douyu:
             
             Log("Processes.shared.videoDecoder.getDouyuHtml")
-            
-            videoDecoder.douyu.getDouyuHtml(url.absoluteString).done {
-                self.initDouYuSocket($0.roomId)
-                }.catch {
-                    Log($0)
-            }
+			
+			Task {
+				do {
+					let info = try await videoDecoder.douyu.getDouyuHtml(url.absoluteString)
+					initDouYuSocket(info.roomId)
+				} catch let error {
+					Log(error)
+				}
+			}
         case .huya:
             AF.request(url.absoluteString).responseString().done {
                 let js = $0.string.subString(from: "var TT_ROOM_DATA = ", to: "};")

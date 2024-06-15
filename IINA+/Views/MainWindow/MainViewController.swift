@@ -592,43 +592,47 @@ class MainViewController: NSViewController {
                       url.pathComponents.count > 2,
                       url.pathComponents[1] == "topic" {
                 let douyu = videoGet.douyu
-                douyu.getDouyuHtml(str).done { htmls in
-                    guard htmls.roomIds.count > 0 else {
-                        decodeUrl()
-                        return
-                    }
-                    let cid = htmls.roomId
-                    var re = [DouyuVideoSelector]()
-                    
-                    douyu.getDouyuEventRoomNames(htmls.pageId).get {
-                        re = $0.enumerated().map {
-                            DouyuVideoSelector(
-                                index: $0.offset,
-                                title: $0.element.text,
-                                id: $0.element.roomId,
-                                url: "https://www.douyu.com/\($0.element.roomId)",
-                                isLiving: false,
-                                coverUrl: nil)
-                        }
-                    }.then { _ in
-                        douyu.getDouyuEventRoomOnlineStatus(htmls.pageId)
-                    }.done { status in
-                        re.enumerated().forEach {
-                            re[$0.offset].isLiving = status[$0.element.id] ?? false
-                        }
-                        self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
-                        resolver.fulfill(())
-                    }.catch {
-                        switch $0 {
-                        case VideoGetError.douyuNotFoundSubRooms:
-                            decodeUrl()
-                        default:
-                            resolver.reject($0)
-                        }
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
+				
+				Task {
+					do {
+						let htmls = try await douyu.getDouyuHtml(str)
+						guard htmls.roomIds.count > 0 else {
+							decodeUrl()
+							return
+						}
+						let cid = htmls.roomId
+						var re = [DouyuVideoSelector]()
+						
+						let names = try await douyu.getDouyuEventRoomNames(htmls.pageId)
+						
+						re = names.enumerated().map {
+							DouyuVideoSelector(
+								index: $0.offset,
+								title: $0.element.text,
+								id: $0.element.roomId,
+								url: "https://www.douyu.com/\($0.element.roomId)",
+								isLiving: false,
+								coverUrl: nil)
+						}
+						
+						let status = try await douyu.getDouyuEventRoomOnlineStatus(htmls.pageId)
+						
+						re.enumerated().forEach {
+							re[$0.offset].isLiving = status[$0.element.id] ?? false
+						}
+						showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
+						
+						resolver.fulfill(())
+						
+					} catch let error {
+						switch error {
+						case VideoGetError.douyuNotFoundSubRooms:
+							decodeUrl()
+						default:
+							resolver.reject(error)
+						}
+					}
+				}
             } else if url.host == "www.huya.com" {                
                 videoGet.huya.getHuyaRoomList(url.absoluteString).done { rl in
                     if rl.list.count == 0 {

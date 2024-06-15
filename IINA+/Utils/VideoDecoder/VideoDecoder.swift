@@ -169,16 +169,22 @@ class VideoDecoder: NSObject {
                 return .value(json)
             } else {
                 let id = json.id
-                return douyu.getDouyuHtml("https://www.douyu.com/\(id)").then {
-                    self.douyu.getDouyuUrl(id, rate: rate, jsContext: $0.jsContext)
-                }.map {
-                    let url = $0.first {
-                        $0.1.rate == rate
-                    }?.1.url
-                    var re = json
-                    re.streams[key]?.url = url
-                    return re
-                }
+				return .init { resolver in
+					Task {
+						do {
+							let html = try await douyu.getDouyuHtml("https://www.douyu.com/\(id)")
+							let urls = try await douyu.getDouyuUrl(id, rate: rate, jsContext: html.jsContext)
+							let url = urls.first {
+								$0.1.rate == rate
+							}?.1.url
+							var re = json
+							re.streams[key]?.url = url
+							resolver.fulfill(re)
+						} catch let error {
+							resolver.reject(error)
+						}
+					}
+				}
             }
         default:
             return .value(json)
