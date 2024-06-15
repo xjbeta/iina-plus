@@ -144,11 +144,14 @@ class MainViewController: NSViewController {
                 searchField.becomeFirstResponder()
                 startSearch(self)
             } else if card.videos > 1 {
-                bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)").done { infos in
-                    self.showSelectVideo(bvid, infos: infos)
-                    }.catch { error in
-                        Log("Get video list error: \(error)")
-                }
+				Task {
+					do {
+						let infos = try await bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)")
+						showSelectVideo(bvid, infos: infos)
+					} catch let error {
+						Log("Get video list error: \(error)")
+					}
+				}
             }
         }
     }
@@ -380,33 +383,36 @@ class MainViewController: NSViewController {
 		default: break
 		}
 		Log("\(uuid), start, \(dynamicID)")
-		bilibili.getUid().then {
-			self.bilibili.dynamicList($0, action, dynamicID)
-		}.done(on: .main) { cards in
-			switch action {
-			case .init😅:
-				self.bilibiliCards = cards
-			case .history:
-				let appends = cards.filter { card in
-					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+		Task {
+			do {
+				let uid = try await bilibili.getUid()
+				let cards = try await bilibili.dynamicList(uid, action, dynamicID)
+				
+				switch action {
+				case .init😅:
+					bilibiliCards = cards
+				case .history:
+					let appends = cards.filter { card in
+						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+					bilibiliCards.append(contentsOf: appends)
+				case .new:
+					let appends = cards.filter { card in
+						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+					if appends.count > 0 {
+						bilibiliCards.insert(contentsOf: appends, at: 0)
+					}
 				}
-				self.bilibiliCards.append(contentsOf: appends)
-			case .new:
-				let appends = cards.filter { card in
-					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
-				}
-				if appends.count > 0 {
-					self.bilibiliCards.insert(contentsOf: appends, at: 0)
-				}
+			} catch let error {
+				Log("Get bilibili dynamicList error: \(error)")
 			}
-		}.ensure(on: .main) {
-			self.canLoadMoreBilibiliCards = true
-			self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
-			self.bookmarkLoaderTimer = Date()
-			self.bookmarkLoaderSemaphore.signal()
+			
+			canLoadMoreBilibiliCards = true
+			progressStatusChanged(!canLoadMoreBilibiliCards)
+			bookmarkLoaderTimer = Date()
+			bookmarkLoaderSemaphore.signal()
 			Log("\(uuid), finish, \(dynamicID)")
-		}.catch { error in
-			Log("Get bilibili dynamicList error: \(error)")
 		}
 	}
     
@@ -536,33 +542,46 @@ class MainViewController: NSViewController {
                 
                 switch bUrl.urlType {
                 case .video:
-                    re = bilibili.getVideoList(u).done { infos in
-                        let list = infos.flatMap({ $0.1 })
-                        if list.count > 1 {
-                            let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
-                            resolver.fulfill(())
-                        } else {
-                            decodeUrl()
-                        }
-                    }
+					re = .init { resolver in
+						Task {
+							do {
+								let infos = try await bilibili.getVideoList(u)
+								let list = infos.flatMap({ $0.1 })
+								if list.count > 1 {
+									let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
+									self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
+									resolver.fulfill(())
+								} else {
+									decodeUrl()
+								}
+							} catch let error {
+								resolver.reject(error)
+							}
+						}
+					}
                 case .bangumi:
-                    re = bilibili.getBangumiList(u).done {
-                        let epVS = $0.epVideoSelectors
-                        if epVS.count == 1 {
-                            decodeUrl()
-                        } else {
-                            var cItem = 0
-                            if bUrl.id.starts(with: "ep") {
-                                cItem = epVS.firstIndex {
-                                    $0.id == bUrl.id.dropFirst(2)
-                                } ?? 0
-                            }
-                            
-                            self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
-                            resolver.fulfill(())
-                        }
-                    }
+					re = .init { resolver in
+						Task {
+							do {
+								let epVS = try await bilibili.getBangumiList(u).epVideoSelectors
+								if epVS.count == 1 {
+									decodeUrl()
+								} else {
+									var cItem = 0
+									if bUrl.id.starts(with: "ep") {
+										cItem = epVS.firstIndex {
+											$0.id == bUrl.id.dropFirst(2)
+										} ?? 0
+									}
+									
+									self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
+									resolver.fulfill(())
+								}
+							} catch let error {
+								resolver.reject(error)
+							}
+						}
+					}
                 default:
                     return
                 }

@@ -98,88 +98,80 @@ extension Danmaku {
 	}
 	
 	
-	func bililiveRid(_ roomID: String) -> Promise<(String)> {
-		return Promise { resolver in
-			AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)").response {
-				do {
-					let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-					let id: Int = try json.value(for: "data.room_id")
-					resolver.fulfill("\(id)")
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
+	func bililiveRid(_ roomID: String) async throws -> String {
+		let url = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(roomID)"
+		let data = try await AF.request(url).serializingData().value
+		let json = try JSONParser.JSONObjectWithData(data)
+		let id: Int = try json.value(for: "data.room_id")
+		return "\(id)"
 	}
 	
-	func bililiveToken(_ rid: String) -> Promise<(String)> {
-		return Promise { resolver in
-			AF.request("https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=\(rid)&type=0").response {
-				do {
-					let json = try JSONParser.JSONObjectWithData($0.data ?? Data())
-					let token: String = try json.value(for: "data.token")
-					resolver.fulfill(token)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-	}
-	
-	
-	func bililiveEmoticons(_ rid: String) -> Promise<([BiliLiveEmoticon])> {
-		var emoticons = [BiliLiveEmoticon]()
+	func bililiveToken(_ rid: String) async throws -> String {
+		let url = "https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id=\(rid)&type=0"
+		let data = try await AF.request(url).serializingData().value
+		let json = try JSONParser.JSONObjectWithData(data)
 		
-		return AF.request("https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)").responseData().get {
-			
-			struct BiliLiveEmoticonData: Unmarshaling {
-				let emoticons: [BiliLiveEmoticon]
-				let pkgId: Int
-				let pkgName: String
-				init(object: MarshaledObject) throws {
-					emoticons = try object.value(for: "emoticons")
-					pkgId = try object.value(for: "pkg_id")
-					pkgName = try object.value(for: "pkg_name")
-				}
-			}
-			
-			let json = try JSONParser.JSONObjectWithData($0.data)
-			let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
-			
-			emoticonData.forEach {
-				if $0.pkgName == "emoji" {
-					let emojis = $0.emoticons.map {
-						var emot = $0
-						emot.width = 75
-						emot.height = 75
-						return emot
-					}
-					emoticons.append(contentsOf: emojis)
-				} else {
-					emoticons.append(contentsOf: $0.emoticons)
-				}
-			}
-		}.then { _ in
-			when(fulfilled: emoticons.enumerated().map { e in
-				self.loadBililiveEmoticon(e.element).done {
-					emoticons[e.offset].emoticonData = $0
-				}
-			})
-		}.map {
-			emoticons
-		}
+		return try json.value(for: "data.token")
 	}
 	
-	func loadBililiveEmoticon(_ emoticon: BiliLiveEmoticon) -> Promise<Data?> {
+	
+	func bililiveEmoticons(_ rid: String) async throws -> [BiliLiveEmoticon] {
+		var emoticons = [BiliLiveEmoticon]()
+		let url = "https://api.live.bilibili.com/xlive/web-ucenter/v2/emoticon/GetEmoticons?platform=pc&room_id=\(rid)"
+		let data = try await AF.request(url).serializingData().value
+		let json = try JSONParser.JSONObjectWithData(data)
+		
+		struct BiliLiveEmoticonData: Unmarshaling {
+			let emoticons: [BiliLiveEmoticon]
+			let pkgId: Int
+			let pkgName: String
+			init(object: MarshaledObject) throws {
+				emoticons = try object.value(for: "emoticons")
+				pkgId = try object.value(for: "pkg_id")
+				pkgName = try object.value(for: "pkg_name")
+			}
+		}
+		
+		let emoticonData: [BiliLiveEmoticonData] = try json.value(for: "data.data")
+		
+		emoticonData.forEach {
+			if $0.pkgName == "emoji" {
+				let emojis = $0.emoticons.map {
+					var emot = $0
+					emot.width = 75
+					emot.height = 75
+					return emot
+				}
+				emoticons.append(contentsOf: emojis)
+			} else {
+				emoticons.append(contentsOf: $0.emoticons)
+			}
+		}
+		
+		await withTaskGroup(of: (Int, Data?).self) { group in
+			emoticons.enumerated().forEach { e in
+				group.addTask {
+					async let data = self.loadBililiveEmoticon(e.element)
+					return await (e.offset, data)
+				}
+			}
+			
+			for await e in group {
+				emoticons[e.0].emoticonData = e.1
+			}
+		}
+		return emoticons
+	}
+	
+	func loadBililiveEmoticon(_ emoticon: BiliLiveEmoticon) async -> Data? {
 		let key = "BiliLive_Emoticons_" + emoticon.emoticonUnique
 		if let image = SDImageCache.shared.imageFromCache(forKey: key) {
-			return .value(image.sd_imageData())
+			return image.sd_imageData()
+		} else if let data = try? await AF.request(emoticon.url).serializingData().value {
+			await SDImageCache.shared.store(NSImage(data: data), forKey: key)
+			return data
 		} else {
-			return AF.request(emoticon.url).responseData().get {
-				SDImageCache.shared.store(NSImage(data: $0.data), forKey: key)
-			}.map {
-				$0.data
-			}
+			return nil
 		}
 	}
 	
@@ -372,10 +364,12 @@ extension Danmaku {
 			
 			return emoticon.comment()
 		} else {
-			loadBililiveEmoticon(emoticon).done {
-				guard let i = self.bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == unique }) else { return }
-				self.bililiveEmoticons[i].emoticonData = $0
-			}.cauterize()
+			let emot = emoticon
+			Task {
+				let data = await self.loadBililiveEmoticon(emot)
+				guard let i = bililiveEmoticons.firstIndex(where: { $0.emoticonUnique == unique }) else { return }
+				bililiveEmoticons[i].emoticonData = data
+			}
 			self.bililiveEmoticons.append(emoticon)
 			return nil
 		}

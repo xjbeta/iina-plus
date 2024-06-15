@@ -124,24 +124,19 @@ class Danmaku: NSObject {
         case .biliLive:
             socket = .init(url: biliLiveServer!)
             socket?.delegate = self
-            
-            bililiveRid(roomID).get {
-                self.biliLiveIDs.rid = $0
-            }.then {
-				when(fulfilled:
-						self.bililiveToken($0),
-					self.bililiveEmoticons($0),
-					Bilibili().getUid()
-				)
-            }.done {
-                self.biliLiveIDs.token = $0.0
-                self.bililiveEmoticons = $0.1
-				self.biliLiveIDs.uid = $0.2
-				
-                self.socket?.open()
-            }.catch {
-                Log("can't find bilibili ids \($0).")
-            }
+			
+			Task {
+				do {
+					let rid = try await self.bililiveRid(roomID)
+					biliLiveIDs.rid = rid
+					biliLiveIDs.token = try await bililiveToken(rid)
+					bililiveEmoticons = try await bililiveEmoticons(rid)
+					biliLiveIDs.uid = try await Bilibili().getUid()
+					socket?.open()
+				} catch let error {
+					Log("can't find bilibili ids \(error).")
+				}
+			}
         case .douyu:
             
             Log("Processes.shared.videoDecoder.getDouyuHtml")

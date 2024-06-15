@@ -141,13 +141,21 @@ class OpenFilesViewController: NSViewController {
         guard let bUrl = formatBiliUrl(s) else {
             return .init(error: OpenFilesError.invalidDanmakuUrl)
         }
-        
-        return videoDecoder.bilibili.bilibiliPrepareID(bUrl.fUrl).map {
-            json.id = $0.id
-            json.bvid = $0.bvid
-            json.duration = $0.duration
-            return json
-        }.then {
+		
+		return .init { resolver in
+			Task {
+				do {
+					let re = try await videoDecoder.bilibili.bilibiliPrepareID(bUrl.fUrl)
+					
+					json.id = re.id
+					json.bvid = re.bvid
+					json.duration = re.duration
+					resolver.fulfill(json)
+				} catch let error {
+					resolver.reject(error)
+				}
+			}
+		}.then {
             videoDecoder.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
         }.map {
             json

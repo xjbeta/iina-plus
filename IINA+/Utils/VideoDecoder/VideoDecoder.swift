@@ -137,7 +137,16 @@ class VideoDecoder: NSObject {
             }
             let qn = stream.quality
             
-            return bilibili.bilibiliPlayUrl(yougetJson: json, false, true, qn)
+			return .init { resolver in
+				Task {
+					do {
+						let re = try await bilibili.bilibiliPlayUrl(yougetJson: json, false, true, qn)
+						resolver.fulfill(re)
+					} catch let error {
+						resolver.reject(error)
+					}
+				}
+			}
         case .biliLive:
             guard let stream = json.streams[key],
                   stream.quality != -1 else {

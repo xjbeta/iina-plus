@@ -104,8 +104,17 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
                 $0.forEach {
                     HTTPCookieStorage.shared.setCookie($0)
                 }
-            }.then {
-                self.bilibili.isLogin()
+            }.then { _ -> Promise<(Bool, String)> in
+				.init { resolver in
+					Task {
+						do {
+							let s = try await self.bilibili.isLogin()
+							resolver.fulfill(s)
+						} catch let error {
+							resolver.reject(error)
+						}
+					}
+				}
             }.done(on: .main) {
                 Log("islogin \($0.0), \($0.1)")
                 
