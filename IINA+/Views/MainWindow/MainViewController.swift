@@ -664,31 +664,32 @@ class MainViewController: NSViewController {
 					}
 				}
             } else if url.host == "cc.163.com" {
-                videoGet.cc163.getCC163State(url.absoluteString).done {
-                    
-                    
-                    if $0.list.count > 1 {
-                        let infos = $0.list.enumerated().map {
-                            CC163VideoSelector(
-                                index: $0.offset,
-                                title: $0.element.name,
-                                ccid: "\($0.element.ccid)",
-                                isLiving: $0.element.isLiving,
-                                url: $0.element.channel,
-                                id: "\($0.element.ccid)")
-                        }
-                        self.showSelectVideo("", infos: [("", infos)])
-                        resolver.fulfill(())
-                    } else if let i = $0.info as? CC163Info {
-                        str = "https://cc.163.com/ccid/\(i.ccid)"
-                        decodeUrl()
-                    } else if let i = $0.info as? CC163ChannelInfo {
-                        str = "https://cc.163.com/ccid/\(i.ccid)"
-                        decodeUrl()
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
+				Task {
+					do {
+						let state = try await videoGet.cc163.getCC163State(url.absoluteString)
+						if state.list.count > 1 {
+							let infos = state.list.enumerated().map {
+								CC163VideoSelector(
+									index: $0.offset,
+									title: $0.element.name,
+									ccid: "\($0.element.ccid)",
+									isLiving: $0.element.isLiving,
+									url: $0.element.channel,
+									id: "\($0.element.ccid)")
+							}
+							self.showSelectVideo("", infos: [("", infos)])
+							resolver.fulfill(())
+						} else if let i = state.info as? CC163Info {
+							str = "https://cc.163.com/ccid/\(i.ccid)"
+							decodeUrl()
+						} else if let i = state.info as? CC163ChannelInfo {
+							str = "https://cc.163.com/ccid/\(i.ccid)"
+							decodeUrl()
+						}
+					} catch let error {
+						resolver.reject(error)
+					}
+				}
             } else {
                 decodeUrl()
             }
