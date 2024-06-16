@@ -645,22 +645,24 @@ class MainViewController: NSViewController {
                     resolver.reject($0)
                 }
             } else if url.host == "live.bilibili.com" {
-                videoGet.biliLive.getRoomList(url.absoluteString).done {
-                    if $0.1.count == 0 || $0.1.count == 1 {
-                        decodeUrl()
-                    } else {
-                        var c = 0
-                        if url.pathComponents.count > 1 {
-                            let id = "\(url.pathComponents[1])"
-                            c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
-                        }
-                        
-                        self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
-                        resolver.fulfill(())
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
+				Task {
+					do {
+						let list = try await videoGet.biliLive.getRoomList(url.absoluteString)
+						if list.1.count == 0 || list.1.count == 1 {
+							decodeUrl()
+						} else {
+							var c = 0
+							if url.pathComponents.count > 1 {
+								let id = "\(url.pathComponents[1])"
+								c = list.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
+							}
+							showSelectVideo("", infos: [("", list.1)], currentItem: c)
+							resolver.fulfill(())
+						}
+					} catch let error {
+						resolver.reject(error)
+					}
+				}
             } else if url.host == "cc.163.com" {
                 videoGet.cc163.getCC163State(url.absoluteString).done {
                     
