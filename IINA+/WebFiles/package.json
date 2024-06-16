@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "comment-core-library": "github:xjbeta/CommentCoreLibrary#iina-grunt",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "mpegts.js": "^1.7.3"
   }
 }
