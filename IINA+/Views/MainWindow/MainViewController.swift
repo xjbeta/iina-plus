@@ -633,17 +633,20 @@ class MainViewController: NSViewController {
 						}
 					}
 				}
-            } else if url.host == "www.huya.com" {                
-                videoGet.huya.getHuyaRoomList(url.absoluteString).done { rl in
-                    if rl.list.count == 0 {
-                        decodeUrl()
-                    } else {
-                        self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
-                        resolver.fulfill(())
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
+            } else if url.host == "www.huya.com" {
+				Task {
+					do {
+						let rl = try await videoGet.huya.getHuyaRoomList(url.absoluteString)
+						if rl.list.count == 0 {
+							decodeUrl()
+						} else {
+							self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
+							resolver.fulfill(())
+						}
+					} catch let error {
+						resolver.reject(error)
+					}
+				}
             } else if url.host == "live.bilibili.com" {
 				Task {
 					do {
