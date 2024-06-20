@@ -70,8 +70,6 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  哦嚯, ";
 
-/* KuaiShou */
-"SupportSites.KuaiShou" = "快手直播";
 
 /* plugin install finish */
 "PluginInstaller.tips" = "\n准备就绪  ✅\n重启 IINA 以生效";
