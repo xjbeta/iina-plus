@@ -40,8 +40,6 @@ class HttpServer: NSObject, DanmakuDelegate {
     
     let videoDecoder = VideoDecoder()
     
-    let danmukusLock = NSLock()
-    
     func start() {
         prepareWebSiteFiles()
         guard let dir = httpFilesURL?.path else { return }
@@ -173,12 +171,6 @@ class HttpServer: NSObject, DanmakuDelegate {
             self?.unknownSessions.append(session)
         }, disconnected: { [weak self] session in
             Log("Websocket client disconnected.")
-            
-            // Resolve race-condition crash when closing multiple IINA player windows at the same time (press Q on keyboard)
-            guard let closeLock = self?.danmukusLock else { return }
-            closeLock.lock()
-            defer { closeLock.unlock() }
-            
             self?.connectedItems.removeAll { $0.session == session
             }
             guard let items = self?.connectedItems else { return }
