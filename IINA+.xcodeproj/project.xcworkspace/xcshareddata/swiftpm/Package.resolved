@@ -1,5 +1,5 @@
 {
-  "originHash" : "e1a2a270e94ff27f6dd19686d853234eb5215f464533d87c0820af5a66b0e602",
+  "originHash" : "1b448869e60459f9f01d517abd3adc7ce869796d7c11c7df7bdcf8bb9422a066",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "bbd811be9b78352e74970d1c2c652e87c83ce51b",
         "version" : "1.2.8"
-      }
-    },
-    {
-      "identity" : "pmkalamofire",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/PromiseKit/PMKAlamofire",
-      "state" : {
-        "revision" : "e1791b81d309d4b4853127d72473978f86e96ebe",
-        "version" : "4.0.0"
       }
     },
     {

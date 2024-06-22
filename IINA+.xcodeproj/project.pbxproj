@@ -69,7 +69,6 @@
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
 		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
 		018F4F6128126FFD0045B67C /* Huya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6028126FFD0045B67C /* Huya.swift */; };
-		018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 018F4F632812BFC60045B67C /* PMKAlamofire */; };
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
 		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
@@ -307,7 +306,6 @@
 				01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */,
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
-				018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */,
 				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
@@ -650,7 +648,6 @@
 				01C0809627BC074000E87A8C /* SDWebImage */,
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
-				018F4F632812BFC60045B67C /* PMKAlamofire */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -706,7 +703,6 @@
 				01C0809527BC074000E87A8C /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				01C0809827BC079200E87A8C /* XCRemoteSwiftPackageReference "Sparkle" */,
 				01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */,
-				018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */,
 				010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
@@ -1106,14 +1102,6 @@
 				minimumVersion = 0.1.0;
 			};
 		};
-		018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PromiseKit/PMKAlamofire";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
-			};
-		};
 		01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire";
@@ -1205,11 +1193,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		018F4F632812BFC60045B67C /* PMKAlamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */;
-			productName = PMKAlamofire;
-		};
 		01C0807B27BC00EA00E87A8C /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */;

@@ -9,7 +9,6 @@
 import Cocoa
 import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 
 class QQLive: NSObject, SupportSiteProtocol {

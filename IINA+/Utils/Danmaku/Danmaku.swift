@@ -14,7 +14,6 @@ import Gzip
 import JavaScriptCore
 import CryptoSwift
 import PromiseKit
-import PMKAlamofire
 import Marshal
 import SDWebImage
 
@@ -110,74 +109,78 @@ class Danmaku: NSObject {
     }
 
 	func loadDM() {
-		DispatchQueue.main.async {
-			self.loadDanmaku()
+		Task {
+			do {
+				try await loadDanmaku()
+			} catch let error {
+				Log("loadDM failed, \(error)")
+			}
 		}
 	}
 	
     
-    func loadDanmaku() {
+    func loadDanmaku() async throws {
         guard let url = URL(string: self.url) else { return }
         let roomID = url.lastPathComponent
         let videoDecoder = Processes.shared.videoDecoder
         switch liveSite {
         case .biliLive:
-            socket = .init(url: biliLiveServer!)
-            socket?.delegate = self
+
+			let rid = try await self.bililiveRid(roomID)
+			let token = try await bililiveToken(rid)
+			let emoticons = try await bililiveEmoticons(rid)
+			let uid = try await Bilibili().getUid()
 			
-			Task {
-				do {
-					let rid = try await self.bililiveRid(roomID)
-					biliLiveIDs.rid = rid
-					biliLiveIDs.token = try await bililiveToken(rid)
-					bililiveEmoticons = try await bililiveEmoticons(rid)
-					biliLiveIDs.uid = try await Bilibili().getUid()
-					socket?.open()
-				} catch let error {
-					Log("can't find bilibili ids \(error).")
-				}
+			await MainActor.run {
+				biliLiveIDs.rid = rid
+				biliLiveIDs.token = token
+				bililiveEmoticons = emoticons
+				biliLiveIDs.uid = uid
+				socket = .init(url: biliLiveServer!)
+				socket?.delegate = self
+				socket?.open()
 			}
         case .douyu:
             
             Log("Processes.shared.videoDecoder.getDouyuHtml")
 			
-			Task {
-				do {
-					let info = try await videoDecoder.douyu.getDouyuHtml(url.absoluteString)
-					initDouYuSocket(info.roomId)
-				} catch let error {
-					Log(error)
-				}
+			let info = try await videoDecoder.douyu.getDouyuHtml(url.absoluteString)
+			
+			await MainActor.run {
+				initDouYuSocket(info.roomId)
 			}
+			
         case .huya:
-            AF.request(url.absoluteString).responseString().done {
-                let js = $0.string.subString(from: "var TT_ROOM_DATA = ", to: "};")
-                let roomData = (js + "}").data(using: .utf8) ?? Data()
-                let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
-                
-                if let id: String = try? roomInfo.value(for: "id"),
-                    let uid = Int(id) {
-                    self.huyaAnchorUid = uid
-                } else {
-                    self.huyaAnchorUid = try roomInfo.value(for: "id")
-                }
-                
-                self.socket = .init(url: self.huyaServer!)
-                self.socket?.delegate = self
-                self.socket?.open()
-            }.catch {
-                Log("Init huya AnchorUid failed \($0).")
-            }
+			let str = try await AF.request(url.absoluteString).serializingString().value
+			let js = str.subString(from: "var TT_ROOM_DATA = ", to: "};")
+			let roomData = (js + "}").data(using: .utf8) ?? Data()
+			let roomInfo: JSONObject = try JSONParser.JSONObjectWithData(roomData)
+
+			try await MainActor.run {
+				if let id: String = try? roomInfo.value(for: "id"),
+					let uid = Int(id) {
+					self.huyaAnchorUid = uid
+				} else {
+					self.huyaAnchorUid = try roomInfo.value(for: "id")
+				}
+				
+				self.socket = .init(url: self.huyaServer!)
+				self.socket?.delegate = self
+				self.socket?.open()
+			}
+
         case .douyin:
-            douyinDM = .init()
-            douyinDM?.requestPrepared = { ur in
-                self.socket = .init(urlRequest: ur)
-                self.socket?.delegate = self
-                self.socket?.open()
-            }
-            douyinDM?.start(self.url)
-            socketClosed = false
-			startTimer()
+			await MainActor.run {
+				douyinDM = .init()
+				douyinDM?.requestPrepared = { ur in
+					self.socket = .init(urlRequest: ur)
+					self.socket?.delegate = self
+					self.socket?.open()
+				}
+				douyinDM?.start(self.url)
+				socketClosed = false
+				startTimer()
+			}
         default:
             break
         }
