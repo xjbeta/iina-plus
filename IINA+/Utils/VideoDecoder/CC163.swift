@@ -7,50 +7,33 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 import SwiftSoup
 
 class CC163: NSObject, SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					if url.pathComponents.count == 4,
-					   url.pathComponents[2] == "ccid" {
-						var info = BilibiliInfo()
-						info.site = .cc163
-						info.isLiving = true
-						resolver.fulfill(info)
-					} else {
-						let info = try await getCC163Info(url)
-						resolver.fulfill(info)
-					}
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		if url.pathComponents.count == 4,
+		   url.pathComponents[2] == "ccid" {
+			var info = BilibiliInfo()
+			info.site = .cc163
+			info.isLiving = true
+			return info
+		} else {
+			let info = try await getCC163Info(url)
+			return info
 		}
-    }
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let ccid = try await getCC163Ccid(url)
+		let cid = try await getCC163ChannelID(ccid)
+		let videos = try await getCC163Videos(cid)
+		guard let v = videos.first else { throw VideoGetError.notFountData }
+		let json = v.write(to: YouGetJSON(rawUrl: url))
+		return json
+	}
     
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					let ccid = try await getCC163Ccid(url)
-					let cid = try await getCC163ChannelID(ccid)
-					let videos = try await getCC163Videos(cid)
-					guard let v = videos.first else { throw VideoGetError.notFountData }
-					let json = v.write(to: YouGetJSON(rawUrl: url))
-					resolver.fulfill(json)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
     
     func getCC163Info(_ url: String) async throws -> LiveInfo {
 		let state = try await getCC163State(url)

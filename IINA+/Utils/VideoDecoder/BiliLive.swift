@@ -7,9 +7,7 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 
 class BiliLive: NSObject, SupportSiteProtocol {
@@ -20,43 +18,27 @@ class BiliLive: NSObject, SupportSiteProtocol {
     
     let apiType = APIType.roomPlayInfo
     
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					var info = try await getBiliLiveRoomId(url)
-					let uInfo = try await getBiliUserInfo(info.roomId)
-					
-					info.name = uInfo.name
-					info.avatar = uInfo.avatar
-					
-					resolver.fulfill(info)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					var yougetJson = YouGetJSON(rawUrl: url)
-					
-					let info = try await getBiliLiveRoomId(url)
-					yougetJson.title = info.title
-					yougetJson.id = info.roomId
-					
-					let json = try await getBiliLiveJSON(yougetJson)
-					
-					resolver.fulfill(json)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		var info = try await getBiliLiveRoomId(url)
+		let uInfo = try await getBiliUserInfo(info.roomId)
+		
+		info.name = uInfo.name
+		info.avatar = uInfo.avatar
+		
+		return info
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		var yougetJson = YouGetJSON(rawUrl: url)
+		
+		let info = try await getBiliLiveRoomId(url)
+		yougetJson.title = info.title
+		yougetJson.id = info.roomId
+		
+		let json = try await getBiliLiveJSON(yougetJson)
+		
+		return json
+	}
     
     func getBiliLiveRoomId(_ url: String) async throws -> BiliLiveInfo {
 		let u = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(url.lastPathComponent)"

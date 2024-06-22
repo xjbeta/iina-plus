@@ -8,11 +8,9 @@
 
 import Cocoa
 import WebKit
-import PromiseKit
 import SwiftSoup
 import Alamofire
 import Marshal
-import PMKAlamofire
 
 class DouYin: NSObject, SupportSiteProtocol {
     
@@ -84,36 +82,26 @@ addXMLRequestCallback(function (xhr) {
 	private var refreshCookies: Task<[String: String], Error>?
 	private var invalidCookiesCount = 0
 	
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					let _ = try await initCookies()
-					let info = try await getEnterContent(url)
-					resolver.fulfill(info)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		let _ = try await initCookies()
+		let info = try await getEnterContent(url)
+		return info
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await liveInfo(url)
+		var json = YouGetJSON(rawUrl: url)
+		
+		if let info = info as? DouYinEnterData.DouYinLiveInfo {
+			json = info.write(to: json)
+		} else if let info = info as? DouYinInfo {
+			json = info.write(to: json)
+		} else {
+			throw VideoGetError.notFindUrls
 		}
 		
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        liveInfo(url).compactMap {
-			var json = YouGetJSON(rawUrl: url)
-			
-			if let info = $0 as? DouYinEnterData.DouYinLiveInfo {
-				json = info.write(to: json)
-			} else if let info = $0 as? DouYinInfo {
-				json = info.write(to: json)
-			} else {
-				return nil
-			}
-			
-			return json
-        }
-    }
+		return json
+	}
     
 	
 	func getEnterContent(_ url: String) async throws -> LiveInfo {

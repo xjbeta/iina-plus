@@ -111,6 +111,6 @@ enum LiveState: Int {
 }
 
 protocol SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo>
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON>
+    func liveInfo(_ url: String) async throws -> LiveInfo
+    func decodeUrl(_ url: String) async throws -> YouGetJSON
 }

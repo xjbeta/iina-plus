@@ -10,7 +10,6 @@ import Cocoa
 import Alamofire
 import Marshal
 import PromiseKit
-import PMKAlamofire
 
 class Bilibili: NSObject, SupportSiteProtocol {
 	
@@ -18,66 +17,48 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	
 	let bangumiUA = "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"
 	
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					let isBangumi = SupportSites(url: url) == .bangumi
-					let data = try await getBilibiliHTMLDatas(url, isBangumi: isBangumi)
-					
-					if isBangumi {
-						
-						
-						// 				decode bangumiData if biliUA
-						//				let tt = try JSONParser.JSONObjectWithData($0.bangumiData)
-						//				let queries: [JSONObject] = try tt.value(for: "props.pageProps.dehydratedState.queries")
-						//				if let obj: JSONObject = try? queries.first?.value(for: "state.data") {
-						//					return try BangumiInfo(object: obj)
-						//				}
-						let binfo = try BangumiInfo(object: try JSONParser.JSONObjectWithData(data.initialStateData))
-						
-						var info = BilibiliInfo()
-						info.site = .bangumi
-						info.title = binfo.mediaInfo.title
-						info.cover = binfo.mediaInfo.squareCover
-						info.isLiving = true
-						resolver.fulfill(info)
-					} else {
-						let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(data.initialStateData)
-						
-						var info = BilibiliInfo()
-						info.title = try initialStateJson.value(for: "videoData.title")
-						info.cover = try initialStateJson.value(for: "videoData.pic")
-						info.cover = info.cover.https()
-						info.name = try initialStateJson.value(for: "videoData.owner.name")
-						info.isLiving = true
-						
-						resolver.fulfill(info)
-					}
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		let isBangumi = SupportSites(url: url) == .bangumi
+		let data = try await getBilibiliHTMLDatas(url, isBangumi: isBangumi)
+		
+		if isBangumi {
+			
+			
+			// 				decode bangumiData if biliUA
+			//				let tt = try JSONParser.JSONObjectWithData($0.bangumiData)
+			//				let queries: [JSONObject] = try tt.value(for: "props.pageProps.dehydratedState.queries")
+			//				if let obj: JSONObject = try? queries.first?.value(for: "state.data") {
+			//					return try BangumiInfo(object: obj)
+			//				}
+			let binfo = try BangumiInfo(object: try JSONParser.JSONObjectWithData(data.initialStateData))
+			
+			var info = BilibiliInfo()
+			info.site = .bangumi
+			info.title = binfo.mediaInfo.title
+			info.cover = binfo.mediaInfo.squareCover
+			info.isLiving = true
+			return info
+		} else {
+			let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(data.initialStateData)
+			
+			var info = BilibiliInfo()
+			info.title = try initialStateJson.value(for: "videoData.title")
+			info.cover = try initialStateJson.value(for: "videoData.pic")
+			info.cover = info.cover.https()
+			info.name = try initialStateJson.value(for: "videoData.owner.name")
+			info.isLiving = true
+			
+			return info
 		}
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					if SupportSites(url: url) == .bangumi {
-						let re = try await getBangumi(url)
-						resolver.fulfill(re)
-					} else {
-						let re = try await getBilibili(url)
-						resolver.fulfill(re)
-					}
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		if SupportSites(url: url) == .bangumi {
+			try await getBangumi(url)
+		} else {
+			try await getBilibili(url)
 		}
-    }
+	}
     
 // MARK: - Bilibili
     

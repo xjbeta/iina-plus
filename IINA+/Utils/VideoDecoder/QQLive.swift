@@ -20,34 +20,17 @@ class QQLive: NSObject, SupportSiteProtocol {
 		return Session(configuration: configuration)
 	}()
 	
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					let re = try await roomInfo(url)
-					resolver.fulfill(re)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					let info = try await mInfo(url)
-					var re = YouGetJSON(rawUrl: url)
-					re.title = info.title
-					re.streams["Default"] = .init(url: info.url.https())
-					resolver.fulfill(re)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		try await roomInfo(url)
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await mInfo(url)
+		var re = YouGetJSON(rawUrl: url)
+		re.title = info.title
+		re.streams["Default"] = .init(url: info.url.https())
+		return re
+	}
 	
 	func roomInfo(_ url: String) async throws -> QQLiveInfo {
 		var s = try await AF.request(url).serializingString().value

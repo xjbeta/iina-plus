@@ -7,9 +7,7 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 import SwiftSoup
 
@@ -25,31 +23,14 @@ class Huya: NSObject, SupportSiteProtocol {
 	// T.a.uid
 	private let huyaUid = (Int(Date().timeIntervalSince1970 * 1000) % Int(1e10) * Int(1e3) + Int.random(in: Int(1e2)..<Int(1e3))) % 4294967295
     
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					let info = try await getHuyaInfoMP(url)
-					resolver.fulfill(info)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					let info = try await getHuyaInfoMP(url)
-					resolver.fulfill(info.videos(url, uid: huyaUid))
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		try await getHuyaInfoMP(url)
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await getHuyaInfoMP(url)
+		return info.videos(url, uid: huyaUid)
+	}
     
     // MARK: - Huya
     

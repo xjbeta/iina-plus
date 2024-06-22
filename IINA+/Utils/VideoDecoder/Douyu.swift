@@ -8,55 +8,36 @@
 
 import Cocoa
 import Alamofire
-import PMKAlamofire
-import PromiseKit
 import JavaScriptCore
 import Marshal
 import CryptoSwift
 
 class Douyu: NSObject, SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		.init { resolver in
-			Task {
-				do {
-					let rid = try await getDouyuHtml(url).roomId
-					let id = Int(rid) ?? -1
-					let info = try await douyuBetard(id)
-					
-					resolver.fulfill(info)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
-		}
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		let rid = try await getDouyuHtml(url).roomId
+		let id = Int(rid) ?? -1
+		let info = try await douyuBetard(id)
+		return info
+	}
     
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		.init { resolver in
-			Task {
-				do {
-					let html = try await getDouyuHtml(url)
-					guard let rid = Int(html.roomId) else {
-						throw VideoGetError.douyuNotFoundRoomId
-					}
-					let jsContext = html.jsContext
-					let info = try await douyuBetard(rid)
-					let urls = try await getDouyuUrl(rid, jsContext: jsContext)
-					
-					var yougetJson = YouGetJSON(rawUrl: url)
-					yougetJson.id = rid
-					yougetJson.title = info.title
-					urls.forEach {
-						yougetJson.streams[$0.0] = $0.1
-					}
-					
-					resolver.fulfill(yougetJson)
-				} catch let error {
-					resolver.reject(error)
-				}
-			}
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let html = try await getDouyuHtml(url)
+		guard let rid = Int(html.roomId) else {
+			throw VideoGetError.douyuNotFoundRoomId
 		}
-    }
+		let jsContext = html.jsContext
+		let info = try await douyuBetard(rid)
+		let urls = try await getDouyuUrl(rid, jsContext: jsContext)
+		
+		var yougetJson = YouGetJSON(rawUrl: url)
+		yougetJson.id = rid
+		yougetJson.title = info.title
+		urls.forEach {
+			yougetJson.streams[$0.0] = $0.1
+		}
+		return yougetJson
+	}
+	
     
     func getDouyuHtml(_ url: String) async throws -> (roomId: String, roomIds: [String], isLiving: Bool, pageId: String, jsContext: JSContext) {
         
