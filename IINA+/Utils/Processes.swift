@@ -18,9 +18,8 @@ class Processes: NSObject {
     let httpServer = HttpServer()
 	let iina = IINAApp()
     
-    var decodeTask: Process?
-    var videoGetTasks: [(Promise<YouGetJSON>, cancel: () -> Void)] = []
-    
+	private var decodeTask: Task<YouGetJSON, any Error>?
+	
     fileprivate override init() {
     }
     
@@ -84,20 +83,15 @@ class Processes: NSObject {
     }
     
 	
-    func decodeURL(_ url: String) -> Promise<YouGetJSON> {
-        return Promise { resolver in
-            videoGetTasks.append(decodeUrlWithVideoGet(url))
-            videoGetTasks.last?.0.done {
-                resolver.fulfill($0)
-                }.catch(policy: .allErrors) {
-                    switch $0 {
-                    case PMKError.cancelled:
-                        resolver.reject(PMKError.cancelled)
-                    default:
-                        resolver.reject($0)
-                    }
-            }
-        }
+    func decodeURL(_ url: String) async throws -> YouGetJSON {
+		decodeTask?.cancel()
+		
+		let task = Task {
+			try await videoDecoder.decodeUrl(url)
+		}
+		
+		decodeTask = task
+		return try await task.value
     }
     
     enum DecodeUrlError: Error {
@@ -107,35 +101,7 @@ class Processes: NSObject {
     }
     
     func stopDecodeURL() {
-        if let task = decodeTask, task.isRunning {
-            decodeTask?.suspend()
-            decodeTask?.terminate()
-            decodeTask = nil
-        }
-        
-        videoGetTasks.removeAll {
-            $0.0.isFulfilled || $0.0.isRejected
-        }
-        videoGetTasks.last?.cancel()
-    }
-    
-    func decodeUrlWithVideoGet(_ url: String) -> (Promise<YouGetJSON>, cancel: () -> Void) {
-        var cancelme = false
-        
-        let promise = Promise<YouGetJSON> { resolver in
-            self.videoDecoder.decodeUrl(url).done {
-                guard !cancelme else { return resolver.reject(PMKError.cancelled) }
-                resolver.fulfill($0)
-                }.catch {
-                    guard !cancelme else { return resolver.reject(PMKError.cancelled) }
-                    resolver.reject($0)
-            }
-        }
-        
-        let cancel = {
-            cancelme = true
-        }
-        return (promise, cancel)
+		decodeTask?.cancel()
     }
     
     func openWithPlayer(_ json: YouGetJSON, _ key: String) {
