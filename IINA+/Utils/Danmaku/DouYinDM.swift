@@ -86,12 +86,21 @@ class DouYinDM: NSObject {
 			return .init()
 		} else {
 			let dy = proc.videoDecoder.douyin
-			return dy.liveInfo(url).done {
-				self.cookies = dy.cookies
-				if let rid = ($0 as? DouYinEnterData.DouYinLiveInfo)?.roomId {
-					self.roomId = rid
-				} else {
-					self.roomId = ($0 as! DouYinInfo).roomId
+			return .init { resolver in
+				Task {
+					do {
+						let info = try await dy.liveInfo(self.url)
+						await MainActor.run {
+							self.cookies = dy.cookies
+							if let rid = (info as? DouYinEnterData.DouYinLiveInfo)?.roomId {
+								self.roomId = rid
+							} else {
+								self.roomId = (info as! DouYinInfo).roomId
+							}
+						}
+					} catch let error {
+						resolver.reject(error)
+					}
 				}
 			}
 		}
