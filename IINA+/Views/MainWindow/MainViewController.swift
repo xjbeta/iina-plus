@@ -459,7 +459,7 @@ class MainViewController: NSViewController {
 			} catch let error {
 				var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
 				switch error {
-				case PMKError.cancelled:
+				case is CancellationError:
 					return
 				case VideoGetError.invalidLink:
 					s += NSLocalizedString("VideoGetError.invalidLink", comment: "invalid url.")
@@ -484,14 +484,19 @@ class MainViewController: NSViewController {
     func startSearchingUrl(_ url: String,
                            directly: Bool = false,
                            with option: Bool = false) async throws {
-        guard url != "" else { return }
-
 		await MainActor.run {
 			Processes.shared.stopDecodeURL()
 			waitingErrorMessage = nil
 			yougetResult = nil
 		}
 		
+		guard url != "" else {
+			await MainActor.run {
+				isSearching = false
+				progressStatusChanged(false)
+			}
+			return
+		}
         
 		let jspSupported = SupportSites(url: url).supportWebPlayer()
         
