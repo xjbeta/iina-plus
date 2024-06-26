@@ -1,5 +1,5 @@
 {
-  "originHash" : "1b448869e60459f9f01d517abd3adc7ce869796d7c11c7df7bdcf8bb9422a066",
+  "originHash" : "8f0535c879b446e431bd59505a63b0fa4b1c6a094757066330c3fb6a647087cf",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -94,10 +94,10 @@
     {
       "identity" : "swifter",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/httpswift/swifter",
+      "location" : "https://github.com/xjbeta/swifter",
       "state" : {
-        "revision" : "9483a5d459b45c3ffd059f7b55f9638e268632fd",
-        "version" : "1.5.0"
+        "branch" : "dev",
+        "revision" : "b2b6331a083c5d036324c8449cc57fb17c257c3c"
       }
     },
     {
