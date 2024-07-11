@@ -8,7 +8,6 @@
 
 import Cocoa
 import WebKit
-import PromiseKit
 
 class BilibiliLoginViewController: NSViewController {
 
@@ -16,13 +15,13 @@ class BilibiliLoginViewController: NSViewController {
     @IBOutlet weak var viewForWeb: NSView!
     @IBOutlet weak var waitProgressIndicator: NSProgressIndicator!
     var webView: WKWebView!
-	var dismiss: (((Bool, String)?) -> Void)?
-    let bilibili = Processes.shared.videoDecoder.bilibili
+	var dismissLogin: (((Bool, String)?) -> Void)?
+    
     @IBAction func tryAgain(_ sender: Any) {
         loadWebView()
     }
 	@IBAction func cancel(_ sender: NSButton) {
-		dismiss?(nil)
+		dismissLogin?(nil)
 	}
 	
     var webviewObserver: NSKeyValueObservation?
@@ -37,7 +36,7 @@ class BilibiliLoginViewController: NSViewController {
         super.keyUp(with: event)
         switch event.keyCode {
         case 53:
-            dismiss?(nil)
+            dismissLogin?(nil)
         default:
             break
         }
@@ -54,6 +53,9 @@ class BilibiliLoginViewController: NSViewController {
     
     func loadWebView() {
         tabView.selectTabViewItem(at: 0)
+		
+		webviewObserver?.invalidate()
+		webviewObserver = nil
         
 		//	https://passport.bilibili.com/ajax/miniLogin/minilogin
         let url = URL(string: "https://passport.bilibili.com/login")
@@ -88,6 +90,31 @@ document.getElementsByClassName("v-navbar__back")[0].remove();
         waitProgressIndicator.startAnimation(self)
     }
     
+	func checkLogin() {
+		Task { @MainActor in
+			do {
+				let cookies = await webView.configuration.websiteDataStore.httpCookieStore.allCookies()
+				cookies.forEach {
+					HTTPCookieStorage.shared.setCookie($0)
+				}
+				
+				let bilibili = Processes.shared.videoDecoder.bilibili
+				let isLogin = try await bilibili.isLogin()
+				
+				Log("islogin \(isLogin.0), \(isLogin.1)")
+				
+				if isLogin.0 {
+					self.dismissLogin?(isLogin)
+				} else {
+					self.tabView.selectTabViewItem(at: 1)
+				}
+			} catch let error {
+				Log(error)
+				self.tabView.selectTabViewItem(at: 1)
+			}
+		}
+	}
+	
 }
 
 
@@ -97,36 +124,13 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
         guard let str = webView.url?.absoluteString,
               str.contains("bili_jct") else { return }
         displayWait()
-        webviewObserver = webView.observe(\.isLoading) { (webView, _) in
-            guard !webView.isLoading else { return }
-            Log("Finish loading")
-            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies().done {
-                $0.forEach {
-                    HTTPCookieStorage.shared.setCookie($0)
-                }
-            }.then { _ -> Promise<(Bool, String)> in
-				.init { resolver in
-					Task {
-						do {
-							let s = try await self.bilibili.isLogin()
-							resolver.fulfill(s)
-						} catch let error {
-							resolver.reject(error)
-						}
-					}
-				}
-            }.done(on: .main) {
-                Log("islogin \($0.0), \($0.1)")
-                
-                if $0.0 {
-                    self.dismiss?($0)
-                } else {
-                    self.tabView.selectTabViewItem(at: 1)
-                }
-            }.catch(on: .main) { _ in
-                self.tabView.selectTabViewItem(at: 1)
-            }
-        }
+		
+		webviewObserver = webView.observe(\.isLoading) { (webView, _) in
+			guard !webView.isLoading else { return }
+			Log("Finish loading")
+			self.checkLogin()
+		}
+		
     }
     
     

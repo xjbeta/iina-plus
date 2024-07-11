@@ -46,7 +46,7 @@ class BilibiliViewController: NSViewController {
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         if let vc = segue.destinationController as? BilibiliLoginViewController {
-            vc.dismiss = { isLogin in
+            vc.dismissLogin = { isLogin in
 				vc.view.window?.close()
 				guard let isLogin = isLogin else { return }
                 self.updateStatus(isLogin)
