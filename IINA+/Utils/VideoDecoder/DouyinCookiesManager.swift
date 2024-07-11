@@ -24,34 +24,43 @@ actor DouyinCookiesManager {
 	
 	private let prepareArgs: (() async throws -> [String: String])
 	
+	private var lock = NSLock()
+	
 	init(prepareArgs: @escaping (() async throws -> [String: String])) {
 		self.prepareArgs = prepareArgs
 	}
 	
 	
 	func initCookies() async throws -> [String: String] {
-		if let handle = refreshCookies {
-			return try await handle.value
-		}
-		
-		if cookies.count > 0 {
-			return cookies
-		}
-		cookies = try await refreshCookies()
-		return cookies
-	}
-	
-	private func refreshCookies() async throws -> [String: String] {
-		if let refreshTask = refreshCookies {
-			return try await refreshTask.value
-		}
+		await withCheckedContinuation { continuation in
+			lock.lock()
+			defer { lock.unlock() }
+			
+			Task {
+				if let handle = refreshCookies {
+					let cookies = try await handle.value
+					continuation.resume(returning: cookies)
+					return
+				}
+				
+				if cookies.count > 0 {
+					continuation.resume(returning: cookies)
+					return
+				}
+				
+				let task = Task { () throws -> [String: String] in
+					defer {
+						self.refreshCookies = nil
+					}
+					return try await prepareArgs()
+				}
 
-		let task = Task { () throws -> [String: String] in
-			return try await prepareArgs()
+				self.refreshCookies = task
+				cookies = try await task.value
+				
+				continuation.resume(returning: cookies)
+			}
 		}
-
-		self.refreshCookies = task
-		return try await task.value
 	}
 	
 	func setCookies(_ cookies: [String: String]) async {
