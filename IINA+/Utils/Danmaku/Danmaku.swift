@@ -104,8 +104,10 @@ class Danmaku: NSObject {
         douyuSavedData = Data()
         heartBeatCount = 0
         
-        douyinDM?.stop()
-        douyinDM = nil
+		Task {
+			await douyinDM?.stop()
+			douyinDM = nil
+		}
     }
 
 	func loadDM() {
