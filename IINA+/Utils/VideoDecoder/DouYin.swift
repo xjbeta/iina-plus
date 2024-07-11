@@ -19,7 +19,6 @@ class DouYin: NSObject, SupportSiteProtocol {
 	
     var dyFinishNotification: NSObjectProtocol?
     
-    var cookies = [String: String]()
     var storageDic = [String: String]()
     
     let douyinEmptyURL = URL(string: "https://live.douyin.com/1")!
@@ -79,11 +78,12 @@ addXMLRequestCallback(function (xhr) {
 	@MainActor
 	private var cookiesTaskState: DYState = .none
 	
-	private var refreshCookies: Task<[String: String], Error>?
+	lazy var cookiesManager = DouyinCookiesManager(prepareArgs: prepareArgs)
+	
 	private var invalidCookiesCount = 0
 	
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
-		let _ = try await initCookies()
+		let _ = try await cookiesManager.initCookies()
 		let info = try await getEnterContent(url)
 		return info
 	}
@@ -105,9 +105,7 @@ addXMLRequestCallback(function (xhr) {
     
 	
 	func getEnterContent(_ url: String) async throws -> LiveInfo {
-		let cookieString = cookies.map {
-			"\($0.key)=\($0.value)"
-		}.joined(separator: ";")
+		let cookieString = await cookiesManager.cookiesString
 		
 		let headers = HTTPHeaders([
 			"User-Agent": douyinUA,
@@ -140,9 +138,7 @@ addXMLRequestCallback(function (xhr) {
 	
     
     func getContent(_ url: String) async throws -> LiveInfo {
-        let cookieString = cookies.map {
-            "\($0.key)=\($0.value)"
-        }.joined(separator: ";")
+		let cookieString = await cookiesManager.cookiesString
         
         let headers = HTTPHeaders([
             "User-Agent": douyinUA,
@@ -155,7 +151,7 @@ addXMLRequestCallback(function (xhr) {
 			self.invalidCookiesCount += 1
 			if self.invalidCookiesCount == 5 {
 				self.invalidCookiesCount = 0
-				self.cookies.removeAll()
+				await cookiesManager.removeAll()
 				
 				Log("Reload Douyin Cookies")
 			}
@@ -223,36 +219,8 @@ addXMLRequestCallback(function (xhr) {
 		}
 	}
 	
-	func initCookies() async throws -> [String: String] {
-		if let handle = refreshCookies {
-			return try await handle.value
-		}
-		
-		if cookies.count > 0 {
-			return cookies
-		}
-		let _ = try await refreshCookies()
-		return cookies
-	}
 	
-	func refreshCookies() async throws -> [String: String] {
-		if let refreshTask = refreshCookies {
-			return try await refreshTask.value
-		}
-
-		let task = Task { () throws -> [String: String] in
-			defer { refreshCookies = nil }
-
-			try await prepareArgs()
-			return cookies
-		}
-
-		self.refreshCookies = task
-		return try await task.value
-	}
-	
-    func prepareArgs() async throws {
-        cookies.removeAll()
+	func prepareArgs() async throws -> [String: String] {
         storageDic.removeAll()
         deleteDouYinCookies()
 		
@@ -319,17 +287,19 @@ addXMLRequestCallback(function (xhr) {
 			Log("Douyin cookies checking.")
 		}
 		
-		try await loadCookies()
+		let cookies = try await loadCookies()
 		await MainActor.run {
 			cookiesTaskState = .finish
 			Log("Douyin cookies finish.")
 		}
 		await deinitWebView()
+		
+		return cookies
     }
     
 
 	
-	func loadCookies() async throws {
+	func loadCookies() async throws -> [String: String] {
 		guard let webview = webView else {
 			throw VideoGetError.douyuSignError
 		}
@@ -338,10 +308,12 @@ addXMLRequestCallback(function (xhr) {
 		let allCookies = await getAllWKCookies()
 		
 		Log("Douyin getAllWKCookies")
+		var cookies = [String: String]()
+		
 		allCookies.filter {
 			$0.domain.contains("douyin")
 		}.forEach {
-			self.cookies[$0.name] = $0.value
+			cookies[$0.name] = $0.value
 		}
 		
 		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)")
@@ -367,9 +339,13 @@ addXMLRequestCallback(function (xhr) {
 			self.privateKeys[1].base64Decode(): values[1]
 		]
 		
+		await cookiesManager.setCookies(cookies)
+		
 		let info = try await getEnterContent(douyinEmptyURL.absoluteString)
 		
 		Log("Douyin test info \(info.title)")
+		
+		return cookies
 	}
 	
 	@MainActor
