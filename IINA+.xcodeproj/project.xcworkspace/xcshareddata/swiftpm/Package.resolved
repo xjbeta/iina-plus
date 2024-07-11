@@ -1,5 +1,5 @@
 {
-  "originHash" : "8f0535c879b446e431bd59505a63b0fa4b1c6a094757066330c3fb6a647087cf",
+  "originHash" : "3ee7d1c78fc4d98bd1c9eaf35f9b4a263d0b9b98d97f310ecc74fcc7cf1d66ed",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "bbd811be9b78352e74970d1c2c652e87c83ce51b",
         "version" : "1.2.8"
-      }
-    },
-    {
-      "identity" : "promisekit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mxcl/PromiseKit",
-      "state" : {
-        "revision" : "8a98e31a47854d3180882c8068cc4d9381bf382d",
-        "version" : "6.22.1"
       }
     },
     {

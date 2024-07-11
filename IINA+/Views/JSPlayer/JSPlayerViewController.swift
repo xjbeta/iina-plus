@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 import WebKit
 
 class JSPlayerViewController: NSViewController {
@@ -537,9 +536,11 @@ class JSPlayerViewController: NSViewController {
     
     func evaluateJavaScript(_ str: String) {
         guard webView != nil else { return }
-        webView.evaluateJavaScript(str).catch {
-            Log("evaluateJavaScript error \($0)")
+        webView.evaluateJavaScript(str) {
+			guard let e = $1 else { return }
+			Log("evaluateJavaScript error \(e)")
         }
+		
     }
     
     

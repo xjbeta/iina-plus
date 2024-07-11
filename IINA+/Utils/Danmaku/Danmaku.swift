@@ -13,7 +13,6 @@ import SocketRocket
 import Gzip
 import JavaScriptCore
 import CryptoSwift
-import PromiseKit
 import Marshal
 import SDWebImage
 

@@ -8,7 +8,6 @@
 
 import Cocoa
 import Marshal
-import PromiseKit
 import Alamofire
 import SDWebImage
 

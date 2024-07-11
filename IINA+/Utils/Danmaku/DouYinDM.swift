@@ -8,7 +8,6 @@
 
 import Cocoa
 import WebKit
-import PromiseKit
 
 class DouYinDM: NSObject {
 	var url = ""

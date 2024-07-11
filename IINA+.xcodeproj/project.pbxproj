@@ -109,7 +109,6 @@
 		01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808427BC03E300E87A8C /* SwiftSoup */; };
 		01C0808827BC049500E87A8C /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808727BC049500E87A8C /* CryptoSwift */; };
 		01C0808B27BC04C500E87A8C /* Marshal in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808A27BC04C500E87A8C /* Marshal */; };
-		01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808D27BC056200E87A8C /* PromiseKit */; };
 		01C0809127BC05A500E87A8C /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809027BC05A500E87A8C /* Gzip */; };
 		01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809327BC06EC00E87A8C /* SwiftProtobuf */; };
 		01C0809727BC074000E87A8C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809627BC074000E87A8C /* SDWebImage */; };
@@ -308,7 +307,6 @@
 				013F9B4B2C2C0A060024020C /* Swifter in Frameworks */,
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
-				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
 			);
@@ -644,7 +642,6 @@
 				01C0808427BC03E300E87A8C /* SwiftSoup */,
 				01C0808727BC049500E87A8C /* CryptoSwift */,
 				01C0808A27BC04C500E87A8C /* Marshal */,
-				01C0808D27BC056200E87A8C /* PromiseKit */,
 				01C0809027BC05A500E87A8C /* Gzip */,
 				01C0809327BC06EC00E87A8C /* SwiftProtobuf */,
 				01C0809627BC074000E87A8C /* SDWebImage */,
@@ -699,7 +696,6 @@
 				01C0808327BC03E300E87A8C /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				01C0808627BC049500E87A8C /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				01C0808927BC04C500E87A8C /* XCRemoteSwiftPackageReference "Marshal" */,
-				01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */,
 				01C0808F27BC05A500E87A8C /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				01C0809227BC06EC00E87A8C /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				01C0809527BC074000E87A8C /* XCRemoteSwiftPackageReference "SDWebImage" */,
@@ -1146,14 +1142,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mxcl/PromiseKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
-			};
-		};
 		01C0808F27BC05A500E87A8C /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/1024jp/GzipSwift";
@@ -1221,11 +1209,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0808927BC04C500E87A8C /* XCRemoteSwiftPackageReference "Marshal" */;
 			productName = Marshal;
-		};
-		01C0808D27BC056200E87A8C /* PromiseKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */;
-			productName = PromiseKit;
 		};
 		01C0809027BC05A500E87A8C /* Gzip */ = {
 			isa = XCSwiftPackageProductDependency;

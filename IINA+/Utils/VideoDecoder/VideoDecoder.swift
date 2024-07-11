@@ -8,7 +8,6 @@
 
 import Cocoa
 import Alamofire
-import PromiseKit
 import Marshal
 import CommonCrypto
 import JavaScriptCore

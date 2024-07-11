@@ -8,7 +8,6 @@
 
 import Foundation
 import Marshal
-import PromiseKit
 import Cocoa
 
 class Processes: NSObject {

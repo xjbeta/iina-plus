@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 
 class OpenFilesViewController: NSViewController {
     @IBOutlet weak var videoTextField: NSTextField!

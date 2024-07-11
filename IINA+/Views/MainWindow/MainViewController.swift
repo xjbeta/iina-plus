@@ -8,7 +8,6 @@
 
 import Cocoa
 import CoreData
-import PromiseKit
 import Alamofire
 import SDWebImage
 import WebKit
@@ -743,6 +742,8 @@ class MainViewController: NSViewController {
 		}
 	}
     
+	
+	/*
     func checkIINAProxy() -> Promise<(Bool)> {
         return Promise { resolver in
             guard var u = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
@@ -789,6 +790,7 @@ class MainViewController: NSViewController {
             }
         }
     }
+	 */
     
     func initLiveStateMenu() {
         let items = liveStateMenu.items

@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
 import Marshal
 

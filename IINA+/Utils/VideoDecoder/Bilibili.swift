@@ -9,7 +9,6 @@
 import Cocoa
 import Alamofire
 import Marshal
-import PromiseKit
 
 class Bilibili: NSObject, SupportSiteProtocol {
 	

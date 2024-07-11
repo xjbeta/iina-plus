@@ -408,7 +408,7 @@ struct DanmakuWS {
             if let s = session {
                 s.writeText(str)
             } else if let wv = webview {
-                wv.evaluateJavaScript("window.dmMessage(\(str));").catch { _ in }
+				wv.evaluateJavaScript("window.dmMessage(\(str));") { _,_ in }
             }
             
             if !str.contains("sendDM") {

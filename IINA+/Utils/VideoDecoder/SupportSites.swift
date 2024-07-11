@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 
 enum SupportSites: String {
     case b23 = "b23.tv"
