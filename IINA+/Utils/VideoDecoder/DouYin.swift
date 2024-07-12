@@ -119,7 +119,15 @@ addXMLRequestCallback(function (xhr) {
 			throw VideoGetError.invalidLink
 		}
 		
-		let rid = pc[1]
+		let rid = try {
+			if let i = Int(pc[1]) {
+				return pc[1]
+			} else if pc.count >= 4, pc[2] == "live", let i = Int(pc[3]) {
+				return pc[3]
+			} else {
+				throw VideoGetError.invalidLink
+			}
+		}()
 		
 		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=\(rid)&enter_source=&is_need_double_stream=true"
 		

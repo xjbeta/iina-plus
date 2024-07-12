@@ -38,7 +38,14 @@ enum SupportSites: String {
             default:
                 self = .unsupported
             }
-        } else if let list = SupportSites(rawValue: host) {
+		} else if host == "www.douyin.com",
+				  let pc = NSURL(string: url)?.pathComponents,
+				  pc.count >= 4,
+				  pc[2] == "live",
+					let rid = Int(pc[3]) {
+			
+			self = .init(url: "https://live.douyin.com/\(rid)")
+		} else if let list = SupportSites(rawValue: host) {
             self = list
         } else {
             self = .unsupported
