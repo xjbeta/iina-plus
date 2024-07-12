@@ -21,10 +21,6 @@ class DouYinDM: NSObject {
 		douyin.privateKeys
 	}
 	
-	var storageDic: [String: String] {
-		douyin.storageDic
-	}
-	
 	private var webView = WKWebView()
 	var requestPrepared: ((URLRequest) -> Void)?
 	
@@ -91,6 +87,11 @@ class DouYinDM: NSObject {
 	}
 	
 	func prepareCookies() async {
+		
+		let storageDic = await MainActor.run {
+			return douyin.storageDic
+		}
+		
 		let kvs = [
 			privateKeys[0].base64Decode(),
 			privateKeys[1].base64Decode()

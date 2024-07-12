@@ -19,8 +19,6 @@ class DouYin: NSObject, SupportSiteProtocol {
 	
     var dyFinishNotification: NSObjectProtocol?
     
-    var storageDic = [String: String]()
-    
     let douyinEmptyURL = URL(string: "https://live.douyin.com/1")!
     var douyinUA = ""
     
@@ -74,6 +72,9 @@ addXMLRequestCallback(function (xhr) {
 		case checking
 		case finish
 	}
+	
+	@MainActor
+	var storageDic = [String: String]()
 	
 	@MainActor
 	private var cookiesTaskState: DYState = .none
@@ -229,11 +230,11 @@ addXMLRequestCallback(function (xhr) {
 	
 	
 	func prepareArgs() async throws -> [String: String] {
-        storageDic.removeAll()
         deleteDouYinCookies()
 		
 		let config = await webviewConfig
 		await MainActor.run {
+			storageDic.removeAll()
 			cookiesTaskState = .preparing
 		}
 		webView = await WKWebView(frame: .zero, configuration: config)
@@ -342,10 +343,12 @@ addXMLRequestCallback(function (xhr) {
 			throw VideoGetError.douyuSignError
 		}
 		
-		storageDic = [
-			self.privateKeys[0].base64Decode(): values[0],
-			self.privateKeys[1].base64Decode(): values[1]
-		]
+		await MainActor.run {
+            storageDic = [
+                self.privateKeys[0].base64Decode(): values[0],
+                self.privateKeys[1].base64Decode(): values[1]
+            ]
+        }
 		
 		await cookiesManager.setCookies(cookies)
 		
