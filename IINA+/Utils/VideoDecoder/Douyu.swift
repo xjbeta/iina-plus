@@ -8,74 +8,59 @@
 
 import Cocoa
 import Alamofire
-import PMKAlamofire
-import PromiseKit
 import JavaScriptCore
 import Marshal
 import CryptoSwift
 
 class Douyu: NSObject, SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        getDouyuHtml(url).map {
-            Int($0.roomId) ?? -1
-        }.then {
-            self.douyuBetard($0)
-        }.map {
-            $0 as LiveInfo
-        }
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		let rid = try await getDouyuHtml(url).roomId
+		let id = Int(rid) ?? -1
+		let info = try await douyuBetard(id)
+		return info
+	}
     
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        var yougetJson = YouGetJSON(rawUrl: url)
-        var roomId = 0
-        var roomTitle = ""
-        var jsContext: JSContext!
-        return getDouyuHtml(url).get {
-            guard let rid = Int($0.roomId) else {
-                throw VideoGetError.douyuNotFoundRoomId
-            }
-            roomId = rid
-            jsContext = $0.jsContext
-        }.then { _ in
-            self.douyuBetard(roomId)
-        }.get {
-            roomTitle = $0.title
-        }.then { _ in
-            self.getDouyuUrl(roomId, jsContext: jsContext)
-        }.map {
-            yougetJson.title = roomTitle
-            $0.forEach {
-                yougetJson.streams[$0.0] = $0.1
-            }
-            yougetJson.id = roomId
-            return yougetJson
-        }
-    }
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let html = try await getDouyuHtml(url)
+		guard let rid = Int(html.roomId) else {
+			throw VideoGetError.douyuNotFoundRoomId
+		}
+		let jsContext = html.jsContext
+		let info = try await douyuBetard(rid)
+		let urls = try await getDouyuUrl(rid, jsContext: jsContext)
+		
+		var yougetJson = YouGetJSON(rawUrl: url)
+		yougetJson.id = rid
+		yougetJson.title = info.title
+		urls.forEach {
+			yougetJson.streams[$0.0] = $0.1
+		}
+		return yougetJson
+	}
+	
     
-    func getDouyuHtml(_ url: String) -> Promise<(roomId: String, roomIds: [String], isLiving: Bool, pageId: String, jsContext: JSContext)> {
+    func getDouyuHtml(_ url: String) async throws -> (roomId: String, roomIds: [String], isLiving: Bool, pageId: String, jsContext: JSContext) {
         
-        AF.request(url).responseString().map {
-            let text = $0.string
-            
-            let showStatus = text.subString(from: "$ROOM.show_status =", to: ";") == "1"
-            let roomId = text.subString(from: "$ROOM.room_id =", to: ";").replacingOccurrences(of: " ", with: "")
-            
-            guard roomId != "",
-                  let jsContext = self.douyuJSContext(text) else {
-                throw VideoGetError.douyuNotFoundRoomId
-            }
-            
-            var roomIds = [String]()
-            var pageId = ""
-            let roomIdsStr = text.subString(from: "window.room_ids=[", to: "],")
-            
-            if roomIdsStr != "" {
-                roomIds = roomIdsStr.replacingOccurrences(of: "\"", with: "").split(separator: ",").map(String.init)
-                pageId = text.subString(from: "\"pageId\":", to: ",")
-            }
+		let text = try await AF.request(url).serializingString().value
+		
+		let showStatus = text.subString(from: "$ROOM.show_status =", to: ";") == "1"
+		let roomId = text.subString(from: "$ROOM.room_id =", to: ";").replacingOccurrences(of: " ", with: "")
+		
+		guard roomId != "",
+			  let jsContext = self.douyuJSContext(text) else {
+			throw VideoGetError.douyuNotFoundRoomId
+		}
+		
+		var roomIds = [String]()
+		var pageId = ""
+		let roomIdsStr = text.subString(from: "window.room_ids=[", to: "],")
+		
+		if roomIdsStr != "" {
+			roomIds = roomIdsStr.replacingOccurrences(of: "\"", with: "").split(separator: ",").map(String.init)
+			pageId = text.subString(from: "\"pageId\":", to: ",")
+		}
 
-            return (roomId, roomIds, showStatus, pageId, jsContext)
-        }
+		return (roomId, roomIds, showStatus, pageId, jsContext)
     }
     
     func douyuJSContext(_ text: String) -> JSContext? {
@@ -107,42 +92,41 @@ class Douyu: NSObject, SupportSiteProtocol {
         return context
     }
     
-    func douyuBetard(_ rid: Int) -> Promise<DouyuInfo> {
-        AF.request("https://www.douyu.com/betard/\(rid)").responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            
-            return try DouyuInfo(object: json)
-        }
+    func douyuBetard(_ rid: Int) async throws -> DouyuInfo {
+		let data = try await AF.request("https://www.douyu.com/betard/\(rid)").serializingData().value
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try DouyuInfo(object: json)
     }
     
     
 //    https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=1149&view=0
-    func getDouyuEventRoomNames(_ pageId: String) -> Promise<[DouyuEventRoom]> {
+    func getDouyuEventRoomNames(_ pageId: String) async throws -> [DouyuEventRoom] {
         
-        AF.request("https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0").responseString().map {
-            guard let data = self.douyuRoomJsonFormatter($0.string)?.data(using: .utf8) else {
-                throw VideoGetError.douyuNotFoundSubRooms
-            }
-            
-            let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-            return (try json.value(for: "children")).filter {
-                $0.roomId != ""
-            }
-        }
+		let url = "https://butterfly.douyucdn.cn/api/page/loadPage?name=pageData2&pageId=\(pageId)&view=0"
+		
+		let string = try await AF.request(url).serializingString().value
+		
+		guard let data = self.douyuRoomJsonFormatter(string)?.data(using: .utf8) else {
+			throw VideoGetError.douyuNotFoundSubRooms
+		}
+		
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return (try json.value(for: "children")).filter {
+			$0.roomId != ""
+		}
     }
     
-    func getDouyuEventRoomOnlineStatus(_ pageId: String) -> Promise<[String: Bool]> {
+    func getDouyuEventRoomOnlineStatus(_ pageId: String) async throws -> [String: Bool] {
         
         struct RoomOnlineStatus: Decodable {
             let data: [String: Bool]
         }
         
-        return AF.request("https://www.douyu.com/japi/carnival/c/roomActivity/getRoomOnlineStatus?pageId=\(pageId)").responseDecodable(RoomOnlineStatus.self).map {
-            $0.data
-        }
+		let url = "https://www.douyu.com/japi/carnival/c/roomActivity/getRoomOnlineStatus?pageId=\(pageId)"
+		return try await AF.request(url).serializingDecodable(RoomOnlineStatus.self).value.data
     }
     
-    func getDouyuUrl(_ roomID: Int, rate: Int = 0, jsContext: JSContext) -> Promise<[(String, Stream)]> {
+    func getDouyuUrl(_ roomID: Int, rate: Int = 0, jsContext: JSContext) async throws -> [(String, Stream)] {
         let time = Int(Date().timeIntervalSince1970)
         let didStr: String = {
             let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
@@ -155,7 +139,7 @@ class Douyu: NSObject, SupportSiteProtocol {
         guard let sign = jsContext.evaluateScript("ub98484234(\(roomID), '\(didStr)', \(time))").toString(),
               let v = jsContext.evaluateScript("vdwdae325w_64we").toString()
         else {
-            return .init(error: VideoGetError.douyuSignError)
+            throw VideoGetError.douyuSignError
         }
         
         let pars = ["v": v,
@@ -168,43 +152,41 @@ class Douyu: NSObject, SupportSiteProtocol {
                     "iar": "0",
                     "ive": "0"] as [String : Any]
         
-        return AF.request("https://www.douyu.com/lapi/live/getH5Play/\(roomID)", method: .post, parameters: pars).responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            return try DouyuH5Play(object: json)
-        }.then {
-            self.douyuCDNs($0)
-        }.map { play in
-            play.multirates.map { rate -> (String, Stream) in
-                var s = Stream(url: "")
-                s.quality = rate.bit
-                s.rate = rate.rate
-                
-                var urls = play.p2pUrls
-                urls.append(play.flvUrl)
-                
-                if rate.rate == play.rate, urls.count > 0 {
-                    s.url = urls.removeFirst()
-                    s.src = urls
-                }
-                return (rate.name, s)
-            }
-        }
+		let url = "https://www.douyu.com/lapi/live/getH5Play/\(roomID)"
+		let data = try await AF.request(url, method: .post, parameters: pars).serializingData().value
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		var play = try DouyuH5Play(object: json)
+		play = try await douyuCDNs(play)
+		
+		return play.multirates.map { rate -> (String, Stream) in
+			var s = Stream(url: "")
+			s.quality = rate.bit
+			s.rate = rate.rate
+			
+			var urls = play.p2pUrls
+			urls.append(play.flvUrl)
+			
+			if rate.rate == play.rate, urls.count > 0 {
+				s.url = urls.removeFirst()
+				s.src = urls
+			}
+			return (rate.name, s)
+		}
     }
     
-    func douyuCDNs(_ info: DouyuH5Play) -> Promise<DouyuH5Play> {
+    func douyuCDNs(_ info: DouyuH5Play) async throws -> DouyuH5Play {
         guard let url = info.cdnUrl else {
-            return .value(info)
-        }
-        
-        return AF.request(url).responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            
-            let sugs: [String] = try json.value(for: "sug")
-            let baks: [String] = try json.value(for: "bak")
-            var info = info
-            info.initP2pUrls(sugs + baks)
             return info
         }
+        
+		let data = try await AF.request(url).serializingData().value
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		
+		let sugs: [String] = try json.value(for: "sug")
+		let baks: [String] = try json.value(for: "bak")
+		var info = info
+		info.initP2pUrls(sugs + baks)
+		return info
     }
     
     func douyuRoomJsonFormatter(_ text: String) -> String? {

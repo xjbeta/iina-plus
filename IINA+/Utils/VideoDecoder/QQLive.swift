@@ -7,9 +7,7 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 
 class QQLive: NSObject, SupportSiteProtocol {
@@ -20,45 +18,39 @@ class QQLive: NSObject, SupportSiteProtocol {
 		return Session(configuration: configuration)
 	}()
 	
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        roomInfo(url).map {
-            $0 as LiveInfo
-        }
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        mInfo(url).map {
-            var re = YouGetJSON(rawUrl: url)
-            re.title = $0.title
-			re.streams["Default"] = .init(url: $0.url.https())
-            return re
-        }
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		try await roomInfo(url)
+	}
 	
-	func roomInfo(_ url: String) -> Promise<QQLiveInfo> {
-		AF.request(url).responseString().map {
-			$0.string
-				.subString(from: #"__NEXT_DATA__"#, to: "</script>")
-				.subString(from: ">")
-		}.map {
-			guard let data = $0.data(using: .utf8) else { throw VideoGetError.notFountData }
-			
-			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-			return try QQLiveInfo(object: json)
-		}
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await mInfo(url)
+		var re = YouGetJSON(rawUrl: url)
+		re.title = info.title
+		re.streams["Default"] = .init(url: info.url.https())
+		return re
+	}
+	
+	func roomInfo(_ url: String) async throws -> QQLiveInfo {
+		var s = try await AF.request(url).serializingString().value
+		s = s.subString(from: #"__NEXT_DATA__"#, to: "</script>")
+			.subString(from: ">")
+		
+		guard let data = s.data(using: .utf8) else { throw VideoGetError.notFountData }
+		
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try QQLiveInfo(object: json)
 	}
     
-    func mInfo(_ url: String) -> Promise<QQLiveMInfo> {
+    func mInfo(_ url: String) async throws -> QQLiveMInfo {
 		let url = url.replacingOccurrences(of: "https://live.qq.com", with: "https://m.live.qq.com")
 		
-		return pSession.request(url).responseString().map {
-			$0.string.subString(from: "window.$ROOM_INFO = ", to: ";</script>")
-		}.map {
-			guard let data = $0.data(using: .utf8) else { throw VideoGetError.notFountData }
-			
-			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-			return try QQLiveMInfo(object: json)
-		}
+		var s = try await pSession.request(url).serializingString().value
+		s = s.subString(from: "window.$ROOM_INFO = ", to: ";</script>")
+		
+		guard let data = s.data(using: .utf8) else { throw VideoGetError.notFountData }
+		
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try QQLiveMInfo(object: json)
     }
 }
 

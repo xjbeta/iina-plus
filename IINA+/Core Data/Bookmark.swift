@@ -53,20 +53,24 @@ public class Bookmark: NSManagedObject {
         }
          */
 		updating = true
-        Processes.shared.videoDecoder.liveInfo(url).done(on: .main) {
-            self.setInfo($0)
-		}.ensure {
-			self.updateDate = Date()
-			self.updating = false
-			self.save()
-		}.catch(on: .main) {
-			let s = "Get live status error: \($0) \n - \(self.url)"
-			Log(s)
-			self.liveTitle = self.url
-			self.state = LiveState.none.raw
+		
+		Task {
+			do {
+				let info = try await Processes.shared.videoDecoder.liveInfo(url)
+				await setInfo(info)
+			} catch let error {
+				await setInfoError(error)
+			}
+			
+			await MainActor.run {
+				updateDate = Date()
+				updating = false
+				save()
+			}
 		}
     }
     
+	@MainActor
     private func setInfo(_ info: LiveInfo) {
         liveTitle = info.title
         liveName = info.name
@@ -90,6 +94,14 @@ public class Bookmark: NSManagedObject {
             state = LiveState.none.raw
         }
     }
+	
+	@MainActor
+	private func setInfoError(_ error: any Error) {
+		let s = "Get live status error: \(error) \n - \(url)"
+		Log(s)
+		self.liveTitle = url
+		self.state = LiveState.none.raw
+	}
     
     private func updateImage() {
         image = nil

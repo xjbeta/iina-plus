@@ -8,7 +8,6 @@
 
 import Cocoa
 import CoreData
-import PromiseKit
 import Alamofire
 import SDWebImage
 import WebKit
@@ -144,11 +143,14 @@ class MainViewController: NSViewController {
                 searchField.becomeFirstResponder()
                 startSearch(self)
             } else if card.videos > 1 {
-                bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)").done { infos in
-                    self.showSelectVideo(bvid, infos: infos)
-                    }.catch { error in
-                        Log("Get video list error: \(error)")
-                }
+				Task {
+					do {
+						let infos = try await bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)")
+						showSelectVideo(bvid, infos: infos)
+					} catch let error {
+						Log("Get video list error: \(error)")
+					}
+				}
             }
         }
     }
@@ -203,9 +205,14 @@ class MainViewController: NSViewController {
             return
         }
         clear()
-        open(result: yougetJSON, row: row).catch {
-            Log("Prepare DM file error : \($0)")
-        }
+		
+		Task {
+			do {
+				try await open(result: yougetJSON, row: row)
+			} catch let error {
+				Log("Prepare Video / DM file error : \(error)")
+			}
+		}
     }
     
     // MARK: - Danmaku
@@ -380,33 +387,36 @@ class MainViewController: NSViewController {
 		default: break
 		}
 		Log("\(uuid), start, \(dynamicID)")
-		bilibili.getUid().then {
-			self.bilibili.dynamicList($0, action, dynamicID)
-		}.done(on: .main) { cards in
-			switch action {
-			case .init😅:
-				self.bilibiliCards = cards
-			case .history:
-				let appends = cards.filter { card in
-					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
+		Task {
+			do {
+				let uid = try await bilibili.getUid()
+				let cards = try await bilibili.dynamicList(uid, action, dynamicID)
+				
+				switch action {
+				case .init😅:
+					bilibiliCards = cards
+				case .history:
+					let appends = cards.filter { card in
+						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+					bilibiliCards.append(contentsOf: appends)
+				case .new:
+					let appends = cards.filter { card in
+						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
+					}
+					if appends.count > 0 {
+						bilibiliCards.insert(contentsOf: appends, at: 0)
+					}
 				}
-				self.bilibiliCards.append(contentsOf: appends)
-			case .new:
-				let appends = cards.filter { card in
-					!self.bilibiliCards.contains(where: { $0.bvid == card.bvid })
-				}
-				if appends.count > 0 {
-					self.bilibiliCards.insert(contentsOf: appends, at: 0)
-				}
+			} catch let error {
+				Log("Get bilibili dynamicList error: \(error)")
 			}
-		}.ensure(on: .main) {
-			self.canLoadMoreBilibiliCards = true
-			self.progressStatusChanged(!self.canLoadMoreBilibiliCards)
-			self.bookmarkLoaderTimer = Date()
-			self.bookmarkLoaderSemaphore.signal()
+			
+			canLoadMoreBilibiliCards = true
+			progressStatusChanged(!canLoadMoreBilibiliCards)
+			bookmarkLoaderTimer = Date()
+			bookmarkLoaderSemaphore.signal()
 			Log("\(uuid), finish, \(dynamicID)")
-		}.catch { error in
-			Log("Get bilibili dynamicList error: \(error)")
 		}
 	}
     
@@ -428,7 +438,7 @@ class MainViewController: NSViewController {
         }
     }
     
-    
+	
     func openWithJSPlayer(_ url: String) {
         guard let playerWC = NSStoryboard(name: .player, bundle: nil).instantiateInitialController() as? JSPlayerWindowController else {
                     return
@@ -438,293 +448,302 @@ class MainViewController: NSViewController {
         playerWC.contentVC?.url = url
     }
     
+	
+	func startSearchingUrl(_ url: String,
+						   directly: Bool = false,
+						   with option: Bool = false) {
+		Task {
+			do {
+				try await startSearchingUrl(url, directly: directly, with: option)
+			} catch let error {
+				var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
+				switch error {
+				case is CancellationError:
+					return
+				case VideoGetError.invalidLink:
+					s += NSLocalizedString("VideoGetError.invalidLink", comment: "invalid url.")
+				case VideoGetError.isNotLiving:
+					s += NSLocalizedString("VideoGetError.isNotLiving", comment: "the host is not online.")
+				case VideoGetError.notSupported:
+					s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
+				case VideoGetError.needVip:
+					s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
+				default:
+					s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
+				}
+				
+				Log(error)
+				await MainActor.run {
+					waitingErrorMessage = s
+				}
+			}
+		}
+	}
     
     func startSearchingUrl(_ url: String,
                            directly: Bool = false,
-                           with option: Bool = false) {
-        guard url != "" else { return }
-        Processes.shared.stopDecodeURL()
-        waitingErrorMessage = nil
-        yougetResult = nil
+                           with option: Bool = false) async throws {
+		await MainActor.run {
+			Processes.shared.stopDecodeURL()
+			waitingErrorMessage = nil
+			yougetResult = nil
+		}
+		
+		guard url != "" else {
+			await MainActor.run {
+				isSearching = false
+				progressStatusChanged(false)
+			}
+			return
+		}
         
 		let jspSupported = SupportSites(url: url).supportWebPlayer()
         
         if Preferences.shared.enableFlvjs, jspSupported {
-            openWithJSPlayer(url)
+			await MainActor.run {
+				openWithJSPlayer(url)
+			}
             return
         }
         
-        isSearching = true
-        progressStatusChanged(true)
+		await MainActor.run {
+			isSearching = true
+			progressStatusChanged(true)
+		}
+
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         var str = url
         
-        Processes.shared.videoDecoder.bilibiliUrlFormatter(url).get {
-            if self.searchField.stringValue == str {
-                self.searchField.stringValue = $0
-                str = $0
-            }
-        }.then {
-            self.decodeUrl($0, directly: directly, with: option)
-        }.ensure {
-            self.isSearching = false
-            self.progressStatusChanged(false)
-        }.done {
-            Log("decodeUrl success: \(str)")
-        }.catch { error in
-            var s = NSLocalizedString("VideoGetError.oops", comment: "ಠ_ಠ  oops, ")
-            switch error {
-            case PMKError.cancelled:
-                return
-            case VideoGetError.invalidLink:
-                s += NSLocalizedString("VideoGetError.invalidLink", comment: "invalid url.")
-            case VideoGetError.isNotLiving:
-                s += NSLocalizedString("VideoGetError.isNotLiving", comment: "the host is not online.")
-            case VideoGetError.notSupported:
-                s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
-            case VideoGetError.needVip:
-                s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
-            default:
-                s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
-            }
-            
-            Log(error)
-            self.waitingErrorMessage = s
-        }
+		let urlString = try await Processes.shared.videoDecoder.bilibiliUrlFormatter(url)
+		
+		await MainActor.run {
+			if searchField.stringValue == str {
+				searchField.stringValue = urlString
+				str = urlString
+			}
+		}
+		
+		try await decodeUrl(urlString, directly: directly, with: option)
+		
+		
+		await MainActor.run {
+			isSearching = false
+			progressStatusChanged(false)
+		}
+		
+		Log("decodeUrl success: \(str)")
+		
+
     }
     
     func decodeUrl(_ url: String,
                    directly: Bool = false,
-                   with option: Bool = false) -> Promise<()> {
+                   with option: Bool = false) async throws {
         
-        return Promise { resolver in
-            let videoGet = Processes.shared.videoDecoder
-            var str = url
-            yougetResult = nil
-            guard str.isUrl,
-                  let url = URL(string: str) else {
-                resolver.reject(VideoGetError.invalidLink)
-                return
-            }
-            
-            func decodeUrl() {
-                videoGet.liveInfo(str, false).get {
-                    if !$0.isLiving {
-                        throw VideoGetError.isNotLiving
-                    }
-                }.then { _ in
-                    Processes.shared.decodeURL(str)
-                }.done(on: .main) {
-                    if Preferences.shared.autoOpenResult && !option {
-                        self.open(result: $0, row: 0).catch {
-                            Log("Open YouGetJSON error : \($0)")
-                        }
-                    } else {
-                        self.yougetResult = $0
-                    }
-                    resolver.fulfill(())
-                }.catch(on: .main, policy: .allErrors) {
-                    resolver.reject($0)
-                }
-            }
-            
-            if directly {
-                decodeUrl()
-            } else if let bUrl = BilibiliUrl(url: str) {
-                let u = bUrl.fUrl
-                var re: Promise<Void>
-                
-                switch bUrl.urlType {
-                case .video:
-                    re = bilibili.getVideoList(u).done { infos in
-                        let list = infos.flatMap({ $0.1 })
-                        if list.count > 1 {
-                            let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
-                            self.showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
-                            resolver.fulfill(())
-                        } else {
-                            decodeUrl()
-                        }
-                    }
-                case .bangumi:
-                    re = bilibili.getBangumiList(u).done {
-                        let epVS = $0.epVideoSelectors
-                        if epVS.count == 1 {
-                            decodeUrl()
-                        } else {
-                            var cItem = 0
-                            if bUrl.id.starts(with: "ep") {
-                                cItem = epVS.firstIndex {
-                                    $0.id == bUrl.id.dropFirst(2)
-                                } ?? 0
-                            }
-                            
-                            self.showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
-                            resolver.fulfill(())
-                        }
-                    }
-                default:
-                    return
-                }
-                re.catch {
-                    resolver.reject($0)
-                }
-            } else if url.host == "www.douyu.com",
-                      url.pathComponents.count > 2,
-                      url.pathComponents[1] == "topic" {
-                let douyu = videoGet.douyu
-                douyu.getDouyuHtml(str).done { htmls in
-                    guard htmls.roomIds.count > 0 else {
-                        decodeUrl()
-                        return
-                    }
-                    let cid = htmls.roomId
-                    var re = [DouyuVideoSelector]()
-                    
-                    douyu.getDouyuEventRoomNames(htmls.pageId).get {
-                        re = $0.enumerated().map {
-                            DouyuVideoSelector(
-                                index: $0.offset,
-                                title: $0.element.text,
-                                id: $0.element.roomId,
-                                url: "https://www.douyu.com/\($0.element.roomId)",
-                                isLiving: false,
-                                coverUrl: nil)
-                        }
-                    }.then { _ in
-                        douyu.getDouyuEventRoomOnlineStatus(htmls.pageId)
-                    }.done { status in
-                        re.enumerated().forEach {
-                            re[$0.offset].isLiving = status[$0.element.id] ?? false
-                        }
-                        self.showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
-                        resolver.fulfill(())
-                    }.catch {
-                        switch $0 {
-                        case VideoGetError.douyuNotFoundSubRooms:
-                            decodeUrl()
-                        default:
-                            resolver.reject($0)
-                        }
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
-            } else if url.host == "www.huya.com" {                
-                videoGet.huya.getHuyaRoomList(url.absoluteString).done { rl in
-                    if rl.list.count == 0 {
-                        decodeUrl()
-                    } else {
-                        self.showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
-                        resolver.fulfill(())
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
-            } else if url.host == "live.bilibili.com" {
-                videoGet.biliLive.getRoomList(url.absoluteString).done {
-                    if $0.1.count == 0 || $0.1.count == 1 {
-                        decodeUrl()
-                    } else {
-                        var c = 0
-                        if url.pathComponents.count > 1 {
-                            let id = "\(url.pathComponents[1])"
-                            c = $0.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
-                        }
-                        
-                        self.showSelectVideo("", infos: [("", $0.1)], currentItem: c)
-                        resolver.fulfill(())
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
-            } else if url.host == "cc.163.com" {
-                videoGet.cc163.getCC163State(url.absoluteString).done {
-                    
-                    
-                    if $0.list.count > 1 {
-                        let infos = $0.list.enumerated().map {
-                            CC163VideoSelector(
-                                index: $0.offset,
-                                title: $0.element.name,
-                                ccid: "\($0.element.ccid)",
-                                isLiving: $0.element.isLiving,
-                                url: $0.element.channel,
-                                id: "\($0.element.ccid)")
-                        }
-                        self.showSelectVideo("", infos: [("", infos)])
-                        resolver.fulfill(())
-                    } else if let i = $0.info as? CC163Info {
-                        str = "https://cc.163.com/ccid/\(i.ccid)"
-                        decodeUrl()
-                    } else if let i = $0.info as? CC163ChannelInfo {
-                        str = "https://cc.163.com/ccid/\(i.ccid)"
-                        decodeUrl()
-                    }
-                }.catch {
-                    resolver.reject($0)
-                }
-            } else {
-                decodeUrl()
-            }
-        }
-    }
-    
-    func open(result: YouGetJSON, row: Int) -> Promise<()> {
-        let proc = Processes.shared
-        let pref = Preferences.shared
-        
-        var yougetJSON = result
-        let uuid = yougetJSON.uuid
-        
-        let videoGet = proc.videoDecoder
-        
-        guard yougetJSON.videos.count > 0 else {
-            return .init(error: VideoGetError.notFountData)
-        }
-        
-        let key = yougetJSON.videos[row].key
-        
-        return videoGet.prepareVideoUrl(yougetJSON, key).get {
-            yougetJSON = $0
-        }.then { _ in
-            videoGet.prepareDanmakuFile(
-                yougetJSON: yougetJSON,
-                id: uuid)
-        }.done {
-            guard !pref.enableFlvjs,
-                  pref.livePlayer == .iina,
-				  proc.iina.archiveType() == .plugin else {
-                proc.openWithPlayer(yougetJSON, key)
-                return
-            }
+		let videoGet = Processes.shared.videoDecoder
+		var str = url
+		yougetResult = nil
+		guard str.isUrl,
+			  let url = URL(string: str) else {
+			throw VideoGetError.invalidLink
+			return
+		}
+		
+		func decodeUrl() async throws {
+			let info = try await videoGet.liveInfo(str, false)
+			if !info.isLiving {
+				throw VideoGetError.isNotLiving
+			}
+			let json = try await Processes.shared.decodeURL(str)
 			
-			func showInstallAlert() {
-				let alert = NSAlert()
-				alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
-				alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "")
-				
-				alert.alertStyle = .warning
-				alert.addButton(withTitle: "OK")
-				let _ = alert.runModal()
+			if Preferences.shared.autoOpenResult && !option {
+				try await open(result: json, row: 0)
+			} else {
+				await MainActor.run {
+					self.yougetResult = json
+				}
+			}
+		}
+		
+		if directly {
+			try await decodeUrl()
+		} else if let bUrl = BilibiliUrl(url: str) {
+			let u = bUrl.fUrl
+			
+			switch bUrl.urlType {
+			case .video:
+				let infos = try await bilibili.getVideoList(u)
+				let list = infos.flatMap({ $0.1 })
+				if list.count > 1 {
+					let cItem = list.first!.isCollection ? list.firstIndex(where: { $0.bvid == bUrl.id }) : bUrl.p - 1
+					showSelectVideo(bUrl.id, infos: infos, currentItem: cItem ?? 0)
+				} else {
+					try await decodeUrl()
+				}
+			case .bangumi:
+				let epVS = try await bilibili.getBangumiList(u).epVideoSelectors
+				if epVS.count == 1 {
+					try await decodeUrl()
+				} else {
+					var cItem = 0
+					if bUrl.id.starts(with: "ep") {
+						cItem = epVS.firstIndex {
+							$0.id == bUrl.id.dropFirst(2)
+						} ?? 0
+					}
+					
+					showSelectVideo("", infos: [("", epVS)], currentItem: cItem)
+				}
+			default:
+				return
+			}
+		} else if url.host == "www.douyu.com",
+				  url.pathComponents.count > 2,
+				  url.pathComponents[1] == "topic" {
+			let douyu = videoGet.douyu
+			
+			try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(), any Error>) in
+				Task {
+					defer {
+						continuation.resume()
+					}
+					
+					do {
+						let htmls = try await douyu.getDouyuHtml(str)
+						guard htmls.roomIds.count > 0 else {
+							try await decodeUrl()
+							return
+						}
+						let cid = htmls.roomId
+						var re = [DouyuVideoSelector]()
+						
+						let names = try await douyu.getDouyuEventRoomNames(htmls.pageId)
+						
+						re = names.enumerated().map {
+							DouyuVideoSelector(
+								index: $0.offset,
+								title: $0.element.text,
+								id: $0.element.roomId,
+								url: "https://www.douyu.com/\($0.element.roomId)",
+								isLiving: false,
+								coverUrl: nil)
+						}
+						
+						let status = try await douyu.getDouyuEventRoomOnlineStatus(htmls.pageId)
+						
+						re.enumerated().forEach {
+							re[$0.offset].isLiving = status[$0.element.id] ?? false
+						}
+						showSelectVideo("", infos: [("", re)], currentItem: re.map({ $0.id }).firstIndex(of: cid) ?? 0)
+					} catch let error {
+						switch error {
+						case VideoGetError.douyuNotFoundSubRooms:
+							try await decodeUrl()
+						default:
+							continuation.resume(throwing: error)
+						}
+					}
+				}
 			}
 			
-			switch proc.iina.pluginState() {
-			case .needsUpdate(let plugin) where plugin.ghVersion < 4:
-				Log("Open result failed, plugin outdate.")
-				showInstallAlert()
-			case .isDev, .needsUpdate(_), .ok(_), .newer(_):
-				Log("Open result with plugin")
-				proc.openWithPlayer(yougetJSON, key)
-			case .needsInstall, .multiple:
-				Log("Open result failed, pluginNotFound.")
-				showInstallAlert()
-			case .error(let error):
-				Log(error)
+			
+		} else if url.host == "www.huya.com" {
+			let rl = try await videoGet.huya.getHuyaRoomList(url.absoluteString)
+			if rl.list.count == 0 {
+				try await decodeUrl()
+			} else {
+				showSelectVideo("", infos: [("", rl.list)], currentItem: rl.list.firstIndex(where: { $0.id == rl.current }) ?? 0)
 			}
-        }
+		} else if url.host == "live.bilibili.com" {
+			let list = try await videoGet.biliLive.getRoomList(url.absoluteString)
+			if list.1.count == 0 || list.1.count == 1 {
+				try await decodeUrl()
+			} else {
+				var c = 0
+				if url.pathComponents.count > 1 {
+					let id = "\(url.pathComponents[1])"
+					c = list.1.firstIndex(where: { $0.id == id || $0.sid == id }) ?? 0
+				}
+				showSelectVideo("", infos: [("", list.1)], currentItem: c)
+			}
+		} else if url.host == "cc.163.com" {
+			let state = try await videoGet.cc163.getCC163State(url.absoluteString)
+			if state.list.count > 1 {
+				let infos = state.list.enumerated().map {
+					CC163VideoSelector(
+						index: $0.offset,
+						title: $0.element.name,
+						ccid: "\($0.element.ccid)",
+						isLiving: $0.element.isLiving,
+						url: $0.element.channel,
+						id: "\($0.element.ccid)")
+				}
+				showSelectVideo("", infos: [("", infos)])
+			} else if let i = state.info as? CC163Info {
+				str = "https://cc.163.com/ccid/\(i.ccid)"
+				try await decodeUrl()
+			} else if let i = state.info as? CC163ChannelInfo {
+				str = "https://cc.163.com/ccid/\(i.ccid)"
+				try await decodeUrl()
+			}
+		} else {
+			try await decodeUrl()
+		}
     }
     
+	func open(result: YouGetJSON, row: Int) async throws {
+		let proc = Processes.shared
+		let pref = Preferences.shared
+		
+		var yougetJSON = result
+		let uuid = yougetJSON.uuid
+		
+		let videoGet = proc.videoDecoder
+		
+		guard yougetJSON.videos.count > 0 else {
+			throw VideoGetError.notFountData
+		}
+		
+		let key = yougetJSON.videos[row].key
+		
+		yougetJSON = try await videoGet.prepareVideoUrl(yougetJSON, key)
+		try await videoGet.prepareDanmakuFile(yougetJSON: yougetJSON, id: uuid)
+		
+		guard !pref.enableFlvjs,
+			  pref.livePlayer == .iina,
+			  proc.iina.archiveType() == .plugin else {
+			proc.openWithPlayer(yougetJSON, key)
+			return
+		}
+		
+		@MainActor
+		func showInstallAlert() {
+			let alert = NSAlert()
+			alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
+			alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "")
+			
+			alert.alertStyle = .warning
+			alert.addButton(withTitle: "OK")
+			let _ = alert.runModal()
+		}
+		
+		switch proc.iina.pluginState() {
+		case .needsUpdate(let plugin) where plugin.ghVersion < 4:
+			Log("Open result failed, plugin outdate.")
+			showInstallAlert()
+		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
+			Log("Open result with plugin")
+			proc.openWithPlayer(yougetJSON, key)
+		case .needsInstall, .multiple:
+			Log("Open result failed, pluginNotFound.")
+			showInstallAlert()
+		case .error(let error):
+			Log(error)
+		}
+	}
+    
+	
+	/*
     func checkIINAProxy() -> Promise<(Bool)> {
         return Promise { resolver in
             guard var u = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
@@ -771,6 +790,7 @@ class MainViewController: NSViewController {
             }
         }
     }
+	 */
     
     func initLiveStateMenu() {
         let items = liveStateMenu.items

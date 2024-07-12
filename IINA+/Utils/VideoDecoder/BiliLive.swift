@@ -7,9 +7,7 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 
 class BiliLive: NSObject, SupportSiteProtocol {
@@ -20,56 +18,57 @@ class BiliLive: NSObject, SupportSiteProtocol {
     
     let apiType = APIType.roomPlayInfo
     
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        var info = BiliLiveInfo()
-        return getBiliLiveRoomId(url).get {
-            info = $0
-        }.then {
-            self.getBiliUserInfo($0.roomId)
-        }.map {
-            info.name = $0.name
-            info.avatar = $0.avatar
-            return info
-        }
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		var info = try await getBiliLiveRoomId(url)
+		let uInfo = try await getBiliUserInfo(info.roomId)
+		
+		info.name = uInfo.name
+		info.avatar = uInfo.avatar
+		
+		return info
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		var yougetJson = YouGetJSON(rawUrl: url)
+		
+		let info = try await getBiliLiveRoomId(url)
+		yougetJson.title = info.title
+		yougetJson.id = info.roomId
+		
+		let json = try await getBiliLiveJSON(yougetJson)
+		
+		return json
+	}
     
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        var yougetJson = YouGetJSON(rawUrl: url)
-        return getBiliLiveRoomId(url).get {
-            yougetJson.title = $0.title
-            yougetJson.id = $0.roomId
-        }.get {
-            yougetJson.id = $0.roomId
-        }.then { _ in
-            self.getBiliLiveJSON(yougetJson)
-        }
-    }
-    
-    func getBiliLiveRoomId(_ url: String) -> Promise<(BiliLiveInfo)> {
-        AF.request("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(url.lastPathComponent)").responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            let longID: Int = try json.value(for: "data.room_id")
+    func getBiliLiveRoomId(_ url: String) async throws -> BiliLiveInfo {
+		let u = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=\(url.lastPathComponent)"
+		
+		let data = try await AF.request(u).serializingData().value
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		let longID: Int = try json.value(for: "data.room_id")
 
-            var info = BiliLiveInfo()
-            info.title = try json.value(for: "data.title")
-            info.isLiving = try json.value(for: "data.live_status") == 1
-            info.roomId = longID
-            info.cover = try json.value(for: "data.user_cover")
-            return info
-        }
+		var info = BiliLiveInfo()
+		info.title = try json.value(for: "data.title")
+		info.isLiving = try json.value(for: "data.live_status") == 1
+		info.roomId = longID
+		info.cover = try json.value(for: "data.user_cover")
+		return info
     }
     
-    func getBiliUserInfo(_ roomId: Int) -> Promise<(BiliLiveInfo)> {
-        AF.request("https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)").responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            var info = BiliLiveInfo()
-            info.name = try json.value(for: "data.info.uname")
-            info.avatar = try json.value(for: "data.info.face")
-            return info
-        }
-    }
+	func getBiliUserInfo(_ roomId: Int) async throws -> BiliLiveInfo {
+		let u = "https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=\(roomId)"
+		
+		let data = try await AF.request(u).serializingData().value
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		
+		var info = BiliLiveInfo()
+		info.name = try json.value(for: "data.info.uname")
+		info.avatar = try json.value(for: "data.info.face")
+		return info
+		
+	}
     
-    func getBiliLiveJSON(_ yougetJSON: YouGetJSON, _ quality: Int = 20000) -> Promise<(YouGetJSON)> {
+    func getBiliLiveJSON(_ yougetJSON: YouGetJSON, _ quality: Int = 20000) async throws -> YouGetJSON {
         
         let result = yougetJSON
         let roomID = result.id
@@ -83,46 +82,48 @@ class BiliLive: NSObject, SupportSiteProtocol {
         case .playUrl:
             let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
             
-            return AF.request(u).responseData().map {
-                let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-                let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
-                return playUrl.write(to: result)
-            }
+			let data = try await AF.request(u).serializingData().value
+			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+			
+			let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
+			return playUrl.write(to: result)
         case .roomPlayInfo:
             let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8&dolby=5"
 
-            return AF.request(u).responseData().map {
-                let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-                
-                if try json.value(for: "data.encrypted") == true,
-                   try json.value(for: "data.pwd_verified") == false {
-                    throw VideoGetError.needPassWork
-                }
-                
-                let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
-                return playUrl.write(to: result)
-            }
+			let data = try await AF.request(u).serializingData().value
+			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+			
+			if try json.value(for: "data.encrypted") == true,
+			   try json.value(for: "data.pwd_verified") == false {
+				throw VideoGetError.needPassWork
+			}
+			
+			let playUrl: BiliLivePlayUrl = try BiliLivePlayUrl(object: json)
+			return playUrl.write(to: result)
         case .html:
             let u = "https://live.bilibili.com/\(roomID)"
-            return AF.request(u).responseString().map {
-                let s = $0.string.subString(from: "<script>window.__NEPTUNE_IS_MY_WAIFU__=", to: "</script>")
-                let data = s.data(using: .utf8) ?? Data()
-                
-                let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-                let playUrl: BiliLivePlayUrl = try json.value(for: "roomInitRes")
-                return playUrl.write(to: result)
-            }
+			
+			let string = try await AF.request(u).serializingString().value
+			let s = string.subString(from: "<script>window.__NEPTUNE_IS_MY_WAIFU__=", to: "</script>")
+			let data = s.data(using: .utf8) ?? Data()
+			
+			let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+			let playUrl: BiliLivePlayUrl = try json.value(for: "roomInitRes")
+			return playUrl.write(to: result)
         }
     }
     
-    func getRoomList(_ url: String) -> Promise<(String, [BiliLiveVideoSelector])> {
+    func getRoomList(_ url: String) async throws -> (String, [BiliLiveVideoSelector]) {
         var re = [BiliLiveVideoSelector]()
-        
-        return AF.request(url).responseString().map { res -> [BiliLiveVideoSelector] in
-            let s = res.string.subString(from: "window.__initialState = ", to: ";\n")
-            guard let data = s.data(using: .utf8),
-                  let json: JSONObject = try? JSONParser.JSONObjectWithData(data) else { return [] }
-            
+		
+		let string = try await AF.request(url).serializingString().value
+		
+		
+		let selectors: [BiliLiveVideoSelector] = {
+			let s = string.subString(from: "window.__initialState = ", to: ";\n")
+			guard let data = s.data(using: .utf8),
+				  let json: JSONObject = try? JSONParser.JSONObjectWithData(data) else { return [] }
+			
 			if let list: [BiliLiveRoomList] = try? json.value(for: "live-non-revenue-player") {
 				re = list.first?.roomList.enumerated().map {
 					BiliLiveVideoSelector(
@@ -143,43 +144,42 @@ class BiliLive: NSObject, SupportSiteProtocol {
 				}
 			}
 			return re
-        }.then {
-            self.liveInfos($0.compactMap({ Int($0.id) }))
-        }.map {
-            guard let json: JSONObject = try? JSONParser.JSONObjectWithData($0) else { return ("", []) }
-            
-            let rooms: [String: BiliLiveBaseInfo] = try json.value(for: "data.by_room_ids")
-            
-            re.enumerated().forEach { s in
-                let id = s.element.id
-                guard let info = rooms[id] ?? rooms.values.first(where: { $0.shortId == Int(id) }) else {
-                    re[s.offset].url = "https://live.bilibili.com/\(id)"
-                    return
-                }
-                
-                re[s.offset].isLiving = info.isLiving
-                re[s.offset].url = info.url
-                re[s.offset].sid = "\(info.shortId)"
-                if re[s.offset].title == "" {
-                    re[s.offset].title = info.uname
-                }
-            }
-            return ("", re)
-        }
+		}()
+		
+		let infoData = try await liveInfos(selectors.compactMap({ Int($0.id) }))
+		
+		guard let json: JSONObject = try? JSONParser.JSONObjectWithData(infoData) else { return ("", []) }
+		
+		let rooms: [String: BiliLiveBaseInfo] = try json.value(for: "data.by_room_ids")
+		
+		re.enumerated().forEach { s in
+			let id = s.element.id
+			guard let info = rooms[id] ?? rooms.values.first(where: { $0.shortId == Int(id) }) else {
+				re[s.offset].url = "https://live.bilibili.com/\(id)"
+				return
+			}
+			
+			re[s.offset].isLiving = info.isLiving
+			re[s.offset].url = info.url
+			re[s.offset].sid = "\(info.shortId)"
+			if re[s.offset].title == "" {
+				re[s.offset].title = info.uname
+			}
+		}
+		return ("", re)
     }
     
-    func liveInfos(_ roomIds: [Int]) -> Promise<Data> {
+    func liveInfos(_ roomIds: [Int]) async throws -> Data {
         let s = roomIds.filter {
             $0 > 0
         }.map {
             "room_ids=\($0)"
         }.joined(separator: "&")
         
-        guard s.count > 0 else { return .value(Data()) }
+        guard s.count > 0 else { return Data() }
         
         let u = "https://api.live.bilibili.com/xlive/web-room/v1/index/getRoomBaseInfo?\(s)&req_biz=web_room_componet"
-        
-        return AF.request(u).responseData().map({ $0.data })
+		return try await AF.request(u).serializingData().value
     }
 	
 	private func findAllRoomIds(_ str: String) -> [String] {

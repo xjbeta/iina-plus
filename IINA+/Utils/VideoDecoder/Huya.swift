@@ -7,9 +7,7 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 import SwiftSoup
 
@@ -25,17 +23,14 @@ class Huya: NSObject, SupportSiteProtocol {
 	// T.a.uid
 	private let huyaUid = (Int(Date().timeIntervalSince1970 * 1000) % Int(1e10) * Int(1e3) + Int.random(in: Int(1e2)..<Int(1e3))) % 4294967295
     
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-		getHuyaInfoMP(url).map {
-			$0
-		}
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-		getHuyaInfoMP(url).map {
-			$0.videos(url, uid: self.huyaUid)
-		}
-    }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		try await getHuyaInfoMP(url)
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await getHuyaInfoMP(url)
+		return info.videos(url, uid: huyaUid)
+	}
     
     // MARK: - Huya
     
@@ -46,115 +41,103 @@ class Huya: NSObject, SupportSiteProtocol {
     
     
     // href, name
-    func getHuyaRoomList(_ url: String) -> Promise<HuyaRoomList> {
-        AF.request(url).responseString().map {
-            var re = HuyaRoomList(current: "")
-            try SwiftSoup.parse($0.string).getElementsByClass("match-nav").first()?.children().enumerated().forEach {
-                
-                if try $0.element.attr("class") == "on" {
-                    re.current = try $0.element.attr("href")
-                }
-                
-                try re.list.append(.init(
-                    id: $0.element.attr("href"),
-                    index: $0.offset,
-                    title: $0.element.text(),
-                    url: "https://www.huya.com/\($0.element.attr("href"))",
-                    isLiving: $0.element.getChildNodes().contains(where: { try $0.attr("class") == "live" })
-                ))
-            }
-            return re
-        }
+    func getHuyaRoomList(_ url: String) async throws -> HuyaRoomList {
+		let text = try await AF.request(url).serializingString().value
+		var re = HuyaRoomList(current: "")
+		
+		try SwiftSoup.parse(text).getElementsByClass("match-nav").first()?.children().enumerated().forEach {
+			
+			if try $0.element.attr("class") == "on" {
+				re.current = try $0.element.attr("href")
+			}
+			
+			try re.list.append(.init(
+				id: $0.element.attr("href"),
+				index: $0.offset,
+				title: $0.element.text(),
+				url: "https://www.huya.com/\($0.element.attr("href"))",
+				isLiving: $0.element.getChildNodes().contains(where: { try $0.attr("class") == "live" })
+			))
+		}
+		return re
     }
 	
-	func getHuyaInfo(_ url: String) -> Promise<HuyaStream.GameLiveInfo> {
-		getPlayerConfig(url).map {
-			let stream = try HuyaStream(object: $0)
-			
-			
-			guard let data = stream.data.first else {
-				throw VideoGetError.notFountData
-			}
-			var info = data.liveInfo
-			info.isLiving = data.streamInfoList.count > 0
-			
-			return info
+	func getHuyaInfo(_ url: String) async throws -> HuyaStream.GameLiveInfo {
+		let obj = try await getPlayerConfig(url)
+		let stream = try HuyaStream(object: obj)
+		
+		guard let data = stream.data.first else {
+			throw VideoGetError.notFountData
 		}
+		var info = data.liveInfo
+		info.isLiving = data.streamInfoList.count > 0
+		
+		return info
 	}
     
-    func getHuyaVideos(_ url: String) -> Promise<YouGetJSON> {
-		getPlayerConfig(url).map {
-			let info = try HuyaStream(object: $0)
-			
-			var yougetJson = YouGetJSON(rawUrl: url)
-			return info.write(to: yougetJson, uid: self.huyaUid)
-		}
+    func getHuyaVideos(_ url: String) async throws -> YouGetJSON {
+		let obj = try await getPlayerConfig(url)
+		let info = try HuyaStream(object: obj)
+		var yougetJson = YouGetJSON(rawUrl: url)
+		return info.write(to: yougetJson, uid: huyaUid)
     }
 	
-	func getPlayerConfig(_ url: String) -> Promise<JSONObject> {
-		AF.request(url).responseString().map {
+	func getPlayerConfig(_ url: String) async throws -> JSONObject {
+		let text = try await AF.request(url).serializingString().value
+		
+		let hyPlayerConfigStr: String? = {
+			var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
 			
-			let text = $0.string
-			
-			let hyPlayerConfigStr: String? = {
-				var str = text.subString(from: "var hyPlayerConfig = ", to: "window.TT_LIVE_TIMING")
+			if let range = str.range(of: "stream:") {
+				str.removeSubrange(str.startIndex..<range.upperBound)
+				let c1 = str.indexes(of: "{")
+				let c2 = str.indexes(of: "}")
 				
-				if let range = str.range(of: "stream:") {
-					str.removeSubrange(str.startIndex..<range.upperBound)
-					let c1 = str.indexes(of: "{")
-					let c2 = str.indexes(of: "}")
-					
-					if c2.count > c1.count {
-						str = String(str[str.startIndex...c2[c1.count-1]])
-					}
+				if c2.count > c1.count {
+					str = String(str[str.startIndex...c2[c1.count-1]])
 				}
-				return str
-			}()
-			
-			guard let data = hyPlayerConfigStr?.data(using: .utf8) else {
-				throw VideoGetError.notFountData
 			}
-			
-			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
-			return jsonObj
+			return str
+		}()
+		
+		guard let data = hyPlayerConfigStr?.data(using: .utf8) else {
+			throw VideoGetError.notFountData
 		}
+		
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return jsonObj
 	}
     
-    func getHuyaInfoM(_ url: String) -> Promise<HuyaInfoM> {
-        pSession.request(url).responseString().map {
-            guard let jsonData = $0.string.subString(from: "<script> window.HNF_GLOBAL_INIT = ", to: " </script>").data(using: .utf8)
-            else {
-                throw VideoGetError.notFindUrls
-            }
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-            
-            let info: HuyaInfoM = try HuyaInfoM(object: jsonObj)
-                  
-            return info
-        }
+    func getHuyaInfoM(_ url: String) async throws -> HuyaInfoM {
+		let s = try await pSession.request(url).serializingString().value
+		guard let jsonData = s.subString(from: "<script> window.HNF_GLOBAL_INIT = ", to: " </script>").data(using: .utf8) else {
+			throw VideoGetError.notFindUrls
+		}
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+		let info: HuyaInfoM = try HuyaInfoM(object: jsonObj)
+		return info
     }
 	
-	func getHuyaInfoMP(_ url: String) -> Promise<HuyaInfoMP> {
+	func getHuyaInfoMP(_ url: String) async throws -> HuyaInfoMP {
 		let ucs = url.pathComponents
 		guard ucs.count >= 3 else {
-			return .init(error: VideoGetError.invalidLink)
+			throw VideoGetError.invalidLink
 		}
 		let rid = ucs[2]
 		
 		if let rid = Int(rid) {
-			return getHuyaInfoMP(rid)
+			return try await getHuyaInfoMP(rid)
 		} else {
-			return getHuyaInfo(url).then {
-				self.getHuyaInfoMP($0.rid)
-			}
+			let rid = try await getHuyaInfo(url).rid
+			return try await getHuyaInfoMP(rid)
 		}
 	}
 	
-	func getHuyaInfoMP(_ rid: Int) -> Promise<HuyaInfoMP> {
-		pSession.request("https://mp.huya.com/cache.php?m=Live&do=profileRoom&roomid=\(rid)").responseData().map {
-			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-			return try HuyaInfoMP(object: jsonObj)
-		}
+	func getHuyaInfoMP(_ rid: Int) async throws -> HuyaInfoMP {
+		let u = "https://mp.huya.com/cache.php?m=Live&do=profileRoom&roomid=\(rid)"
+		let data = try await pSession.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try HuyaInfoMP(object: jsonObj)
 	}
 }
 
