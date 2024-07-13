@@ -393,8 +393,8 @@ addXMLRequestCallback(function (xhr) {
 	func webcastUpdatedNotification() async -> Notification {
 		await withCheckedContinuation { continuation in
 			dyFinishNotification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: nil) { n in
-				if let n = self.dyFinishNotification {
-					NotificationCenter.default.removeObserver(n)
+				if let noti = dyFinishNotification {
+					NotificationCenter.default.removeObserver(noti)
 				}
 				continuation.resume(returning: n)
 			}

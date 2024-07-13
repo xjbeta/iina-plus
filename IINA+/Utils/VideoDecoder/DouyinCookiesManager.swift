@@ -32,33 +32,37 @@ actor DouyinCookiesManager {
 	
 	
 	func initCookies() async throws -> [String: String] {
-		await withCheckedContinuation { continuation in
+		try await withCheckedThrowingContinuation { continuation in
 			lock.lock()
 			defer { lock.unlock() }
 			
 			Task {
-				if let handle = refreshCookies {
-					let cookies = try await handle.value
-					continuation.resume(returning: cookies)
-					return
-				}
-				
-				if cookies.count > 0 {
-					continuation.resume(returning: cookies)
-					return
-				}
-				
-				let task = Task { () throws -> [String: String] in
-					defer {
-						self.refreshCookies = nil
+				do {
+					if let handle = refreshCookies {
+						let cookies = try await handle.value
+						continuation.resume(returning: cookies)
+						return
 					}
-					return try await prepareArgs()
-				}
+					
+					if cookies.count > 0 {
+						continuation.resume(returning: cookies)
+						return
+					}
+					
+					let task = Task { () throws -> [String: String] in
+						defer {
+							self.refreshCookies = nil
+						}
+						return try await prepareArgs()
+					}
 
-				self.refreshCookies = task
-				cookies = try await task.value
-				
-				continuation.resume(returning: cookies)
+					self.refreshCookies = task
+					cookies = try await task.value
+					
+					continuation.resume(returning: cookies)
+				} catch {
+					continuation.resume(throwing: error)
+				}
 			}
 		}
 	}
