@@ -33,8 +33,6 @@ class MainViewController: NSViewController {
             return bookmarkArrayController.arrangedObjects as? [Bookmark] ?? []
         }
     }
-	var bookmarkLoaderSemaphore = DispatchSemaphore(value: 1)
-	var bookmarkLoaderTimer: Date?
 	
     @objc var context: NSManagedObjectContext
     @IBAction func sendURL(_ sender: Any) {
@@ -132,6 +130,9 @@ class MainViewController: NSViewController {
     @IBOutlet var bilibiliArrayController: NSArrayController!
     @objc dynamic var bilibiliCards: [BilibiliCard] = []
     let bilibili = Processes.shared.videoDecoder.bilibili
+	
+	let bilibiliDynamicManager = BilibiliDynamicManger()
+	
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
@@ -227,8 +228,12 @@ class MainViewController: NSViewController {
         dataManager.requestData().forEach {
             $0.state = LiveState.none.raw
         }
-        
-        loadBilibiliCards()
+		
+		Task {
+			await bilibiliDynamicManager.setDelegate(self)
+			await bilibiliDynamicManager.loadBilibiliCards()
+		}
+     
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
@@ -291,7 +296,6 @@ class MainViewController: NSViewController {
         }
     }
     
-    var canLoadMoreBilibiliCards = true
     
     @objc func scrollViewDidScroll(_ notification: Notification) {
         bilibiliTableView.enumerateAvailableRowViews { (view, i) in
@@ -303,16 +307,18 @@ class MainViewController: NSViewController {
             boxV.updatePreview(.stop)
             boxV.stopTimer()
         }
-        
-        guard canLoadMoreBilibiliCards else { return }
+		
+		Task { @MainActor in
+			guard await bilibiliDynamicManager.canLoadMore else { return }
 
-        if let scrollView = notification.object as? NSScrollView {
-            let visibleRect = scrollView.contentView.documentVisibleRect
-            let documentRect = scrollView.contentView.documentRect
-            if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
-                loadBilibiliCards(.history)
-            }
-        }
+			if let scrollView = notification.object as? NSScrollView {
+				let visibleRect = scrollView.contentView.documentVisibleRect
+				let documentRect = scrollView.contentView.documentRect
+				if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
+					await bilibiliDynamicManager.loadBilibiliCards(.history)
+				}
+			}
+		}
     }
 
     override var representedObject: Any? {
@@ -335,11 +341,13 @@ class MainViewController: NSViewController {
                 $0.updateState()
             }
         case .bilibili:
-            if bilibiliCards.count > 0 {
-                loadBilibiliCards(.new)
-            } else {
-                loadBilibiliCards(.init😅)
-            }
+			Task {
+				if bilibiliCards.count > 0 {
+					await bilibiliDynamicManager.loadBilibiliCards(.new)
+				} else {
+					await bilibiliDynamicManager.loadBilibiliCards(.init😅)
+				}
+			}
         case .search:
             mainWindowController.window?.makeFirstResponder(searchField)
         default:
@@ -363,62 +371,7 @@ class MainViewController: NSViewController {
         }
     }
     
-	func loadBilibiliCards(_ action: BilibiliDynamicAction = .init😅) {
-		guard canLoadMoreBilibiliCards else { return }
-		
-		if let date = bookmarkLoaderTimer,
-		   date.secondsSinceNow < 5 {
-			Log("ignore load more")
-			return
-		}
-		
-		bookmarkLoaderSemaphore.wait()
-		let uuid = UUID().uuidString
-		canLoadMoreBilibiliCards = false
-		progressStatusChanged(!canLoadMoreBilibiliCards)
-		
-		var dynamicID = -1
-		
-		switch action {
-		case .history:
-			dynamicID = bilibiliCards.last?.dynamicId ?? -1
-		case .new:
-			dynamicID = bilibiliCards.first?.dynamicId ?? -1
-		default: break
-		}
-		Log("\(uuid), start, \(dynamicID)")
-		Task {
-			do {
-				let uid = try await bilibili.getUid()
-				let cards = try await bilibili.dynamicList(uid, action, dynamicID)
-				
-				switch action {
-				case .init😅:
-					bilibiliCards = cards
-				case .history:
-					let appends = cards.filter { card in
-						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
-					}
-					bilibiliCards.append(contentsOf: appends)
-				case .new:
-					let appends = cards.filter { card in
-						!bilibiliCards.contains(where: { $0.bvid == card.bvid })
-					}
-					if appends.count > 0 {
-						bilibiliCards.insert(contentsOf: appends, at: 0)
-					}
-				}
-			} catch let error {
-				Log("Get bilibili dynamicList error: \(error)")
-			}
-			
-			canLoadMoreBilibiliCards = true
-			progressStatusChanged(!canLoadMoreBilibiliCards)
-			bookmarkLoaderTimer = Date()
-			bookmarkLoaderSemaphore.signal()
-			Log("\(uuid), finish, \(dynamicID)")
-		}
-	}
+
     
     func progressStatusChanged(_ inProgress: Bool) {
         NotificationCenter.default.post(name: .progressStatusChanged, object: nil, userInfo: ["inProgress": inProgress])
@@ -1135,6 +1088,31 @@ extension MainViewController: NSMenuDelegate {
     }
 }
 
+extension MainViewController: BilibiliDynamicMangerDelegate {
+	func bilibiliDynamicStatusChanged(_ isLoading: Bool) {
+		progressStatusChanged(isLoading)
+	}
+	
+	func bilibiliDynamicCardsContains(_ bvid: String) -> Bool {
+		bilibiliCards.contains(where: { $0.bvid == bvid })
+	}
+	
+	func bilibiliDynamicInitCards(_ cards: [BilibiliCard]) {
+		bilibiliCards = cards
+	}
+	
+	func bilibiliDynamicAppendCards(_ cards: [BilibiliCard]) {
+		bilibiliCards.append(contentsOf: cards)
+	}
+	
+	func bilibiliDynamicInsertCards(_ cards: [BilibiliCard]) {
+		bilibiliCards.insert(contentsOf: cards, at: 0)
+	}
+	
+	func bilibiliDynamicCards() -> [BilibiliCard] {
+		bilibiliCards
+	}
+}
 
 extension NSTableView {
     func selectedIndexs() -> IndexSet {
