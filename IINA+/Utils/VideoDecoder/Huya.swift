@@ -461,14 +461,19 @@ struct HuyaInfoMP: Unmarshaling, LiveInfo {
 		let liveStatus: String = try object.value(for: "data.liveStatus")
 		isLiving = liveStatus == "ON"
 		
-		streamInfos = try object.value(for: "data.stream.baseSteamInfoList")
-		
-		let bitRateInfoString: String = try object.value(for: "data.liveData.bitRateInfo")
-		guard let data = bitRateInfoString.data(using: .utf8) else {
-			throw VideoGetError.notFountData
+		if isLiving {
+			streamInfos = try object.value(for: "data.stream.baseSteamInfoList")
+			
+			let bitRateInfoString: String = try object.value(for: "data.liveData.bitRateInfo")
+			guard let data = bitRateInfoString.data(using: .utf8) else {
+				throw VideoGetError.notFountData
+			}
+			let jsonObj: [JSONObject] = try JSONParser.JSONArrayWithData(data)
+			bitRateInfos = try jsonObj.map(HuyaInfoM.BitRateInfo.init)
+		} else {
+			streamInfos = []
+			bitRateInfos = []
 		}
-		let jsonObj: [JSONObject] = try JSONParser.JSONArrayWithData(data)
-		bitRateInfos = try jsonObj.map(HuyaInfoM.BitRateInfo.init)
 	}
 	
 	
