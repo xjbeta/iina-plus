@@ -36,6 +36,7 @@
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
 		013CE8E021854813000271FB /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoDecoder.swift */; };
 		013CE8F62185D992000271FB /* HttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8F52185D992000271FB /* HttpServer.swift */; };
+		013F9B4B2C2C0A060024020C /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 013F9B4A2C2C0A060024020C /* Swifter */; };
 		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
 		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
 		014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */; };
@@ -44,6 +45,7 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
+		0153BFF12C3023F100AF5871 /* DouyinCookiesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */; };
 		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
@@ -69,7 +71,6 @@
 		0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534727A0F5A90011BAAC /* LiveStateTextField.swift */; };
 		0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0189534E27A138310011BAAC /* JSPlayerViewController.swift */; };
 		018F4F6128126FFD0045B67C /* Huya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6028126FFD0045B67C /* Huya.swift */; };
-		018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 018F4F632812BFC60045B67C /* PMKAlamofire */; };
 		018F4F662812C3EB0045B67C /* Douyu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F652812C3EB0045B67C /* Douyu.swift */; };
 		018F4F6A2812D95C0045B67C /* CC163.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F692812D95C0045B67C /* CC163.swift */; };
 		018F4F6C2817FFF30045B67C /* BiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F4F6B2817FFF30045B67C /* BiliLive.swift */; };
@@ -100,17 +101,15 @@
 		01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
 		01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */; };
 		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
+		01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */; };
 		01BC354B29AF2BC000B45577 /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
 		01BC354C29AF2BD700B45577 /* douyin.html in Copy DouYin */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
-		01BC354E29AF369200B45577 /* KuaiShou.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BC354D29AF369200B45577 /* KuaiShou.swift */; };
 		01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807227BB5CF300E87A8C /* JSPlayer.storyboard */; };
 		01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01C0807727BB5CFD00E87A8C /* Preferences.storyboard */; };
 		01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0807B27BC00EA00E87A8C /* Alamofire */; };
-		01C0808227BC03A500E87A8C /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808127BC03A500E87A8C /* Swifter */; };
 		01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808427BC03E300E87A8C /* SwiftSoup */; };
 		01C0808827BC049500E87A8C /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808727BC049500E87A8C /* CryptoSwift */; };
 		01C0808B27BC04C500E87A8C /* Marshal in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808A27BC04C500E87A8C /* Marshal */; };
-		01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0808D27BC056200E87A8C /* PromiseKit */; };
 		01C0809127BC05A500E87A8C /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809027BC05A500E87A8C /* Gzip */; };
 		01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809327BC06EC00E87A8C /* SwiftProtobuf */; };
 		01C0809727BC074000E87A8C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 01C0809627BC074000E87A8C /* SDWebImage */; };
@@ -217,6 +216,7 @@
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
+		0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouyinCookiesManager.swift; sourceTree = "<group>"; };
 		015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGetStructs.swift; sourceTree = "<group>"; };
 		015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Plus.xml"; sourceTree = "<group>"; };
 		015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Basic.xml"; sourceTree = "<group>"; };
@@ -272,8 +272,8 @@
 		01B53B5C27B64F420051F7B4 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
 		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
+		01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliDynamicManger.swift; sourceTree = "<group>"; };
 		01BC354A29AF2BC000B45577 /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
-		01BC354D29AF369200B45577 /* KuaiShou.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KuaiShou.swift; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
 		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
@@ -305,12 +305,10 @@
 				01C0809127BC05A500E87A8C /* Gzip in Frameworks */,
 				01C0809D27BC0BC400E87A8C /* SocketRocket in Frameworks */,
 				01C0808827BC049500E87A8C /* CryptoSwift in Frameworks */,
-				01C0808227BC03A500E87A8C /* Swifter in Frameworks */,
 				01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */,
+				013F9B4B2C2C0A060024020C /* Swifter in Frameworks */,
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
-				018F4F642812BFC60045B67C /* PMKAlamofire in Frameworks */,
-				01C0808E27BC056200E87A8C /* PromiseKit in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
 			);
@@ -412,7 +410,7 @@
 				011E4D3221E99CA300997633 /* Log.swift */,
 				01E40FEA22C304E800864118 /* ImageLoader.swift */,
 				016D772327B0CD4300358E2F /* WaitTimer.swift */,
-				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
+				01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -483,13 +481,13 @@
 				0199489D2742852E00C71708 /* SupportSites.swift */,
 				018F4F692812D95C0045B67C /* CC163.swift */,
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
+				0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
 				01A183DA2B789728006FA874 /* HuyaUrl.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
-				01BC354D29AF369200B45577 /* KuaiShou.swift */,
 				01C338B428E47B3F004CC0B8 /* MBGA.swift */,
 			);
 			path = VideoDecoder;
@@ -590,6 +588,7 @@
 		01BAD2AD2B13960600A64D55 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
 				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				0184D7112B2025FF00C7901A /* DateExtension.swift */,
 			);
@@ -643,17 +642,15 @@
 			name = "IINA+";
 			packageProductDependencies = (
 				01C0807B27BC00EA00E87A8C /* Alamofire */,
-				01C0808127BC03A500E87A8C /* Swifter */,
 				01C0808427BC03E300E87A8C /* SwiftSoup */,
 				01C0808727BC049500E87A8C /* CryptoSwift */,
 				01C0808A27BC04C500E87A8C /* Marshal */,
-				01C0808D27BC056200E87A8C /* PromiseKit */,
 				01C0809027BC05A500E87A8C /* Gzip */,
 				01C0809327BC06EC00E87A8C /* SwiftProtobuf */,
 				01C0809627BC074000E87A8C /* SDWebImage */,
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
-				018F4F632812BFC60045B67C /* PMKAlamofire */,
+				013F9B4A2C2C0A060024020C /* Swifter */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -699,18 +696,16 @@
 			mainGroup = 01AEC89E20EDFD01001406E8;
 			packageReferences = (
 				01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */,
-				01C0808027BC03A500E87A8C /* XCRemoteSwiftPackageReference "swifter" */,
 				01C0808327BC03E300E87A8C /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				01C0808627BC049500E87A8C /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				01C0808927BC04C500E87A8C /* XCRemoteSwiftPackageReference "Marshal" */,
-				01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */,
 				01C0808F27BC05A500E87A8C /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				01C0809227BC06EC00E87A8C /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				01C0809527BC074000E87A8C /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				01C0809827BC079200E87A8C /* XCRemoteSwiftPackageReference "Sparkle" */,
 				01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */,
-				018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */,
 				010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
+				013F9B492C2C0A060024020C /* XCRemoteSwiftPackageReference "swifter" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -802,10 +797,10 @@
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
 				0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */,
-				01BC354E29AF369200B45577 /* KuaiShou.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
+				01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01C248B52A623EC000C92639 /* IINAApp.swift in Sources */,
 				016A71ED2A91AA48007B4CA3 /* DanmakuBiliLive.swift in Sources */,
@@ -849,6 +844,7 @@
 				016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
 				018739EE2852135200156F3F /* QQLive.swift in Sources */,
+				0153BFF12C3023F100AF5871 /* DouyinCookiesManager.swift in Sources */,
 				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
 				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
 				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
@@ -956,7 +952,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -1015,7 +1011,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -1040,8 +1036,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.30;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1067,8 +1063,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 0.7.30;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 0.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1110,12 +1106,12 @@
 				minimumVersion = 0.1.0;
 			};
 		};
-		018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */ = {
+		013F9B492C2C0A060024020C /* XCRemoteSwiftPackageReference "swifter" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PromiseKit/PMKAlamofire";
+			repositoryURL = "https://github.com/xjbeta/swifter";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
+				branch = dev;
+				kind = branch;
 			};
 		};
 		01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
@@ -1124,14 +1120,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.0;
-			};
-		};
-		01C0808027BC03A500E87A8C /* XCRemoteSwiftPackageReference "swifter" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/httpswift/swifter";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
 			};
 		};
 		01C0808327BC03E300E87A8C /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
@@ -1156,14 +1144,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
-			};
-		};
-		01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mxcl/PromiseKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
 			};
 		};
 		01C0808F27BC05A500E87A8C /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
@@ -1209,20 +1189,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		018F4F632812BFC60045B67C /* PMKAlamofire */ = {
+		013F9B4A2C2C0A060024020C /* Swifter */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 018F4F622812BFC60045B67C /* XCRemoteSwiftPackageReference "PMKAlamofire" */;
-			productName = PMKAlamofire;
+			package = 013F9B492C2C0A060024020C /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
 		};
 		01C0807B27BC00EA00E87A8C /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		01C0808127BC03A500E87A8C /* Swifter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 01C0808027BC03A500E87A8C /* XCRemoteSwiftPackageReference "swifter" */;
-			productName = Swifter;
 		};
 		01C0808427BC03E300E87A8C /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1238,11 +1213,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0808927BC04C500E87A8C /* XCRemoteSwiftPackageReference "Marshal" */;
 			productName = Marshal;
-		};
-		01C0808D27BC056200E87A8C /* PromiseKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 01C0808C27BC056200E87A8C /* XCRemoteSwiftPackageReference "PromiseKit" */;
-			productName = PromiseKit;
 		};
 		01C0809027BC05A500E87A8C /* Gzip */ = {
 			isa = XCSwiftPackageProductDependency;

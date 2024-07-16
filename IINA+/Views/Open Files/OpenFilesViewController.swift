@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 
 class OpenFilesViewController: NSViewController {
     @IBOutlet weak var videoTextField: NSTextField!
@@ -41,23 +40,28 @@ class OpenFilesViewController: NSViewController {
     }
     
     @IBAction func open(_ sender: NSButton) {
-        getVideo().then {
-            self.getDanmaku($0)
-        }.done {
-            guard let key = $0.videos.max (by: {
-                $0.value.quality < $1.value.quality
-            })?.key else {
-                return
-            }
-            
-            let id = $0.uuid
-            NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
+		Task {
+			do {
+				var json = try await getVideo()
+				json = try await getDanmaku(json)
+				guard let key = json.videos.max (by: {
+					$0.value.quality < $1.value.quality
+				})?.key else {
+					return
+				}
+				let id = json.uuid
+				
+				await MainActor.run {
+					NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
 
-            Processes.shared.openWithPlayer($0, key)
-            self.view.window?.close()
-        }.catch {
-            Log($0)
-        }
+					Processes.shared.openWithPlayer(json, key)
+					view.window?.close()
+				}
+				
+			} catch let error {
+				Log("open files failed, \(error)")
+			}
+		}
     }
     
     var videoURL: URL?
@@ -102,56 +106,56 @@ class OpenFilesViewController: NSViewController {
         return BilibiliUrl(url: string)
     }
     
-    func getVideo() -> Promise<(YouGetJSON)> {
+    func getVideo() async throws -> YouGetJSON {
         let string = videoTextField.stringValue
         
         guard videoURL == nil else {
             if let path = videoURL?.absoluteString, path != "" {
                 var json = YouGetJSON(url: path)
                 json.site = .local
-                return .value(json)
+                return json
             } else {
-                return .init(error: OpenFilesError.invalidVideoUrl)
+                throw OpenFilesError.invalidVideoUrl
             }
         }
         
         guard let bUrl = formatBiliUrl(string) else {
-            return .init(error: OpenFilesError.invalidVideoUrl)
+			throw OpenFilesError.invalidVideoUrl
         }
         
-        return Processes.shared.videoDecoder.decodeUrl(bUrl.fUrl)
+        return try await Processes.shared.videoDecoder.decodeUrl(bUrl.fUrl)
     }
     
-    func getDanmaku(_ yougetJSON: YouGetJSON) -> Promise<(YouGetJSON)> {
+    func getDanmaku(_ yougetJSON: YouGetJSON) async throws -> YouGetJSON {
         let videoDecoder = Processes.shared.videoDecoder
         var json = yougetJSON
         guard danmakuURL == nil else {
             let url = danmakuURL!
             let data = FileManager.default.contents(atPath: url.path)
             videoDecoder.saveDMFile(data, with: json.uuid)
-            return .value(json)
+			return json
         }
         
         let s = danmakuTextField.stringValue
         
         if s == "" {
-            return .value(json)
+			return json
         }
         
         guard let bUrl = formatBiliUrl(s) else {
-            return .init(error: OpenFilesError.invalidDanmakuUrl)
+            throw OpenFilesError.invalidDanmakuUrl
         }
-        
-        return videoDecoder.bilibili.bilibiliPrepareID(bUrl.fUrl).map {
-            json.id = $0.id
-            json.bvid = $0.bvid
-            json.duration = $0.duration
-            return json
-        }.then {
-            videoDecoder.prepareDanmakuFile(yougetJSON: $0, id: json.uuid)
-        }.map {
-            json
-        }
+		
+		
+		let re = try await videoDecoder.bilibili.bilibiliPrepareID(bUrl.fUrl)
+		
+		json.id = re.id
+		json.bvid = re.bvid
+		json.duration = re.duration
+		
+		try await videoDecoder.prepareDanmakuFile(yougetJSON: json, id: json.uuid)
+		
+		return json
     }
     
     enum OpenFilesError: Error {

@@ -8,23 +8,16 @@
 
 import Cocoa
 import WebKit
-import PromiseKit
 import SwiftSoup
 import Alamofire
 import Marshal
-import PMKAlamofire
 
 class DouYin: NSObject, SupportSiteProtocol {
     
     // MARK: - DY Init
     var webView: WKWebView?
-    var webViewLoadingObserver: NSKeyValueObservation?
-    
-    var prepareTask: Promise<()>?
-    var dyFinishNitification: NSObjectProtocol?
-    
-    var cookies = [String: String]()
-    var storageDic = [String: String]()
+	
+    var dyFinishNotification: NSObjectProtocol?
     
     let douyinEmptyURL = URL(string: "https://live.douyin.com/1")!
     var douyinUA = ""
@@ -37,6 +30,7 @@ class DouYin: NSObject, SupportSiteProtocol {
         "X3NpZ25hdHVyZQ=="
     ]
 	
+	@MainActor
 	lazy var webviewConfig: WKWebViewConfiguration = {
 		// https://gist.github.com/genecyber/e4a5f7c6f92eaef9ccb5
 		let script = """
@@ -72,45 +66,47 @@ addXMLRequestCallback(function (xhr) {
 		return config
 	}()
 	
+	enum DYState {
+		case none
+		case preparing
+		case checking
+		case finish
+	}
+	
+	@MainActor
+	var storageDic = [String: String]()
+	
+	@MainActor
+	private var cookiesTaskState: DYState = .none
+	
+	lazy var cookiesManager = DouyinCookiesManager(prepareArgs: prepareArgs)
 	
 	private var invalidCookiesCount = 0
-    
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        if cookies.count == 0 {
-            if prepareTask == nil {
-                prepareTask = prepareArgs().ensure {
-                    self.prepareTask = nil
-                }
-            }
-            return prepareTask!.then {
-                self.getEnterContent(url)
-            }
-        } else {
-            return self.getEnterContent(url)
-        }
-    }
-    
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        liveInfo(url).compactMap {
-			var json = YouGetJSON(rawUrl: url)
-			
-			if let info = $0 as? DouYinEnterData.DouYinLiveInfo {
-				json = info.write(to: json)
-			} else if let info = $0 as? DouYinInfo {
-				json = info.write(to: json)
-			} else {
-				return nil
-			}
-			
-			return json
-        }
-    }
+	
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		let _ = try await cookiesManager.initCookies()
+		let info = try await getEnterContent(url)
+		return info
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let info = try await liveInfo(url)
+		var json = YouGetJSON(rawUrl: url)
+		
+		if let info = info as? DouYinEnterData.DouYinLiveInfo {
+			json = info.write(to: json)
+		} else if let info = info as? DouYinInfo {
+			json = info.write(to: json)
+		} else {
+			throw VideoGetError.notFindUrls
+		}
+		
+		return json
+	}
     
 	
-	func getEnterContent(_ url: String) -> Promise<LiveInfo> {
-		let cookieString = cookies.map {
-			"\($0.key)=\($0.value)"
-		}.joined(separator: ";")
+	func getEnterContent(_ url: String) async throws -> LiveInfo {
+		let cookieString = await cookiesManager.cookiesString
 		
 		let headers = HTTPHeaders([
 			"User-Agent": douyinUA,
@@ -121,34 +117,37 @@ addXMLRequestCallback(function (xhr) {
 		guard let pc = NSURL(string: url)?.pathComponents,
 			  pc.count >= 2,
 			  pc[0] == "/" else {
-			return .init(error: VideoGetError.invalidLink)
+			throw VideoGetError.invalidLink
 		}
 		
-		let rid = pc[1]
+		let rid = try {
+			if let i = Int(pc[1]) {
+				return pc[1]
+			} else if pc.count >= 4, pc[2] == "live", let i = Int(pc[3]) {
+				return pc[3]
+			} else {
+				throw VideoGetError.invalidLink
+			}
+		}()
 		
 		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=\(rid)&enter_source=&is_need_double_stream=true"
 		
+		let data = try await AF.request(u, headers: headers).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		let enterData = try DouYinEnterData(object: jsonObj)
 		
-		return AF.request(u, headers: headers).responseData().map {
-			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-			
-			let enterData = try DouYinEnterData(object: jsonObj)
-			
-			if let info = enterData.infos.first {
-				return info
-			} else if let info = try? DouYinEnterData2(object: jsonObj) {
-				return info
-			} else {
-				throw VideoGetError.notFountData
-			}
+		if let info = enterData.infos.first {
+			return info
+		} else if let info = try? DouYinEnterData2(object: jsonObj) {
+			return info
+		} else {
+			throw VideoGetError.notFountData
 		}
 	}
 	
     
-    func getContent(_ url: String) -> Promise<LiveInfo> {
-        let cookieString = cookies.map {
-            "\($0.key)=\($0.value)"
-        }.joined(separator: ";")
+    func getContent(_ url: String) async throws -> LiveInfo {
+		let cookieString = await cookiesManager.cookiesString
         
         let headers = HTTPHeaders([
             "User-Agent": douyinUA,
@@ -156,29 +155,26 @@ addXMLRequestCallback(function (xhr) {
             "Cookie": cookieString
         ])
         
-		return AF.request(url, headers: headers).responseString().map(on: .global()) {
-			self.getJSON($0.string)
-		}.map {
-			guard let json = $0 else {
-				self.invalidCookiesCount += 1
-				if self.invalidCookiesCount == 5 {
-					self.invalidCookiesCount = 0
-					self.cookies.removeAll()
-					
-					Log("Reload Douyin Cookies")
-				}
-                throw VideoGetError.notFountData
-            }
-            
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
-            
-            if let re = try? DouYinInfo(object: jsonObj) {
-                return re
-            } else {
-                let info: DouYinInfo = try jsonObj.value(for: "app")
-                return info
-            }
-        }
+		let text = try await AF.request(url, headers: headers).serializingString().value
+		guard let json = getJSON(text) else {
+			self.invalidCookiesCount += 1
+			if self.invalidCookiesCount == 5 {
+				self.invalidCookiesCount = 0
+				await cookiesManager.removeAll()
+				
+				Log("Reload Douyin Cookies")
+			}
+			throw VideoGetError.notFountData
+		}
+		
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(json)
+		
+		if let re = try? DouYinInfo(object: jsonObj) {
+			return re
+		} else {
+			let info: DouYinInfo = try jsonObj.value(for: "app")
+			return info
+		}
     }
     
 	func getJSON(_ text: String) -> Data? {
@@ -231,145 +227,161 @@ addXMLRequestCallback(function (xhr) {
 			return re.first?.data(using: .utf8)
 		}
 	}
-    
-    func prepareArgs() -> Promise<()> {
-        cookies.removeAll()
-        storageDic.removeAll()
+	
+	
+	func prepareArgs() async throws -> [String: String] {
         deleteDouYinCookies()
 		
-		enum DYState {
-			case none
-			case checking
-			case finish
+		let config = await webviewConfig
+		await MainActor.run {
+			storageDic.removeAll()
+			cookiesTaskState = .preparing
+		}
+		webView = await WKWebView(frame: .zero, configuration: config)
+		guard let webView else { throw VideoGetError.douyuSignError }
+		Log("DouYin Cookies start.")
+		
+#if DEBUG
+		await MainActor.run {
+			if #available(macOS 13.3, *) {
+				webView.isInspectable = true
+			}
+		}
+#endif
+		
+		async let noti = Task {
+			let _ = await webcastUpdatedNotification()
+			await MainActor.run {
+				cookiesTaskState = .checking
+			}
 		}
 		
-		var state = DYState.none
-		var timerStarted = false
+		await webView.load(.init(url: douyinEmptyURL))
 		
-        return Promise { resolver in
-            dyFinishNitification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: .main) { _ in
-				guard state == .none else { return }
-				state = .checking
-				
-				Log("Douyin WebcastUpdated")
-				
-                if let n = self.dyFinishNitification {
-                    NotificationCenter.default.removeObserver(n)
-                }
-				
-				self.loadCookies().done {
-					resolver.fulfill_()
-				}.ensure {
-					self.deinitWebView()
-					state = .finish
-				}.catch {
-					resolver.reject($0)
-				}
-            }
-			
-			webView = WKWebView(frame: .zero, configuration: webviewConfig)
-			
-#if DEBUG
-			if #available(macOS 13.3, *) {
-				webView?.isInspectable = true
+		var loadingCount = 0
+		while loadingCount >= 0 {
+			loadingCount += 1
+			try await Task.sleep(nanoseconds: 330_000_000)
+			let isLoading = await webView.isLoading
+			guard !isLoading,
+				  let title = try await webView.evaluateJavaScriptAsync("document.title") as? String else {
+				continue
 			}
-#endif
-	       
-            webViewLoadingObserver?.invalidate()
-            webViewLoadingObserver = webView?.observe(\.isLoading) { webView, _ in
-                guard !webView.isLoading else { return }
-                Log("Load Douyin webview finished.")
-                
-                webView.evaluateJavaScript("document.title") { str, error in
-                    guard let s = str as? String else { return }
-                    Log("Douyin webview title \(s).")
-                    if s.contains("抖音直播") {
-                        self.webViewLoadingObserver?.invalidate()
-                        self.webViewLoadingObserver = nil
-                    } else if s.contains("验证") {
-						Log("Douyin reload init url")
-                        self.deleteCookies().done {
-                            self.webView?.load(.init(url: self.douyinEmptyURL))
-                        }.catch({ _ in })
-                    }
-                }
-				
-				guard !timerStarted else { return }
-				timerStarted = true
-				DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
-					guard state == .none else { return }
-					Log("DouYin Cookies timeout, check cookies.")
-					NotificationCenter.default.post(name: .douyinWebcastUpdated, object: nil)
-				}
-            }
 			
-            webView?.load(.init(url: douyinEmptyURL))
-        }
+			if loadingCount >= (3 * 120) {
+				Log("DouYin Cookies timeout, check cookies.")
+				loadingCount = -1
+				break
+			} else if await cookiesTaskState != .preparing {
+				Log("DouYin Cookies webcastUpdated.")
+				loadingCount = -2
+				break
+			} else if title.contains("抖音直播") {
+				Log("Douyin cookies web load finish, \(title).")
+				loadingCount = -3
+				break
+			} else if title.contains("验证") {
+				Log("Douyin cookies web reload.")
+				await self.deleteCookies()
+				await webView.load(.init(url: self.douyinEmptyURL))
+			}
+		}
+		
+		if loadingCount < -1 {
+			let _ = await noti
+		}
+		
+		await MainActor.run {
+			cookiesTaskState = .checking
+			Log("Douyin cookies checking.")
+		}
+		
+		let cookies = try await loadCookies()
+		await MainActor.run {
+			cookiesTaskState = .finish
+			Log("Douyin cookies finish.")
+		}
+		await deinitWebView()
+		
+		return cookies
     }
     
 
 	
-	func loadCookies() -> Promise<()> {
+	func loadCookies() async throws -> [String: String] {
 		guard let webview = webView else {
-			return .init(error: VideoGetError.douyuSignError)
+			throw VideoGetError.douyuSignError
 		}
 		let cid = "dHRjaWQ=".base64Decode()
 		
-		return getAllWKCookies().get {
-			Log("Douyin getAllWKCookies")
-			$0.filter {
-				$0.domain.contains("douyin")
-			}.forEach {
-				self.cookies[$0.name] = $0.value
-			}
-		}.then { _ in
-			when(fulfilled: [
-				webview.evaluateJavaScript("localStorage.\(cid)"),
-				webview.evaluateJavaScript("window.navigator.userAgent")
-			])
-		}.get {
-			Log("Douyin cid UA")
-			let id = $0[0] as? String
-			guard let ua = $0[1] as? String else {
-				throw CookiesError.invalid
-			}
-			self.cookies[cid] = id
-			self.douyinUA = ua
-		}.then { _ in
-			webview.evaluateJavaScript(
-				"localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
-		}.compactMap { re -> [String: String]? in
-			
-			Log("Douyin privateKeys")
-			guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else { return nil }
-			return [
-				self.privateKeys[0].base64Decode(): values[0],
-				self.privateKeys[1].base64Decode(): values[1]
-			]
-		}.get {
-			self.storageDic = $0
-		}.then { _ in
-			self.getEnterContent(self.douyinEmptyURL.absoluteString)
-		}.done { info in
-			Log("Douyin test info \(info.title)")
+		let allCookies = await getAllWKCookies()
+		
+		Log("Douyin getAllWKCookies")
+		var cookies = [String: String]()
+		
+		allCookies.filter {
+			$0.domain.contains("douyin")
+		}.forEach {
+			cookies[$0.name] = $0.value
 		}
+		
+		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)")
+		let re2 = try await webview.evaluateJavaScriptAsync("window.navigator.userAgent")
+		
+		
+		cookies[cid] = re1 as? String
+		guard let ua = re2 as? String else {
+			throw CookiesError.invalid
+		}
+		douyinUA = ua
+		
+		let re = try await webview.evaluateJavaScriptAsync("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
+		
+		Log("Douyin privateKeys")
+		
+		guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else {
+			throw VideoGetError.douyuSignError
+		}
+		
+		await MainActor.run {
+            storageDic = [
+                self.privateKeys[0].base64Decode(): values[0],
+                self.privateKeys[1].base64Decode(): values[1]
+            ]
+        }
+		
+		await cookiesManager.setCookies(cookies)
+		
+		let info = try await getEnterContent(douyinEmptyURL.absoluteString)
+		
+		Log("Douyin test info \(info.title)")
+		
+		return cookies
 	}
 	
-	func deinitWebView() {
+	@MainActor
+	func deinitWebView() async {
 		Log("Douyin deinit webview")
 		
-		self.webView?.stopLoading()
-		self.webView?.configuration.userContentController.removeScriptMessageHandler(forName: "fetch")
-		self.webView?.removeFromSuperview()
-		self.webView = nil
+		webView?.stopLoading()
+		webView?.configuration.userContentController.removeScriptMessageHandler(forName: "fetch")
+		webView?.removeFromSuperview()
+		webView = nil
 	}
 	
-    func deleteCookies() -> Promise<()> {
-        getAllWKCookies().then {
-            when(fulfilled: $0.map(self.deleteWKCookie))
-        }.get {
-            self.deleteDouYinCookies()
-        }
+    func deleteCookies() async {
+		let cookies = await getAllWKCookies()
+		
+		await withTaskGroup(of: Int.self) { group in
+			cookies.forEach { c in
+				group.addTask {
+					await self.deleteWKCookie(c)
+					return 0
+				}
+			}
+		}
+		
+		deleteDouYinCookies()
     }
     
     func deleteDouYinCookies() {
@@ -377,27 +389,31 @@ addXMLRequestCallback(function (xhr) {
             $0.domain.contains("douyin")
         }.forEach(HTTPCookieStorage.shared.deleteCookie)
     }
+	
+	func webcastUpdatedNotification() async -> Notification {
+		await withCheckedContinuation { continuation in
+			dyFinishNotification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: nil) { n in
+				if let noti = self.dyFinishNotification {
+					NotificationCenter.default.removeObserver(noti)
+				}
+				continuation.resume(returning: n)
+			}
+		}
+	}
     
     
-    func getAllWKCookies() -> Promise<[HTTPCookie]> {
-        Promise { resolver in
-            WKWebsiteDataStore.default().httpCookieStore.getAllCookies {
-                let cookies = $0.filter({ $0.domain.contains("douyin") })
-                resolver.fulfill(cookies)
-            }
-        }
+	@MainActor
+    func getAllWKCookies() async -> [HTTPCookie] {
+		let all = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
+		return all.filter({ $0.domain.contains("douyin") })
     }
     
-    func deleteWKCookie(_ cookie: HTTPCookie) -> Promise<()> {
-        Promise { resolver in
-            WKWebsiteDataStore.default().httpCookieStore.delete(cookie) {
-                resolver.fulfill_()
-            }
-        }
+    func deleteWKCookie(_ cookie: HTTPCookie) async {
+		await WKWebsiteDataStore.default().httpCookieStore.deleteCookie(cookie)
     }
 
     deinit {
-        prepareTask = nil
+//        prepareTask = nil
     }
     
     enum CookiesError: Error {

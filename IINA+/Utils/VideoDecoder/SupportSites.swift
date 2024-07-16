@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 
 enum SupportSites: String {
     case b23 = "b23.tv"
@@ -19,7 +18,6 @@ enum SupportSites: String {
     case cc163 = "cc.163.com"
     case douyin = "live.douyin.com"
     case qqLive = "live.qq.com"
-    case kuaiShou = "live.kuaishou.com"
     case local
     case unsupported
     
@@ -40,7 +38,14 @@ enum SupportSites: String {
             default:
                 self = .unsupported
             }
-        } else if let list = SupportSites(rawValue: host) {
+		} else if host == "www.douyin.com",
+				  let pc = NSURL(string: url)?.pathComponents,
+				  pc.count >= 4,
+				  pc[2] == "live",
+					let rid = Int(pc[3]) {
+			
+			self = .init(url: "https://live.douyin.com/\(rid)")
+		} else if let list = SupportSites(rawValue: host) {
             self = list
         } else {
             self = .unsupported
@@ -66,8 +71,6 @@ enum SupportSites: String {
             return NSLocalizedString("SupportSites.DouYin", comment: "DouYin")
         case .qqLive:
             return NSLocalizedString("SupportSites.QQLive", comment: "QQ Live")
-        case .kuaiShou:
-            return NSLocalizedString("SupportSites.KuaiShou", comment: "KuaiShou")
         case .unsupported:
             return NSLocalizedString("SupportSites.Unsupported", comment: "Unsupported")
         case .b23, .local:
@@ -114,6 +117,6 @@ enum LiveState: Int {
 }
 
 protocol SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo>
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON>
+    func liveInfo(_ url: String) async throws -> LiveInfo
+    func decodeUrl(_ url: String) async throws -> YouGetJSON
 }

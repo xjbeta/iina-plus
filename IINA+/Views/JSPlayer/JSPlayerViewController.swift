@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import PromiseKit
 import WebKit
 
 class JSPlayerViewController: NSViewController {
@@ -336,85 +335,106 @@ class JSPlayerViewController: NSViewController {
 	}
     
     func openLive() {
-		playerState = .opening
-		playerReloadDate = .init()
-		playerReloadTimer?.invalidate()
-		playerReloadTimer = nil
-		
-        proc.videoDecoder.liveInfo(url, true).get {
-            if !$0.isLiving {
-				self.playerState = .error(.notLiving)
-                throw VideoGetError.isNotLiving
-            }
-        }.then { _ in
-            self.proc.decodeURL(self.url)
-        }.then { re in
-            self.proc.videoDecoder.prepareVideoUrl(re, {
-                let videoKeys = re.videos.map {
-                    $0.key
-                }
-                
-                if self.videoKey == nil || !videoKeys.contains(self.videoKey!) {
-                    self.videoKey = re.videos.first?.key
-                }
-                
-                return self.videoKey ?? "😶‍🌫️"
-            }())
-        }.done(on: .main) {
-            let re = $0
-            self.result = re
-            
-            guard let stream = re.videos.first(where: {
-                $0.key == self.videoKey
-            })?.value else {
-				self.playerState = .error(.openFailed)
-                return
-            }
-            var urls = stream.src
-            if let u = stream.url {
-                urls.insert(u, at: 0)
-            }
-            
-			urls = urls.filter {
-				!$0.isEmpty
+		Task {
+			do {
+				try await openLive()
+			} catch let error {
+				Log("openLive failed \(error)")
 			}
-			
-			guard urls.count > 0 else {
-				self.playerState = .error(.openFailed)
-				return
-			}
-            
-            if urls.count <= self.videoLine {
-                self.videoLine = 0
-            }
-            
-            self.initControllers()
-            let u = urls[0]
-			
-			guard u.count > 0 else {
-				self.playerState = .error(.openFailed)
-				return
-			}
-			
-			self.hackUrl = JSPlayerURL.encode(u, site: re.site)
-            
-            self.evaluateJavaScript("initContent();")
-            self.evaluateJavaScript("window.openUrl('\(self.hackUrl)');")
-            self.evaluateJavaScript("player.muted = \(self.playerMuted);")
-            
-            switch re.site {
-            case .douyu, .biliLive, .huya, .douyin:
-                self.startDM()
-            case .bilibili, .bangumi:
-                break
-            default:
-                break
-            }
-        }.catch(on: .main, policy: .allErrors) {
-            Log($0)
-        }
+		}
     }
     
+	func openLive() async throws {
+		await MainActor.run {
+			playerState = .opening
+			playerReloadDate = .init()
+			playerReloadTimer?.invalidate()
+			playerReloadTimer = nil
+		}
+		
+		let info = try await proc.videoDecoder.liveInfo(url, true)
+		
+		if !info.isLiving {
+			await MainActor.run {
+				playerState = .error(.notLiving)
+			}
+			throw VideoGetError.isNotLiving
+		}
+		
+		var json = try await proc.decodeURL(self.url)
+		
+		json = try await proc.videoDecoder.prepareVideoUrl(json, {
+			let videoKeys = json.videos.map {
+				$0.key
+			}
+			
+			if self.videoKey == nil || !videoKeys.contains(self.videoKey!) {
+				self.videoKey = json.videos.first?.key
+			}
+			
+			return self.videoKey ?? "😶‍🌫️"
+		}())
+		
+		await MainActor.run {
+			self.result = json
+		}
+		
+		guard let stream = json.videos.first(where: {
+			$0.key == self.videoKey
+		})?.value else {
+			await MainActor.run {
+				self.playerState = .error(.openFailed)
+			}
+			return
+		}
+		var urls = stream.src
+		if let u = stream.url {
+			urls.insert(u, at: 0)
+		}
+		
+		urls = urls.filter {
+			!$0.isEmpty
+		}
+		
+		guard urls.count > 0 else {
+			await MainActor.run {
+				self.playerState = .error(.openFailed)
+			}
+			return
+		}
+		
+		if urls.count <= self.videoLine {
+			self.videoLine = 0
+		}
+		
+		self.initControllers()
+		let u = urls[0]
+		
+		guard u.count > 0 else {
+			await MainActor.run {
+				self.playerState = .error(.openFailed)
+			}
+			return
+		}
+		
+		await MainActor.run {
+			self.hackUrl = JSPlayerURL.encode(u, site: json.site)
+			
+			self.evaluateJavaScript("initContent();")
+			self.evaluateJavaScript("window.openUrl('\(self.hackUrl)');")
+			self.evaluateJavaScript("player.muted = \(self.playerMuted);")
+			
+			switch json.site {
+			case .douyu, .biliLive, .huya, .douyin:
+				self.startDM()
+			case .bilibili, .bangumi:
+				break
+			default:
+				break
+			}
+		}
+	}
+	
     
     func initControllers() {
         linesPopUpButton.removeAllItems()
@@ -516,9 +536,11 @@ class JSPlayerViewController: NSViewController {
     
     func evaluateJavaScript(_ str: String) {
         guard webView != nil else { return }
-        webView.evaluateJavaScript(str).catch {
-            Log("evaluateJavaScript error \($0)")
+        webView.evaluateJavaScript(str) {
+			guard let e = $1 else { return }
+			Log("evaluateJavaScript error \(e)")
         }
+		
     }
     
     

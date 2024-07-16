@@ -64,10 +64,13 @@ class SidebarViewController: NSViewController {
     }
     
     func checkBiliLoginState() {
-        Processes.shared.videoDecoder.bilibili.isLogin().done { _ in
-            }.catch { _ in
-                self.biliStatusChanged(false)
-        }
+		Task {
+			do {
+				let _ = try await Processes.shared.videoDecoder.bilibili.isLogin()
+			} catch let error {
+				biliStatusChanged(false)
+			}
+		}
     }
     
     func biliStatusChanged(_ isLogin: Bool) {

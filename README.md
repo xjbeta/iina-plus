@@ -25,7 +25,6 @@
 | douyin        | ✓           | ✓            | ✓       |
 | cc.163        | ✓           | ✓            | ✕       |
 | live.qq       | ✓           | ✓            | ✕       |
-| live.kuaishou | 🛠           | 🛠            | ✕       |
 
 
 ## Build
@@ -48,7 +47,6 @@ Open `IINA+.xcodeproj` with Xcode.
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
 - [GzipSwift](https://github.com/1024jp/GzipSwift)
 - [Marshal](https://github.com/utahiosmac/Marshal)
-- [PromiseKit](https://github.com/mxcl/PromiseKit)
 - [SDWebImage](https://github.com/SDWebImage/SDWebImage)
 - [SocketRocket with SPM patch](https://github.com/xjbeta/SocketRocket)
 - [Sparkle](https://github.com/sparkle-project/Sparkle)

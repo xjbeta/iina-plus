@@ -7,78 +7,73 @@
 //
 
 import Cocoa
-import PromiseKit
 import Alamofire
-import PMKAlamofire
 import Marshal
 import SwiftSoup
 
 class CC163: NSObject, SupportSiteProtocol {
-    func liveInfo(_ url: String) -> Promise<LiveInfo> {
-        if url.pathComponents.count == 4,
-           url.pathComponents[2] == "ccid" {
-            var info = BilibiliInfo()
-            info.site = .cc163
-            info.isLiving = true
-            return .value(info)
-        } else {
-            return getCC163Info(url)
-        }
+	func liveInfo(_ url: String) async throws -> any LiveInfo {
+		if url.pathComponents.count == 4,
+		   url.pathComponents[2] == "ccid" {
+			var info = BilibiliInfo()
+			info.site = .cc163
+			info.isLiving = true
+			return info
+		} else {
+			let info = try await getCC163Info(url)
+			return info
+		}
+	}
+	
+	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		let ccid = try await getCC163Ccid(url)
+		let cid = try await getCC163ChannelID(ccid)
+		let videos = try await getCC163Videos(cid)
+		guard let v = videos.first else { throw VideoGetError.notFountData }
+		let json = v.write(to: YouGetJSON(rawUrl: url))
+		return json
+	}
+    
+    
+    func getCC163Info(_ url: String) async throws -> LiveInfo {
+		let state = try await getCC163State(url)
+		if let i = state.info {
+			return i
+		} else if let cid = state.list.first?.cid {
+			return try await getCC163ZtState(cid: "\(cid)")
+		} else {
+			throw VideoGetError.invalidLink
+		}
     }
     
-    func decodeUrl(_ url: String) -> Promise<YouGetJSON> {
-        getCC163Ccid(url).then {
-            self.getCC163ChannelID($0)
-        }.then {
-            self.getCC163Videos($0)
-        }.compactMap {
-            $0.first
-        }.map {
-            $0.write(to: YouGetJSON(rawUrl: url))
-        }
-    }
-    
-    func getCC163Info(_ url: String) -> Promise<LiveInfo> {
-        getCC163State(url).then { state -> Promise<LiveInfo> in
-            if let i = state.info {
-                return .value(i)
-            } else if let cid = state.list.first?.cid {
-                return self.getCC163ZtState(cid: "\(cid)")
-            } else {
-                throw VideoGetError.invalidLink
-            }
-        }
-    }
-    
-    func getCC163State(_ url: String) -> Promise<(info: LiveInfo?, list: [CC163ChannelInfo])> {
-        AF.request(url).responseString().then { re -> Promise<(info: LiveInfo?, list: [CC163ChannelInfo])> in
-            guard let jsonData = re.string.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">").data(using: .utf8) else {
-                throw VideoGetError.notFountData
-            }
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
-            
-            if let domain: String = try? jsonObj.value(for: "query.domain") {
-                let list = try self.getCC163ZtRoomList(jsonObj)
-                guard list.count > 0 else {
-                    throw VideoGetError.notFountData
-                }
-                
-                if let cid = list.first!.cid {
-                    return self.getCC163ZtState(cid: "\(cid)").map {
-                        ($0, list)
-                    }
-                } else {
-                    return .value((list.first, list))
-                }
-            } else if let cid: String = try? jsonObj.value(for: "query.subcId") {
-                return self.getCC163ZtState(cid: cid).map {
-                    ($0, [])
-                }
-            } else {
-                let info = try CC163Info(object: jsonObj)
-                return .value((info, []))
-            }
-        }
+    func getCC163State(_ url: String) async throws -> (info: LiveInfo?, list: [CC163ChannelInfo]) {
+		
+		let re = try await AF.request(url).serializingString().value
+		
+		guard let jsonData = re.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">").data(using: .utf8) else {
+			throw VideoGetError.notFountData
+		}
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+		
+		if let domain: String = try? jsonObj.value(for: "query.domain") {
+			let list = try self.getCC163ZtRoomList(jsonObj)
+			guard list.count > 0 else {
+				throw VideoGetError.notFountData
+			}
+			
+			if let cid = list.first!.cid {
+				let info = try await getCC163ZtState(cid: "\(cid)")
+				return (info, list)
+			} else {
+				return (list.first, list)
+			}
+		} else if let cid: String = try? jsonObj.value(for: "query.subcId") {
+			let info = try await getCC163ZtState(cid: cid)
+			return (info, [])
+		} else {
+			let info = try CC163Info(object: jsonObj)
+			return (info, [])
+		}
     }
     
     func getCC163ZtRoomList(_ json: JSONObject) throws -> [CC163ChannelInfo] {
@@ -105,59 +100,61 @@ class CC163: NSObject, SupportSiteProtocol {
         return try jsonObj.value(for: "content")
     }
     
-    func getCC163ZtState(cid: String) -> Promise<LiveInfo> {
-        AF.request("https://cc.163.com/live/channel/?channelids=\(cid)").responseData().map {
-            let json: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            let infos: [CC163ChannelInfo] = try json.value(for: "data")
-        
-            guard let info = infos.first else {
-                throw VideoGetError.notFountData
-            }
-            guard info.isLiving else {
-                throw VideoGetError.isNotLiving
-            }
-            return info
-        }
+    func getCC163ZtState(cid: String) async throws -> LiveInfo {
+		let u = "https://cc.163.com/live/channel/?channelids=\(cid)"
+		let data = try await AF.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		
+		let infos: [CC163ChannelInfo] = try jsonObj.value(for: "data")
+	
+		guard let info = infos.first else {
+			throw VideoGetError.notFountData
+		}
+		guard info.isLiving else {
+			throw VideoGetError.isNotLiving
+		}
+		return info
     }
     
-    func getCC163(_ ccid: String) -> Promise<[String]> {
-        AF.request("https://vapi.cc.163.com/video_play_url/\(ccid)").responseData().map {
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            
-            var re = [String]()
-            re.append(try jsonObj.value(for: "videourl"))
-            re.append(try jsonObj.value(for: "bakvideourl"))
-            
-            return re
-        }
+    func getCC163(_ ccid: String) async throws -> [String] {
+		let u = "https://vapi.cc.163.com/video_play_url/\(ccid)"
+		let data = try await AF.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		
+		var re = [String]()
+		re.append(try jsonObj.value(for: "videourl"))
+		re.append(try jsonObj.value(for: "bakvideourl"))
+		
+		return re
     }
     
-    func getCC163Ccid(_ url: String) -> Promise<(String)> {
+    func getCC163Ccid(_ url: String) async throws -> String {
         let pcs = url.pathComponents
         if pcs.count == 4,
            pcs[2] == "ccid" {
-            return .value((pcs[3]))
+            return pcs[3]
         } else {
-            return getCC163Info(url).compactMap {
-                $0 as? CC163ChannelInfo
-            }.map {
-                "\($0.ccid)"
-            }
+			let info = try await getCC163Info(url)
+			guard let ccid = (info as? CC163ChannelInfo)?.ccid else {
+				throw VideoGetError.notFountData
+			}
+			
+			return "\(ccid)"
         }
     }
     
-    func getCC163ChannelID(_ ccid: String) -> Promise<(Int)> {
-        AF.request("https://api.cc.163.com/v1/activitylives/anchor/lives?anchor_ccid=\(ccid)").responseData().map {
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            return try jsonObj.value(for: "data.\(ccid).channel_id")
-        }
+	func getCC163ChannelID(_ ccid: String) async throws -> Int {
+		let u = "https://api.cc.163.com/v1/activitylives/anchor/lives?anchor_ccid=\(ccid)"
+		let data = try await AF.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try jsonObj.value(for: "data.\(ccid).channel_id")
     }
     
-    func getCC163Videos(_ channelID: Int) -> Promise<[CC163NewVideos]> {
-        AF.request("https://cc.163.com/live/channel/?channelids=\(channelID)").responseData().map {
-            let jsonObj: JSONObject = try JSONParser.JSONObjectWithData($0.data)
-            return try jsonObj.value(for: "data")
-        }
+    func getCC163Videos(_ channelID: Int) async throws -> [CC163NewVideos] {
+		let u = "https://cc.163.com/live/channel/?channelids=\(channelID)"
+		let data = try await AF.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		return try jsonObj.value(for: "data")
     }
 }
 

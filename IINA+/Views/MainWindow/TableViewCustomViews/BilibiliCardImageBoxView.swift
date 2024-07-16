@@ -87,13 +87,16 @@ class BilibiliCardImageBoxView: NSView {
             state = .init🐴
             if pImages.count == 0 || pAid != aid {
                 let id = aid
-                Processes.shared.videoDecoder.bilibili.getPvideo(id).done(on: .main) { pvideo in
-                    self.pImages = pvideo.pImages
-                    self.pAid = id
-                    self.updatePreview(.start, per: self.previewPercent)
-                    }.catch { error in
-                        Log("Error when get pImages: \(error)")
-                }
+				Task {
+					do {
+						let pvideo = try await Processes.shared.videoDecoder.bilibili.getPvideo(id)
+						pImages = pvideo.pImages
+						pAid = id
+						updatePreview(.start, per: previewPercent)
+					} catch let error {
+						Log("Error when get pImages: \(error)")
+					}
+				}
             } else {
                 self.updatePreview(.start, per: self.previewPercent)
             }
