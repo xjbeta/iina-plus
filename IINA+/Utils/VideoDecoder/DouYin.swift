@@ -229,23 +229,20 @@ addXMLRequestCallback(function (xhr) {
 	}
 	
 	
+	@MainActor
 	func prepareArgs() async throws -> [String: String] {
         deleteDouYinCookies()
 		
-		let config = await webviewConfig
-		await MainActor.run {
-			storageDic.removeAll()
-			cookiesTaskState = .preparing
-		}
-		webView = await WKWebView(frame: .zero, configuration: config)
+		let config = webviewConfig
+		storageDic.removeAll()
+		cookiesTaskState = .preparing
+		webView = WKWebView(frame: .zero, configuration: config)
 		guard let webView else { throw VideoGetError.douyuSignError }
 		Log("DouYin Cookies start.")
 		
 #if DEBUG
-		await MainActor.run {
-			if #available(macOS 13.3, *) {
-				webView.isInspectable = true
-			}
+		if #available(macOS 13.3, *) {
+			webView.isInspectable = true
 		}
 #endif
 		
@@ -256,13 +253,13 @@ addXMLRequestCallback(function (xhr) {
 			}
 		}
 		
-		await webView.load(.init(url: douyinEmptyURL))
+		webView.load(.init(url: douyinEmptyURL))
 		
 		var loadingCount = 0
 		while loadingCount >= 0 {
 			loadingCount += 1
 			try await Task.sleep(nanoseconds: 330_000_000)
-			let isLoading = await webView.isLoading
+			let isLoading = webView.isLoading
 			guard !isLoading,
 				  let title = try await webView.evaluateJavaScriptAsync("document.title") as? String else {
 				continue
@@ -272,7 +269,7 @@ addXMLRequestCallback(function (xhr) {
 				Log("DouYin Cookies timeout, check cookies.")
 				loadingCount = -1
 				break
-			} else if await cookiesTaskState != .preparing {
+			} else if cookiesTaskState != .preparing {
 				Log("DouYin Cookies webcastUpdated.")
 				loadingCount = -2
 				break
@@ -283,7 +280,7 @@ addXMLRequestCallback(function (xhr) {
 			} else if title.contains("验证") {
 				Log("Douyin cookies web reload.")
 				await self.deleteCookies()
-				await webView.load(.init(url: self.douyinEmptyURL))
+				webView.load(.init(url: self.douyinEmptyURL))
 			}
 		}
 		
@@ -291,16 +288,13 @@ addXMLRequestCallback(function (xhr) {
 			let _ = await noti
 		}
 		
-		await MainActor.run {
-			cookiesTaskState = .checking
-			Log("Douyin cookies checking.")
-		}
+		cookiesTaskState = .checking
+		Log("Douyin cookies checking.")
 		
 		let cookies = try await loadCookies()
-		await MainActor.run {
-			cookiesTaskState = .finish
-			Log("Douyin cookies finish.")
-		}
+		cookiesTaskState = .finish
+		Log("Douyin cookies finish.")
+		
 		await deinitWebView()
 		
 		return cookies
