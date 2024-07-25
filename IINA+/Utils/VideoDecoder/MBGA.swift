@@ -25,6 +25,11 @@ class MBGA: NSObject {
     }
     
     static func update(_ urls: [String]) -> [String] {
+		urls.sorted { u1, u2 in
+			cdnLevel(for: u1).rawValue < cdnLevel(for: u2).rawValue
+		}
+		
+		/*
         urls.compactMap { u -> String? in
             guard var uc = URLComponents(string: u),
                   let host = uc.host else { return u }
@@ -42,10 +47,11 @@ class MBGA: NSObject {
         }.sorted { u1, u2 in
             cdnLevel(for: u1).rawValue < cdnLevel(for: u2).rawValue
         }
+		*/
     }
     
     static func cdnLevel(for url: String) -> BilibiliCDN {
-        guard var uc = URLComponents(string: url),
+		guard let uc = URLComponents(string: url),
               let host = uc.host else { return .mcdn }
         
         if host.hasSuffix(".mcdn.bilivideo.cn") {
