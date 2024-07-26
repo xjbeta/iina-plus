@@ -133,10 +133,33 @@ class VideoDecoder: NSObject {
             }
             let qn = stream.quality
             
-            if stream.src.count > 0 {
+            if let url = stream.url,
+				url != "" {
                 return json
             } else {
-				return try await biliLive.getBiliLiveJSON(json, qn)
+				var re = try await biliLive.getBiliLiveJSON(json, qn, with: .roomPlayInfo)
+				
+				func results() -> YouGetJSON? {
+					if let stream = json.streams[key],
+					   let url = stream.url,
+					   url != "" {
+						return re
+					} else {
+						return nil
+					}
+				}
+				
+				if let re = results() {
+					return re
+				}
+				
+				re = try await biliLive.getBiliLiveJSON(json, qn, with: .playUrl)
+				
+				if let re = results() {
+					return re
+				}
+				
+				throw VideoGetError.needLogin
             }
         case .douyu:
             guard let stream = json.streams[key],
@@ -291,5 +314,6 @@ enum VideoGetError: Error {
     case cantWatch
     case notFountData
     case needVip
+	case needLogin
     case needPassWork
 }

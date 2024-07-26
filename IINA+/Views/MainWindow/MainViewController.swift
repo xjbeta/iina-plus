@@ -421,6 +421,8 @@ class MainViewController: NSViewController {
 					s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
 				case VideoGetError.needVip:
 					s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
+				case VideoGetError.needLogin:
+					s += NSLocalizedString("VideoGetError.needLogin", comment: "need login.")
 				default:
 					s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
 				}

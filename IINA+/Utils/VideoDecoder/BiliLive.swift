@@ -16,8 +16,6 @@ class BiliLive: NSObject, SupportSiteProtocol {
         case playUrl, roomPlayInfo, html
     }
     
-    let apiType = APIType.roomPlayInfo
-    
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		var info = try await getBiliLiveRoomId(url)
 		let uInfo = try await getBiliUserInfo(info.roomId)
@@ -29,15 +27,51 @@ class BiliLive: NSObject, SupportSiteProtocol {
 	}
 	
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
-		var yougetJson = YouGetJSON(rawUrl: url)
+		var re = YouGetJSON(rawUrl: url)
 		
 		let info = try await getBiliLiveRoomId(url)
-		yougetJson.title = info.title
-		yougetJson.id = info.roomId
+		re.title = info.title
+		re.id = info.roomId
 		
-		let json = try await getBiliLiveJSON(yougetJson)
+		func results() -> YouGetJSON {
+			let ss = re.streams.filter {
+				($0.value.url ?? "").count > 0
+			}.max {
+				$0.value.quality > $1.value.quality
+			}?.value
+			
+			if let ss {
+				re.streams.filter {
+					$0.value.quality > ss.quality
+				}.forEach {
+					re.streams[$0.key] = nil
+				}
+			}
+			return re
+		}
 		
-		return json
+		do {
+			re = try await getBiliLiveJSON(re, with: .roomPlayInfo)
+			return results()
+		} catch {
+#if DEBUG
+			assert(false, error.localizedDescription)
+#endif
+			Log(error)
+		}
+		
+		do {
+			re = try await getBiliLiveJSON(re, with: .playUrl)
+			return results()
+		} catch {
+#if DEBUG
+			assert(false, error.localizedDescription)
+#endif
+			Log(error)
+		}
+		
+		re = try await getBiliLiveJSON(re, with: .html)
+		return results()
 	}
     
     func getBiliLiveRoomId(_ url: String) async throws -> BiliLiveInfo {
@@ -68,16 +102,11 @@ class BiliLive: NSObject, SupportSiteProtocol {
 		
 	}
     
-    func getBiliLiveJSON(_ yougetJSON: YouGetJSON, _ quality: Int = 20000) async throws -> YouGetJSON {
+	func getBiliLiveJSON(_ yougetJSON: YouGetJSON, _ quality: Int = 30000, with apiType: APIType = .roomPlayInfo) async throws -> YouGetJSON {
         
         let result = yougetJSON
         let roomID = result.id
         
-		var apiType = self.apiType
-		if Preferences.shared.enableFlvjs {
-			apiType = .playUrl
-		}
-		
         switch apiType {
         case .playUrl:
             let u = "https://api.live.bilibili.com/room/v1/Room/playUrl?cid=\(roomID)&qn=\(quality)&platform=web"
@@ -88,6 +117,7 @@ class BiliLive: NSObject, SupportSiteProtocol {
 			let playUrl: BiliLiveOldPlayUrl = try BiliLiveOldPlayUrl(object: json)
 			return playUrl.write(to: result)
         case .roomPlayInfo:
+			// 4K dolby
             let u = "https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo?room_id=\(roomID)&protocol=0,1&format=0,1,2&codec=0,1&qn=\(quality)&platform=web&ptype=8&dolby=5"
 
 			let data = try await AF.request(u).serializingData().value
@@ -281,8 +311,9 @@ struct BiliLiveOldPlayUrl: Unmarshaling {
             var s = Stream(url: "")
             s.quality = $0.qn
             if cqn == $0.qn {
-                s.src = urls
-                s.url = urls.first
+				var urls = MBGA.update(urls)
+				s.url = urls.removeFirst()
+				s.src = urls
             }
             json.streams[$0.desc] = s
         }
