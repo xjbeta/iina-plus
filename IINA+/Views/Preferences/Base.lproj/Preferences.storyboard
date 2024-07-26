@@ -371,8 +371,8 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zhX-AV-lQQ">
-                                                    <rect key="frame" x="107" y="33" width="71" height="32"/>
-                                                    <buttonCell key="cell" type="push" title="Log in" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tFa-ZK-G6I">
+                                                    <rect key="frame" x="88" y="33" width="110" height="32"/>
+                                                    <buttonCell key="cell" type="push" title="Log in Bilibili" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tFa-ZK-G6I">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                         <font key="font" metaFont="system"/>
                                                     </buttonCell>
