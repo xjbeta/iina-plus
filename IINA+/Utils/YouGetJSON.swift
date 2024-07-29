@@ -357,6 +357,8 @@ struct Stream: Unmarshaling, Codable {
     var size: Int64?
     var src: [String] = []
     
+	var dashContent: String?
+	
     init(object: MarshaledObject) throws {
         let srcArray: [String]? = try? object.value(for: "src")
         src = srcArray ?? []

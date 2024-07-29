@@ -167,7 +167,7 @@ struct BilibiliDash: Unmarshaling {
 	}
 	
 	
-	func dashString(_ id: Int) -> String? {
+	func dashContent(_ id: Int) -> String? {
 		dashXML(id)?.xmlString(options: .documentTidyXML)
 	}
 	
@@ -200,10 +200,8 @@ struct BilibiliDash: Unmarshaling {
 		
 		return xmlDocument
 	}
-
-	private func adaptationSets(_ id: Int) -> [XMLElement] {
-		var re = [XMLElement]()
-		
+	
+	func preferVideo(_ id: Int) -> AVObject? {
 		let preferVideos = video.filter {
 			switch Preferences.shared.bilibiliCodec {
 			case 0:
@@ -226,7 +224,17 @@ struct BilibiliDash: Unmarshaling {
 			$0.codecs.starts(with: "av1")
 		}
 		
-		guard let video else {
+		return video
+	}
+	
+	func preferAudio() -> AVObject? {
+		audio.max(by: { $0.bandwidth > $1.bandwidth })
+	}
+
+	private func adaptationSets(_ id: Int) -> [XMLElement] {
+		var re = [XMLElement]()
+		
+		guard let video = preferVideo(id) else {
 			return re
 		}
 		
@@ -234,7 +242,7 @@ struct BilibiliDash: Unmarshaling {
 		videoAdaptationSet.addChild(video.representation())
 		re.append(videoAdaptationSet)
 		
-		guard let audio = audio.max(by: { $0.bandwidth > $1.bandwidth }) else {
+		guard let audio = preferAudio() else {
 			return re
 		}
 		
