@@ -111,32 +111,42 @@ class VideoDecoder: NSObject {
 			id: id)
 	}
     
-    func prepareVideoUrl(_ json: YouGetJSON, _ key: String) async throws -> YouGetJSON {
-        
-        guard json.id != -1 else {
-            return json
-        }
-        
-        switch json.site {
-        case .bilibili, .bangumi:
-            guard let stream = json.streams[key],
-                  stream.url == "" else {
-                return json
-            }
-            let qn = stream.quality
-            
-			return try await bilibili.bilibiliPlayUrl(yougetJson: json, false, true, qn)
-        case .biliLive:
-            guard let stream = json.streams[key],
-                  stream.quality != -1 else {
-                return json
-            }
-            let qn = stream.quality
-            
-            if let url = stream.url,
-				url != "" {
-                return json
-            } else {
+	func prepareVideoUrl(_ json: YouGetJSON, _ key: String) async throws -> YouGetJSON {
+		
+		guard json.id != -1 else {
+			return json
+		}
+		
+		switch json.site {
+		case .bilibili, .bangumi:
+			func registerDash(_ json: YouGetJSON) async -> YouGetJSON {
+				guard let stream = json.streams[key], let content = stream.dashContent else {
+					return json
+				}
+				var json = json
+				json.streams[key]?.dashUrl = await Processes.shared.httpServer.registerDash(json.bvid, content: content)
+				return json
+			}
+			
+			guard let stream = json.streams[key],
+				  stream.url == "" else {
+				return await registerDash(json)
+			}
+			
+			let qn = stream.quality
+			var json = try await bilibili.bilibiliPlayUrl(yougetJson: json, false, json.site == .bangumi, qn)
+			return await registerDash(json)
+		case .biliLive:
+			guard let stream = json.streams[key],
+				  stream.quality != -1 else {
+				return json
+			}
+			let qn = stream.quality
+			
+			if let url = stream.url,
+			   url != "" {
+				return json
+			} else {
 				var re = try await biliLive.getBiliLiveJSON(json, qn, with: .roomPlayInfo)
 				
 				func results() -> YouGetJSON? {
@@ -160,17 +170,17 @@ class VideoDecoder: NSObject {
 				}
 				
 				throw VideoGetError.needLogin
-            }
-        case .douyu:
-            guard let stream = json.streams[key],
-                  stream.quality != -1 else {
-                return json
-            }
-            let rate = stream.rate
-            if stream.url != "" {
-                return json
-            } else {
-                let id = json.id
+			}
+		case .douyu:
+			guard let stream = json.streams[key],
+				  stream.quality != -1 else {
+				return json
+			}
+			let rate = stream.rate
+			if stream.url != "" {
+				return json
+			} else {
+				let id = json.id
 				let html = try await douyu.getDouyuHtml("https://www.douyu.com/\(id)")
 				let urls = try await douyu.getDouyuUrl(id, rate: rate, jsContext: html.jsContext)
 				let url = urls.first {
@@ -179,11 +189,11 @@ class VideoDecoder: NSObject {
 				var re = json
 				re.streams[key]?.url = url
 				return re
-            }
-        default:
-            return json
-        }
-    }
+			}
+		default:
+			return json
+		}
+	}
 }
 
 
