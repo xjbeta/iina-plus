@@ -144,9 +144,11 @@ struct BilibiliDash: Unmarshaling {
 			urls.append(url)
 			urls = MBGA.update(urls)
 			
+			let url = urls.first?.replacingOccurrences(of: "&", with: "&amp;")
+			
 			let baseURLElement = XMLElement(
 				name: "BaseURL",
-				stringValue: urls.first
+				stringValue: url
 			)
 			
 			representationElement.addChild(baseURLElement)
