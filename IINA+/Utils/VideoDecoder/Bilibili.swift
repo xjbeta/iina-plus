@@ -63,13 +63,10 @@ class Bilibili: NSObject, SupportSiteProtocol {
     
     func getBilibili(_ url: String) async throws -> YouGetJSON {
         setBilibiliQuality()
-        
-		let isDM = Processes.shared.iina.archiveType() != .normal
-        
-		
+
 		func r1() async throws -> YouGetJSON {
 			let json = try await bilibiliPrepareID(url)
-			return try await bilibiliPlayUrl(yougetJson: json, isDM)
+			return try await bilibiliPlayUrl(yougetJson: json)
 		}
 		
 		func r2() async throws -> YouGetJSON {
@@ -174,7 +171,6 @@ class Bilibili: NSObject, SupportSiteProtocol {
     }
      
     func bilibiliPlayUrl(yougetJson: YouGetJSON,
-                         _ isDM: Bool = true,
                          _ isBangumi: Bool = false,
                          _ qn: Int = 132) async throws -> YouGetJSON {
         var yougetJson = yougetJson
@@ -183,12 +179,6 @@ class Bilibili: NSObject, SupportSiteProtocol {
         var allowFlv = true
         var dashSymbol = true
         var inner = false
-        
-        if !isDM {
-            allowFlv = true
-            dashSymbol = false
-            inner = false
-        }
         
         let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dashAV1.rawValue + BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         
@@ -234,11 +224,9 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getBangumi(_ url: String) async throws -> YouGetJSON {
         setBilibiliQuality()
         
-		let isDM = Processes.shared.iina.archiveType() != .normal
 		let json = try await bilibiliPrepareID(url)
 		
-        return try await bilibiliPlayUrl(yougetJson: json, isDM, true)
-        
+        return try await bilibiliPlayUrl(yougetJson: json, true)
     }
     
     func bilibiliPrepareID(_ url: String) async throws -> YouGetJSON {
