@@ -186,7 +186,8 @@ struct YouGetJSON: Unmarshaling, Codable {
         }
         
         let u = "iina://open?"
-        var args = mpvDashOptions.map {
+		let opts = url.contains(".mpd") ? mpvDashOptions : mpvOptions
+        var args = opts.map {
             "mpv_" + $0
         }
         args.insert("url=\(url)", at: 0)
