@@ -12,6 +12,12 @@ import Cocoa
 
 class Processes: NSObject {
     
+	enum ProcessesError: Error {
+		case openFailed(String)
+		case urlNotFound
+		case notSupported
+	}
+	
     static let shared = Processes()
     let videoDecoder = VideoDecoder()
     let httpServer = HttpServer()
@@ -103,64 +109,43 @@ class Processes: NSObject {
 		decodeTask?.cancel()
     }
     
-    func openWithPlayer(_ json: YouGetJSON, _ key: String) {
-        let task = Process()
-        let pipe = Pipe()
-        task.standardInput = pipe
-        
+    func openWithPlayer(_ json: YouGetJSON, _ key: String) throws {
 		let type = iina.archiveType
 		let buildVersion = iina.buildVersion
         
+		let urlScheme = json.iinaURLScheme(key, type: type)
 		
-        guard let u = json.videoUrl(key),
-              u != "",
-              let iinaUrl = json.iinaUrl(key, type: type) else {
-            Log("Not Found YouGetJSON Url.")
-            return
-        }
-        
         switch Preferences.shared.livePlayer {
         case .iina where type == .plugin:
-            openWithURLScheme(iinaUrl)
-        case .iina where type == .danmaku && buildVersion >= 15:
-//            IINA-Danmaku 1.1.2 NEW API
-            openWithURLScheme(iinaUrl)
-        case .iina where type == .danmaku && buildVersion < 15:
-            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
+			// IINA Danmaku Plguin
+            try openWithURLScheme(urlScheme)
         case .iina where type == .normal && buildVersion >= 90:
-//            1.0.0 beta3 build 86  URL Scheme without mpv options
-//            1.0.0 beta4 build 90
-            if [.bilibili, .bangumi, .biliLive].contains(json.site) {
-                openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
-            } else {
-                openWithURLScheme(iinaUrl)
-            }
+			// IINA Official with URL Scheme + MPV Options
+            // 1.0.0 beta3 build 86  URL Scheme without mpv options
+            // 1.0.0 beta4 build 90
+			try openWithURLScheme(urlScheme)
+		case .iina where type == .danmaku && buildVersion >= 15:
+			// IINA-Danmaku 1.1.2 NEW API
+			try openWithURLScheme(urlScheme)
+		case .iina where type == .danmaku && buildVersion < 15:
+			// IINA-Danmaku cli
+			try openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
         case .iina where type == .normal && buildVersion >= 56:
-//            iinc-cli build 56
-            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
+			// IINA Official with cli
+			// iinc-cli build 56
+            try openWithProcess(json.videoUrl(key, forDash: true), args: json.mpvOptions, uuid: json.uuid)
         case .mpv:
-            openWithProcess(u, args: json.mpvOptions, uuid: json.uuid)
+            try openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
         default:
-            break
-        }
-        
-    }
-    
-    func openWithYtdl(_ url: String) {
-        // Use IINA's ytdl to open the raw url
-		let buildVersion = iina.buildVersion()
-        guard let v = url.addingPercentEncoding(withAllowedCharacters: urlQueryValueAllowed) else { return }
-        if buildVersion >= 90 {
-            let u = "iina://open?url=\(v)"
-            guard let uu = URL(string: u) else { return }
-            Log("Open IINA URL:  \(u)")
-            NSWorkspace.shared.open(uu)
-        } else if buildVersion >= 56 {
-            openWithProcess(url, args: [], uuid: "")
+			throw ProcessesError.notSupported
         }
     }
     
-    func openWithProcess(_ url: String, args: [String], uuid: String) {
+	private func openWithProcess(_ url: String?, args: [String], uuid: String) throws {
+		guard let url, url != "" else {
+			throw ProcessesError.openFailed("Nil url")
+		}
+		
         let livePlayer = Preferences.shared.livePlayer
         let isIINA = livePlayer == .iina
         var args = args
@@ -189,10 +174,8 @@ class Processes: NSObject {
 		let launchPath = isIINA ? livePlayer.rawValue : "\(self.which(livePlayer.rawValue).first ?? "")"
 		
 		guard launchPath != "" else {
-			Log("Not found launchPath")
-			return
+			throw ProcessesError.openFailed("Not found launchPath")
 		}
-		
 		
 		args.insert(launchPath, at: 0)
 		
@@ -202,10 +185,9 @@ class Processes: NSObject {
 		
     }
     
-    func openWithURLScheme(_ url: String) {
-        guard let u = URL(string: url) else {
-            Log("Invalid url scheme \(url).")
-            return
+    private func openWithURLScheme(_ url: String?) throws {
+        guard let url, url != "", let u = URL(string: url) else {
+			throw ProcessesError.openFailed("Invalid url scheme \(url ?? "nil url").")
         }
         Log("openWithURLScheme \(url).")
         NSWorkspace.shared.open(u)
