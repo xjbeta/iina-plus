@@ -17,6 +17,7 @@ class PreferencesWindowController: NSWindowController {
         window?.titleVisibility = .hidden
         window?.delegate = self
         
+		Processes.shared.iina.updateIINAState()
         
         if let preferencesTabViewController = contentViewController as? PreferencesTabViewController {
             preferencesTabViewController.autoResizeWindow(preferencesTabViewController.tabView.selectedTabViewItem, animate: false)
