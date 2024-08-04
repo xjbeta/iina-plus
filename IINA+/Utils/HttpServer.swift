@@ -74,7 +74,7 @@ class HttpServer: NSObject, DanmakuDelegate {
             guard let url = request.parameters["url"],
                   let json = try? await self.decode(url),
                   let key = json.videos.first?.key,
-                  let data = json.iinaUrl(key, type: type)?.data(using: .utf8) else {
+                  let data = json.iinaURLScheme(key, type: type)?.data(using: .utf8) else {
                 return .badRequest(nil)
             }
             return HttpResponse.ok(.data(data))

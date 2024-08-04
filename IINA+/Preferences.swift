@@ -115,7 +115,7 @@ class Preferences: NSObject {
     
     @objc dynamic var dmPort: Int {
         get {
-			if Processes.shared.iina.buildVersion() > 16 {
+			if Processes.shared.iina.buildVersion > 16 {
                 return defaults(.dmPort) as? Int ?? 19080
             } else {
                 return 19080

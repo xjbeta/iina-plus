@@ -27,6 +27,7 @@ class PreferencesWindowController: NSWindowController {
 
 extension PreferencesWindowController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
+		Processes.shared.iina.updateIINAState()
         NSColorPanel.shared.close()
     }
 }

@@ -108,8 +108,8 @@ class Processes: NSObject {
         let pipe = Pipe()
         task.standardInput = pipe
         
-		let type = iina.archiveType()
-		let buildVersion = iina.buildVersion()
+		let type = iina.archiveType
+		let buildVersion = iina.buildVersion
         
 		
         guard let u = json.videoUrl(key),
@@ -166,7 +166,7 @@ class Processes: NSObject {
         var args = args
 		
         if isIINA {
-			let type = iina.archiveType()
+			let type = iina.archiveType
             args = args.map {
                 "--mpv-" + $0
             }

@@ -666,8 +666,8 @@ class MainViewController: NSViewController {
 		
 		guard !pref.enableFlvjs,
 			  pref.livePlayer == .iina,
-			  proc.iina.archiveType() == .plugin else {
 			proc.openWithPlayer(yougetJSON, key)
+			  proc.iina.archiveType == .plugin else {
 			return
 		}
 		

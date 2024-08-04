@@ -94,7 +94,7 @@ class VideoDecoder: NSObject {
 	func prepareDanmakuFile(yougetJSON: YouGetJSON, id: String) async throws {
 		let pref = Preferences.shared
 		
-		guard Processes.shared.iina.archiveType() != .normal,
+		guard Processes.shared.iina.archiveType != .normal,
 			  pref.enableDanmaku,
 			  pref.livePlayer == .iina,
 			  [.bilibili, .bangumi, .local].contains(yougetJSON.site),
@@ -134,7 +134,7 @@ class VideoDecoder: NSObject {
 			}
 			
 			let qn = stream.quality
-			var json = try await bilibili.bilibiliPlayUrl(yougetJson: json, false, json.site == .bangumi, qn)
+			var json = try await bilibili.bilibiliPlayUrl(yougetJson: json, json.site == .bangumi, qn)
 			return await registerDash(json)
 		case .biliLive:
 			guard let stream = json.streams[key],
