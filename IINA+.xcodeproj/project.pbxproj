@@ -128,6 +128,7 @@
 		01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
+		01F829CA2C5FA783004E4893 /* Semaphore in Frameworks */ = {isa = PBXBuildFile; productRef = 01F829C92C5FA783004E4893 /* Semaphore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -309,6 +310,7 @@
 				013F9B4B2C2C0A060024020C /* Swifter in Frameworks */,
 				01C0807C27BC00EA00E87A8C /* Alamofire in Frameworks */,
 				01C0809727BC074000E87A8C /* SDWebImage in Frameworks */,
+				01F829CA2C5FA783004E4893 /* Semaphore in Frameworks */,
 				01C0808527BC03E300E87A8C /* SwiftSoup in Frameworks */,
 				01C0808B27BC04C500E87A8C /* Marshal in Frameworks */,
 			);
@@ -651,6 +653,7 @@
 				01C0809927BC079200E87A8C /* Sparkle */,
 				01C0809C27BC0BC400E87A8C /* SocketRocket */,
 				013F9B4A2C2C0A060024020C /* Swifter */,
+				01F829C92C5FA783004E4893 /* Semaphore */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -706,6 +709,7 @@
 				01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */,
 				010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
 				013F9B492C2C0A060024020C /* XCRemoteSwiftPackageReference "swifter" */,
+				01F829C82C5FA783004E4893 /* XCRemoteSwiftPackageReference "Semaphore" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -1186,6 +1190,14 @@
 				kind = branch;
 			};
 		};
+		01F829C82C5FA783004E4893 /* XCRemoteSwiftPackageReference "Semaphore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/Semaphore";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1238,6 +1250,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0809B27BC0BC400E87A8C /* XCRemoteSwiftPackageReference "SocketRocket" */;
 			productName = SocketRocket;
+		};
+		01F829C92C5FA783004E4893 /* Semaphore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01F829C82C5FA783004E4893 /* XCRemoteSwiftPackageReference "Semaphore" */;
+			productName = Semaphore;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Semaphore
 
 actor DouyinCookiesManager {
 
@@ -22,8 +23,9 @@ actor DouyinCookiesManager {
 	}
 	
 	private var refreshCookies: Task<[String: String], Error>
-	
 	private let prepareArgs: (() async throws -> [String: String])
+	
+	private let semaphore = AsyncSemaphore(value: 1)
 	
 	init(prepareArgs: @escaping (() async throws -> [String: String])) {
 		self.prepareArgs = prepareArgs
@@ -34,6 +36,9 @@ actor DouyinCookiesManager {
 	}
 	
 	func initCookies() async throws -> [String: String] {
+		await semaphore.wait()
+		defer { semaphore.signal() }
+		
 		if cookies.count > 0 {
 			return cookies
 		}
