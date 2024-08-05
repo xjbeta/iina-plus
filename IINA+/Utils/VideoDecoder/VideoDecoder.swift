@@ -150,7 +150,7 @@ class VideoDecoder: NSObject {
 				var re = try await biliLive.getBiliLiveJSON(json, qn, with: .roomPlayInfo)
 				
 				func results() -> YouGetJSON? {
-					if let stream = json.streams[key],
+					if let stream = re.streams[key],
 					   let url = stream.url,
 					   url != "" {
 						return re
