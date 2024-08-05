@@ -792,6 +792,7 @@ struct BilibiliPlayInfo: Unmarshaling {
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {
         var yougetJson = yougetJson
 		yougetJson.duration = dash.duration
+		yougetJson.audio = dash.preferAudio()?.url ?? ""
         
 		qualityDescription.forEach {
 			let id = $0.key
