@@ -31,6 +31,9 @@ class HttpServer: NSObject, DanmakuDelegate {
     private var server = Swifter.HttpServer()
     
 	@MainActor
+	private var dash = [String: String]()
+	
+	@MainActor
     private var unknownSessions = [WebSocketSession]()
 	
 	@MainActor
@@ -71,11 +74,18 @@ class HttpServer: NSObject, DanmakuDelegate {
             guard let url = request.parameters["url"],
                   let json = try? await self.decode(url),
                   let key = json.videos.first?.key,
-                  let data = json.iinaUrl(key, type: type)?.data(using: .utf8) else {
+                  let data = json.iinaURLScheme(key, type: type)?.data(using: .utf8) else {
                 return .badRequest(nil)
             }
             return HttpResponse.ok(.data(data))
         }
+		
+		server.get["/dash/**"] = { request -> HttpResponse in
+			let id = request.path.subString(from: "/dash/", to: ".mpd")
+			guard let content = await self.dash[id]?.data(using: .utf8) else { return .badRequest(.none) }
+			
+			return .ok(.data(content))
+		}
         
         server.get["/video"] = { request -> HttpResponse in
             let encoder = JSONEncoder()
@@ -238,6 +248,17 @@ class HttpServer: NSObject, DanmakuDelegate {
 		
         return json
     }
+	
+	@MainActor
+	func registerDash(_ bvid: String, content: String) -> String {
+		guard let address = server.listenAddressIPv4,
+				let port = try? server.port() else {
+			assert(false, "HttpServer can't register dash.")
+		}
+		
+		self.dash[bvid] = content
+		return "http://\(address):\(port)/dash/\(bvid).mpd"
+	}
 }
 
 extension HttpServer {
