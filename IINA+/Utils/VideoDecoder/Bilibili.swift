@@ -52,11 +52,27 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	}
 	
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		var re: YouGetJSON!
 		if SupportSites(url: url) == .bangumi {
-			try await getBangumi(url)
+			re = try await getBangumi(url)
 		} else {
-			try await getBilibili(url)
+			re = try await getBilibili(url)
 		}
+		
+		let ss = re.streams.filter {
+			$0.value.url != nil && $0.value.url != ""
+		}.max {
+			$0.value.quality < $1.value.quality
+		}
+		
+		if let ss {
+			re.streams.filter {
+				$0.value.quality > ss.value.quality
+			}.forEach {
+				re.streams[$0.key] = nil
+			}
+		}
+		return re
 	}
     
 // MARK: - Bilibili
@@ -780,7 +796,9 @@ struct BilibiliPlayInfo: Unmarshaling {
 		qualityDescription.forEach {
 			let id = $0.key
 			guard let video = dash.preferVideo(id) else {
-				yougetJson.streams[$0.value] = Stream(url: "")
+				var s = Stream(url: "")
+				s.quality = id
+				yougetJson.streams[$0.value] = s
 				return
 			}
 			
