@@ -98,6 +98,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
 		do {
 			return try await preferHTML ? r2() : r1()
 		} catch let error {
+			Log("\(error), fallback")
 			return try await preferHTML ? r1() : r2()
 		}
     }
@@ -192,9 +193,9 @@ class Bilibili: NSObject, SupportSiteProtocol {
         var yougetJson = yougetJson
         let cid = yougetJson.id
         
-        var allowFlv = true
-        var dashSymbol = true
-        var inner = false
+        let allowFlv = true
+		let dashSymbol = true
+		let inner = false
         
         let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dashAV1.rawValue + BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         

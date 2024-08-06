@@ -223,7 +223,6 @@ class MainViewController: NSViewController {
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        let proc = Processes.shared
         
         dataManager.requestData().forEach {
             $0.state = LiveState.none.raw
@@ -501,7 +500,6 @@ class MainViewController: NSViewController {
 		guard str.isUrl,
 			  let url = URL(string: str) else {
 			throw VideoGetError.invalidLink
-			return
 		}
 		
 		func decodeUrl() async throws {
