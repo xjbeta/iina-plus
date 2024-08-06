@@ -513,6 +513,8 @@ struct DouYinEnterData: Unmarshaling {
 		var urls: [String: String]
 		var roomId: String
 		
+		var qualities: [Qualitie]
+		
 		init(object: MarshaledObject) throws {
 			title = try object.value(for: "title")
 			
@@ -529,25 +531,59 @@ struct DouYinEnterData: Unmarshaling {
 			roomId = try object.value(for: "id_str")
 
 			urls = (try? object.value(for: "stream_url.flv_pull_url")) ?? [:]
-//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
+			qualities = (try? object.value(for: "stream_url.live_core_sdk_data.pull_data.options.qualities")) ?? []
+			
+			
+			#warning("FULL_HD1 only hls")
+			// https://live.douyin.com/208823316033
+			//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
 		}
 		
 		func write(to yougetJson: YouGetJSON) -> YouGetJSON {
 			var json = yougetJson
 			json.title = title
 
-
 			urls.map {
 				($0.key, $0.value.https())
 			}.sorted { v0, v1 in
 				v0.0 < v1.0
 			}.enumerated().forEach {
-				var stream = Stream(url: $0.element.1)
-				stream.quality = 999 - $0.offset
-				json.streams[$0.element.0] = stream
+				let u = $0.element.1
+				var stream = Stream(url: u)
+				
+				if let fn = URL(string: u)?.lastPathComponent,
+				   let q = qualities.first(where: { fn.subString(from: "_", to: ".").contains($0.sdkKey) }),
+				   !q.disable {
+					stream.quality = 900 + q.level
+					json.streams[q.name] = stream
+				} else {
+					stream.quality = 666 - $0.offset
+					json.streams[$0.element.0] = stream
+				}
 			}
 
 			return json
+		}
+	}
+	
+	struct Qualitie: Unmarshaling {
+		let name: String
+		let level: Int
+		let sdkKey: String
+		let disable: Bool
+		
+		init(object: MarshaledObject) throws {
+			level = try object.value(for: "level")
+			let sk: String = try object.value(for: "sdk_key")
+			disable = try object.value(for: "disable")
+			
+			if sk == "origin" {
+				name = "原画"
+				sdkKey = "or"
+			} else {
+				name = try object.value(for: "name")
+				sdkKey = sk
+			}
 		}
 	}
 	
