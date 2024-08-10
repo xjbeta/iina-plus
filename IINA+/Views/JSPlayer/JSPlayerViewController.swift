@@ -508,6 +508,12 @@ class JSPlayerViewController: NSViewController {
 		
 		webView.navigationDelegate = self
 		
+#if DEBUG
+		if #available(macOS 13.3, *) {
+			webView.isInspectable = true
+		}
+#endif
+		
         // Background Color
         view.wantsLayer = true
         view.layer?.backgroundColor = .black
