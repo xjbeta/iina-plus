@@ -254,6 +254,7 @@ class HttpServer: NSObject, DanmakuDelegate {
 		guard let address = server.listenAddressIPv4,
 				let port = try? server.port() else {
 			assert(false, "HttpServer can't register dash.")
+			return ""
 		}
 		
 		self.dash[bvid] = content
