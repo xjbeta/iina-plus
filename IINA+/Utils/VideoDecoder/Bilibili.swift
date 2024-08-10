@@ -52,24 +52,37 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	}
 	
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		var re: YouGetJSON!
 		if SupportSites(url: url) == .bangumi {
-			try await getBangumi(url)
+			re = try await getBangumi(url)
 		} else {
-			try await getBilibili(url)
+			re = try await getBilibili(url)
 		}
+		
+		let ss = re.streams.filter {
+			$0.value.url != nil && $0.value.url != ""
+		}.max {
+			$0.value.quality < $1.value.quality
+		}
+		
+		if let ss {
+			re.streams.filter {
+				$0.value.quality > ss.value.quality
+			}.forEach {
+				re.streams[$0.key] = nil
+			}
+		}
+		return re
 	}
     
 // MARK: - Bilibili
     
     func getBilibili(_ url: String) async throws -> YouGetJSON {
         setBilibiliQuality()
-        
-		let isDM = Processes.shared.iina.archiveType() != .normal
-        
-		
+
 		func r1() async throws -> YouGetJSON {
 			let json = try await bilibiliPrepareID(url)
-			return try await bilibiliPlayUrl(yougetJson: json, isDM)
+			return try await bilibiliPlayUrl(yougetJson: json)
 		}
 		
 		func r2() async throws -> YouGetJSON {
@@ -85,6 +98,7 @@ class Bilibili: NSObject, SupportSiteProtocol {
 		do {
 			return try await preferHTML ? r2() : r1()
 		} catch let error {
+			Log("\(error), fallback")
 			return try await preferHTML ? r1() : r2()
 		}
     }
@@ -174,21 +188,14 @@ class Bilibili: NSObject, SupportSiteProtocol {
     }
      
     func bilibiliPlayUrl(yougetJson: YouGetJSON,
-                         _ isDM: Bool = true,
                          _ isBangumi: Bool = false,
                          _ qn: Int = 132) async throws -> YouGetJSON {
         var yougetJson = yougetJson
         let cid = yougetJson.id
         
-        var allowFlv = true
-        var dashSymbol = true
-        var inner = false
-        
-        if !isDM {
-            allowFlv = true
-            dashSymbol = false
-            inner = false
-        }
+        let allowFlv = true
+		let dashSymbol = true
+		let inner = false
         
         let fnval = allowFlv ? dashSymbol ? inner ? BilibiliFnval.dashH265.rawValue : BilibiliFnval.dashAV1.rawValue + BilibiliFnval.dash8K.rawValue + BilibiliFnval.dolbyVideo.rawValue + BilibiliFnval.dolbyAudio.rawValue + BilibiliFnval.dash4K.rawValue + BilibiliFnval.hdr.rawValue + BilibiliFnval.dashH265.rawValue : BilibiliFnval.flv.rawValue : BilibiliFnval.mp4.rawValue
         
@@ -216,9 +223,11 @@ class Bilibili: NSObject, SupportSiteProtocol {
 		let key = isBangumi ? "result" : "data"
 		
 		
-		if let info: BilibiliPlayInfo = try? json.value(for: key) {
+		do {
+			let info: BilibiliPlayInfo = try json.value(for: key)
 			yougetJson = info.write(to: yougetJson)
-		} else {
+		} catch {
+			Log("Bilibili fallback simple play info \(error)")
 			let info: BilibiliSimplePlayInfo = try json.value(for: key)
 			yougetJson = info.write(to: yougetJson)
 		}
@@ -232,11 +241,9 @@ class Bilibili: NSObject, SupportSiteProtocol {
     func getBangumi(_ url: String) async throws -> YouGetJSON {
         setBilibiliQuality()
         
-		let isDM = Processes.shared.iina.archiveType() != .normal
 		let json = try await bilibiliPrepareID(url)
 		
-        return try await bilibiliPlayUrl(yougetJson: json, isDM, true)
-        
+        return try await bilibiliPlayUrl(yougetJson: json, true)
     }
     
     func bilibiliPrepareID(_ url: String) async throws -> YouGetJSON {
@@ -754,40 +761,9 @@ struct BilibiliUrl {
 
 
 struct BilibiliPlayInfo: Unmarshaling {
-    let videos: [VideoInfo]
-    let audios: [AudioInfo]?
-    let duration: Int
-    
-    struct VideoInfo: Unmarshaling {
-        var index = -1
-        let url: String
-        let id: Int
-        let bandwidth: Int
-        var description: String = ""
-        let backupUrl: [String]
-        let codecs: String
-        
-        init(object: MarshaledObject) throws {
-            url = try object.value(for: "baseUrl")
-            id = try object.value(for: "id")
-            bandwidth = try object.value(for: "bandwidth")
-            backupUrl = (try? object.value(for: "backupUrl")) ?? []
-            codecs = try object.value(for: "codecs")
-        }
-    }
-    
-    struct AudioInfo: Unmarshaling {
-        let url: String
-        let bandwidth: Int
-        let backupUrl: [String]
-        
-        init(object: MarshaledObject) throws {
-            url = try object.value(for: "baseUrl")
-            bandwidth = try object.value(for: "bandwidth")
-            backupUrl = (try? object.value(for: "backupUrl")) ?? []
-        }
-    }
-    
+	let dash: BilibiliDash
+	var qualityDescription = [Int: String]()
+	
     struct Durl: Unmarshaling {
         let url: String
         let backupUrls: [String]
@@ -801,9 +777,8 @@ struct BilibiliPlayInfo: Unmarshaling {
     }
     
     init(object: MarshaledObject) throws {
-        let videos: [VideoInfo] = try object.value(for: "dash.video")
-        audios = try? object.value(for: "dash.audio")
-        
+		dash = try object.value(for: "dash")
+		
         let acceptQuality: [Int] = try object.value(for: "accept_quality")
         let acceptDescription: [String] = try object.value(for: "accept_description")
         
@@ -811,69 +786,31 @@ struct BilibiliPlayInfo: Unmarshaling {
         acceptQuality.enumerated().forEach {
             descriptionDic[$0.element] = acceptDescription[$0.offset]
         }
-        
-        var newVideos = [Int: VideoInfo]()
 		
-		let preferVideos = videos.filter {
-			switch Preferences.shared.bilibiliCodec {
-			case 0:
-				return $0.codecs.starts(with: "av01") || $0.codecs.starts(with: "av1")
-			case 1:
-				return $0.codecs.starts(with: "hev")
-			default:
-				return $0.codecs.starts(with: "avc")
-			}
-		}
-		
-		acceptQuality.forEach { id in
-			let video = preferVideos.first {
-				$0.id == id
-			} ?? videos.filter {
-				$0.id == id
-			}.first {
-				$0.codecs.starts(with: "avc") ||
-				$0.codecs.starts(with: "hev") ||
-				$0.codecs.starts(with: "av01") ||
-				$0.codecs.starts(with: "av1")
-			}
-			guard var video = video else { return }
-			
-			let des = descriptionDic[video.id] ?? "unkonwn"
-			video.index = id
-			video.description = des
-
-			newVideos[id] = video
-		}
-
-        self.videos = newVideos.map {
-            $0.value
-        }
-        duration = try object.value(for: "dash.duration")
+		qualityDescription = descriptionDic
     }
     
     func write(to yougetJson: YouGetJSON) -> YouGetJSON {
         var yougetJson = yougetJson
-        yougetJson.duration = duration
+		yougetJson.duration = dash.duration
+		yougetJson.audio = dash.preferAudio()?.url ?? ""
         
-        videos.enumerated().forEach {
-            var urls = $0.element.backupUrl
-            urls.append($0.element.url)
-            urls = MBGA.update(urls)
-            
-            var stream = Stream(url: "")
-//            stream.quality = $0.element.bandwidth
-            stream.quality = $0.element.index
-            
-            stream.url = urls.removeFirst()
-            stream.src = urls
-            yougetJson.streams[$0.element.description] = stream
-        }
-        
-        if let audios = audios,
-           let audio = audios.max(by: { $0.bandwidth > $1.bandwidth }) {
-            yougetJson.audio = audio.url
-        }
-        
+		qualityDescription.forEach {
+			let id = $0.key
+			guard let video = dash.preferVideo(id) else {
+				var s = Stream(url: "")
+				s.quality = id
+				yougetJson.streams[$0.value] = s
+				return
+			}
+			
+			var stream = Stream(url: video.url)
+			stream.src = video.backupUrl
+			stream.quality = $0.key
+			stream.dashContent = dash.dashContent($0.key)
+			yougetJson.streams[$0.value] = stream
+		}
+		
         return yougetJson
     }
 }

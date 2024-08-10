@@ -68,6 +68,7 @@ class SidebarViewController: NSViewController {
 			do {
 				let _ = try await Processes.shared.videoDecoder.bilibili.isLogin()
 			} catch let error {
+				Log(error)
 				biliStatusChanged(false)
 			}
 		}

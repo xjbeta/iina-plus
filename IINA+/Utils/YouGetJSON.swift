@@ -17,7 +17,6 @@ struct DanmakuPluginOptions: Encodable {
     let rawUrl: String
     let mpvScript: String
     let port: Int
-    let urls: [String]
     
     var type: Int = PluginOptionsType.none.rawValue
     
@@ -30,7 +29,6 @@ struct DanmakuPluginOptions: Encodable {
     
     init(rawUrl: String,
          mpvScript: String,
-         urls: [String],
          qualitys: [String],
          lines: [String],
          currentQuality: Int,
@@ -38,7 +36,6 @@ struct DanmakuPluginOptions: Encodable {
          port: Int) {
         self.rawUrl = rawUrl
         self.mpvScript = mpvScript
-        self.urls = urls
         self.qualitys = qualitys
         self.lines = lines
         self.currentQuality = currentQuality
@@ -75,37 +72,50 @@ struct YouGetJSON: Unmarshaling, Codable {
     }
 
     var site: SupportSites = .unsupported
+	
+	var mpvDashOptions: [String] {
+		var args = mpvOptions
+		switch site {
+		case .bilibili, .bangumi:
+			args.removeAll {
+				$0.starts(with: MPVOption.ProgramBehavior.ytdl)
+				|| $0.starts(with: MPVOption.Audio.audioFile)
+			}
+			args.append("\(MPVOption.ProgramBehavior.ytdl)=yes")
+		default:
+			break
+		}
+		return args
+	}
     
     var mpvOptions: [String] {
-        get {
-            // Fix title
-            let t = title.replacingOccurrences(of: "\"", with: "''")
-            var args = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(t)"]
-            switch site {
-            case .bilibili, .bangumi:
-                args.append(contentsOf: [
-                    "\(MPVOption.ProgramBehavior.ytdl)=no",
-                    "\(MPVOption.Network.referrer)=https://www.bilibili.com/"
-                ])
-                if audio != "" {
-                    args.append("\(MPVOption.Audio.audioFile)=\(audio)")
-                }
-            case .biliLive:
-                args.append(contentsOf: [
-                    "\(MPVOption.ProgramBehavior.ytdl)=no",
-                    "\(MPVOption.Network.referrer)=https://live.bilibili.com/"
-                ])
-			case .huya:
-				args.append(contentsOf: [
-					"\(MPVOption.ProgramBehavior.ytdl)=no",
-					"\(MPVOption.Network.referrer)=https://www.huya.com/",
-					"\(MPVOption.Network.userAgent)=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15"
-				])
-            default:
-                args.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
-            }
-            return args
-        }
+		// Fix title
+		let t = title.replacingOccurrences(of: "\"", with: "''")
+		var args = ["\(MPVOption.Miscellaneous.forceMediaTitle)=\(t)"]
+		switch site {
+		case .bilibili, .bangumi:
+			args.append(contentsOf: [
+				"\(MPVOption.ProgramBehavior.ytdl)=no",
+				"\(MPVOption.Network.referrer)=https://www.bilibili.com/"
+			])
+			if audio != "" {
+				args.append("\(MPVOption.Audio.audioFile)=\(audio)")
+			}
+		case .biliLive:
+			args.append(contentsOf: [
+				"\(MPVOption.ProgramBehavior.ytdl)=no",
+				"\(MPVOption.Network.referrer)=https://live.bilibili.com/"
+			])
+		case .huya:
+			args.append(contentsOf: [
+				"\(MPVOption.ProgramBehavior.ytdl)=no",
+				"\(MPVOption.Network.referrer)=https://www.huya.com/",
+				"\(MPVOption.Network.userAgent)=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15"
+			])
+		default:
+			args.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
+		}
+		return args
     }
     
     enum CodingKeys: String, CodingKey {
@@ -128,16 +138,14 @@ struct YouGetJSON: Unmarshaling, Codable {
         streams = ["url": Stream(url: url)]
     }
     
-    func iinaUrl(_ key: String, type: IINAUrlType) -> String? {
+    func iinaURLScheme(_ key: String, type: IINAUrlType) -> String? {
         switch type {
-        case .none:
-            return nil
-        case .normal:
+		case .normal, .plugin:
             return iinaDefaultUrl(key)
         case .danmaku:
             return danmakuUrl(key)
-        case .plugin:
-            return iinaPluginUrl(key)
+		case .none:
+			return nil
         }
     }
     
@@ -168,15 +176,19 @@ struct YouGetJSON: Unmarshaling, Codable {
     }
     
     func iinaDefaultUrl(_ key: String) -> String? {
-        guard let url = videoUrl(key) else {
+        guard let url = videoUrl(key, forDash: true),
+			  let argsStr = iinaPlusArgsString(key) else {
             return nil
         }
         
         let u = "iina://open?"
-        var args = mpvOptions.map {
+		let opts = url.contains(".mpd") ? mpvDashOptions : mpvOptions
+        var args = opts.map {
             "mpv_" + $0
         }
         args.insert("url=\(url)", at: 0)
+		args.append("mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)")
+		
         args = args.compactMap { kvs -> String? in
             let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
             guard kv.count == 2 else {
@@ -191,35 +203,10 @@ struct YouGetJSON: Unmarshaling, Codable {
         return u + args.joined(separator: "&")
     }
     
-    func iinaPluginUrl(_ key: String) -> String? {
-        guard let argsStr = iinaPlusArgsString(key) else {
-            return nil
-        }
-        
-        let u = "iina://open?"
-        
-        var args = [
-			"new_window=1",
-            "url=-",
-            "mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)"
-        ]
-        
-        args = args.compactMap { kvs -> String? in
-            let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
-            guard kv.count == 2 else {
-                return kvs
-            }
-            
-            guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
-            let k = kv[0]
-            return "\(k)=\(v)"
-        }
-        
-        return u + args.joined(separator: "&")
-    }
-    
-    func videoUrl(_ key: String) -> String? {
+	func videoUrl(_ key: String, forDash: Bool = false) -> String? {
         switch site {
+		case .bilibili where forDash, .bangumi where forDash:
+			return streams[key]?.dashUrl
         case .bilibili, .bangumi, .biliLive:
             return streams[key]?.url
         case .local:
@@ -253,7 +240,6 @@ struct YouGetJSON: Unmarshaling, Codable {
         var opts = DanmakuPluginOptions(
             rawUrl: rawUrl,
             mpvScript: mpvOptionsToScriptValue(mpvOptions),
-            urls: urls,
             qualitys: qualitys,
             lines: (0..<lineCount).map {
                 "Line \($0 + 1)"
@@ -356,7 +342,10 @@ struct Stream: Unmarshaling, Codable {
     var videoProfile: String?
     var size: Int64?
     var src: [String] = []
-    
+	
+	var dashContent: String?
+	var dashUrl: String?
+	
     init(object: MarshaledObject) throws {
         let srcArray: [String]? = try? object.value(for: "src")
         src = srcArray ?? []

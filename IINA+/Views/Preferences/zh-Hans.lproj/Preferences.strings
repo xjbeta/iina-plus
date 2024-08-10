@@ -70,8 +70,8 @@
 /* Class = "NSTabViewItem"; label = "Item 2"; ObjectID = "qqF-RM-1Ix"; */
 "qqF-RM-1Ix.label" = "Item 2";
 
-/* Class = "NSButtonCell"; title = "Log in"; ObjectID = "tFa-ZK-G6I"; */
-"tFa-ZK-G6I.title" = "登陆";
+/* Class = "NSButtonCell"; title = "Log in Bilibili"; ObjectID = "tFa-ZK-G6I"; */
+"tFa-ZK-G6I.title" = "登陆 Bilibili";
 
 /* Class = "NSTextFieldCell"; title = "Can't Connect to Pilipili."; ObjectID = "vjJ-22-KsL"; */
 "vjJ-22-KsL.title" = "无法连接到 Pilipili.";
@@ -156,3 +156,6 @@
 
 /* Class = "NSTextFieldCell"; title = "1. enable IINA plugin system"; ObjectID = "naV-oK-pw1"; */
 "naV-oK-pw1.title" = "1. 开启IINA 插件系统";
+
+/* Class = "NSTabViewItem"; label = "About"; ObjectID = "Mei-9r-Dcc"; */
+"Mei-9r-Dcc.label" = "关于";

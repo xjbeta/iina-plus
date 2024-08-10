@@ -229,23 +229,20 @@ addXMLRequestCallback(function (xhr) {
 	}
 	
 	
+	@MainActor
 	func prepareArgs() async throws -> [String: String] {
         deleteDouYinCookies()
 		
-		let config = await webviewConfig
-		await MainActor.run {
-			storageDic.removeAll()
-			cookiesTaskState = .preparing
-		}
-		webView = await WKWebView(frame: .zero, configuration: config)
+		let config = webviewConfig
+		storageDic.removeAll()
+		cookiesTaskState = .preparing
+		webView = WKWebView(frame: .zero, configuration: config)
 		guard let webView else { throw VideoGetError.douyuSignError }
 		Log("DouYin Cookies start.")
 		
 #if DEBUG
-		await MainActor.run {
-			if #available(macOS 13.3, *) {
-				webView.isInspectable = true
-			}
+		if #available(macOS 13.3, *) {
+			webView.isInspectable = true
 		}
 #endif
 		
@@ -256,13 +253,13 @@ addXMLRequestCallback(function (xhr) {
 			}
 		}
 		
-		await webView.load(.init(url: douyinEmptyURL))
+		webView.load(.init(url: douyinEmptyURL))
 		
 		var loadingCount = 0
 		while loadingCount >= 0 {
 			loadingCount += 1
 			try await Task.sleep(nanoseconds: 330_000_000)
-			let isLoading = await webView.isLoading
+			let isLoading = webView.isLoading
 			guard !isLoading,
 				  let title = try await webView.evaluateJavaScriptAsync("document.title") as? String else {
 				continue
@@ -272,7 +269,7 @@ addXMLRequestCallback(function (xhr) {
 				Log("DouYin Cookies timeout, check cookies.")
 				loadingCount = -1
 				break
-			} else if await cookiesTaskState != .preparing {
+			} else if cookiesTaskState != .preparing {
 				Log("DouYin Cookies webcastUpdated.")
 				loadingCount = -2
 				break
@@ -283,7 +280,7 @@ addXMLRequestCallback(function (xhr) {
 			} else if title.contains("验证") {
 				Log("Douyin cookies web reload.")
 				await self.deleteCookies()
-				await webView.load(.init(url: self.douyinEmptyURL))
+				webView.load(.init(url: self.douyinEmptyURL))
 			}
 		}
 		
@@ -291,16 +288,13 @@ addXMLRequestCallback(function (xhr) {
 			let _ = await noti
 		}
 		
-		await MainActor.run {
-			cookiesTaskState = .checking
-			Log("Douyin cookies checking.")
-		}
+		cookiesTaskState = .checking
+		Log("Douyin cookies checking.")
 		
 		let cookies = try await loadCookies()
-		await MainActor.run {
-			cookiesTaskState = .finish
-			Log("Douyin cookies finish.")
-		}
+		cookiesTaskState = .finish
+		Log("Douyin cookies finish.")
+		
 		await deinitWebView()
 		
 		return cookies
@@ -393,9 +387,11 @@ addXMLRequestCallback(function (xhr) {
 	func webcastUpdatedNotification() async -> Notification {
 		await withCheckedContinuation { continuation in
 			dyFinishNotification = NotificationCenter.default.addObserver(forName: .douyinWebcastUpdated, object: nil, queue: nil) { n in
-				if let noti = self.dyFinishNotification {
-					NotificationCenter.default.removeObserver(noti)
+				guard let noti = self.dyFinishNotification else {
+					return
 				}
+				NotificationCenter.default.removeObserver(noti)
+				self.dyFinishNotification = nil
 				continuation.resume(returning: n)
 			}
 		}
@@ -517,6 +513,8 @@ struct DouYinEnterData: Unmarshaling {
 		var urls: [String: String]
 		var roomId: String
 		
+		var qualities: [Qualitie]
+		
 		init(object: MarshaledObject) throws {
 			title = try object.value(for: "title")
 			
@@ -533,25 +531,59 @@ struct DouYinEnterData: Unmarshaling {
 			roomId = try object.value(for: "id_str")
 
 			urls = (try? object.value(for: "stream_url.flv_pull_url")) ?? [:]
-//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
+			qualities = (try? object.value(for: "stream_url.live_core_sdk_data.pull_data.options.qualities")) ?? []
+			
+			
+			#warning("FULL_HD1 only hls")
+			// https://live.douyin.com/208823316033
+			//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
 		}
 		
 		func write(to yougetJson: YouGetJSON) -> YouGetJSON {
 			var json = yougetJson
 			json.title = title
 
-
 			urls.map {
 				($0.key, $0.value.https())
 			}.sorted { v0, v1 in
 				v0.0 < v1.0
 			}.enumerated().forEach {
-				var stream = Stream(url: $0.element.1)
-				stream.quality = 999 - $0.offset
-				json.streams[$0.element.0] = stream
+				let u = $0.element.1
+				var stream = Stream(url: u)
+				
+				if let fn = URL(string: u)?.lastPathComponent,
+				   let q = qualities.first(where: { fn.subString(from: "_", to: ".").contains($0.sdkKey) }),
+				   !q.disable {
+					stream.quality = 900 + q.level
+					json.streams[q.name] = stream
+				} else {
+					stream.quality = 666 - $0.offset
+					json.streams[$0.element.0] = stream
+				}
 			}
 
 			return json
+		}
+	}
+	
+	struct Qualitie: Unmarshaling {
+		let name: String
+		let level: Int
+		let sdkKey: String
+		let disable: Bool
+		
+		init(object: MarshaledObject) throws {
+			level = try object.value(for: "level")
+			let sk: String = try object.value(for: "sdk_key")
+			disable = try object.value(for: "disable")
+			
+			if sk == "origin" {
+				name = "原画"
+				sdkKey = "or"
+			} else {
+				name = try object.value(for: "name")
+				sdkKey = sk
+			}
 		}
 	}
 	

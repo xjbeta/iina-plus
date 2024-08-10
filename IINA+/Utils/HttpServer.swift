@@ -31,6 +31,9 @@ class HttpServer: NSObject, DanmakuDelegate {
     private var server = Swifter.HttpServer()
     
 	@MainActor
+	private var dash = [String: String]()
+	
+	@MainActor
     private var unknownSessions = [WebSocketSession]()
 	
 	@MainActor
@@ -71,11 +74,18 @@ class HttpServer: NSObject, DanmakuDelegate {
             guard let url = request.parameters["url"],
                   let json = try? await self.decode(url),
                   let key = json.videos.first?.key,
-                  let data = json.iinaUrl(key, type: type)?.data(using: .utf8) else {
+                  let data = json.iinaURLScheme(key, type: type)?.data(using: .utf8) else {
                 return .badRequest(nil)
             }
             return HttpResponse.ok(.data(data))
         }
+		
+		server.get["/dash/**"] = { request -> HttpResponse in
+			let id = request.path.subString(from: "/dash/", to: ".mpd")
+			guard let content = await self.dash[id]?.data(using: .utf8) else { return .badRequest(.none) }
+			
+			return .ok(.data(content))
+		}
         
         server.get["/video"] = { request -> HttpResponse in
             let encoder = JSONEncoder()
@@ -155,29 +165,23 @@ class HttpServer: NSObject, DanmakuDelegate {
         }
         
         danmukuObservers.append(Preferences.shared.observe(\.danmukuFontFamilyName, options: .new, changeHandler: { _, _ in
-			Task {
-				await MainActor.run {
-					self.connectedItems.forEach {
-						$0.loadCustomFont()
-					}
+			Task { @MainActor in
+				self.connectedItems.forEach {
+					$0.loadCustomFont()
 				}
 			}
         }))
         danmukuObservers.append(Preferences.shared.observe(\.dmSpeed, options: .new, changeHandler: { _, _ in
-			Task {
-				await MainActor.run {
-					self.connectedItems.forEach {
-						$0.customDMSpeed()
-					}
+			Task { @MainActor in
+				self.connectedItems.forEach {
+					$0.customDMSpeed()
 				}
 			}
         }))
         danmukuObservers.append(Preferences.shared.observe(\.dmOpacity, options: .new, changeHandler: { _, _ in
-			Task {
-				await MainActor.run {
-					self.connectedItems.forEach {
-						$0.customDMOpdacity()
-					}
+			Task { @MainActor in
+				self.connectedItems.forEach {
+					$0.customDMOpdacity()
 				}
 			}
         }))
@@ -244,107 +248,111 @@ class HttpServer: NSObject, DanmakuDelegate {
 		
         return json
     }
+	
+	@MainActor
+	func registerDash(_ bvid: String, content: String) -> String {
+		guard let address = server.listenAddressIPv4,
+				let port = try? server.port() else {
+			assert(false, "HttpServer can't register dash.")
+			return ""
+		}
+		
+		self.dash[bvid] = content
+		return "http://\(address):\(port)/dash/\(bvid).mpd"
+	}
 }
 
 extension HttpServer {
 	func websocketConnected(_ session: WebSocketSession) {
 		Log("Websocket client connected.")
-		Task {
-			await MainActor.run {
-				unknownSessions.append(session)
-			}
+		Task { @MainActor in
+			unknownSessions.append(session)
 		}
 	}
 	
 	func websocketDisconnected(_ session: WebSocketSession) {
 		Log("Websocket client disconnected.")
 		
-		Task {
-			await MainActor.run {
-				connectedItems.removeAll { $0.session == session}
-				let items = self.connectedItems
-				danmakus.removeAll { dm in
-					let remove = !items.contains(where: { $0.url == dm.url })
-					if remove {
-						dm.stop()
-					}
-					return remove
+		Task { @MainActor in
+			connectedItems.removeAll { $0.session == session}
+			let items = self.connectedItems
+			danmakus.removeAll { dm in
+				let remove = !items.contains(where: { $0.url == dm.url })
+				if remove {
+					dm.stop()
 				}
-				
-				Log("Danmaku list: \(danmakus.map({ $0.url }))")
+				return remove
 			}
+			
+			Log("Danmaku list: \(danmakus.map({ $0.url }))")
 		}
 	}
 	
 	func websocketReceived(_ session: WebSocketSession, text: String) {
-		Task {
-			await MainActor.run {
-				var clickType: IINAUrlType = .none
-				
-				let ws: DanmakuWS? = {
-					if text.starts(with: "iinaDM://") {
-						clickType = .plugin
-						var v = 0
-						var u = String(text.dropFirst("iinaDM://".count))
-						
-						if u.starts(with: "v=") {
-							let vu = u.split(separator: "&", maxSplits: 1)
-							guard vu.count == 2 else { return nil }
-							v = Int(vu[0].dropFirst(2)) ?? 0
-							u = String(vu[1])
-						}
-						
-						var re = DanmakuWS(id: u,
-										   site: .init(url: u),
-										   url: u,
-										   session: session)
-						re.version = v
-						return re
-					} else if text.starts(with: "iinaWebDM://") {
-						let hex = String(text.dropFirst("iinaWebDM://".count))
-						clickType = .danmaku
-						guard let ids = String(data: Data(hex: hex), encoding: .utf8)?.split(separator: "👻").map(String.init),
-							  ids.count == 2 else { return nil }
-						let u = ids[1]
-						
-						var re = DanmakuWS(id: ids[0],
-										   site: .init(url: u),
-										   url: u,
-										   session: session)
-						re.version = 1
-						return re
-					} else {
-						return nil
-					}
-				}()
-				
-				
-				
-				guard unknownSessions.contains(session),
-					  let ws = ws else {
-					return
-				}
-				
-				switch clickType {
-				case .danmaku:
-					ws.loadCustomFont()
-					ws.customDMSpeed()
-					ws.customDMOpdacity()
+		Task { @MainActor in
+			var clickType: IINAUrlType = .none
+			
+			let ws: DanmakuWS? = {
+				if text.starts(with: "iinaDM://") {
+					clickType = .plugin
+					var v = 0
+					var u = String(text.dropFirst("iinaDM://".count))
 					
-					if [.bilibili, .bangumi, .b23].contains(ws.site) {
-						ws.loadFilters()
-						ws.loadXMLDM()
-						session.socket.close()
-					} else if ws.site != .unsupported {
-						loadNewDanmaku(ws)
-						connectedItems.append(ws)
+					if u.starts(with: "v=") {
+						let vu = u.split(separator: "&", maxSplits: 1)
+						guard vu.count == 2 else { return nil }
+						v = Int(vu[0].dropFirst(2)) ?? 0
+						u = String(vu[1])
 					}
-				case .plugin where [.unsupported, .bangumi, .bilibili, .b23].contains(ws.site):
+					
+					var re = DanmakuWS(id: u,
+									   site: .init(url: u),
+									   url: u,
+									   session: session)
+					re.version = v
+					return re
+				} else if text.starts(with: "iinaWebDM://") {
+					let hex = String(text.dropFirst("iinaWebDM://".count))
+					clickType = .danmaku
+					guard let ids = String(data: Data(hex: hex), encoding: .utf8)?.split(separator: "👻").map(String.init),
+						  ids.count == 2 else { return nil }
+					let u = ids[1]
+					
+					var re = DanmakuWS(id: ids[0],
+									   site: .init(url: u),
+									   url: u,
+									   session: session)
+					re.version = 1
+					return re
+				} else {
+					return nil
+				}
+			}()
+			
+			guard unknownSessions.contains(session),
+				  let ws = ws else {
+				return
+			}
+			
+			switch clickType {
+			case .danmaku:
+				ws.loadCustomFont()
+				ws.customDMSpeed()
+				ws.customDMOpdacity()
+				
+				if [.bilibili, .bangumi, .b23].contains(ws.site) {
+					ws.loadFilters()
+					ws.loadXMLDM()
+					session.socket.close()
+				} else if ws.site != .unsupported {
 					loadNewDanmaku(ws)
 					connectedItems.append(ws)
-				default:
-					break
 				}
+			case .plugin where ![.unsupported, .bangumi, .bilibili, .b23].contains(ws.site):
+				loadNewDanmaku(ws)
+				connectedItems.append(ws)
+			default:
+				break
 			}
 		}
 	}

@@ -10,11 +10,6 @@ import Cocoa
 
 class IINAApp: NSObject {
 	
-	let internalPluginVersion = "0.1.8"
-	let internalPluginBuild = 5
-	
-	let minIINABuild = 135
-	
 	enum PluginState {
 		case ok(String)
 		case needsUpdate(PluginInfo)
@@ -45,14 +40,32 @@ class IINAApp: NSObject {
 		}
 	}
 	
-	func buildVersion() -> Int {
+	let internalPluginVersion = "0.1.9"
+	let internalPluginBuild = 6
+	
+	let minIINABuild = 135
+	
+	var buildVersion: Int = 0
+	var archiveType: IINAUrlType = .none
+	
+	override init() {
+		super.init()
+		updateIINAState()
+	}
+	
+	func updateIINAState() {
+		buildVersion = getBuildVersion()
+		archiveType = getArchiveType()
+	}
+	
+	func getBuildVersion() -> Int {
 		let b = Bundle(path: "/Applications/IINA.app")
 		let build = b?.infoDictionary?["CFBundleVersion"] as? String ?? ""
 		return Int(build) ?? 0
 	}
 	
-	func archiveType() -> IINAUrlType {
-		let build = buildVersion()
+	func getArchiveType() -> IINAUrlType {
+		let build = buildVersion
 		
 		let b = Bundle(path: "/Applications/IINA.app")
 		guard let version = b?.infoDictionary?["CFBundleShortVersionString"] as? String else {
@@ -63,7 +76,12 @@ class IINAApp: NSObject {
 		} else if version.contains("plugin") {
 			return .plugin
 		} else if build >= minIINABuild {
-			return .plugin
+			switch pluginState() {
+			case .isDev, .ok(_):
+				return .plugin
+			default:
+				break
+			}
 		}
 		return .normal
 	}

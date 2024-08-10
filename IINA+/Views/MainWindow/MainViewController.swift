@@ -223,7 +223,6 @@ class MainViewController: NSViewController {
     // MARK: - Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        let proc = Processes.shared
         
         dataManager.requestData().forEach {
             $0.state = LiveState.none.raw
@@ -421,6 +420,8 @@ class MainViewController: NSViewController {
 					s += NSLocalizedString("VideoGetError.notSupported", comment: "the website is not supported.")
 				case VideoGetError.needVip:
 					s += NSLocalizedString("VideoGetError.needVip", comment: "need vip.")
+				case VideoGetError.needLogin:
+					s += NSLocalizedString("VideoGetError.needLogin", comment: "need login.")
 				default:
 					s += NSLocalizedString("VideoGetError.default", comment: "something went wrong.")
 				}
@@ -499,7 +500,6 @@ class MainViewController: NSViewController {
 		guard str.isUrl,
 			  let url = URL(string: str) else {
 			throw VideoGetError.invalidLink
-			return
 		}
 		
 		func decodeUrl() async throws {
@@ -664,8 +664,8 @@ class MainViewController: NSViewController {
 		
 		guard !pref.enableFlvjs,
 			  pref.livePlayer == .iina,
-			  proc.iina.archiveType() == .plugin else {
-			proc.openWithPlayer(yougetJSON, key)
+			  proc.iina.archiveType == .plugin else {
+			try proc.openWithPlayer(yougetJSON, key)
 			return
 		}
 		
@@ -686,12 +686,12 @@ class MainViewController: NSViewController {
 			showInstallAlert()
 		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
 			Log("Open result with plugin")
-			proc.openWithPlayer(yougetJSON, key)
+			try proc.openWithPlayer(yougetJSON, key)
 		case .needsInstall, .multiple:
 			Log("Open result failed, pluginNotFound.")
 			showInstallAlert()
 		case .error(let error):
-			Log(error)
+			throw error
 		}
 	}
     

@@ -7,71 +7,49 @@
 //
 
 import Cocoa
+import Semaphore
 
 actor DouyinCookiesManager {
 
-	var cookies = [String: String]()
-	
-	var cookiesString: String {
-		get {
-			cookies.map {
-				"\($0.key)=\($0.value)"
-			}.joined(separator: ";")
-		}
+	private var _cookies = [String: String]()
+	var cookies: [String: String] {
+		_cookies
 	}
 	
-	private var refreshCookies: Task<[String: String], Error>?
+	var cookiesString: String {
+		cookies.map {
+			"\($0.key)=\($0.value)"
+		}.joined(separator: ";")
+	}
 	
+	private var refreshCookies: Task<[String: String], Error>
 	private let prepareArgs: (() async throws -> [String: String])
 	
-	private var lock = NSLock()
+	private let semaphore = AsyncSemaphore(value: 1)
 	
 	init(prepareArgs: @escaping (() async throws -> [String: String])) {
 		self.prepareArgs = prepareArgs
-	}
-	
-	
-	func initCookies() async throws -> [String: String] {
-		try await withCheckedThrowingContinuation { continuation in
-			lock.lock()
-			defer { lock.unlock() }
-			
-			Task {
-				do {
-					if let handle = refreshCookies {
-						let cookies = try await handle.value
-						continuation.resume(returning: cookies)
-						return
-					}
-					
-					if cookies.count > 0 {
-						continuation.resume(returning: cookies)
-						return
-					}
-					
-					let task = Task { () throws -> [String: String] in
-						defer {
-							self.refreshCookies = nil
-						}
-						return try await prepareArgs()
-					}
-
-					self.refreshCookies = task
-					cookies = try await task.value
-					
-					continuation.resume(returning: cookies)
-				} catch {
-					continuation.resume(throwing: error)
-				}
-			}
+		
+		refreshCookies = Task { () throws -> [String: String] in
+			try await prepareArgs()
 		}
 	}
 	
+	func initCookies() async throws -> [String: String] {
+		await semaphore.wait()
+		defer { semaphore.signal() }
+		
+		if cookies.count > 0 {
+			return cookies
+		}
+		return try await refreshCookies.value
+	}
+	
 	func setCookies(_ cookies: [String: String]) async {
-		self.cookies = cookies
+		_cookies = cookies
 	}
 	
 	func removeAll() async {
-		cookies.removeAll()
+		_cookies.removeAll()
 	}
 }
