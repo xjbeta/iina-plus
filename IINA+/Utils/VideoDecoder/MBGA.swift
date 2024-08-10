@@ -25,7 +25,9 @@ class MBGA: NSObject {
     }
     
     static func update(_ urls: [String]) -> [String] {
-		urls.sorted { u1, u2 in
+		var urls: [String] = Array(Set(urls))
+		
+		return urls.sorted { u1, u2 in
 			cdnLevel(for: u1).rawValue < cdnLevel(for: u2).rawValue
 		}
 		
@@ -54,11 +56,11 @@ class MBGA: NSObject {
 		guard let uc = URLComponents(string: url),
               let host = uc.host else { return .mcdn }
         
-        if host.hasSuffix(".mcdn.bilivideo.cn") {
+        if host.contains(".mcdn.bilivideo.cn") {
             return .mcdn
-        } else if host.hasSuffix(".szbdyd.com") {
+        } else if host.contains(".szbdyd.com") {
             return .pcdn
-        } else if host.hasSuffix("bilivideo.com") && host.hasPrefix("up") {
+        } else if host.contains("bilivideo.com") && host.hasPrefix("up") {
             return .mirror
         } else {
             return .cache

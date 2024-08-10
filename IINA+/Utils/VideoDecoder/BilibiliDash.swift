@@ -43,8 +43,6 @@ struct BilibiliDash: Unmarshaling {
 		
 		init(object: MarshaledObject) throws {
 			id = try object.value(for: "id")
-			url = try object.value(for: ["baseUrl", "base_url"])
-			backupUrl = (try? object.value(for: ["backupUrl", "backup_url"])) ?? []
 			bandwidth = try object.value(for: "bandwidth")
 			mimeType = try object.value(for: ["mimeType", "mime_type"])
 			codecs = try object.value(for: "codecs")
@@ -56,6 +54,19 @@ struct BilibiliDash: Unmarshaling {
 			startWithSap = try object.value(for: ["startWithSap", "start_with_sap", "startWithSAP"])
 			segmentBase = try object.value(for: ["SegmentBase", "segment_base"])
 //			["SegmentBase", "segment_base"]
+			
+			
+			var urls = [String]()
+			urls.append(try object.value(for: ["baseUrl", "base_url"]))
+			urls.append(contentsOf: (try? object.value(for: ["backupUrl", "backup_url"])) ?? [])
+			urls = MBGA.update(urls)
+			
+			guard urls.count > 0 else {
+				throw VideoGetError.invalidLink
+			}
+			
+			url = urls.removeFirst()
+			backupUrl = urls
 		}
 		
 		struct SegmentBase: Unmarshaling {
@@ -140,15 +151,9 @@ struct BilibiliDash: Unmarshaling {
 				attributes: attributes
 			)
 			
-			var urls = backupUrl
-			urls.append(url)
-			urls = MBGA.update(urls)
-			
-			let url = urls.first?.replacingOccurrences(of: "&", with: "&amp;")
-			
 			let baseURLElement = XMLElement(
 				name: "BaseURL",
-				stringValue: url
+				stringValue: url.replacingOccurrences(of: "&", with: "&amp;")
 			)
 			
 			representationElement.addChild(baseURLElement)
