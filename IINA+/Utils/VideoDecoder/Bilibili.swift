@@ -16,28 +16,31 @@ class Bilibili: NSObject, SupportSiteProtocol {
 	
 	let bangumiUA = "Mozilla/5.0 (X11; Linux x86_64; rv:38.0) Gecko/20100101 Firefox/38.0 Iceweasel/38.2.1"
 	
+	struct BangumiID {
+		let epId: Int
+		let seasonId: Int
+	}
+	
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		let isBangumi = SupportSites(url: url) == .bangumi
-		let data = try await getBilibiliHTMLDatas(url, isBangumi: isBangumi)
 		
 		if isBangumi {
+			let ids = try await getBangumiId(url)
+			let list = try await getBangumiList(url, ids: ids)
 			
-			
-			// 				decode bangumiData if biliUA
-			//				let tt = try JSONParser.JSONObjectWithData($0.bangumiData)
-			//				let queries: [JSONObject] = try tt.value(for: "props.pageProps.dehydratedState.queries")
-			//				if let obj: JSONObject = try? queries.first?.value(for: "state.data") {
-			//					return try BangumiInfo(object: obj)
-			//				}
-			let binfo = try BangumiInfo(object: try JSONParser.JSONObjectWithData(data.initialStateData))
+			guard let ep = list.episodes.first(where: {
+				$0.id == ids.epId
+			}) else { throw VideoGetError.notFountData }
 			
 			var info = BilibiliInfo()
 			info.site = .bangumi
-			info.title = binfo.mediaInfo.title
-			info.cover = binfo.mediaInfo.squareCover
+			info.title = ep.titles()
+			info.cover = ep.cover
 			info.isLiving = true
 			return info
 		} else {
+			let data = try await getBilibiliHTMLDatas(url)
+			
 			let initialStateJson: JSONObject = try JSONParser.JSONObjectWithData(data.initialStateData)
 			
 			var info = BilibiliInfo()
@@ -110,7 +113,15 @@ class Bilibili: NSObject, SupportSiteProtocol {
 
 		let re = try await AF.request(url, headers: headers).serializingString().value
 		
-		let playInfoData = re.subString(from: "window.__playinfo__=", to: "</script>").data(using: .utf8) ?? Data()
+		let playinfoStrig = {
+			var s = re.subString(from: "window.__playinfo__=", to: "</script>")
+			if s == "" {
+				s = re.subString(from: "const playurlSSRData = ", to: "\n")
+			}
+			return s
+		}()
+		
+		let playInfoData = playinfoStrig.data(using: .utf8) ?? Data()
 		let initialStateData = re.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
 		let bangumiData = re.subString(from: "<script id=\"__NEXT_DATA__\" type=\"application/json\">", to: "</script>").data(using: .utf8) ?? Data()
 		
@@ -273,19 +284,19 @@ class Bilibili: NSObject, SupportSiteProtocol {
         case .bangumi:
             json.site = .bangumi
 			let list = try await getBangumiList(url)
-			var ep: BangumiInfo.BangumiEp? {
+			var ep: BangumiEpList.BangumiEp? {
 				if bUrl.id.prefix(2) == "ss" {
-					return list.epList.first
+					return list.episodes.first
 				} else {
-					return list.epList.first(where: { $0.id == Int(bUrl.id.dropFirst(2)) })
+					return list.episodes.first(where: { $0.id == Int(bUrl.id.dropFirst(2)) })
 				}
 			}
 			guard let s = ep else { throw VideoGetError.notFountData }
 
 			json.bvid = s.bvid
 			json.id = s.cid
-			if list.epList.count == 1 {
-				json.title = list.title
+			if list.episodes.count == 1 {
+				json.title = list.episodes.first?.title ?? list.episodes.first?.longTitle ?? ""
 			} else {
 				let title = [json.title,
 							 s.title,
@@ -414,13 +425,31 @@ class Bilibili: NSObject, SupportSiteProtocol {
 			return [("", infos)]
 		}
     }
+	
+	func getBangumiId(_ url: String) async throws -> BangumiID {
+		let data = try await getBilibiliHTMLDatas(url, isBangumi: true).playInfoData
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		let epid: Int = try json.value(for: "result.play_view_business_info.episode_info.ep_id")
+		let sid: Int = try json.value(for: "result.play_view_business_info.season_info.season_id")
+		return BangumiID(epId: epid, seasonId: sid)
+	}
     
-    func getBangumiList(_ url: String,
-                        initialStateData: Data? = nil) async throws -> BangumiList {
-		let data = try await getBilibiliHTMLDatas(url, isBangumi: true).initialStateData
-		let stateJson: JSONObject = try JSONParser.JSONObjectWithData(data)
-		let state = try BangumiList(object: stateJson)
-		return state
+	func getBangumiList(_ url: String, ids: BangumiID? = nil) async throws -> BangumiEpList {
+		
+		let ids = try await {
+			if let ids {
+				ids
+			} else {
+				try await getBangumiId(url)
+			}
+		}()
+		
+		let u = "https://api.bilibili.com/pgc/view/web/ep/list?season_id=\(ids.seasonId)"
+		let data = try await AF.request(u).serializingData().value
+		
+		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+		let list = try BangumiEpList(object: json)
+		return list
     }
 }
 
@@ -604,7 +633,7 @@ struct BiliVideoSelector: Unmarshaling, BilibiliVideoSelector {
         site = .bilibili
     }
     
-    init(ep: BangumiInfo.BangumiEp) {
+	init(ep: BangumiEpList.BangumiEp) {
         id = "\(ep.id)"
         index = -1
         part = ""
@@ -657,40 +686,6 @@ struct BilibiliVideoCollection: Unmarshaling {
             }
             episodes = eps
         }
-    }
-}
-
-struct BangumiList: Unmarshaling {
-    let title: String
-    let epList: [BangumiInfo.BangumiEp]
-    let sections: [BangumiInfo.BangumiSections]
-    
-    var epVideoSelectors: [BiliVideoSelector] {
-        get {
-            var list = epList.map(BiliVideoSelector.init)
-            list.enumerated().forEach {
-                list[$0.offset].index = $0.offset + 1
-            }
-            return list
-        }
-    }
-    
-    var selectionVideoSelectors: [BiliVideoSelector] {
-        get {
-            var list = sections.compactMap {
-                $0.epList.first
-            }.map(BiliVideoSelector.init)
-            list.enumerated().forEach {
-                list[$0.offset].index = $0.offset + 1
-            }
-            return list
-        }
-    }
-    
-    init(object: MarshaledObject) throws {
-        epList = try object.value(for: "epList")
-        sections = try object.value(for: "sections")
-        title = try object.value(for: "h1Title")
     }
 }
 
@@ -866,6 +861,111 @@ struct BilibiliSimplePlayInfo: Unmarshaling {
     }
 }
 
+struct BangumiEpList: Unmarshaling {
+	let episodes: [BangumiEp]
+	let section: [BangumiSections]
+	
+	struct BangumiEp: Unmarshaling {
+		let id: Int
+		let aid: Int
+		let bvid: String
+		let cid: Int
+		let title: String
+		let longTitle: String
+		let cover: String
+		let duration: Int
+		let fullTitle: String
+		
+		init(object: MarshaledObject) throws {
+			id = try object.value(for: "id")
+			aid = try object.value(for: "aid")
+			bvid = (try? object.value(for: "bvid")) ?? ""
+			cid = try object.value(for: "cid")
+			title = try object.value(for: "title")
+			longTitle = try object.value(for: "long_title")
+			let u: String = try object.value(for: "cover")
+			cover = u.https()
+			
+			let d: Int? = try? object.value(for: "duration")
+			duration = d ?? 0 / 1000
+			
+			fullTitle = try object.value(for: "share_copy")
+		}
+		
+		func titles() -> String {
+			if fullTitle.isEmpty {
+				return [title, longTitle].filter({ $0 != "" }).joined(separator: " ")
+			} else {
+				return fullTitle
+			}
+		}
+	}
+	
+	struct BangumiSections: Unmarshaling {
+		let id: Int
+		let title: String
+		let type: Int
+		let episodes: [BangumiEp]
+		
+		init(object: MarshaledObject) throws {
+			id = try object.value(for: "id")
+			title = try object.value(for: "title")
+			type = try object.value(for: "type")
+			episodes = try object.value(for: "episodes")
+		}
+	}
+	
+	init(object: MarshaledObject) throws {
+		episodes = try object.value(for: "result.episodes")
+		section = try object.value(for: "result.section")
+	}
+	
+	var epVideoSelectors: [BiliVideoSelector] {
+		get {
+			var list = episodes.map(BiliVideoSelector.init)
+			list.enumerated().forEach {
+				list[$0.offset].index = $0.offset + 1
+			}
+			return list
+		}
+	}
+}
+
+/*
+struct BangumiList: Unmarshaling {
+    let title: String
+    let epList: [BangumiInfo.BangumiEp]
+    let sections: [BangumiInfo.BangumiSections]
+
+    var epVideoSelectors: [BiliVideoSelector] {
+        get {
+            var list = epList.map(BiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
+        }
+    }
+
+    var selectionVideoSelectors: [BiliVideoSelector] {
+        get {
+            var list = sections.compactMap {
+                $0.epList.first
+            }.map(BiliVideoSelector.init)
+            list.enumerated().forEach {
+                list[$0.offset].index = $0.offset + 1
+            }
+            return list
+        }
+    }
+
+    init(object: MarshaledObject) throws {
+        epList = try object.value(for: "epList")
+        sections = try object.value(for: "sections")
+        title = try object.value(for: "h1Title")
+    }
+}
+
 struct BangumiPlayInfo: Unmarshaling {
     let session: String
     let isPreview: Bool
@@ -1000,3 +1100,4 @@ struct BangumiInfo: Unmarshaling {
         }
     }
 }
+*/
