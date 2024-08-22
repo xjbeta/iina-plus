@@ -40,8 +40,8 @@ class IINAApp: NSObject {
 		}
 	}
 	
-	let internalPluginVersion = "0.1.11"
-	let internalPluginBuild = 8
+	let internalPluginVersion = "0.1.12"
+	let internalPluginBuild = 9
 	
 	let minIINABuild = 135
 	
