@@ -17,7 +17,7 @@ struct DanmakuPluginOptions: Encodable {
     let rawUrl: String
     let mpvScript: String
     let port: Int
-    
+	let urls: [String]
     var type: Int = PluginOptionsType.none.rawValue
     
     let qualitys: [String]
@@ -29,6 +29,7 @@ struct DanmakuPluginOptions: Encodable {
     
     init(rawUrl: String,
          mpvScript: String,
+		 urls: [String],
          qualitys: [String],
          lines: [String],
          currentQuality: Int,
@@ -36,6 +37,7 @@ struct DanmakuPluginOptions: Encodable {
          port: Int) {
         self.rawUrl = rawUrl
         self.mpvScript = mpvScript
+		self.urls = urls
         self.qualitys = qualitys
         self.lines = lines
         self.currentQuality = currentQuality
@@ -140,7 +142,9 @@ struct YouGetJSON: Unmarshaling, Codable {
     
     func iinaURLScheme(_ key: String, type: IINAUrlType) -> String? {
         switch type {
-		case .normal, .plugin:
+		case .plugin:
+			return iinaPluginUrl(key)
+		case .normal:
             return iinaDefaultUrl(key)
         case .danmaku:
             return danmakuUrl(key)
@@ -175,6 +179,32 @@ struct YouGetJSON: Unmarshaling, Codable {
         return u + base64Str
     }
     
+	func iinaPluginUrl(_ key: String) -> String? {
+		guard let argsStr = iinaPlusArgsString(key) else {
+			return nil
+		}
+		
+		let u = "iina://open?"
+		
+		var args = [
+			"new_window=1",
+			"url=-",
+			"mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)"
+		]
+		args = args.compactMap { kvs -> String? in
+			let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
+			guard kv.count == 2 else {
+				return kvs
+			}
+			
+			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+			let k = kv[0]
+			return "\(k)=\(v)"
+		}
+		
+		return u + args.joined(separator: "&")
+	}
+	
     func iinaDefaultUrl(_ key: String) -> String? {
         guard let url = videoUrl(key, forDash: true),
 			  let argsStr = iinaPlusArgsString(key) else {
@@ -240,6 +270,7 @@ struct YouGetJSON: Unmarshaling, Codable {
         var opts = DanmakuPluginOptions(
             rawUrl: rawUrl,
             mpvScript: mpvOptionsToScriptValue(mpvOptions),
+			urls: urls,
             qualitys: qualitys,
             lines: (0..<lineCount).map {
                 "Line \($0 + 1)"
