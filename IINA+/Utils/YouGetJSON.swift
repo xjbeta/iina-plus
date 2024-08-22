@@ -26,6 +26,8 @@ struct DanmakuPluginOptions: Encodable {
     let currentLine: Int
     
     var xmlPath: String?
+	
+	var edl: String?
     
     init(rawUrl: String,
          mpvScript: String,
@@ -145,7 +147,7 @@ struct YouGetJSON: Unmarshaling, Codable {
 		case .plugin:
 			return iinaPluginUrl(key)
 		case .normal:
-            return iinaDefaultUrl(key)
+			return iinaDefaultUrl(key)
         case .danmaku:
             return danmakuUrl(key)
 		case .none:
@@ -269,7 +271,7 @@ struct YouGetJSON: Unmarshaling, Codable {
         
         var opts = DanmakuPluginOptions(
             rawUrl: rawUrl,
-            mpvScript: mpvOptionsToScriptValue(mpvOptions),
+			mpvScript: mpvOptionsToScriptValue(mpvOptions),
 			urls: urls,
             qualitys: qualitys,
             lines: (0..<lineCount).map {
@@ -279,6 +281,8 @@ struct YouGetJSON: Unmarshaling, Codable {
             currentLine: 0,
             port: Preferences.shared.dmPort)
 
+//		opts.edl = edl(key: key)
+		
         if Preferences.shared.enableDanmaku {
             opts.type = PluginOptionsType.ws.rawValue
         }
@@ -297,6 +301,29 @@ struct YouGetJSON: Unmarshaling, Codable {
         
         return data.toHexString()
     }
+	
+	func edl(key: String) -> String? {
+//		mpv.set("stream-open-filename", opts.edl);
+		guard let stream = streams[key],
+			  stream.url != nil else { return nil }
+		
+		var edl = "edl://"
+		
+		func appendUrl(_ url: String) {
+			edl += "!new_stream;!no_clip;!no_chapters;"
+			edl += "%\(url.count)%"
+			edl += url
+			edl += ";"
+		}
+		
+		appendUrl(stream.url!)
+		
+		if audio != "" {
+			appendUrl(audio)
+		}
+		
+		return edl
+	}
     
     func m3uContent(key: String) -> Data? {
         guard let stream = streams[key],
