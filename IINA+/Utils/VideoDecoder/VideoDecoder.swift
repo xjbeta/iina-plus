@@ -22,6 +22,8 @@ class VideoDecoder: NSObject {
     lazy var biliLive = BiliLive()
     lazy var bilibili = Bilibili()
     lazy var qqLive = QQLive()
+	
+	let enableDash = false
     
     
     func bilibiliUrlFormatter(_ url: String) async throws -> String {
@@ -120,7 +122,9 @@ class VideoDecoder: NSObject {
 		switch json.site {
 		case .bilibili, .bangumi:
 			func registerDash(_ json: YouGetJSON) async -> YouGetJSON {
-				guard let stream = json.streams[key], let content = stream.dashContent else {
+				guard enableDash,
+					  let stream = json.streams[key],
+					  let content = stream.dashContent else {
 					return json
 				}
 				var json = json

@@ -17,7 +17,7 @@ struct DanmakuPluginOptions: Encodable {
     let rawUrl: String
     let mpvScript: String
     let port: Int
-    
+	let urls: [String]
     var type: Int = PluginOptionsType.none.rawValue
     
     let qualitys: [String]
@@ -26,9 +26,12 @@ struct DanmakuPluginOptions: Encodable {
     let currentLine: Int
     
     var xmlPath: String?
+	
+	var edl: String?
     
     init(rawUrl: String,
          mpvScript: String,
+		 urls: [String],
          qualitys: [String],
          lines: [String],
          currentQuality: Int,
@@ -36,6 +39,7 @@ struct DanmakuPluginOptions: Encodable {
          port: Int) {
         self.rawUrl = rawUrl
         self.mpvScript = mpvScript
+		self.urls = urls
         self.qualitys = qualitys
         self.lines = lines
         self.currentQuality = currentQuality
@@ -140,8 +144,10 @@ struct YouGetJSON: Unmarshaling, Codable {
     
     func iinaURLScheme(_ key: String, type: IINAUrlType) -> String? {
         switch type {
-		case .normal, .plugin:
-            return iinaDefaultUrl(key)
+		case .plugin:
+			return iinaPluginUrl(key)
+		case .normal:
+			return iinaDefaultUrl(key)
         case .danmaku:
             return danmakuUrl(key)
 		case .none:
@@ -175,6 +181,32 @@ struct YouGetJSON: Unmarshaling, Codable {
         return u + base64Str
     }
     
+	func iinaPluginUrl(_ key: String) -> String? {
+		guard let argsStr = iinaPlusArgsString(key) else {
+			return nil
+		}
+		
+		let u = "iina://open?"
+		
+		var args = [
+			"new_window=1",
+			"url=-",
+			"mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)"
+		]
+		args = args.compactMap { kvs -> String? in
+			let kv = kvs.split(separator: "=", maxSplits: 1).map(String.init)
+			guard kv.count == 2 else {
+				return kvs
+			}
+			
+			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+			let k = kv[0]
+			return "\(k)=\(v)"
+		}
+		
+		return u + args.joined(separator: "&")
+	}
+	
     func iinaDefaultUrl(_ key: String) -> String? {
         guard let url = videoUrl(key, forDash: true),
 			  let argsStr = iinaPlusArgsString(key) else {
@@ -239,7 +271,8 @@ struct YouGetJSON: Unmarshaling, Codable {
         
         var opts = DanmakuPluginOptions(
             rawUrl: rawUrl,
-            mpvScript: mpvOptionsToScriptValue(mpvOptions),
+			mpvScript: mpvOptionsToScriptValue(mpvOptions),
+			urls: urls,
             qualitys: qualitys,
             lines: (0..<lineCount).map {
                 "Line \($0 + 1)"
@@ -248,6 +281,8 @@ struct YouGetJSON: Unmarshaling, Codable {
             currentLine: 0,
             port: Preferences.shared.dmPort)
 
+//		opts.edl = edl(key: key)
+		
         if Preferences.shared.enableDanmaku {
             opts.type = PluginOptionsType.ws.rawValue
         }
@@ -266,6 +301,29 @@ struct YouGetJSON: Unmarshaling, Codable {
         
         return data.toHexString()
     }
+	
+	func edl(key: String) -> String? {
+//		mpv.set("stream-open-filename", opts.edl);
+		guard let stream = streams[key],
+			  stream.url != nil else { return nil }
+		
+		var edl = "edl://"
+		
+		func appendUrl(_ url: String) {
+			edl += "!new_stream;!no_clip;!no_chapters;"
+			edl += "%\(url.count)%"
+			edl += url
+			edl += ";"
+		}
+		
+		appendUrl(stream.url!)
+		
+		if audio != "" {
+			appendUrl(audio)
+		}
+		
+		return edl
+	}
     
     func m3uContent(key: String) -> Data? {
         guard let stream = streams[key],
