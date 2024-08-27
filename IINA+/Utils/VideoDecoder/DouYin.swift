@@ -552,7 +552,7 @@ struct DouYinEnterData: Unmarshaling {
 				var stream = Stream(url: u)
 				
 				if let fn = URL(string: u)?.lastPathComponent,
-				   let q = qualities.first(where: { fn.subString(from: "_", to: ".").contains($0.sdkKey) }),
+				   let q = qualities.filter({ fn.subString(from: "_", to: ".").contains($0.sdkKey) }).max(by: { $0.level < $1.level }),
 				   !q.disable {
 					stream.quality = 900 + q.level
 					json.streams[q.name] = stream
