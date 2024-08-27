@@ -529,14 +529,22 @@ struct DouYinEnterData: Unmarshaling {
 			isLiving = status == 2
 						
 			roomId = try object.value(for: "id_str")
-
-			urls = (try? object.value(for: "stream_url.flv_pull_url")) ?? [:]
+			
 			qualities = (try? object.value(for: "stream_url.live_core_sdk_data.pull_data.options.qualities")) ?? []
 			
+			guard let streamData: String = try? object.value(for: "stream_url.live_core_sdk_data.pull_data.stream_data"),
+				  let data = streamData.data(using: .utf8) else {
+//				#warning("FULL_HD1 only hls")
+				urls = (try? object.value(for: "stream_url.flv_pull_url")) ?? [:]
+				return
+			}
+			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
 			
-			#warning("FULL_HD1 only hls")
-			// https://live.douyin.com/208823316033
-			//			let hlsUrls: [String: String] = try object.value(for: "stream_url.hls_pull_url_map")
+			var urls = [String: String]()
+			qualities.forEach { q in
+				urls[q.sdkKey] = try? jsonObj.value(for: "data.\(q.sdkKey).main.flv")
+			}
+			self.urls = urls
 		}
 		
 		func write(to yougetJson: YouGetJSON) -> YouGetJSON {
@@ -548,12 +556,17 @@ struct DouYinEnterData: Unmarshaling {
 			}.sorted { v0, v1 in
 				v0.0 < v1.0
 			}.enumerated().forEach {
-				let u = $0.element.1
+				let ku = $0.element
+				let u = ku.1
 				var stream = Stream(url: u)
 				
-				if let fn = URL(string: u)?.lastPathComponent,
-				   let q = qualities.filter({ fn.subString(from: "_", to: ".").contains($0.sdkKey) }).max(by: { $0.level < $1.level }),
+				if let q = qualities.first(where: { $0.sdkKey == ku.0 }),
 				   !q.disable {
+					stream.quality = 900 + q.level
+					json.streams[q.name] = stream
+				} else if let fn = URL(string: u)?.lastPathComponent,
+						  let q = qualities.filter({ fn.subString(from: "_", to: ".").contains($0.sdkKey == "origin" ? "or" : $0.sdkKey) }).max(by: { $0.level < $1.level }),
+						  !q.disable {
 					stream.quality = 900 + q.level
 					json.streams[q.name] = stream
 				} else {
@@ -574,16 +587,9 @@ struct DouYinEnterData: Unmarshaling {
 		
 		init(object: MarshaledObject) throws {
 			level = try object.value(for: "level")
-			let sk: String = try object.value(for: "sdk_key")
+			sdkKey = try object.value(for: "sdk_key")
 			disable = try object.value(for: "disable")
-			
-			if sk == "origin" {
-				name = "原画"
-				sdkKey = "or"
-			} else {
-				name = try object.value(for: "name")
-				sdkKey = sk
-			}
+			name = try object.value(for: "name")
 		}
 	}
 	
