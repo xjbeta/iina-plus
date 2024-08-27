@@ -540,6 +540,13 @@ struct DouYinEnterData: Unmarshaling {
 			}
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
 			
+			qualities = [
+				.init(name: "原画", level: 4, sdkKey: "origin"),
+				.init(name: "超清", level: 3, sdkKey: "hd"),
+				.init(name: "高清", level: 2, sdkKey: "sd"),
+				.init(name: "标清", level: 1, sdkKey: "ld"),
+			]
+			
 			var urls = [String: String]()
 			qualities.forEach { q in
 				urls[q.sdkKey] = try? jsonObj.value(for: "data.\(q.sdkKey).main.flv")
@@ -585,12 +592,23 @@ struct DouYinEnterData: Unmarshaling {
 		let sdkKey: String
 		let disable: Bool
 		
+		init(name: String, level: Int, sdkKey: String, disable: Bool = false) {
+			self.name = name
+			self.level = level
+			self.sdkKey = sdkKey
+			self.disable = disable
+		}
+		
 		init(object: MarshaledObject) throws {
 			level = try object.value(for: "level")
 			sdkKey = try object.value(for: "sdk_key")
 			disable = try object.value(for: "disable")
+			if sdkKey == "origin" {
+				name = "原画"
+			} else {
 			name = try object.value(for: "name")
 		}
+	}
 	}
 	
 	
