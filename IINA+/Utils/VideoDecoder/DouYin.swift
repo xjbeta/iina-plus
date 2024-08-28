@@ -61,16 +61,27 @@ class DouYin: NSObject, SupportSiteProtocol {
 		
 		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=\(rid)&enter_source=&is_need_double_stream=true"
 
-		let data = try await AF.request(u, headers: headers).serializingData().value
-		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
-		let enterData = try DouYinEnterData(object: jsonObj)
 		
-		if let info = enterData.infos.first {
-			return info
-		} else if let info = try? DouYinEnterData2(object: jsonObj) {
-			return info
-		} else {
-			throw VideoGetError.notFountData
+		do {
+			let data = try await AF.request(u, headers: headers).serializingData().value
+			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+			let enterData = try DouYinEnterData(object: jsonObj)
+			
+			if let info = enterData.infos.first {
+				return info
+			} else if let info = try? DouYinEnterData2(object: jsonObj) {
+				return info
+			} else {
+				throw VideoGetError.notFountData
+			}
+		} catch {
+			switch error {
+			case AFError.responseSerializationFailed(reason: .inputDataNilOrZeroLength):
+				Log("douyin inputDataNilOrZeroLength")
+			default:
+				break
+			}
+			throw error
 		}
 	}
 	
