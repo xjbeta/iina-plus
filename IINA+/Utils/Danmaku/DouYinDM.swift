@@ -13,18 +13,15 @@ class DouYinDM: NSObject {
 	var url = ""
 	
 	let douyin = Processes.shared.videoDecoder.douyin
-	var ua: String {
-		douyin.douyinUA
-	}
 	
 	var privateKeys: [String] {
-		douyin.privateKeys
+		douyin.cookiesManager.privateKeys
 	}
 	
 	private var webView = WKWebView()
 	var requestPrepared: ((URLRequest) -> Void)?
 	
-	func initWS(_ roomId: String, cookies: [String: String]) async throws -> URLRequest {
+	func initWS(_ roomId: String, cookies: [String: String], ua: String) async throws -> URLRequest {
 		let s = "bGl2ZV9pZD0xLGFpZD02MzgzLHZlcnNpb25fY29kZT0xODA4MDAsd2ViY2FzdF9zZGtfdmVyc2lvbj0xLjMuMCxyb29tX2lkPQ==".base64Decode()
 		+ roomId
 		+ "LHN1Yl9yb29tX2lkPSxzdWJfY2hhbm5lbF9pZD0sZGlkX3J1bGU9Myx1c2VyX3VuaXF1ZV9pZD0sZGV2aWNlX3BsYXRmb3JtPXdlYixkZXZpY2VfdHlwZT0sYWM9LGlkZW50aXR5PWF1ZGllbmNl".base64Decode()
@@ -56,7 +53,7 @@ class DouYinDM: NSObject {
 		
 		req.setValue(cookieString, forHTTPHeaderField: "Cookie")
 		req.setValue("https://live.douyin.com", forHTTPHeaderField: "referer")
-		req.setValue(self.ua, forHTTPHeaderField: "User-Agent")
+		req.setValue(ua, forHTTPHeaderField: "User-Agent")
 		
 		return req
 	}
@@ -89,7 +86,7 @@ class DouYinDM: NSObject {
 	func prepareCookies() async {
 		
 		let storageDic = await MainActor.run {
-			return douyin.storageDic
+			return douyin.cookiesManager.storageDic
 		}
 		
 		let kvs = [
@@ -112,10 +109,11 @@ class DouYinDM: NSObject {
 		Task {
             do {
 				let rid = try await getRoomId()
-				let cookies = await douyin.cookiesManager.cookies
+				let cookies = try await douyin.cookiesManager.cookies()
+				let ua = await douyin.cookiesManager.douyinUA()
 				
 				await prepareCookies()
-				let req = try await initWS(rid, cookies: cookies)
+				let req = try await initWS(rid, cookies: cookies, ua: ua)
 				
 				await MainActor.run {
 					self.requestPrepared?(req)

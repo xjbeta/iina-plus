@@ -25,9 +25,11 @@
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
 		0120934427A4F632002C7FD3 /* JSPlayerWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */; };
+		0120FDBF2C725E9800526079 /* DouyinCookiesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120FDBE2C725E9800526079 /* DouyinCookiesManager.swift */; };
 		01260171211948BF00C9C639 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260170211948BF00C9C639 /* PreferencesTabViewController.swift */; };
 		012601742119FBF400C9C639 /* BilibiliCardTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */; };
 		01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */; };
+		012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012738C02C731EEB0031E643 /* TaskExtension.swift */; };
 		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
 		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
 		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
@@ -46,7 +48,6 @@
 		01479CD7210B35480046AAAD /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01479CD6210B35480046AAAD /* MainMenu.swift */; };
 		014B447D210069FF00E7AA6A /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447B210069FF00E7AA6A /* Bookmark.swift */; };
 		014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014B447C210069FF00E7AA6A /* BookmarkExtension.swift */; };
-		0153BFF12C3023F100AF5871 /* DouyinCookiesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */; };
 		015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */; };
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
@@ -198,9 +199,11 @@
 		0120932A27A3B441002C7FD3 /* flvplayer.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = flvplayer.htm; sourceTree = "<group>"; };
 		0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerWindowController.swift; sourceTree = "<group>"; };
 		0120934327A4F632002C7FD3 /* JSPlayerWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerWebView.swift; sourceTree = "<group>"; };
+		0120FDBE2C725E9800526079 /* DouyinCookiesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouyinCookiesManager.swift; sourceTree = "<group>"; };
 		01260170211948BF00C9C639 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		012601732119FBF400C9C639 /* BilibiliCardTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardTableCellView.swift; sourceTree = "<group>"; };
 		01260177211ABD3B00C9C639 /* VideoViewsFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewsFormatter.swift; sourceTree = "<group>"; };
+		012738C02C731EEB0031E643 /* TaskExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtension.swift; sourceTree = "<group>"; };
 		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
 		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
 		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
@@ -219,7 +222,6 @@
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
 		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
-		0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouyinCookiesManager.swift; sourceTree = "<group>"; };
 		015C19DB218B0D4F003B2F3A /* VideoGetStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGetStructs.swift; sourceTree = "<group>"; };
 		015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Plus.xml"; sourceTree = "<group>"; };
 		015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Basic.xml"; sourceTree = "<group>"; };
@@ -485,7 +487,7 @@
 				0199489D2742852E00C71708 /* SupportSites.swift */,
 				018F4F692812D95C0045B67C /* CC163.swift */,
 				01892C7727C0CDA400494AFD /* DouYin.swift */,
-				0153BFF02C3023F100AF5871 /* DouyinCookiesManager.swift */,
+				0120FDBE2C725E9800526079 /* DouyinCookiesManager.swift */,
 				018F4F652812C3EB0045B67C /* Douyu.swift */,
 				018F4F6028126FFD0045B67C /* Huya.swift */,
 				01A183DA2B789728006FA874 /* HuyaUrl.swift */,
@@ -596,6 +598,7 @@
 				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
 				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				0184D7112B2025FF00C7901A /* DateExtension.swift */,
+				012738C02C731EEB0031E643 /* TaskExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -778,12 +781,14 @@
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
 				01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */,
 				01A183DB2B789728006FA874 /* HuyaUrl.swift in Sources */,
+				012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */,
 				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
 				0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */,
 				013CE8F62185D992000271FB /* HttpServer.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
+				0120FDBF2C725E9800526079 /* DouyinCookiesManager.swift in Sources */,
 				01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
@@ -853,7 +858,6 @@
 				016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,
 				018739EE2852135200156F3F /* QQLive.swift in Sources */,
-				0153BFF12C3023F100AF5871 /* DouyinCookiesManager.swift in Sources */,
 				0169098021CF472F008CDF0E /* SideBarImageView.swift in Sources */,
 				0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */,
 				016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */,
