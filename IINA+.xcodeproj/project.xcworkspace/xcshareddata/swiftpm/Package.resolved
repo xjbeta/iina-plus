@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/xjbeta/SocketRocket/",
       "state" : {
-        "branch" : "develop",
-        "revision" : "9a913ed5d1329b8de5dc0f2c52be9b85e8e23ff4"
+        "branch" : "dev",
+        "revision" : "c81e0ea3776ad369211259b9078c8bf5204c240f"
       }
     },
     {

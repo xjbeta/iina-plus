@@ -1195,7 +1195,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/xjbeta/SocketRocket/";
 			requirement = {
-				branch = develop;
+				branch = dev;
 				kind = branch;
 			};
 		};
