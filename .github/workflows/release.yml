@@ -17,6 +17,11 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+
       - name: Clone AppUpdaterAppcasts
         run: git clone https://github.com/xjbeta/AppUpdaterAppcasts
 
