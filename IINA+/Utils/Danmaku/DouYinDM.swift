@@ -29,9 +29,9 @@ class DouYinDM: NSObject {
 		let code = "\("d2luZG93LmJ5dGVkX2FjcmF3bGVyLmZyb250aWVyU2lnbg==".base64Decode())({'\("WC1NUy1TVFVC".base64Decode())':'\(s.md5())'})"
 		
 		
-		let re = try await webView.evaluateJavaScriptAsync(code)
+		let re = try await webView.evaluateJavaScriptAsync(code, type: [String: String].self)
 		
-		guard let value = (re as? [String: String])?.first?.value else {
+		guard let value = re?.first?.value else {
 			throw DouYinDMError.signFailed
 		}
 		
@@ -101,7 +101,7 @@ class DouYinDM: NSObject {
 		}
 		
 		for kv in kvs {
-			let _ = try? await webView.evaluateJavaScriptAsync("window.sessionStorage.setItem('\(kv.0)', '\(kv.1)')")
+			let _ = try? await webView.evaluateJavaScriptAsync("window.sessionStorage.setItem('\(kv.0)', '\(kv.1)')", type: String.self)
 		}
 	}
 	

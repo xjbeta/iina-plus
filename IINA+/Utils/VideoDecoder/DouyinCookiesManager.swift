@@ -185,7 +185,7 @@ addXMLRequestCallback(function (xhr) {
 //			Log("time")
 			let isLoading = webView.isLoading
 			guard !isLoading,
-				  let title = try await webView.evaluateJavaScriptAsync("document.title") as? String else {
+				  let title = try await webView.evaluateJavaScriptAsync("document.title", type: String.self) else {
 				continue
 			}
 			
@@ -231,22 +231,22 @@ addXMLRequestCallback(function (xhr) {
 			cookies[$0.name] = $0.value
 		}
 		
-		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)")
-		let re2 = try await webview.evaluateJavaScriptAsync("window.navigator.userAgent")
+		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)", type: String.self)
+		let re2 = try await webview.evaluateJavaScriptAsync("window.navigator.userAgent", type: String.self)
 		
-		cookies[cid] = re1 as? String
+		cookies[cid] = re1
 		Log("cid \(re1 ?? ""), ua \(re2 ?? "")")
 		
-		guard let ua = re2 as? String else {
+		guard let ua = re2 else {
 			Log("nil userAgent")
 			throw CookiesError.invalid
 		}
 		
-		let re = try await webview.evaluateJavaScriptAsync("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
+		let re = try await webview.evaluateJavaScriptAsync("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())", type: String.self)
 		
 		Log("privateKeys")
 		
-		guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else {
+		guard let values = re?.split(separator: ",", maxSplits: 1).map(String.init) else {
 			throw VideoGetError.douyuSignError
 		}
 		
