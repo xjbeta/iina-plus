@@ -8,13 +8,14 @@
 
 import Cocoa
 
-class Preferences: NSObject {
+final class Preferences: NSObject, Sendable {
     static let shared = Preferences()
     
     private override init() {
     }
 
-    let prefs = UserDefaults.standard
+	nonisolated(unsafe) let prefs = UserDefaults.standard
+	
     let keys = PreferenceKeys.self
     
     var livePlayer: LivePlayer {
@@ -224,7 +225,7 @@ class Preferences: NSObject {
 private extension Preferences {
     
     func defaults(_ key: PreferenceKeys) -> Any? {
-        return prefs.value(forKey: key.rawValue) as Any?
+		prefs.value(forKey: key.rawValue) as Any?
     }
     
     func defaultsSet(_ value: Any, forKey key: PreferenceKeys) {
