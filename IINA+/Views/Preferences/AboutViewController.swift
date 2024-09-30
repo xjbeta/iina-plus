@@ -17,18 +17,17 @@ class AboutViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 		
+		verify()
+    }
+	
+	func verify() {
 		let image = view.subviews.filter {
 			$0 is NSImageView
 		}.compactMap {
 			$0 as? NSImageView
 		}.first?.image
 		
-		DispatchQueue.global().async { [weak self] in
-			guard let self else { return }
-			let key = image?.sd_imageData()?.sha1().toHexString()
-			
-			assert(key == "NzZkZDZhZGIyZGRkMzUxMTM5YmM1NTU5M2RmMDlkNGI2MzQ1OGFmMA==".base64Decode(), "Fxxk")
-		}
-    }
-    
+		let key = image?.sd_imageData()?.sha1().toHexString()
+		assert(key == "NzZkZDZhZGIyZGRkMzUxMTM5YmM1NTU5M2RmMDlkNGI2MzQ1OGFmMA==".base64Decode(), "Fxxk")
+	}
 }
