@@ -31,11 +31,8 @@ class GereralViewController: NSViewController, NSMenuDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         initMenu(for: playerPopUpButton)
-        
-        let proc = Processes.shared
-        portTextField.isEnabled = pref.enableDanmaku
-		&& ((proc.iina.archiveType == .danmaku && proc.iina.buildVersion > 16) || proc.iina.archiveType == .plugin)
-            
+		portTextField.isEnabled = false
+		initDanmakuPrefs()
 		initPluginInfo()
     }
     
@@ -59,15 +56,27 @@ class GereralViewController: NSViewController, NSMenuDelegate {
         }
     }
 	
+	func initDanmakuPrefs() {
+		Task { @MainActor in
+			let iina = Processes.shared.iina
+			let archiveType = await iina.archiveType
+			let buildVersion = await iina.buildVersion
+			
+			let allowDanmaku = (archiveType == .danmaku && buildVersion > 16) || archiveType == .plugin
+			
+			portTextField.isEnabled = pref.enableDanmaku && allowDanmaku
+		}
+	}
+	
 	func initPluginInfo() {
 		let iina = Processes.shared.iina
-		let pluginState = iina.pluginState()
+		let pluginState = IINAApp.pluginState()
 		
 		switch pluginState {
 		case .ok(let version):
 			pluginButton.title = version
 		case .needsUpdate(let plugin):
-			pluginButton.title = "Update \(plugin.version) to \(iina.internalPluginVersion)"
+			pluginButton.title = "Update \(plugin.version) to \(IINAApp.internalPluginVersion)"
 		case .needsInstall:
 			pluginButton.title = "Install"
 		case .newer(let plugin):
@@ -90,7 +99,7 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 			switch proc.iina.archiveType {
             case .danmaku:
                 s = "danmaku"
-			case .plugin where proc.iina.buildVersion >= proc.iina.minIINABuild:
+			case .plugin where proc.iina.buildVersion >= IINAApp.minIINABuild:
 				s = "official"
             case .plugin:
                 s = "plugin"

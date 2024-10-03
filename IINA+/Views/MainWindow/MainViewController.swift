@@ -664,8 +664,8 @@ class MainViewController: NSViewController {
 		
 		guard !pref.enableFlvjs,
 			  pref.livePlayer == .iina,
-			  proc.iina.archiveType == .plugin else {
-			try proc.openWithPlayer(yougetJSON, key)
+			  await proc.iina.archiveType == .plugin else {
+			try await proc.openWithPlayer(yougetJSON, key)
 			return
 		}
 		
@@ -680,13 +680,13 @@ class MainViewController: NSViewController {
 			let _ = alert.runModal()
 		}
 		
-		switch proc.iina.pluginState() {
+		switch IINAApp.pluginState() {
 		case .needsUpdate(let plugin) where plugin.ghVersion < 4:
 			Log("Open result failed, plugin outdate.")
 			showInstallAlert()
 		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
 			Log("Open result with plugin")
-			try proc.openWithPlayer(yougetJSON, key)
+			try await proc.openWithPlayer(yougetJSON, key)
 		case .needsInstall, .multiple:
 			Log("Open result failed, pluginNotFound.")
 			showInstallAlert()

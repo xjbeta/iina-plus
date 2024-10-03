@@ -116,7 +116,7 @@ final class Preferences: NSObject, Sendable {
     
     @objc dynamic var dmPort: Int {
         get {
-			if Processes.shared.iina.buildVersion > 16 {
+			if IINAApp.getBuildVersion() > 16 {
                 return defaults(.dmPort) as? Int ?? 19080
             } else {
                 return 19080

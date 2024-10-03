@@ -51,10 +51,10 @@ class OpenFilesViewController: NSViewController {
 				}
 				let id = json.uuid
 				
+				try? await Processes.shared.openWithPlayer(json, key)
+				
 				await MainActor.run {
 					NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
-
-					try? Processes.shared.openWithPlayer(json, key)
 					view.window?.close()
 				}
 				
