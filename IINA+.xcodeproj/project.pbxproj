@@ -120,6 +120,7 @@
 		01C248B52A623EC000C92639 /* IINAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C248B42A623EC000C92639 /* IINAApp.swift */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
+		01D482BB2CAF978C00F636EE /* CharacterSetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D482BA2CAF978C00F636EE /* CharacterSetExtension.swift */; };
 		01D8282A2AC3E1D6003A73BA /* mpegts.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01D828282AC3E1A6003A73BA /* mpegts.js */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */; };
@@ -287,6 +288,7 @@
 		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		01D482BA2CAF978C00F636EE /* CharacterSetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterSetExtension.swift; sourceTree = "<group>"; };
 		01D828282AC3E1A6003A73BA /* mpegts.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = mpegts.js; path = "IINA+/WebFiles/node_modules/mpegts.js/dist/mpegts.js"; sourceTree = SOURCE_ROOT; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
@@ -596,6 +598,7 @@
 			isa = PBXGroup;
 			children = (
 				01942A3527C49D850092FA5A /* WKWebViewExtension.swift */,
+				01D482BA2CAF978C00F636EE /* CharacterSetExtension.swift */,
 				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				0184D7112B2025FF00C7901A /* DateExtension.swift */,
 				012738C02C731EEB0031E643 /* TaskExtension.swift */,
@@ -854,6 +857,7 @@
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */,
 				0106179D2AF34EFF005C7877 /* JSPlayerURL.swift in Sources */,
+				01D482BB2CAF978C00F636EE /* CharacterSetExtension.swift in Sources */,
 				01010137211EFA75002F0F7F /* SuggestionsTableView.swift in Sources */,
 				016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */,
 				01E6A09C211AD62800C6EF98 /* VideoDurationFormatter.swift in Sources */,

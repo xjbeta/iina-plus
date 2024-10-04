@@ -28,16 +28,6 @@ class Processes: NSObject {
     fileprivate override init() {
     }
     
-    var urlQueryValueAllowed: CharacterSet = {
-        let generalDelimitersToEncode = ":#[]@?/" // does not include "?" or "/" due to RFC 3986 - Section 3.4
-        let subDelimitersToEncode = "!$&'()*+,;="
-        
-        var allowed = CharacterSet.urlQueryAllowed
-        allowed.remove(charactersIn: generalDelimitersToEncode + subDelimitersToEncode)
-        
-        return allowed
-    }()
-    
     func which(_ str: String) -> [String] {
         // which you-get
         // command -v you-get

@@ -199,7 +199,7 @@ struct YouGetJSON: Unmarshaling, Codable {
 				return kvs
 			}
 			
-			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) else { return nil }
 			let k = kv[0]
 			return "\(k)=\(v)"
 		}
@@ -227,7 +227,7 @@ struct YouGetJSON: Unmarshaling, Codable {
                 return kvs
             }
             
-            guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+            guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) else { return nil }
             let k = kv[0]
             return "\(k)=\(v)"
         }
