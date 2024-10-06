@@ -8,9 +8,12 @@
 
 import Cocoa
 import WebKit
-import Alamofire
+@preconcurrency import Alamofire
 import Semaphore
 
+fileprivate let semaphore = AsyncSemaphore(value: 1)
+
+@MainActor
 class DouyinCookiesManager: NSObject {
 	private var webView: WKWebView?
 	
@@ -53,13 +56,8 @@ addXMLRequestCallback(function (xhr) {
 	
 	private var douyinWebcastUpdated: (() -> Void)?
 	
-	@MainActor
-	private let semaphore = AsyncSemaphore(value: 1)
-	
-	@MainActor
 	private var _cookies = [String: String]()
 	
-	@MainActor
 	private var shouldRetry = false
 	
 	enum DYState {
@@ -98,7 +96,7 @@ addXMLRequestCallback(function (xhr) {
 		}.joined(separator: ";")
 	}
 	
-	@MainActor
+	
 	func douyinUA() async -> String {
 		douyinUA
 	}
@@ -107,16 +105,16 @@ addXMLRequestCallback(function (xhr) {
 		await semaphore.wait()
 		defer { semaphore.signal() }
 		
-		if await shouldRetry {
+		if shouldRetry {
 			Log("retry 60s")
-			await updateInternalCookies([:])
+			updateInternalCookies([:])
 			try await Task.sleep(seconds: 60)
-			await updateRetry(false)
+			updateRetry(false)
 		}
 		
-		if await _cookies.count > 0 {
+		if _cookies.count > 0 {
 //			Log("cached cookies")
-			return await _cookies
+			return _cookies
 		}
 		
 		do {
@@ -137,23 +135,23 @@ addXMLRequestCallback(function (xhr) {
 			return cookies
 		} catch {
 			Log("should retry, catch \(error)")
-			await updateRetry(true)
-			await deinitWebViewAsync()
+			updateRetry(true)
+			deinitWebViewAsync()
 			throw error
 		}
 	}
 	
-	@MainActor
+	
 	func updateInternalCookies(_ cookies: [String: String]) {
 		_cookies = cookies
 	}
 	
-	@MainActor
+	
 	func updateRetry(_ retry: Bool) {
 		self.shouldRetry = retry
 	}
 	
-	@MainActor
+	
 	func prepareCookies() async throws -> [String: String] {
 		Log("start")
 		deleteDouYinCookies()
@@ -213,7 +211,7 @@ addXMLRequestCallback(function (xhr) {
 		return cookies
 	}
 	
-	@MainActor
+	
 	func loadCookies() async throws -> [String: String] {
 		guard let webview = webView else {
 			throw VideoGetError.douyuSignError
@@ -270,7 +268,7 @@ addXMLRequestCallback(function (xhr) {
 			"\($0.key)=\($0.value)"
 		}.joined(separator: ";")
 		
-		var headers = HTTPHeaders([
+		let headers = HTTPHeaders([
 			"User-Agent": ua,
 			"Cookie": cookie
 		])
@@ -282,7 +280,7 @@ addXMLRequestCallback(function (xhr) {
 		} catch {
 			switch error {
 			case AFError.responseSerializationFailed(reason: .inputDataNilOrZeroLength):
-				await updateRetry(true)
+				updateRetry(true)
 				throw CookiesError.invalid
 			default:
 				Log(error)
@@ -290,7 +288,7 @@ addXMLRequestCallback(function (xhr) {
 		}
 	}
 	
-	@MainActor
+	
 	func deleteCookies() async {
 		let cookies = await getAllWKCookies()
 		
@@ -306,25 +304,25 @@ addXMLRequestCallback(function (xhr) {
 		deleteDouYinCookies()
 	}
 	
-	@MainActor
+	
 	func deleteDouYinCookies() {
 		HTTPCookieStorage.shared.cookies?.filter {
 			$0.domain.contains("douyin")
 		}.forEach(HTTPCookieStorage.shared.deleteCookie)
 	}
 	
-	@MainActor
+	
 	func getAllWKCookies() async -> [HTTPCookie] {
 		let all = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
 		return all.filter({ $0.domain.contains("douyin") })
 	}
 	
-	@MainActor
+	
 	func deleteWKCookie(_ cookie: HTTPCookie) async {
 		await WKWebsiteDataStore.default().httpCookieStore.deleteCookie(cookie)
 	}
 	
-	@MainActor
+	
 	func deinitWebViewAsync() {
 		deinitWebView()
 	}
@@ -335,10 +333,6 @@ addXMLRequestCallback(function (xhr) {
 		webView?.stopLoading()
 		webView?.removeFromSuperview()
 		webView = nil
-	}
-	
-	deinit {
-		deinitWebView()
 	}
 }
 
