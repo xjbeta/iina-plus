@@ -9,10 +9,10 @@
 import Cocoa
 import WebKit
 import SwiftSoup
-import Alamofire
+@preconcurrency import Alamofire
 import Marshal
 
-class DouYin: NSObject, SupportSiteProtocol {
+actor DouYin: SupportSiteProtocol {
     
     // MARK: - DY Init
     

@@ -7,11 +7,11 @@
 //
 
 import Cocoa
-import Alamofire
+@preconcurrency import Alamofire
 import Marshal
 import SwiftSoup
 
-class Huya: NSObject, SupportSiteProtocol {
+actor Huya: SupportSiteProtocol {
     
     lazy var pSession: Session = {
         let configuration = URLSessionConfiguration.af.default

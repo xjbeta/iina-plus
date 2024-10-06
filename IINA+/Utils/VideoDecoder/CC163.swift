@@ -7,11 +7,11 @@
 //
 
 import Cocoa
-import Alamofire
+@preconcurrency import Alamofire
 import Marshal
 import SwiftSoup
 
-class CC163: NSObject, SupportSiteProtocol {
+actor CC163: SupportSiteProtocol {
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		if url.pathComponents.count == 4,
 		   url.pathComponents[2] == "ccid" {

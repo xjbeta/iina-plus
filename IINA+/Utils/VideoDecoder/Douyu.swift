@@ -7,12 +7,12 @@
 //
 
 import Cocoa
-import Alamofire
+@preconcurrency import Alamofire
 import JavaScriptCore
 import Marshal
 import CryptoSwift
 
-class Douyu: NSObject, SupportSiteProtocol {
+actor Douyu: SupportSiteProtocol {
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		let rid = try await getDouyuHtml(url).roomId
 		let id = Int(rid) ?? -1

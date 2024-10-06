@@ -7,10 +7,10 @@
 //
 
 import Cocoa
-import Alamofire
+@preconcurrency import Alamofire
 import Marshal
 
-class Bilibili: NSObject, SupportSiteProtocol {
+actor Bilibili: SupportSiteProtocol {
 	
 	let bilibiliUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5.1 Safari/605.1.15"
 	
