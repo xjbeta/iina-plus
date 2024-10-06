@@ -74,6 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+	@MainActor
 	func showUpdateAlert() {
 		guard !Preferences.shared.updateInfo070 else { return }
 		Preferences.shared.updateInfo070 = true
