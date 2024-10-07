@@ -7,14 +7,13 @@
 //
 
 import Cocoa
-import Alamofire
+@preconcurrency import Alamofire
 import Marshal
 import CommonCrypto
-import JavaScriptCore
-import WebKit
+@preconcurrency import JavaScriptCore
 import SwiftSoup
 
-class VideoDecoder: NSObject {
+actor VideoDecoder {
     lazy var douyin = DouYin()
     lazy var huya = Huya()
     lazy var douyu = Douyu()
@@ -207,7 +206,7 @@ extension VideoDecoder {
     // MARK: - Bilibili Danmaku
     func downloadDMFile(_ cid: Int, id: String) async throws {
 		let data = try await AF.request("https://comment.bilibili.com/\(cid).xml").serializingData().value
-		await saveDMFile(data, with: id)
+		VideoDecoder.saveDMFile(data, with: id)
     }
     
     
@@ -225,9 +224,9 @@ extension VideoDecoder {
         }
 		
 		let dms = try await withThrowingTaskGroup(of: [DanmakuElem].self) { group in
-			s.forEach { i in
+			for i in s {
 				group.addTask {
-					return try await self.getDanmakuContent(cid: cid, index: i)
+					try await self.getDanmakuContent(cid: cid, index: i)
 				}
 			}
 			
@@ -272,12 +271,11 @@ extension VideoDecoder {
 			}
 		}
 		
-		await self.saveDMFile(doc.xmlData, with: id)
+		VideoDecoder.saveDMFile(doc.xmlData, with: id)
     }
     
-	@MainActor
-    func saveDMFile(_ data: Data?, with id: String) {
-        guard let path = dmPath(id) else { return }
+    static func saveDMFile(_ data: Data?, with id: String) {
+		guard let path = VideoDecoder.dmPath(id) else { return }
         var p = path
         p.deleteLastPathComponent()
         try? FileManager.default.createDirectory(atPath: p, withIntermediateDirectories: true)
@@ -285,7 +283,7 @@ extension VideoDecoder {
         Log("Saved DM in \(path)")
     }
     
-    func dmPath(_ id: String) -> String? {
+    static func dmPath(_ id: String) -> String? {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier,
             var filesURL = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else {
             return nil

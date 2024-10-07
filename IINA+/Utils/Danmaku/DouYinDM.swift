@@ -12,11 +12,6 @@ import WebKit
 class DouYinDM: NSObject {
 	var url = ""
 	
-	let douyin = Processes.shared.videoDecoder.douyin
-	
-	var privateKeys: [String] {
-		douyin.cookiesManager.privateKeys
-	}
 	
 	private var webView = WKWebView()
 	var requestPrepared: ((URLRequest) -> Void)?
@@ -68,7 +63,7 @@ class DouYinDM: NSObject {
 	}
 	
 	func getRoomId() async throws -> String {
-		
+		let douyin = await Processes.shared.videoDecoder.douyin
 		let info = try await douyin.liveInfo(self.url)
 		
 		if let rid = (info as? DouYinEnterData.DouYinLiveInfo)?.roomId {
@@ -84,10 +79,10 @@ class DouYinDM: NSObject {
 	}
 	
 	func prepareCookies() async {
+		let douyin = await Processes.shared.videoDecoder.douyin
 		
-		let storageDic = await MainActor.run {
-			return douyin.cookiesManager.storageDic
-		}
+		let storageDic = await douyin.cookiesManager.storageDic
+		let privateKeys = await douyin.cookiesManager.privateKeys
 		
 		let kvs = [
 			privateKeys[0].base64Decode(),
@@ -109,15 +104,15 @@ class DouYinDM: NSObject {
 		Task {
             do {
 				let rid = try await getRoomId()
+				let douyin = await Processes.shared.videoDecoder.douyin
+				
 				let cookies = try await douyin.cookiesManager.cookies()
 				let ua = await douyin.cookiesManager.douyinUA()
 				
 				await prepareCookies()
 				let req = try await initWS(rid, cookies: cookies, ua: ua)
 				
-				await MainActor.run {
-					self.requestPrepared?(req)
-				}
+				requestPrepared?(req)
             } catch {
                 Log("DouYinDM request error \(error)")
             }

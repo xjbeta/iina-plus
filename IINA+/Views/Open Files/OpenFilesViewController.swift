@@ -132,7 +132,7 @@ class OpenFilesViewController: NSViewController {
         guard danmakuURL == nil else {
             let url = danmakuURL!
             let data = FileManager.default.contents(atPath: url.path)
-            videoDecoder.saveDMFile(data, with: json.uuid)
+			VideoDecoder.saveDMFile(data, with: json.uuid)
 			return json
         }
         

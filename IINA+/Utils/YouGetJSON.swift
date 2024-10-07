@@ -286,8 +286,8 @@ struct YouGetJSON: Unmarshaling, Codable {
         if Preferences.shared.enableDanmaku {
             opts.type = PluginOptionsType.ws.rawValue
         }
-        
-        if let dmPath = VideoDecoder().dmPath(uuid),
+		
+        if let dmPath = VideoDecoder.dmPath(uuid),
             FileManager.default.fileExists(atPath: dmPath) {
             opts.type = PluginOptionsType.xmlFile.rawValue
             opts.xmlPath = dmPath
