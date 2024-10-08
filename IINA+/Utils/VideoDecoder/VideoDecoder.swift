@@ -302,7 +302,7 @@ extension VideoDecoder {
 		let u = "https://api.bilibili.com/x/v2/dm/web/seg.so?type=1&oid=\(cid)&segment_index=\(index)"
 		
 		let data = try await AF.request(u).serializingData().value
-		return try DmSegMobileReply(serializedData: data).elems
+		return try DmSegMobileReply(serializedBytes: data).elems
     }
 }
 

@@ -218,7 +218,7 @@ extension Danmaku {
 		   let data = Data(base64Encoded: msg.dm) {
 			
 			do {
-				let re = try BilibiliDm_Community_Service_Dm_Live_Dm(serializedData: data)
+				let re = try BilibiliDm_Community_Service_Dm_Live_Dm(serializedBytes: data)
 				
 				if re.bizScene == .survive {
 					return nil

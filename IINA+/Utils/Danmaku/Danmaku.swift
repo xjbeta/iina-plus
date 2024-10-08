@@ -590,13 +590,13 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             sendDM(.init(method: .sendDM, text: "", dms: dms))
         case .douyin:
             do {
-                let re = try DouYinResponse(serializedData: data)
-                let ree = try DouYinDMResponse(serializedData: re.data.gunzipped())
+				let re = try DouYinResponse(serializedBytes: data)
+				let ree = try Douyin_Response(serializedBytes: re.data.gunzipped())
                 
-                let dms = ree.messages.filter {
+				let dms = ree.messagesList.filter {
                     $0.method == "WebcastChatMessage"
                 }.compactMap {
-                    try? ChatMessage(serializedData: $0.payload)
+					try? Douyin_ChatMessage(serializedBytes: $0.payload)
                 }.map {
                     DanmakuComment(text: $0.content)
                 }
