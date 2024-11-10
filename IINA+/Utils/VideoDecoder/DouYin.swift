@@ -16,6 +16,7 @@ actor DouYin: SupportSiteProtocol {
     
     // MARK: - DY Init
     
+    @MainActor
 	lazy var cookiesManager = DouyinCookiesManager()
 	
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
