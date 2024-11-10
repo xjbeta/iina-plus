@@ -6,7 +6,7 @@
 //  Copyright © 2018 xjbeta. All rights reserved.
 //
 
-import Cocoa
+@preconcurrency import Cocoa
 import SDWebImage
 import WebKit
 
@@ -47,7 +47,9 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         colorPanelCloseNotification = NotificationCenter.default.addObserver(forName: NSColorPanel.willCloseNotification, object: nil, queue: .main) { _ in
-            self.currentPicker = nil
+			Task { @MainActor in
+				self.currentPicker = nil
+			}
         }
         
         livingColorPick.color = pref.stateLiving
@@ -88,7 +90,7 @@ class AdvancedViewController: NSViewController, NSMenuDelegate {
         }
     }
     
-    deinit {
+	deinit {
         if let n = colorPanelCloseNotification {
             NotificationCenter.default.removeObserver(n)
         }
