@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-@preconcurrency import Alamofire
+import Alamofire
 import Marshal
 import SwiftSoup
 

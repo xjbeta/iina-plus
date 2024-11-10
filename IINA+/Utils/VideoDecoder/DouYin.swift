@@ -9,7 +9,7 @@
 import Cocoa
 import WebKit
 import SwiftSoup
-@preconcurrency import Alamofire
+import Alamofire
 import Marshal
 
 actor DouYin: SupportSiteProtocol {

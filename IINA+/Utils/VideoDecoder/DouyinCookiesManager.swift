@@ -8,7 +8,7 @@
 
 import Cocoa
 import WebKit
-@preconcurrency import Alamofire
+import Alamofire
 import Semaphore
 
 fileprivate let semaphore = AsyncSemaphore(value: 1)
