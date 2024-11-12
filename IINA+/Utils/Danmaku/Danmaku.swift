@@ -11,19 +11,20 @@ import Alamofire
 import Marshal
 import SocketRocket
 import Gzip
-import JavaScriptCore
+@preconcurrency import JavaScriptCore
 import CryptoSwift
 import Marshal
 import SDWebImage
 
 protocol DanmakuDelegate {
-    func send(_ event: DanmakuEvent, sender: Danmaku)
+    @MainActor func send(_ event: DanmakuEvent, sender: Danmaku)
 }
 
 protocol DanmakuSubDelegate {
-    func send(_ event: DanmakuEvent)
+    @MainActor func send(_ event: DanmakuEvent)
 }
 
+@MainActor
 class Danmaku: NSObject {
     var socket: SRWebSocket? = nil
     var liveSite: SupportSites = .unsupported
@@ -104,7 +105,7 @@ class Danmaku: NSObject {
         heartBeatCount = 0
         
 		Task {
-			await douyinDM?.stop()
+			douyinDM?.stop()
 			douyinDM = nil
 		}
     }
@@ -146,10 +147,7 @@ class Danmaku: NSObject {
             Log("Processes.shared.videoDecoder.getDouyuHtml")
 			
 			let info = try await videoDecoder.douyu.getDouyuHtml(url.absoluteString)
-			
-			await MainActor.run {
-				initDouYuSocket(info.roomId)
-			}
+            initDouYuSocket(info.roomId)
 			
         case .huya:
 			let str = try await AF.request(url.absoluteString).serializingString().value
