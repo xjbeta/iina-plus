@@ -9,9 +9,6 @@
 import Cocoa
 import WebKit
 import Alamofire
-import Semaphore
-
-fileprivate let semaphore = AsyncSemaphore(value: 1)
 
 @MainActor
 class DouyinCookiesManager: NSObject {
@@ -56,6 +53,7 @@ addXMLRequestCallback(function (xhr) {
 	
 	private var douyinWebcastUpdated: (() -> Void)?
 	
+    private let tokenBucket = TokenBucket(tokens: 1)
 	private var _cookies = [String: String]()
 	
 	private var shouldRetry = false
@@ -100,11 +98,14 @@ addXMLRequestCallback(function (xhr) {
 	func douyinUA() async -> String {
 		douyinUA
 	}
-	
-	func cookies() async throws -> [String: String] {
-		await semaphore.wait()
-		defer { semaphore.signal() }
-		
+    
+    func cookies() async throws -> [String: String] {
+        try await tokenBucket.withToken {
+            try await internelCookies()
+        }
+    }
+    
+	func internelCookies() async throws -> [String: String] {
 		if shouldRetry {
 			Log("retry 60s")
 			updateInternalCookies([:])

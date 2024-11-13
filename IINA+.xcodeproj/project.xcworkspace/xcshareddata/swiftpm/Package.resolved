@@ -1,5 +1,5 @@
 {
-  "originHash" : "002db082d67dd04ceef35a0e7fc98dc59d5b2928b472f339c49f8bce81f0f426",
+  "originHash" : "e25d26158a9202447104dd429e63878698e1f4c65378618a6d336f857726dcad",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -47,15 +47,6 @@
       }
     },
     {
-      "identity" : "semaphore",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/groue/Semaphore",
-      "state" : {
-        "revision" : "2543679282aa6f6c8ecf2138acd613ed20790bc2",
-        "version" : "0.1.0"
-      }
-    },
-    {
       "identity" : "socketrocket",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/xjbeta/SocketRocket/",
@@ -71,6 +62,15 @@
       "state" : {
         "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
         "version" : "2.6.4"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version" : "1.1.4"
       }
     },
     {
