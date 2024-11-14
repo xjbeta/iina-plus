@@ -1059,7 +1059,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MARKETING_VERSION = 0.8.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1086,7 +1086,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MARKETING_VERSION = 0.8.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -455,27 +455,18 @@ actor Bilibili: SupportSiteProtocol {
 
 
 
-
-@objc(BilibiliCard)
-class BilibiliCard: NSObject, Unmarshaling {
+struct BilibiliCard: Unmarshaling, Sendable, Hashable {
     var aid: Int = 0
     var bvid: String = ""
     var dynamicId: Int = 0
-    @objc var title: String = ""
-    @objc var pic: NSImage?
-    @objc var picUrl: String = ""
-    @objc var name: String = ""
-    @objc var duration: TimeInterval = 0
-    @objc var views: Int = 0
-    @objc var videos: Int = 0
-//    var pubdate = 1533581945
+    var title: String = ""
+    var picUrl: String = ""
+    var name: String = ""
+    var duration: TimeInterval = 0
+    var views: Int = 0
+    var videos: Int = 0
     
-    
-    override init() {
-        super.init()
-    }
-    
-    required init(object: MarshaledObject) throws {
+    init(object: any Marshal.MarshaledObject) throws {
         dynamicId = try object.value(for: "desc.dynamic_id")
         bvid = try object.value(for: "desc.bvid")
         let jsonStr: String = try object.value(for: "card")
@@ -484,7 +475,7 @@ class BilibiliCard: NSObject, Unmarshaling {
             aid = try json.value(for: "aid")
             title = try json.value(for: "title")
             let picUrl: String = try json.value(for: "pic")
-			self.picUrl = picUrl.https()
+            self.picUrl = picUrl.https()
             duration = try json.value(for: "duration")
             name = try json.value(for: "owner.name")
             views = try json.value(for: "stat.view")
