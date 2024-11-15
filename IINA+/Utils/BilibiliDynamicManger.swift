@@ -51,6 +51,12 @@ actor BilibiliDynamicManger {
 		
         await delegate.bilibiliDynamicStatusChanged(true)
 		
+        defer {
+            Task {
+                await delegate.bilibiliDynamicStatusChanged(false)
+            }
+        }
+        
 		var dynamicID = -1
 		
         let bilibiliCards = await delegate.bilibiliDynamicCards()
@@ -139,7 +145,6 @@ actor BilibiliDynamicManger {
 			Log("Get bilibili dynamicList error: \(error)")
 		}
 		
-        await delegate.bilibiliDynamicStatusChanged(false)
 		Log("\(uuid), finish, \(dynamicID)")
 	}
 	
