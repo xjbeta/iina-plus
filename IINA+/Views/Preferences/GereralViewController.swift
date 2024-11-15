@@ -35,12 +35,13 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 		initDanmakuPrefs()
 		initPluginInfo()
     }
-    
+
+	
     func menuDidClose(_ menu: NSMenu) {
         switch menu {
         case playerPopUpButton.menu:
             pref.livePlayer = LivePlayer(index: playerPopUpButton.indexOfSelectedItem)
-            initPlayerVersion()
+			initPlayerVersion()
         default:
             break
         }
@@ -69,7 +70,6 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 	}
 	
 	func initPluginInfo() {
-		let iina = Processes.shared.iina
 		let pluginState = IINAApp.pluginState()
 		
 		switch pluginState {
@@ -92,27 +92,34 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 	}
     
     func initPlayerVersion() {
-        let proc = Processes.shared
-        var s = ""
-        switch pref.livePlayer {
-        case .iina:
-			switch proc.iina.archiveType {
-            case .danmaku:
-                s = "danmaku"
-			case .plugin where proc.iina.buildVersion >= IINAApp.minIINABuild:
-				s = "official"
-            case .plugin:
-                s = "plugin"
-            case .normal:
-                s = "official"
-            case .none:
-                s = "not found"
-            }
-        case .mpv:
-            s = proc.mpvVersion()
-        }
-        playerTextField.stringValue = s
+		Task {
+			playerTextField.stringValue = await playerText()
+		}
     }
+	
+	func playerText() async -> String {
+		let proc = Processes.shared
+		let iina = Processes.shared.iina
+		var s = ""
+		switch pref.livePlayer {
+		case .iina:
+			switch await iina.archiveType {
+			case .danmaku:
+				s = "danmaku"
+			case .plugin where await iina.buildVersion >= IINAApp.minIINABuild:
+				s = "official"
+			case .plugin:
+				s = "plugin"
+			case .normal:
+				s = "official"
+			case .none:
+				s = "not found"
+			}
+		case .mpv:
+			s = proc.mpvVersion()
+		}
+		return s
+	}
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
 		if let vc = segue.destinationController as? PluginViewController {

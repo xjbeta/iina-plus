@@ -10,7 +10,7 @@ import Cocoa
 import CoreData
 import Alamofire
 import SDWebImage
-import WebKit
+@preconcurrency import WebKit
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -294,17 +294,15 @@ class MainViewController: NSViewController {
             boxV.stopTimer()
         }
 		
-		Task { @MainActor in
-			guard await bilibiliDynamicManager.canLoadMore else { return }
-
-			if let scrollView = notification.object as? NSScrollView {
-				let visibleRect = scrollView.contentView.documentVisibleRect
-				let documentRect = scrollView.contentView.documentRect
-				if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
-					await bilibiliDynamicManager.loadBilibiliCards(.history)
-				}
-			}
-		}
+        Task {
+            if let scrollView = notification.object as? NSScrollView {
+                let visibleRect = scrollView.contentView.documentVisibleRect
+                let documentRect = scrollView.contentView.documentRect
+                if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
+                    await bilibiliDynamicManager.loadBilibiliCards(.history)
+                }
+            }
+        }
     }
 
     override var representedObject: Any? {
