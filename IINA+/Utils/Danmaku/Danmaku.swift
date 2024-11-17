@@ -405,10 +405,10 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-			let dms = datas.compactMap(decodeBiliLiveDM(_:))
-			if dms.count > 0 {
-				sendDM(.init(method: .sendDM, text: "", dms: dms))
-			}
+            let dms = try? datas.compactMap(decodeBiliLiveDM(_:))
+            if let dms, dms.count > 0 {
+                sendDM(.init(method: .sendDM, text: "", dms: dms))
+            }
         case .huya:
             let bytes = [UInt8](data)
             guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
