@@ -293,11 +293,10 @@ addXMLRequestCallback(function (xhr) {
 	func deleteCookies() async {
 		let cookies = await getAllWKCookies()
 		
-		await withTaskGroup(of: Int.self) { group in
+		await withTaskGroup(of: Void.self) { group in
 			cookies.forEach { c in
 				group.addTask {
 					await self.deleteWKCookie(c)
-					return 0
 				}
 			}
 		}
