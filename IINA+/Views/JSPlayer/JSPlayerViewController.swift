@@ -327,7 +327,9 @@ class JSPlayerViewController: NSViewController {
 		if sinceLimit > 0 {
 			guard playerReloadTimer == nil else { return }
 			playerReloadTimer = Timer.scheduledTimer(withTimeInterval: sinceLimit, repeats: false) { [weak self] timer in
-				self?.openLive()
+                Task {
+                    try? await self?.openLive()
+                }
 			}
 		} else {
 			openLive()
@@ -497,7 +499,7 @@ class JSPlayerViewController: NSViewController {
 		
 		let handler = JSPlayerURLSchemeHandler()
 		
-		config.setURLSchemeHandler(handler, forURLScheme: JSPlayerURLSchemeHandler.schemeName)
+		config.setURLSchemeHandler(handler, forURLScheme: JSPlayerSchemeName)
 		
 		config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 		
@@ -530,7 +532,7 @@ class JSPlayerViewController: NSViewController {
             webView.configuration.userContentController.removeScriptMessageHandler(forName: $0.rawValue)
         }
 		
-		if let handler = webView.configuration.urlSchemeHandler(forURLScheme: JSPlayerURLSchemeHandler.schemeName) as? JSPlayerURLSchemeHandler {
+        if let handler = webView.configuration.urlSchemeHandler(forURLScheme: JSPlayerSchemeName) as? JSPlayerURLSchemeHandler {
 			handler.stop()
 		}
         

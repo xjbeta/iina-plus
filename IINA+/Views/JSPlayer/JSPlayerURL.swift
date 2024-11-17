@@ -9,9 +9,10 @@
 import Cocoa
 
 class JSPlayerURL: NSObject {
-	static let key = "\(JSPlayerURLSchemeHandler.schemeName)://hack.iina-plus.key/webplayer/live.flv"
 	
 	static func encode(_ url: String, site: SupportSites) -> String {
+        let key = JSPlayerSchemeName + "://hack.iina-plus.key/webplayer/live.flv"
+        
 		guard var uc = URLComponents(string: key),
 			  let site = site.rawValue.base64Encode().addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
 			  let url = url.base64Encode().addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)

@@ -11,15 +11,16 @@ import WebKit
 
 // https://github.com/snowhaze/SnowHaze-iOS/blob/master/SnowHaze/TorSchemeHandler.swift
 
+let JSPlayerSchemeName = "plusplayer"
+
 class JSPlayerURLSchemeHandler: NSObject, WKURLSchemeHandler {
 	
-	static let schemeName = "plusplayer"
 	
 	var map = [URLSessionDataTask: WKURLSchemeTask]()
 	var session: URLSession?
 	
 	func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-		let schemeName = JSPlayerURLSchemeHandler.schemeName
+		let schemeName = JSPlayerSchemeName
 		
 		guard let url = urlSchemeTask.request.url?.absoluteString,
 			  url.hasPrefix(schemeName)
@@ -72,7 +73,7 @@ class JSPlayerURLSchemeHandler: NSObject, WKURLSchemeHandler {
 	}
 }
 
-extension JSPlayerURLSchemeHandler: URLSessionDelegate, URLSessionDataDelegate {
+extension JSPlayerURLSchemeHandler: URLSessionDelegate, @preconcurrency URLSessionDataDelegate {
 	
 	func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
 		DispatchQueue.main.async { [weak self] in
