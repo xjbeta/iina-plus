@@ -144,13 +144,13 @@ actor Douyu: SupportSiteProtocol {
         
         let pars = ["v": v,
                     "did": didStr,
-                    "tt": time,
+                    "tt": "\(time)",
                     "sign": sign.subString(from: "sign="),
                     "cdn": "ali-h5",
                     "rate": "\(rate)",
                     "ver": "Douyu_221111905",
                     "iar": "0",
-                    "ive": "0"] as [String : Any]
+                    "ive": "0"]
         
 		let url = "https://www.douyu.com/lapi/live/getH5Play/\(roomID)"
 		let data = try await AF.request(url, method: .post, parameters: pars).serializingData().value
