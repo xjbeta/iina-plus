@@ -9,6 +9,7 @@
 import Cocoa
 import WebKit
 
+@MainActor
 class DouYinDM: NSObject {
 	var url = ""
 	
@@ -81,8 +82,8 @@ class DouYinDM: NSObject {
 	func prepareCookies() async {
 		let douyin = await Processes.shared.videoDecoder.douyin
 		
-		let storageDic = await douyin.cookiesManager.storageDic
-		let privateKeys = await douyin.cookiesManager.privateKeys
+		let storageDic = douyin.cookiesManager.storageDic
+		let privateKeys = douyin.cookiesManager.privateKeys
 		
 		let kvs = [
 			privateKeys[0].base64Decode(),
@@ -117,11 +118,10 @@ class DouYinDM: NSObject {
                 Log("DouYinDM request error \(error)")
             }
 			
-			await stop()
+			stop()
         }
 	}
 	
-	@MainActor
 	func stop() {
 		webView.navigationDelegate = nil
 		webView.stopLoading()
