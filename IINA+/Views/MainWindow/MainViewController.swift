@@ -321,9 +321,7 @@ class MainViewController: NSViewController {
         
         switch item {
         case .bookmarks:
-            dataManager.requestData().forEach {
-                $0.updateState()
-            }
+            dataManager.reloadAllBookmark()
         case .bilibili:
 			Task {
 				if bilibiliDataSource.snapshot().numberOfItems > 0 {
