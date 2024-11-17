@@ -9,8 +9,9 @@
 import Foundation
 import Marshal
 import Cocoa
-
-class Processes: NSObject {
+ 
+@MainActor
+final class Processes: NSObject, Sendable {
     
 	enum ProcessesError: Error {
 		case openFailed(String)
@@ -20,12 +21,15 @@ class Processes: NSObject {
 	
     static let shared = Processes()
     let videoDecoder = VideoDecoder()
+    let iina = IINAApp()
+    
+    
     let httpServer = HttpServer()
-	let iina = IINAApp()
     
 	private var decodeTask: Task<YouGetJSON, any Error>?
 	
     fileprivate override init() {
+        
     }
     
     func which(_ str: String) -> [String] {
@@ -77,9 +81,8 @@ class Processes: NSObject {
 		return str.subString(from: "mpv", to: "Copyright").replacingOccurrences(of: " ", with: "")
     }
     
-	
     func decodeURL(_ url: String) async throws -> YouGetJSON {
-		decodeTask?.cancel()
+        decodeTask?.cancel()
 		
 		let task = Task {
 			try await videoDecoder.decodeUrl(url)
