@@ -225,7 +225,7 @@ class Danmaku: NSObject {
     private func startTimer() {
         timer?.cancel()
         timer = nil
-        timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
+        timer = DispatchSource.makeTimerSource(flags: [], queue: .main)
         guard let timer = timer else {
             return
         }
@@ -422,6 +422,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
                 return
             } else if str.starts(with: "EWebSocketCommandType") {
+                guard str != "EWebSocketCommandType.EWSCmdS2C_MsgPushReq_V2" else { return }
                 Log("huya websocket info \(str)")
                 return
             } else if str == "EWebSocketCommandType.EWSCmdS2C_HeartBeatRsp" {
