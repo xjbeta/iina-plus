@@ -32,6 +32,8 @@
 		012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012738C02C731EEB0031E643 /* TaskExtension.swift */; };
 		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
 		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
+		013598962CEC8EC400B3EFC0 /* Bangumi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013598952CEC8EC400B3EFC0 /* Bangumi.swift */; };
+		013598982CEC95AE00B3EFC0 /* BilbiliShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013598972CEC95AE00B3EFC0 /* BilbiliShare.swift */; };
 		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
@@ -208,6 +210,8 @@
 		012738C02C731EEB0031E643 /* TaskExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtension.swift; sourceTree = "<group>"; };
 		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
 		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
+		013598952CEC8EC400B3EFC0 /* Bangumi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bangumi.swift; sourceTree = "<group>"; };
+		013598972CEC95AE00B3EFC0 /* BilbiliShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilbiliShare.swift; sourceTree = "<group>"; };
 		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
 		01398984210F27A600B7042F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		01398986210F58E500B7042F /* MainWindowTableRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableRowView.swift; sourceTree = "<group>"; };
@@ -498,6 +502,8 @@
 				01A183DA2B789728006FA874 /* HuyaUrl.swift */,
 				018F4F6B2817FFF30045B67C /* BiliLive.swift */,
 				01683DDA2118905D0016A886 /* Bilibili.swift */,
+				013598972CEC95AE00B3EFC0 /* BilbiliShare.swift */,
+				013598952CEC8EC400B3EFC0 /* Bangumi.swift */,
 				018739ED2852135200156F3F /* QQLive.swift */,
 				01C338B428E47B3F004CC0B8 /* MBGA.swift */,
 				010BEA6B2C4FE2C60061E1DC /* BilibiliDash.swift */,
@@ -809,6 +815,7 @@
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */,
+				013598982CEC95AE00B3EFC0 /* BilbiliShare.swift in Sources */,
 				010BEA6C2C4FE2C60061E1DC /* BilibiliDash.swift in Sources */,
 				0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
@@ -830,6 +837,7 @@
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
+				013598962CEC8EC400B3EFC0 /* Bangumi.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */,
 				011E4D3321E99CA400997633 /* Log.swift in Sources */,
