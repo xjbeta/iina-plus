@@ -10,7 +10,7 @@ import Cocoa
 import SDWebImage
 import Sparkle
 
-@NSApplicationMain
+@main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
 	let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
@@ -74,6 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+	@MainActor
 	func showUpdateAlert() {
 		guard !Preferences.shared.updateInfo070 else { return }
 		Preferences.shared.updateInfo070 = true

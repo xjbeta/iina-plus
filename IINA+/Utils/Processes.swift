@@ -9,8 +9,9 @@
 import Foundation
 import Marshal
 import Cocoa
-
-class Processes: NSObject {
+ 
+@MainActor
+final class Processes: NSObject, Sendable {
     
 	enum ProcessesError: Error {
 		case openFailed(String)
@@ -20,23 +21,16 @@ class Processes: NSObject {
 	
     static let shared = Processes()
     let videoDecoder = VideoDecoder()
+    let iina = IINAApp()
+    
+    
     let httpServer = HttpServer()
-	let iina = IINAApp()
     
 	private var decodeTask: Task<YouGetJSON, any Error>?
 	
     fileprivate override init() {
+        
     }
-    
-    var urlQueryValueAllowed: CharacterSet = {
-        let generalDelimitersToEncode = ":#[]@?/" // does not include "?" or "/" due to RFC 3986 - Section 3.4
-        let subDelimitersToEncode = "!$&'()*+,;="
-        
-        var allowed = CharacterSet.urlQueryAllowed
-        allowed.remove(charactersIn: generalDelimitersToEncode + subDelimitersToEncode)
-        
-        return allowed
-    }()
     
     func which(_ str: String) -> [String] {
         // which you-get
@@ -87,9 +81,8 @@ class Processes: NSObject {
 		return str.subString(from: "mpv", to: "Copyright").replacingOccurrences(of: " ", with: "")
     }
     
-	
     func decodeURL(_ url: String) async throws -> YouGetJSON {
-		decodeTask?.cancel()
+        decodeTask?.cancel()
 		
 		let task = Task {
 			try await videoDecoder.decodeUrl(url)
@@ -109,9 +102,10 @@ class Processes: NSObject {
 		decodeTask?.cancel()
     }
     
-    func openWithPlayer(_ json: YouGetJSON, _ key: String) throws {
-		let type = iina.archiveType
-		let buildVersion = iina.buildVersion
+	func openWithPlayer(_ json: YouGetJSON, _ key: String) async throws {
+		await iina.updateIINAState()
+		let type = await iina.archiveType
+		let buildVersion = await iina.buildVersion
         
 		let urlScheme = json.iinaURLScheme(key, type: type)
 		
@@ -129,19 +123,19 @@ class Processes: NSObject {
 			try openWithURLScheme(urlScheme)
 		case .iina where type == .danmaku && buildVersion < 15:
 			// IINA-Danmaku cli
-			try openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
+			try await openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
         case .iina where type == .normal && buildVersion >= 56:
 			// IINA Official with cli
 			// iinc-cli build 56
-            try openWithProcess(json.videoUrl(key, forDash: true), args: json.mpvOptions, uuid: json.uuid)
+            try await openWithProcess(json.videoUrl(key, forDash: true), args: json.mpvOptions, uuid: json.uuid)
         case .mpv:
-            try openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
+            try await openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
         default:
 			throw ProcessesError.notSupported
         }
     }
     
-	private func openWithProcess(_ url: String?, args: [String], uuid: String) throws {
+	private func openWithProcess(_ url: String?, args: [String], uuid: String) async throws {
 		guard let url, url != "" else {
 			throw ProcessesError.openFailed("Nil url")
 		}
@@ -151,7 +145,7 @@ class Processes: NSObject {
         var args = args
 		
         if isIINA {
-			let type = iina.archiveType
+			let type = await iina.archiveType
             args = args.map {
                 "--mpv-" + $0
             }

@@ -26,20 +26,18 @@ enum DanamkuMethod: String, Encodable {
     
 }
 
+
+@MainActor
 class HttpServer: NSObject, DanmakuDelegate {
     
     private var server = Swifter.HttpServer()
     
-	@MainActor
 	private var dash = [String: String]()
 	
-	@MainActor
     private var unknownSessions = [WebSocketSession]()
 	
-	@MainActor
     var connectedItems = [DanmakuWS]()
     
-	@MainActor
     private var danmakus = [Danmaku]()
 	
     private var danmukuObservers: [NSObjectProtocol] = []
@@ -402,6 +400,7 @@ struct DanmakuWS {
     
     var version = 0
     
+    @MainActor
     func send(_ event: DanmakuEvent) {
         switch version {
         case 0 where event.method == .sendDM:
@@ -425,6 +424,7 @@ struct DanmakuWS {
         }
     }
     
+    @MainActor
     func loadCustomFont() {
         let pref = Preferences.shared
         let font = pref.danmukuFontFamilyName
@@ -444,10 +444,12 @@ struct DanmakuWS {
         send(.init(method: .customFont, text: text))
     }
 
+    @MainActor
     func customDMSpeed() {
         send(.init(method: .dmSpeed, text: "\(Int(Preferences.shared.dmSpeed))"))
     }
 
+    @MainActor
     func customDMOpdacity() {
         send(.init(method: .dmOpacity, text: "\(Preferences.shared.dmOpacity)"))
     }
@@ -460,6 +462,7 @@ struct DanmakuWS {
 //        send(.init(method: .dmBlockList, text: types.joined(separator: ", ")))
     }
     
+    @MainActor
     func loadXMLDM() {
         send(.init(method: .loadDM, text: id))
     }

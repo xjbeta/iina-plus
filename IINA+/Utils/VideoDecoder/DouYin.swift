@@ -12,10 +12,11 @@ import SwiftSoup
 import Alamofire
 import Marshal
 
-class DouYin: NSObject, SupportSiteProtocol {
+actor DouYin: SupportSiteProtocol {
     
     // MARK: - DY Init
     
+    @MainActor
 	lazy var cookiesManager = DouyinCookiesManager()
 	
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
@@ -50,9 +51,9 @@ class DouYin: NSObject, SupportSiteProtocol {
 		}
 		
 		let rid = try {
-			if let i = Int(pc[1]) {
+			if let _ = Int(pc[1]) {
 				return pc[1]
-			} else if pc.count >= 4, pc[2] == "live", let i = Int(pc[3]) {
+			} else if pc.count >= 4, pc[2] == "live", let _ = Int(pc[3]) {
 				return pc[3]
 			} else {
 				throw VideoGetError.invalidLink

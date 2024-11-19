@@ -28,8 +28,9 @@ class LiveStateTextField: NSTextField {
         super.init(coder: coder)
         guard colorObserver == nil else { return }
         colorObserver = observe(\.textColor, options: [.initial, .new]) { textField, _ in
-            
-            textField.backgroundColor = textField.textColor
+			Task { @MainActor in
+				textField.backgroundColor = textField.textColor
+			}
         }
     }
     

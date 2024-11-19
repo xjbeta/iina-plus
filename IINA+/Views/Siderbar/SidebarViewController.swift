@@ -35,17 +35,20 @@ class SidebarViewController: NSViewController {
         super.viewDidLoad()
         sideBarSelectedItem = sideBarItems.first ?? .none
         NotificationCenter.default.addObserver(forName: .updateSideBarSelection, object: nil, queue: .main) {
-            if let userInfo = $0.userInfo as? [String: SidebarItem],
-                let newItem = userInfo["newItem"] {
-                if let index = self.sideBarItems.firstIndex(of: newItem) {
-                    self.sidebarTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
-                }
+            guard let userInfo = $0.userInfo as? [String: SidebarItem],
+                  let newItem = userInfo["newItem"] else { return }
+
+            Task { @MainActor in
+                guard let index = self.sideBarItems.firstIndex(of: newItem) else { return }
+                self.sidebarTableView.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false)
             }
         }
         
         NotificationCenter.default.addObserver(forName: .progressStatusChanged, object: nil, queue: .main) {
-            if let userInfo = $0.userInfo as? [String: Bool],
-                let inProgress = userInfo["inProgress"] {
+            guard let userInfo = $0.userInfo as? [String: Bool],
+                  let inProgress = userInfo["inProgress"] else { return }
+            
+            Task { @MainActor in
                 if inProgress {
                     self.progressIndicator.startAnimation(nil)
                 } else {
@@ -55,8 +58,10 @@ class SidebarViewController: NSViewController {
         }
         
         NotificationCenter.default.addObserver(forName: .biliStatusChanged, object: nil, queue: .main) {
-            if let userInfo = $0.userInfo as? [String: Bool],
-                let isLogin = userInfo["isLogin"] {
+            guard let userInfo = $0.userInfo as? [String: Bool],
+                      let isLogin = userInfo["isLogin"] else { return }
+            
+            Task { @MainActor in
                 self.biliStatusChanged(isLogin)
             }
         }
@@ -93,10 +98,14 @@ class SidebarViewController: NSViewController {
             switch status {
             case .reachable(.cellular):
                 Log("NetworkReachability reachable cellular.")
-                self.checkBiliLoginState()
+                Task { @MainActor in
+                    self.checkBiliLoginState()
+                }
             case .reachable(.ethernetOrWiFi):
                 Log("NetworkReachability reachable ethernetOrWiFi.")
-                self.checkBiliLoginState()
+                Task { @MainActor in
+                    self.checkBiliLoginState()
+                }
             case .notReachable:
                 Log("NetworkReachability notReachable.")
             case .unknown:
@@ -111,7 +120,9 @@ class SidebarViewController: NSViewController {
     }
     
     deinit {
-        stopNRMListening()
+        Task { [reachabilityManager] in
+            reachabilityManager?.stopListening()
+        }
     }
     
 }

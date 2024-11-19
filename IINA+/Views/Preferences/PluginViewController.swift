@@ -29,9 +29,9 @@ class PluginViewController: NSViewController {
 	
 	@IBAction func installPlugin(_ sender: NSButton) {
 		do {
-			let plugins = try iina.listPlugins()
-			iina.uninstallPlugins(plugins)
-			try iina.installPlugin()
+			let plugins = try IINAApp.listPlugins()
+			IINAApp.uninstallPlugins(plugins)
+			try IINAApp.installPlugin()
 		} catch let error {
 			Log(error)
 		}
@@ -58,7 +58,7 @@ class PluginViewController: NSViewController {
 		var domain: String {
 			get {
 				if self == .parseEnable {
-					let path = (try? Processes.shared.iina.pluginFolder() + ".preferences/") ?? ""
+					let path = (try? IINAApp.pluginFolder() + ".preferences/") ?? ""
 					
 					let fm = FileManager.default
 					if !fm.fileExists(atPath: path) {
@@ -97,7 +97,7 @@ class PluginViewController: NSViewController {
 		guard systemState else { return }
 		
 		// danmaku plugin
-		let pluginState = iina.pluginState()
+		let pluginState = IINAApp.pluginState()
 		
 		var installState = false
 		
@@ -108,7 +108,7 @@ class PluginViewController: NSViewController {
 			installState = true
 			
 		case .needsUpdate(let plugin):
-			installPluginTitle = "Update \(plugin.version) to \(iina.internalPluginVersion)"
+			installPluginTitle = "Update \(plugin.version) to \(IINAApp.internalPluginVersion)"
 			enableInstallPluginButton = true
 		case .needsInstall:
 			installPluginTitle = "Install"

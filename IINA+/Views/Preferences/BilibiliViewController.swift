@@ -15,6 +15,7 @@ class BilibiliViewController: NSViewController {
     @IBAction func logout(_ sender: Any) {
 		Task {
 			do {
+				let bilibili = await Processes.shared.videoDecoder.bilibili
 				try await bilibili.logout()
 				initStatus()
 			} catch let error {
@@ -37,8 +38,7 @@ class BilibiliViewController: NSViewController {
     enum BiliBiliTabs: Int {
         case info, login, error, progress
     }
-    let bilibili = Processes.shared.videoDecoder.bilibili
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         initStatus()
@@ -58,6 +58,7 @@ class BilibiliViewController: NSViewController {
         selectTabViewItem(.progress)
 		Task {
 			do {
+				let bilibili = await Processes.shared.videoDecoder.bilibili
 				let s = try await bilibili.isLogin()
 				updateStatus(s)
 			} catch let error {

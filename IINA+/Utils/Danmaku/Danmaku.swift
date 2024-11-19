@@ -11,19 +11,20 @@ import Alamofire
 import Marshal
 import SocketRocket
 import Gzip
-import JavaScriptCore
+@preconcurrency import JavaScriptCore
 import CryptoSwift
 import Marshal
 import SDWebImage
 
 protocol DanmakuDelegate {
-    func send(_ event: DanmakuEvent, sender: Danmaku)
+    @MainActor func send(_ event: DanmakuEvent, sender: Danmaku)
 }
 
 protocol DanmakuSubDelegate {
-    func send(_ event: DanmakuEvent)
+    @MainActor func send(_ event: DanmakuEvent)
 }
 
+@MainActor
 class Danmaku: NSObject {
     var socket: SRWebSocket? = nil
     var liveSite: SupportSites = .unsupported
@@ -104,7 +105,7 @@ class Danmaku: NSObject {
         heartBeatCount = 0
         
 		Task {
-			await douyinDM?.stop()
+			douyinDM?.stop()
 			douyinDM = nil
 		}
     }
@@ -146,10 +147,7 @@ class Danmaku: NSObject {
             Log("Processes.shared.videoDecoder.getDouyuHtml")
 			
 			let info = try await videoDecoder.douyu.getDouyuHtml(url.absoluteString)
-			
-			await MainActor.run {
-				initDouYuSocket(info.roomId)
-			}
+            initDouYuSocket(info.roomId)
 			
         case .huya:
 			let str = try await AF.request(url.absoluteString).serializingString().value
@@ -227,7 +225,7 @@ class Danmaku: NSObject {
     private func startTimer() {
         timer?.cancel()
         timer = nil
-        timer = DispatchSource.makeTimerSource(flags: [], queue: timerQueue)
+        timer = DispatchSource.makeTimerSource(flags: [], queue: .main)
         guard let timer = timer else {
             return
         }
@@ -407,10 +405,10 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 }
             }
             
-			let dms = datas.compactMap(decodeBiliLiveDM(_:))
-			if dms.count > 0 {
-				sendDM(.init(method: .sendDM, text: "", dms: dms))
-			}
+            let dms = try? datas.compactMap(decodeBiliLiveDM(_:))
+            if let dms, dms.count > 0 {
+                sendDM(.init(method: .sendDM, text: "", dms: dms))
+            }
         case .huya:
             let bytes = [UInt8](data)
             guard let re = huyaJSContext?.evaluateScript("test(\(bytes));"),
@@ -424,6 +422,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 self.delegate?.send(.init(method: .liveDMServer, text: ""), sender: self)
                 return
             } else if str.starts(with: "EWebSocketCommandType") {
+                guard str != "EWebSocketCommandType.EWSCmdS2C_MsgPushReq_V2" else { return }
                 Log("huya websocket info \(str)")
                 return
             } else if str == "EWebSocketCommandType.EWSCmdS2C_HeartBeatRsp" {
@@ -590,13 +589,13 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
             sendDM(.init(method: .sendDM, text: "", dms: dms))
         case .douyin:
             do {
-                let re = try DouYinResponse(serializedData: data)
-                let ree = try DouYinDMResponse(serializedData: re.data.gunzipped())
+				let re = try DouYinResponse(serializedBytes: data)
+				let ree = try Douyin_Response(serializedBytes: re.data.gunzipped())
                 
-                let dms = ree.messages.filter {
+				let dms = ree.messagesList.filter {
                     $0.method == "WebcastChatMessage"
                 }.compactMap {
-                    try? ChatMessage(serializedData: $0.payload)
+					try? Douyin_ChatMessage(serializedBytes: $0.payload)
                 }.map {
                     DanmakuComment(text: $0.content)
                 }

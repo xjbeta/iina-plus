@@ -51,10 +51,10 @@ class OpenFilesViewController: NSViewController {
 				}
 				let id = json.uuid
 				
+				try? await Processes.shared.openWithPlayer(json, key)
+				
 				await MainActor.run {
 					NotificationCenter.default.post(name: .loadDanmaku, object: nil, userInfo: ["id": id])
-
-					try? Processes.shared.openWithPlayer(json, key)
 					view.window?.close()
 				}
 				
@@ -132,7 +132,7 @@ class OpenFilesViewController: NSViewController {
         guard danmakuURL == nil else {
             let url = danmakuURL!
             let data = FileManager.default.contents(atPath: url.path)
-            videoDecoder.saveDMFile(data, with: json.uuid)
+			VideoDecoder.saveDMFile(data, with: json.uuid)
 			return json
         }
         

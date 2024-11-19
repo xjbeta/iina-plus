@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="GVV-O1-4pZ">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -38,7 +38,7 @@
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="OII-k7-WVz">
                                 <rect key="frame" x="0.0" y="0.0" width="860" height="484"/>
                             </customView>
-                            <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q3d-da-hps" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
+                            <visualEffectView blendingMode="behindWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Q3d-da-hps" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
                                 <rect key="frame" x="12" y="12" width="251" height="31"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="15" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DFX-1F-IKO">
@@ -129,7 +129,7 @@
                                     <rect key="frame" x="4" y="5" width="32" height="135"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="V4Z-4u-tWT" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
+                                        <visualEffectView blendingMode="behindWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="V4Z-4u-tWT" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="15" width="32" height="120"/>
                                             <subviews>
                                                 <slider wantsLayer="YES" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nUX-RS-Z83">
@@ -166,17 +166,17 @@
                                     <rect key="frame" x="4" y="5" width="128" height="197"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="3qo-tP-DFx" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
+                                        <visualEffectView blendingMode="behindWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="3qo-tP-DFx" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="15" width="95" height="182"/>
                                             <subviews>
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSe-yc-qYo">
                                                     <rect key="frame" x="12" y="2" width="71" height="140"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="7k4-lH-8k6">
-                                                        <rect key="frame" x="0.0" y="0.0" width="71" height="140"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="71" height="125"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" columnSelection="YES" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="24" viewBased="YES" id="6So-Mt-rQe">
-                                                                <rect key="frame" x="0.0" y="0.0" width="80" height="140"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="80" height="125"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -197,7 +197,7 @@
                                                                                 <rect key="frame" x="0.0" y="0.0" width="80" height="24"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <subviews>
-                                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BoA-Ug-ZQm">
+                                                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BoA-Ug-ZQm">
                                                                                         <rect key="frame" x="6" y="4" width="68" height="16"/>
                                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="Lz2-R0-mki">
                                                                                             <font key="font" usesAppearanceFont="YES"/>
@@ -238,7 +238,7 @@
                                                         <constraint firstAttribute="height" constant="140" id="qJM-NN-NcQ"/>
                                                     </constraints>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="vld-IN-y1M">
-                                                        <rect key="frame" x="0.0" y="124" width="71" height="16"/>
+                                                        <rect key="frame" x="0.0" y="125" width="71" height="15"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="fE8-rq-u4e">
@@ -250,7 +250,7 @@
                                                     <rect key="frame" x="9" y="146" width="78" height="25"/>
                                                     <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" refusesFirstResponder="YES" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="03k-iW-imw" id="Cda-il-UrZ">
                                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="menu"/>
+                                                        <font key="font" metaFont="message"/>
                                                         <menu key="menu" id="CSH-3W-faG">
                                                             <items>
                                                                 <menuItem title="Item 1" state="on" id="03k-iW-imw"/>
@@ -292,7 +292,7 @@
                                     <rect key="frame" x="4" y="5" width="169" height="149"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ewv-UV-ySC" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
+                                        <visualEffectView blendingMode="behindWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ewv-UV-ySC" customClass="ControllersVisualEffectView" customModule="IINA_" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="15" width="169" height="134"/>
                                             <subviews>
                                                 <gridView xPlacement="leading" yPlacement="bottom" rowAlignment="none" translatesAutoresizingMaskIntoConstraints="NO" id="dBz-gD-lOU">
@@ -324,7 +324,7 @@
                                                             </button>
                                                         </gridCell>
                                                         <gridCell row="hcf-Ao-HZM" column="DcH-xJ-0gT" id="rea-7u-Uaf">
-                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
+                                                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kx-vU-C1M">
                                                                 <rect key="frame" x="-2" y="73" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Speed:" id="0dj-e7-0em">
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -343,7 +343,7 @@
                                                             </slider>
                                                         </gridCell>
                                                         <gridCell row="HjC-Z2-jtc" column="DcH-xJ-0gT" id="f6w-tp-Uf4">
-                                                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
+                                                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m7T-Zd-VdF">
                                                                 <rect key="frame" x="-2" y="26" width="149" height="15"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Opacity:" id="K36-Zb-kEo">
                                                                     <font key="font" metaFont="cellTitle"/>
@@ -380,7 +380,7 @@
                                     </constraints>
                                 </view>
                             </box>
-                            <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hO9-Dn-LIM">
+                            <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hO9-Dn-LIM">
                                 <rect key="frame" x="374" y="227" width="113" height="30"/>
                                 <shadow key="shadow" blurRadius="1">
                                     <size key="offset" width="1" height="1"/>

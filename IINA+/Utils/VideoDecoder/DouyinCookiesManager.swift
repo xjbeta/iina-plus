@@ -9,8 +9,8 @@
 import Cocoa
 import WebKit
 import Alamofire
-import Semaphore
 
+@MainActor
 class DouyinCookiesManager: NSObject {
 	private var webView: WKWebView?
 	
@@ -53,13 +53,9 @@ addXMLRequestCallback(function (xhr) {
 	
 	private var douyinWebcastUpdated: (() -> Void)?
 	
-	@MainActor
-	private let semaphore = AsyncSemaphore(value: 1)
-	
-	@MainActor
+    private let tokenBucket = TokenBucket(tokens: 1)
 	private var _cookies = [String: String]()
 	
-	@MainActor
 	private var shouldRetry = false
 	
 	enum DYState {
@@ -98,25 +94,28 @@ addXMLRequestCallback(function (xhr) {
 		}.joined(separator: ";")
 	}
 	
-	@MainActor
+	
 	func douyinUA() async -> String {
 		douyinUA
 	}
-	
-	func cookies() async throws -> [String: String] {
-		await semaphore.wait()
-		defer { semaphore.signal() }
-		
-		if await shouldRetry {
+    
+    func cookies() async throws -> [String: String] {
+        try await tokenBucket.withToken {
+            try await internelCookies()
+        }
+    }
+    
+	func internelCookies() async throws -> [String: String] {
+		if shouldRetry {
 			Log("retry 60s")
-			await updateInternalCookies([:])
+			updateInternalCookies([:])
 			try await Task.sleep(seconds: 60)
-			await updateRetry(false)
+			updateRetry(false)
 		}
 		
-		if await _cookies.count > 0 {
+		if _cookies.count > 0 {
 //			Log("cached cookies")
-			return await _cookies
+			return _cookies
 		}
 		
 		do {
@@ -137,23 +136,23 @@ addXMLRequestCallback(function (xhr) {
 			return cookies
 		} catch {
 			Log("should retry, catch \(error)")
-			await updateRetry(true)
-			await deinitWebViewAsync()
+			updateRetry(true)
+			deinitWebViewAsync()
 			throw error
 		}
 	}
 	
-	@MainActor
+	
 	func updateInternalCookies(_ cookies: [String: String]) {
 		_cookies = cookies
 	}
 	
-	@MainActor
+	
 	func updateRetry(_ retry: Bool) {
 		self.shouldRetry = retry
 	}
 	
-	@MainActor
+	
 	func prepareCookies() async throws -> [String: String] {
 		Log("start")
 		deleteDouYinCookies()
@@ -185,7 +184,7 @@ addXMLRequestCallback(function (xhr) {
 //			Log("time")
 			let isLoading = webView.isLoading
 			guard !isLoading,
-				  let title = try await webView.evaluateJavaScriptAsync("document.title") as? String else {
+				  let title = try await webView.evaluateJavaScriptAsync("document.title", type: String.self) else {
 				continue
 			}
 			
@@ -213,7 +212,7 @@ addXMLRequestCallback(function (xhr) {
 		return cookies
 	}
 	
-	@MainActor
+	
 	func loadCookies() async throws -> [String: String] {
 		guard let webview = webView else {
 			throw VideoGetError.douyuSignError
@@ -231,22 +230,22 @@ addXMLRequestCallback(function (xhr) {
 			cookies[$0.name] = $0.value
 		}
 		
-		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)")
-		let re2 = try await webview.evaluateJavaScriptAsync("window.navigator.userAgent")
+		let re1 = try await webview.evaluateJavaScriptAsync("localStorage.\(cid)", type: String.self)
+		let re2 = try await webview.evaluateJavaScriptAsync("window.navigator.userAgent", type: String.self)
 		
-		cookies[cid] = re1 as? String
+		cookies[cid] = re1
 		Log("cid \(re1 ?? ""), ua \(re2 ?? "")")
 		
-		guard let ua = re2 as? String else {
+		guard let ua = re2 else {
 			Log("nil userAgent")
 			throw CookiesError.invalid
 		}
 		
-		let re = try await webview.evaluateJavaScriptAsync("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())")
+		let re = try await webview.evaluateJavaScriptAsync("localStorage.\(self.privateKeys[0].base64Decode()) + ',' + localStorage.\(self.privateKeys[1].base64Decode())", type: String.self)
 		
 		Log("privateKeys")
 		
-		guard let values = (re as? String)?.split(separator: ",", maxSplits: 1).map(String.init) else {
+		guard let values = re?.split(separator: ",", maxSplits: 1).map(String.init) else {
 			throw VideoGetError.douyuSignError
 		}
 		
@@ -270,7 +269,7 @@ addXMLRequestCallback(function (xhr) {
 			"\($0.key)=\($0.value)"
 		}.joined(separator: ";")
 		
-		var headers = HTTPHeaders([
+		let headers = HTTPHeaders([
 			"User-Agent": ua,
 			"Cookie": cookie
 		])
@@ -282,7 +281,7 @@ addXMLRequestCallback(function (xhr) {
 		} catch {
 			switch error {
 			case AFError.responseSerializationFailed(reason: .inputDataNilOrZeroLength):
-				await updateRetry(true)
+				updateRetry(true)
 				throw CookiesError.invalid
 			default:
 				Log(error)
@@ -290,15 +289,14 @@ addXMLRequestCallback(function (xhr) {
 		}
 	}
 	
-	@MainActor
+	
 	func deleteCookies() async {
 		let cookies = await getAllWKCookies()
 		
-		await withTaskGroup(of: Int.self) { group in
+		await withTaskGroup(of: Void.self) { group in
 			cookies.forEach { c in
 				group.addTask {
 					await self.deleteWKCookie(c)
-					return 0
 				}
 			}
 		}
@@ -306,25 +304,25 @@ addXMLRequestCallback(function (xhr) {
 		deleteDouYinCookies()
 	}
 	
-	@MainActor
+	
 	func deleteDouYinCookies() {
 		HTTPCookieStorage.shared.cookies?.filter {
 			$0.domain.contains("douyin")
 		}.forEach(HTTPCookieStorage.shared.deleteCookie)
 	}
 	
-	@MainActor
+	
 	func getAllWKCookies() async -> [HTTPCookie] {
 		let all = await WKWebsiteDataStore.default().httpCookieStore.allCookies()
 		return all.filter({ $0.domain.contains("douyin") })
 	}
 	
-	@MainActor
+	
 	func deleteWKCookie(_ cookie: HTTPCookie) async {
 		await WKWebsiteDataStore.default().httpCookieStore.deleteCookie(cookie)
 	}
 	
-	@MainActor
+	
 	func deinitWebViewAsync() {
 		deinitWebView()
 	}
@@ -335,10 +333,6 @@ addXMLRequestCallback(function (xhr) {
 		webView?.stopLoading()
 		webView?.removeFromSuperview()
 		webView = nil
-	}
-	
-	deinit {
-		deinitWebView()
 	}
 }
 
