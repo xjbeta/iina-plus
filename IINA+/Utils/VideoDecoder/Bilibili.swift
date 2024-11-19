@@ -89,7 +89,7 @@ actor Bilibili: SupportSiteProtocol {
 		}
     }
     
-	func getBilibiliHTMLDatas(_ url: String) async throws -> (playInfoData: Data, initialStateData: Data, bangumiData: Data) {
+	func getBilibiliHTMLDatas(_ url: String) async throws -> (playInfoData: Data, initialStateData: Data) {
         let headers = HTTPHeaders(["Referer": "https://www.bilibili.com/",
                                    "User-Agent": biliShare.bilibiliUA])
 
@@ -105,9 +105,8 @@ actor Bilibili: SupportSiteProtocol {
 		
 		let playInfoData = playinfoStrig.data(using: .utf8) ?? Data()
 		let initialStateData = re.subString(from: "window.__INITIAL_STATE__=", to: ";(function()").data(using: .utf8) ?? Data()
-		let bangumiData = re.subString(from: "<script id=\"__NEXT_DATA__\" type=\"application/json\">", to: "</script>").data(using: .utf8) ?? Data()
 		
-		return (playInfoData, initialStateData, bangumiData)
+		return (playInfoData, initialStateData)
     }
     
     func decodeBilibiliDatas(_ url: String,
@@ -156,9 +155,6 @@ actor Bilibili: SupportSiteProtocol {
 			throw VideoGetError.notFindUrls
 		}
     }
-    
-
-
     
     func bilibiliPrepareID(_ url: String) async throws -> YouGetJSON {
         guard let bUrl = BilibiliUrl(url: url) else {

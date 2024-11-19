@@ -137,7 +137,7 @@ actor VideoDecoder {
 			}
 			
 			let qn = stream.quality
-			let json = try await bilibili.bilibiliPlayUrl(yougetJson: json, json.site == .bangumi, qn)
+            let json = try await bilibili.biliShare.bilibiliPlayUrl(yougetJson: json, json.site == .bangumi, qn)
 			return await registerDash(json)
 		case .biliLive:
 			guard let stream = json.streams[key],
