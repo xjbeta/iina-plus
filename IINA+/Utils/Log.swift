@@ -8,7 +8,7 @@
 
 import Cocoa
 
-public func Log<T>(_ message: T, file: String = #file, method: String = #function, line: Int = #line) {
+public func Log<T: Sendable>(_ message: T, file: String = #file, method: String = #function, line: Int = #line) {
     DispatchQueue.main.async {
         var logStr = "\(URL(fileURLWithPath: file).lastPathComponent)[\(line)], \(method): \(message)"
         #if DEBUG

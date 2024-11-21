@@ -11,7 +11,7 @@ import Alamofire
 import Marshal
 import SwiftSoup
 
-class CC163: NSObject, SupportSiteProtocol {
+actor CC163: SupportSiteProtocol {
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		if url.pathComponents.count == 4,
 		   url.pathComponents[2] == "ccid" {
@@ -55,7 +55,7 @@ class CC163: NSObject, SupportSiteProtocol {
 		}
 		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
 		
-		if let domain: String = try? jsonObj.value(for: "query.domain") {
+		if let _: String = try? jsonObj.value(for: "query.domain") {
 			let list = try self.getCC163ZtRoomList(jsonObj)
 			guard list.count > 0 else {
 				throw VideoGetError.notFountData

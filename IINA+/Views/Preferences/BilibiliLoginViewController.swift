@@ -90,28 +90,26 @@ document.getElementsByClassName("v-navbar__back")[0].remove();
         waitProgressIndicator.startAnimation(self)
     }
     
-	func checkLogin() {
-		Task { @MainActor in
-			do {
-				let cookies = await webView.configuration.websiteDataStore.httpCookieStore.allCookies()
-				cookies.forEach {
-					HTTPCookieStorage.shared.setCookie($0)
-				}
-				
-				let bilibili = Processes.shared.videoDecoder.bilibili
-				let isLogin = try await bilibili.isLogin()
-				
-				Log("islogin \(isLogin.0), \(isLogin.1)")
-				
-				if isLogin.0 {
-					self.dismissLogin?(isLogin)
-				} else {
-					self.tabView.selectTabViewItem(at: 1)
-				}
-			} catch let error {
-				Log(error)
+	func checkLogin() async {
+		do {
+			let cookies = await webView.configuration.websiteDataStore.httpCookieStore.allCookies()
+			cookies.forEach {
+				HTTPCookieStorage.shared.setCookie($0)
+			}
+			
+			let bilibili = await Processes.shared.videoDecoder.bilibili
+			let isLogin = try await bilibili.isLogin()
+			
+			Log("islogin \(isLogin.0), \(isLogin.1)")
+			
+			if isLogin.0 {
+				self.dismissLogin?(isLogin)
+			} else {
 				self.tabView.selectTabViewItem(at: 1)
 			}
+		} catch let error {
+			Log(error)
+			self.tabView.selectTabViewItem(at: 1)
 		}
 	}
 	
@@ -126,11 +124,12 @@ extension BilibiliLoginViewController: WKNavigationDelegate {
         displayWait()
 		
 		webviewObserver = webView.observe(\.isLoading) { (webView, _) in
-			guard !webView.isLoading else { return }
-			Log("Finish loading")
-			self.checkLogin()
+			Task { @MainActor in
+				guard !webView.isLoading else { return }
+				Log("Finish loading")
+				await self.checkLogin()
+			}
 		}
-		
     }
     
     

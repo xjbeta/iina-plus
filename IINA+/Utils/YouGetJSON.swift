@@ -199,7 +199,7 @@ struct YouGetJSON: Unmarshaling, Codable {
 				return kvs
 			}
 			
-			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+			guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) else { return nil }
 			let k = kv[0]
 			return "\(k)=\(v)"
 		}
@@ -227,7 +227,7 @@ struct YouGetJSON: Unmarshaling, Codable {
                 return kvs
             }
             
-            guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: Processes.shared.urlQueryValueAllowed) else { return nil }
+            guard let v = kv[1].addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) else { return nil }
             let k = kv[0]
             return "\(k)=\(v)"
         }
@@ -286,8 +286,8 @@ struct YouGetJSON: Unmarshaling, Codable {
         if Preferences.shared.enableDanmaku {
             opts.type = PluginOptionsType.ws.rawValue
         }
-        
-        if let dmPath = VideoDecoder().dmPath(uuid),
+		
+        if let dmPath = VideoDecoder.dmPath(uuid),
             FileManager.default.fileExists(atPath: dmPath) {
             opts.type = PluginOptionsType.xmlFile.rawValue
             opts.xmlPath = dmPath

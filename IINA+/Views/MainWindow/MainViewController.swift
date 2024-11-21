@@ -10,7 +10,7 @@ import Cocoa
 import CoreData
 import Alamofire
 import SDWebImage
-import WebKit
+@preconcurrency import WebKit
 
 private extension NSPasteboard.PasteboardType {
     static let bookmarkRow = NSPasteboard.PasteboardType("bookmark.Row")
@@ -94,8 +94,10 @@ class MainViewController: NSViewController {
         case bookmarkTableView.menu:
             url = bookmarks[bookmarkTableView.clickedRow].url
         case bilibiliTableView.menu:
-            url = "https://www.bilibili.com/video/" + bilibiliCards[bilibiliTableView.clickedRow].bvid
-        default: break
+            guard let bvid = bilibiliDataSource.itemIdentifier(forRow: bilibiliTableView.clickedRow)?.bvid else { return }
+            url = "https://www.bilibili.com/video/" + bvid
+        default:
+            break
         }
         guard let url = url else { return }
         NSPasteboard.general.clearContents()
@@ -108,8 +110,10 @@ class MainViewController: NSViewController {
         case bookmarkTableView.menu:
             url = bookmarks[bookmarkTableView.clickedRow].url
         case bilibiliTableView.menu:
-            url = "https://www.bilibili.com/video/" + bilibiliCards[bilibiliTableView.clickedRow].bvid
-        default: break
+            guard let bvid = bilibiliDataSource.itemIdentifier(forRow: bilibiliTableView.selectedRow)?.bvid else { return }
+            url = "https://www.bilibili.com/video/" + bvid
+        default:
+            break
         }
         guard let url = url else { return }
         
@@ -127,31 +131,29 @@ class MainViewController: NSViewController {
     
     // MARK: - Bilibili Tab Item
     @IBOutlet weak var bilibiliTableView: MainWindowTableView!
-    @IBOutlet var bilibiliArrayController: NSArrayController!
-    @objc dynamic var bilibiliCards: [BilibiliCard] = []
-    let bilibili = Processes.shared.videoDecoder.bilibili
-	
+    var bilibiliDataSource: NSTableViewDiffableDataSource<Int, BilibiliCard>!
+    
+    @MainActor
 	let bilibiliDynamicManager = BilibiliDynamicManger()
 	
     @IBOutlet weak var videoInfosContainerView: NSView!
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
-        if bilibiliTableView.selectedRow != -1 {
-            let card = bilibiliCards[bilibiliTableView.selectedRow]
-            let bvid = card.bvid
-            if card.videos == 1 {
-                searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
-                searchField.becomeFirstResponder()
-                startSearch(self)
-            } else if card.videos > 1 {
-				Task {
-					do {
-						let infos = try await bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)")
-						showSelectVideo(bvid, infos: infos)
-					} catch let error {
-						Log("Get video list error: \(error)")
-					}
-				}
+        guard let card = bilibiliDataSource.itemIdentifier(forRow: bilibiliTableView.selectedRow) else { return }
+        
+        let bvid = card.bvid
+        if card.videos == 1 {
+            searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
+            searchField.becomeFirstResponder()
+            startSearch(self)
+        } else if card.videos > 1 {
+            Task {
+                do {
+                    let infos = try await Processes.shared.videoDecoder.bilibili.getVideoList("https://www.bilibili.com/video/\(bvid)")
+                    showSelectVideo(bvid, infos: infos)
+                } catch let error {
+                    Log("Get video list error: \(error)")
+                }
             }
         }
     }
@@ -224,60 +226,48 @@ class MainViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureBilibiliTableView()
+        
         dataManager.requestData().forEach {
             $0.state = LiveState.none.raw
         }
 		
-		Task {
-			await bilibiliDynamicManager.setDelegate(self)
-			await bilibiliDynamicManager.loadBilibiliCards()
+        Task {
+            await bilibiliDynamicManager.setDelegate(self)
+            await bilibiliDynamicManager.loadBilibiliCards()
 		}
      
         bookmarkArrayController.sortDescriptors = dataManager.sortDescriptors
         bookmarkTableView.registerForDraggedTypes([.bookmarkRow])
         bookmarkTableView.draggingDestinationFeedbackStyle = .gap
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTableView), name: .reloadMainWindowTableView, object: nil)
-        NotificationCenter.default.addObserver(forName: .sideBarSelectionChanged, object: nil, queue: .main) {
-            guard let userInfo = $0.userInfo as? [String: SidebarItem],
-                  let item = userInfo["selectedItem"] else {
-                return
-            }
-            switch item {
-            case .bookmarks:
-                self.selectTabItem(.bookmarks)
-            case .bilibili:
-                self.selectTabItem(.bilibili)
-            case .search:
-                self.selectTabItem(.search)
-            default:
-                break
-            }
-            self.reloadTableView()
-        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(sideBarSelectionChanged(_:)), name: .sideBarSelectionChanged, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(scrollViewDidScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: bilibiliTableView.enclosingScrollView)
         
         // esc key down event
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
             case 53:
-                if let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
-                    let item = SidebarItem(rawValue: str) {
-                    let oldItem = self.mainTabViewOldItem
-                    
-                    switch item {
-                    case .selectVideos, .search:
-                        switch oldItem {
-                        case .bookmarks, .bilibili, .search:
-                            NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": oldItem])
-                            self.selectTabItem(oldItem)
-                            self.mainTabViewOldItem = .none
-                            return nil
-                        default:
-                            break
-                        }
+                guard let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
+                      let item = SidebarItem(rawValue: str) else { return event }
+                
+                let oldItem = self.mainTabViewOldItem
+                
+                switch item {
+                case .selectVideos, .search:
+                    switch oldItem {
+                    case .bookmarks, .bilibili, .search:
+                        NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": oldItem])
+                        self.selectTabItem(oldItem)
+                        self.mainTabViewOldItem = .none
+                        return nil
                     default:
                         break
                     }
+                default:
+                    break
                 }
             default:
                 break
@@ -285,13 +275,10 @@ class MainViewController: NSViewController {
             return event
         }
         
-        bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { arrayController, _ in
-            let c = (arrayController.arrangedObjects as? [Any])?.count
-            
-            self.noticeTabView.isHidden = c != 0
-            
-            let i = arrayController.fetchPredicate == nil ? 0 : 1
-            self.noticeTabView.selectTabViewItem(at: i)
+        bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { [unowned self] arrayController, _ in
+            Task {
+                await updateNoticeTabView()
+            }
         }
     }
     
@@ -307,17 +294,15 @@ class MainViewController: NSViewController {
             boxV.stopTimer()
         }
 		
-		Task { @MainActor in
-			guard await bilibiliDynamicManager.canLoadMore else { return }
-
-			if let scrollView = notification.object as? NSScrollView {
-				let visibleRect = scrollView.contentView.documentVisibleRect
-				let documentRect = scrollView.contentView.documentRect
-				if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
-					await bilibiliDynamicManager.loadBilibiliCards(.history)
-				}
-			}
-		}
+        Task {
+            if let scrollView = notification.object as? NSScrollView {
+                let visibleRect = scrollView.contentView.documentVisibleRect
+                let documentRect = scrollView.contentView.documentRect
+                if documentRect.height - visibleRect.height - visibleRect.origin.y < 150 {
+                    await bilibiliDynamicManager.loadBilibiliCards(.history)
+                }
+            }
+        }
     }
 
     override var representedObject: Any? {
@@ -336,12 +321,10 @@ class MainViewController: NSViewController {
         
         switch item {
         case .bookmarks:
-            dataManager.requestData().forEach {
-                $0.updateState()
-            }
+            dataManager.reloadAllBookmark()
         case .bilibili:
 			Task {
-				if bilibiliCards.count > 0 {
+				if bilibiliDataSource.snapshot().numberOfItems > 0 {
 					await bilibiliDynamicManager.loadBilibiliCards(.new)
 				} else {
 					await bilibiliDynamicManager.loadBilibiliCards(.init😅)
@@ -352,6 +335,33 @@ class MainViewController: NSViewController {
         default:
             break
         }
+    }
+    
+    @objc func sideBarSelectionChanged(_ notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String: SidebarItem],
+              let item = userInfo["selectedItem"] else {
+            return
+        }
+        switch item {
+        case .bookmarks:
+            self.selectTabItem(.bookmarks)
+        case .bilibili:
+            self.selectTabItem(.bilibili)
+        case .search:
+            self.selectTabItem(.search)
+        default:
+            break
+        }
+        self.reloadTableView()
+    }
+    
+    func updateNoticeTabView() {
+        let c = (bookmarkArrayController.arrangedObjects as? [Any])?.count
+        
+        noticeTabView.isHidden = c != 0
+        
+        let i = bookmarkArrayController.fetchPredicate == nil ? 0 : 1
+        noticeTabView.selectTabViewItem(at: i)
     }
     
     func selectTabItem(_ item: SidebarItem) {
@@ -493,8 +503,11 @@ class MainViewController: NSViewController {
     func decodeUrl(_ url: String,
                    directly: Bool = false,
                    with option: Bool = false) async throws {
-        
+     
 		let videoGet = Processes.shared.videoDecoder
+        let bilibili = await Processes.shared.videoDecoder.bilibili
+        let douyu = await Processes.shared.videoDecoder.douyu
+        
 		var str = url
 		yougetResult = nil
 		guard str.isUrl,
@@ -534,7 +547,7 @@ class MainViewController: NSViewController {
 					try await decodeUrl()
 				}
 			case .bangumi:
-				let epVS = try await bilibili.getBangumiList(u).epVideoSelectors
+                let epVS = try await bilibili.bangumi.getBangumiList(u).epVideoSelectors
 				if epVS.count == 1 {
 					try await decodeUrl()
 				} else {
@@ -553,7 +566,7 @@ class MainViewController: NSViewController {
 		} else if url.host == "www.douyu.com",
 				  url.pathComponents.count > 2,
 				  url.pathComponents[1] == "topic" {
-			let douyu = videoGet.douyu
+			
 			
 			try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(), any Error>) in
 				Task {
@@ -664,8 +677,8 @@ class MainViewController: NSViewController {
 		
 		guard !pref.enableFlvjs,
 			  pref.livePlayer == .iina,
-			  proc.iina.archiveType == .plugin else {
-			try proc.openWithPlayer(yougetJSON, key)
+			  await proc.iina.archiveType == .plugin else {
+			try await proc.openWithPlayer(yougetJSON, key)
 			return
 		}
 		
@@ -680,13 +693,13 @@ class MainViewController: NSViewController {
 			let _ = alert.runModal()
 		}
 		
-		switch proc.iina.pluginState() {
+		switch IINAApp.pluginState() {
 		case .needsUpdate(let plugin) where plugin.ghVersion < 4:
 			Log("Open result failed, plugin outdate.")
 			showInstallAlert()
 		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
 			Log("Open result with plugin")
-			try proc.openWithPlayer(yougetJSON, key)
+			try await proc.openWithPlayer(yougetJSON, key)
 		case .needsInstall, .multiple:
 			Log("Open result failed, pluginNotFound.")
 			showInstallAlert()
@@ -885,6 +898,25 @@ class MainViewController: NSViewController {
         bookmarkArrayController.fetchPredicate = p
     }
     
+    
+    func configureBilibiliTableView() {
+        guard let tableView = bilibiliTableView else { return }
+
+        tableView.delegate = self
+        tableView.dataSource = bilibiliDataSource
+
+        bilibiliDataSource = NSTableViewDiffableDataSource<Int, BilibiliCard>(tableView: tableView) { (tableView, tableColumn, row, item) -> NSView in
+            guard let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: self) as? BilibiliCardTableCellView else { return NSTableCellView() }
+            view.update(item)
+            return view
+        }
+        
+        bilibiliDataSource.rowViewProvider = { (tableView, tableColumn, itemIdentifier) in
+            tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("MainWindowTableRowView"), owner: self) as? MainWindowTableRowView ?? MainWindowTableRowView()
+        }
+    }
+    
+    
     deinit {
         bookmarkArrayCountObserver?.invalidate()
     }
@@ -895,8 +927,6 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
         switch tableView {
         case bookmarkTableView:
             return bookmarks.count
-        case bilibiliTableView:
-            return tableView.numberOfRows
         case suggestionsTableView:
             if let obj = yougetResult {
                 return obj.streams.count
@@ -939,28 +969,6 @@ extension MainViewController: NSTableViewDelegate, NSTableViewDataSource {
                 return tableView.makeView(withIdentifier: .liveUrlTableCellView, owner: nil)
             default:
                 return tableView.makeView(withIdentifier: .liveStatusTableCellView, owner: nil) as? LiveStatusTableCellView
-            }
-        case bilibiliTableView:
-            if let view = tableView.makeView(withIdentifier: .bilibiliCardTableCellView, owner: nil) as? BilibiliCardTableCellView {
-				view.imageView?.image = nil
-				let aid = bilibiliCards[row].aid
-				
-                view.imageBoxView.aid = aid
-                view.imageBoxView.imageView?.image = nil
-                view.imageBoxView.pic = nil
-                view.imageBoxView.updatePreview(.stop)
-                
-                var url = bilibiliCards[row].picUrl
-                url.coverUrlFormatter(site: .bilibili)
-                
-                if let imageView = view.imageView {
-                    SDWebImageManager.shared.loadImage(with: .init(string: url), progress: nil) { img,_,_,_,_,_ in
-						guard view.imageBoxView.aid == aid else { return }
-                        view.imageBoxView.pic = img
-                        imageView.image = img
-                    }
-                }
-                return view
             }
         case suggestionsTableView:
             if let obj = yougetResult {
@@ -1094,23 +1102,36 @@ extension MainViewController: BilibiliDynamicMangerDelegate {
 	}
 	
 	func bilibiliDynamicCardsContains(_ bvid: String) -> Bool {
-		bilibiliCards.contains(where: { $0.bvid == bvid })
+        bilibiliDataSource.snapshot().itemIdentifiers.contains(where: { $0.bvid == bvid })
 	}
 	
 	func bilibiliDynamicInitCards(_ cards: [BilibiliCard]) {
-		bilibiliCards = cards
+        var snapshot = NSDiffableDataSourceSnapshot<Int, BilibiliCard>()
+        snapshot.deleteAllItems()
+        snapshot.appendSections([0])
+        snapshot.appendItems(cards, toSection: 0)
+        bilibiliDataSource.apply(snapshot, animatingDifferences: false)
 	}
 	
 	func bilibiliDynamicAppendCards(_ cards: [BilibiliCard]) {
-		bilibiliCards.append(contentsOf: cards)
+        var snapshot = bilibiliDataSource.snapshot()
+        snapshot.appendItems(cards, toSection: 0)
+        bilibiliDataSource.apply(snapshot, animatingDifferences: false)
 	}
 	
 	func bilibiliDynamicInsertCards(_ cards: [BilibiliCard]) {
-		bilibiliCards.insert(contentsOf: cards, at: 0)
+        var snapshot = bilibiliDataSource.snapshot()
+        if let item = snapshot.itemIdentifiers(inSection: 0).first {
+            snapshot.insertItems(cards, beforeItem: item)
+        } else {
+            snapshot.appendItems(cards)
+        }
+        bilibiliDataSource.apply(snapshot, animatingDifferences: false)
 	}
 	
 	func bilibiliDynamicCards() -> [BilibiliCard] {
-		bilibiliCards
+        
+        bilibiliDataSource.snapshot().itemIdentifiers
 	}
 }
 

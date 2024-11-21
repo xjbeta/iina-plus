@@ -9,14 +9,10 @@
 import Cocoa
 import WebKit
 
+@MainActor
 class DouYinDM: NSObject {
 	var url = ""
 	
-	let douyin = Processes.shared.videoDecoder.douyin
-	
-	var privateKeys: [String] {
-		douyin.cookiesManager.privateKeys
-	}
 	
 	private var webView = WKWebView()
 	var requestPrepared: ((URLRequest) -> Void)?
@@ -29,9 +25,9 @@ class DouYinDM: NSObject {
 		let code = "\("d2luZG93LmJ5dGVkX2FjcmF3bGVyLmZyb250aWVyU2lnbg==".base64Decode())({'\("WC1NUy1TVFVC".base64Decode())':'\(s.md5())'})"
 		
 		
-		let re = try await webView.evaluateJavaScriptAsync(code)
+		let re = try await webView.evaluateJavaScriptAsync(code, type: [String: String].self)
 		
-		guard let value = (re as? [String: String])?.first?.value else {
+		guard let value = re?.first?.value else {
 			throw DouYinDMError.signFailed
 		}
 		
@@ -68,7 +64,7 @@ class DouYinDM: NSObject {
 	}
 	
 	func getRoomId() async throws -> String {
-		
+		let douyin = await Processes.shared.videoDecoder.douyin
 		let info = try await douyin.liveInfo(self.url)
 		
 		if let rid = (info as? DouYinEnterData.DouYinLiveInfo)?.roomId {
@@ -84,10 +80,10 @@ class DouYinDM: NSObject {
 	}
 	
 	func prepareCookies() async {
+		let douyin = await Processes.shared.videoDecoder.douyin
 		
-		let storageDic = await MainActor.run {
-			return douyin.cookiesManager.storageDic
-		}
+		let storageDic = douyin.cookiesManager.storageDic
+		let privateKeys = douyin.cookiesManager.privateKeys
 		
 		let kvs = [
 			privateKeys[0].base64Decode(),
@@ -101,7 +97,7 @@ class DouYinDM: NSObject {
 		}
 		
 		for kv in kvs {
-			let _ = try? await webView.evaluateJavaScriptAsync("window.sessionStorage.setItem('\(kv.0)', '\(kv.1)')")
+			let _ = try? await webView.evaluateJavaScriptAsync("window.sessionStorage.setItem('\(kv.0)', '\(kv.1)')", type: String.self)
 		}
 	}
 	
@@ -109,24 +105,23 @@ class DouYinDM: NSObject {
 		Task {
             do {
 				let rid = try await getRoomId()
+				let douyin = await Processes.shared.videoDecoder.douyin
+				
 				let cookies = try await douyin.cookiesManager.cookies()
 				let ua = await douyin.cookiesManager.douyinUA()
 				
 				await prepareCookies()
 				let req = try await initWS(rid, cookies: cookies, ua: ua)
 				
-				await MainActor.run {
-					self.requestPrepared?(req)
-				}
+				requestPrepared?(req)
             } catch {
                 Log("DouYinDM request error \(error)")
             }
 			
-			await stop()
+			stop()
         }
 	}
 	
-	@MainActor
 	func stop() {
 		webView.navigationDelegate = nil
 		webView.stopLoading()

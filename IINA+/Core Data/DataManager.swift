@@ -8,10 +8,15 @@
 
 import Cocoa
 
+@MainActor
 class DataManager: NSObject {
     
     let context = (NSApp.delegate as! AppDelegate).persistentContainer.viewContext
+	
     let sortDescriptors = [NSSortDescriptor(key: #keyPath(Bookmark.order), ascending: true)]
+    
+    private let tokenBucket = TokenBucket(tokens: 1)
+    private var bookmarkReloadDate = [NSManagedObjectID: TimeInterval]()
     
     func requestData() -> [Bookmark] {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Bookmark")
@@ -23,6 +28,63 @@ class DataManager: NSObject {
         return []
     }
     
+    func reloadAllBookmark() {
+        Task { @MainActor in
+            await withTaskGroup(of: Void.self) { group in
+                for i in requestData() {
+                    let id = i.objectID
+                    group.addTask {
+                        await self.reloadBookmark(id)
+                    }
+                }
+            }
+        }
+    }
+    
+    func reloadBookmark(_ id: NSManagedObjectID) async {
+        guard let obj = try? context.existingObject(with: id) as? Bookmark else { return }
+        let site = SupportSites(url: obj.url)
+        if site == .unsupported {
+            obj.state = LiveState.none.raw
+            save()
+            return
+        }
+        
+        let refreshInterval: CGFloat = [.bangumi, .bilibili, .unsupported].contains(site) ? 300 : 20
+        
+        let rt = await tokenBucket.withToken {
+            // Inited
+            if let ti = await bookmarkReloadDate[id] {
+                // Updating
+                if ti == -1 {
+                    return 1
+                }
+                
+                if Date(timeIntervalSince1970: ti).secondsSinceNow < refreshInterval {
+                    return 1
+                }
+            }
+            return 0
+        }
+        
+        if rt == 1 {
+            return
+        }
+        
+        do {
+            let info = try await Processes.shared.videoDecoder.liveInfo(obj.url)
+            await obj.setInfo(info)
+        } catch let error {
+            obj.setInfoError(error)
+        }
+
+        save()
+        
+        await tokenBucket.withToken { @MainActor in
+            bookmarkReloadDate[id] = Date().timeIntervalSince1970
+        }
+    }
+    
     func addBookmark(_ str: String) {
         let newBookmark = Bookmark(context: context)
         newBookmark.url = str
@@ -31,19 +93,21 @@ class DataManager: NSObject {
         } else {
             newBookmark.order = 0
         }
-        try? context.save()
-        newBookmark.updateState()
+        save()
+        Task {
+            await reloadBookmark(newBookmark.objectID)
+        }
     }
     
     func deleteBookmark(_ index: Int) {
         let bookmark = requestData()[index]
         context.delete(bookmark)
-        try? context.save()
+        save()
     }
     
     func delete(_ bookmark: Bookmark) {
         context.delete(bookmark)
-        try? context.save()
+        save()
     }
     
     func moveBookmark(at oldIndex: Int, to newIndex: Int) {
@@ -62,7 +126,10 @@ class DataManager: NSObject {
         default:
             break
         }        
-        try? context.save()
+        save()
     }
 
+    func save() {
+        try? context.save()
+    }
 }

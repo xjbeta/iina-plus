@@ -9,7 +9,7 @@
 import Cocoa
 import Marshal
 
-protocol LiveInfo {
+protocol LiveInfo: Sendable {
     var title: String { get }
     var name: String { get }
     var avatar: String { get }

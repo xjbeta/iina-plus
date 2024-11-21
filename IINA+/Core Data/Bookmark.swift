@@ -21,57 +21,8 @@ public class Bookmark: NSManagedObject {
     
     @objc dynamic var image: NSImage?
     
-    private var inited = false
-	private var updating = false
-    
-    func updateState(_ force: Bool = false) {
-        if site == .unsupported {
-            self.state = LiveState.none.raw
-            self.save()
-            return
-        }
-        
-        let limitSec: CGFloat = [.bangumi, .bilibili, .unsupported].contains(site) ? 300 : 20
-        
-		if inited {
-			if updating {
-				return
-			}
-			
-			if let s = updateDate?.secondsSinceNow,
-			   s < limitSec {
-				return
-			}
-		}
-		
-        inited = true
-        
-        /*
-        if let d = updateDate?.timeIntervalSince1970,
-           (Date().timeIntervalSince1970 - d) > 1800 {
-            state = LiveState.none.raw
-        }
-         */
-		updating = true
-		
-		Task {
-			do {
-				let info = try await Processes.shared.videoDecoder.liveInfo(url)
-				await setInfo(info)
-			} catch let error {
-				await setInfoError(error)
-			}
-			
-			await MainActor.run {
-				updateDate = Date()
-				updating = false
-				save()
-			}
-		}
-    }
-    
-	@MainActor
-    private func setInfo(_ info: LiveInfo) {
+    @MainActor
+    func setInfo(_ info: LiveInfo) async {
         liveTitle = info.title
         liveName = info.name
         
@@ -80,7 +31,7 @@ public class Bookmark: NSManagedObject {
         cover = isLiveSite ? info.avatar : info.cover
         cover?.coverUrlFormatter(site: isLiveSite ? site : .biliLive)
 
-        updateImage()
+        await updateImage()
         
         if info.site == .bangumi {
             liveName = "Bangumi"
@@ -94,27 +45,31 @@ public class Bookmark: NSManagedObject {
             state = LiveState.none.raw
         }
     }
-	
-	@MainActor
-	private func setInfoError(_ error: any Error) {
+    
+    @MainActor
+	func setInfoError(_ error: any Error) {
 		let s = "Get live status error: \(error) \n - \(url)"
 		Log(s)
-		self.liveTitle = url
-		self.state = LiveState.none.raw
+		liveTitle = url
+		state = LiveState.none.raw
 	}
     
-    private func updateImage() {
+    @MainActor
+    private func updateImage() async {
         image = nil
-        if let c = cover {
+        guard let c = cover else { return }
+        let img = await withCheckedContinuation { continuation in
             SDWebImageManager.shared.loadImage(
                 with: .init(string: c),
                 progress: nil) { image, _, _, _, _, url in
-                    self.image = image
+                    continuation.resume(returning: image?.sd_imageData())
             }
         }
+        guard let img else { return }
+        image = NSImage(data: img)
     }
     
     func save() {
-        try? (NSApp.delegate as? AppDelegate)?.persistentContainer.viewContext.save()
+//        try? (NSApp.delegate as? AppDelegate)?.persistentContainer.viewContext.save()
     }
 }

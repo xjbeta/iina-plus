@@ -10,7 +10,7 @@ import Cocoa
 import Alamofire
 import Marshal
 
-class BiliLive: NSObject, SupportSiteProtocol {
+actor BiliLive: SupportSiteProtocol {
     
     enum APIType {
         case playUrl, roomPlayInfo, html

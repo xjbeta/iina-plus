@@ -11,7 +11,7 @@ import Alamofire
 import Marshal
 import SwiftSoup
 
-class Huya: NSObject, SupportSiteProtocol {
+actor Huya: SupportSiteProtocol {
     
     lazy var pSession: Session = {
         let configuration = URLSessionConfiguration.af.default
@@ -78,7 +78,7 @@ class Huya: NSObject, SupportSiteProtocol {
     func getHuyaVideos(_ url: String) async throws -> YouGetJSON {
 		let obj = try await getPlayerConfig(url)
 		let info = try HuyaStream(object: obj)
-		var yougetJson = YouGetJSON(rawUrl: url)
+		let yougetJson = YouGetJSON(rawUrl: url)
 		return info.write(to: yougetJson, uid: huyaUid)
     }
 	
@@ -395,11 +395,11 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
     }
 	
 	func write(to yougetJson: YouGetJSON, uid: Int) -> YouGetJSON {
-		var yougetJson = yougetJson
+		let yougetJson = yougetJson
 		
 		// HuyaUrl.format not work for m
 		return yougetJson
-		
+		/*
 		let urls = streamInfos.sorted { i1, i2 -> Bool in
 			i1.sCdnType == defaultCDN
 		}.sorted { i1, i2 -> Bool in
@@ -431,6 +431,7 @@ struct HuyaInfoM: Unmarshaling, LiveInfo {
 		}
 		
 		return yougetJson
+		 */
 	}
 }
 

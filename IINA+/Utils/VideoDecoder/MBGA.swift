@@ -25,7 +25,7 @@ class MBGA: NSObject {
     }
     
     static func update(_ urls: [String]) -> [String] {
-		var urls: [String] = Array(Set(urls))
+		let urls: [String] = Array(Set(urls))
 		
 		return urls.sorted { u1, u2 in
 			cdnLevel(for: u1).rawValue < cdnLevel(for: u2).rawValue
