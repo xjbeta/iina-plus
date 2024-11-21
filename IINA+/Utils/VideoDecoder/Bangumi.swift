@@ -100,28 +100,25 @@ actor Bangumi: SupportSiteProtocol {
     }
     
     
-    func getBangumiId(_ url: String) async throws -> (BangumiID, JSONObject) {
+    func getBangumiId(_ url: String) async throws -> BangumiID {
         let data = try await getBilibiliHTMLDatas(url, isBangumi: true).initialStateData
         let json: JSONObject = try JSONParser.JSONObjectWithData(data)
         let epid: Int = try json.value(for: "epInfo.ep_id")
         let sid: Int = try json.value(for: "mediaInfo.season_id")
-        let bid = BangumiID(epId: epid, seasonId: sid)
-        return (bid, json)
+        return BangumiID(epId: epid, seasonId: sid)
     }
     
     func getBangumiList(_ url: String, ids: BangumiID? = nil) async throws -> BangumiEpList {
-        if let ids {
-            let u = "https://api.bilibili.com/pgc/view/web/ep/list?season_id=\(ids.seasonId)"
-            let data = try await AF.request(u).serializingData().value
-            let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-            let list = try BangumiEpList(object: json)
-            return list
-        } else {
-            let bid = try await getBangumiId(url)
-            let ids = bid.0
-            let list = try BangumiEpList(object: bid.1)
-            return list
+        var bid: BangumiID! = ids
+        if bid == nil {
+            bid = try await getBangumiId(url)
         }
+        
+        let u = "https://api.bilibili.com/pgc/view/web/ep/list?season_id=\(bid.seasonId)"
+        let data = try await AF.request(u).serializingData().value
+        let json: JSONObject = try JSONParser.JSONObjectWithData(data)
+        let list = try BangumiEpList(object: json)
+        return list
     }
 }
 
@@ -181,7 +178,7 @@ struct BangumiEpList: Unmarshaling {
     
     init(object: MarshaledObject) throws {
         episodes = try object.value(for: "result.episodes")
-        section = try object.value(for: "result.section")
+        section = (try? object.value(for: "result.section")) ?? []
     }
     
     var epVideoSelectors: [BiliVideoSelector] {
