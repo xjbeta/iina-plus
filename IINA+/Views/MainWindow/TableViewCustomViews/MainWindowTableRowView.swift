@@ -42,7 +42,7 @@ class MainWindowTableRowView: NSTableRowView {
     }
     
 	override func drawSelection(in dirtyRect: NSRect) {
-		let color = isEmphasized ? NSColor.controlAccentColor : NSColor.secondarySelectedControlColor
+		let color = isEmphasized ? NSColor.controlAccentColor : NSColor.unemphasizedSelectedContentBackgroundColor
 		
 		color.setFill()
 		NSBezierPath(roundedRect: bounds, xRadius: 5, yRadius: 5).fill()
