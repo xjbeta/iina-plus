@@ -80,7 +80,7 @@ class HttpServer: NSObject, DanmakuDelegate {
 		
 		server.get["/dash/**"] = { request -> HttpResponse in
 			let id = request.path.subString(from: "/dash/", to: ".mpd")
-			guard let content = await self.dash[id]?.data(using: .utf8) else { return .badRequest(.none) }
+			guard let content = self.dash[id]?.data(using: .utf8) else { return .badRequest(.none) }
 			
 			return .ok(.data(content))
 		}
