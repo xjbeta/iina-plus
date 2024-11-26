@@ -155,7 +155,7 @@ addXMLRequestCallback(function (xhr) {
 	
 	func prepareCookies() async throws -> [String: String] {
 		Log("start")
-		deleteDouYinCookies()
+        await deleteDouYinCookies()
 		storageDic.removeAll()
 		
 		let config = webviewConfig
@@ -301,16 +301,19 @@ addXMLRequestCallback(function (xhr) {
 			}
 		}
 		
-		deleteDouYinCookies()
+        await deleteDouYinCookies()
 	}
 	
-	
-	func deleteDouYinCookies() {
-		HTTPCookieStorage.shared.cookies?.filter {
-			$0.domain.contains("douyin")
-		}.forEach(HTTPCookieStorage.shared.deleteCookie)
+    func deleteDouYinCookies() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .background).async {
+                HTTPCookieStorage.shared.cookies?.filter {
+                    $0.domain.contains("douyin")
+                }.forEach(HTTPCookieStorage.shared.deleteCookie)
+                continuation.resume()
+            }
+        }
 	}
-	
 	
 	func getAllWKCookies() async -> [HTTPCookie] {
 		let all = await WKWebsiteDataStore.default().httpCookieStore.allCookies()

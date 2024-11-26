@@ -19,7 +19,7 @@ class BilibiliCardProgressView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         let fullPath = NSBezierPath(roundedRect: bounds, xRadius: 0, yRadius: 0)
-        NSColor.windowFrameColor.setFill()
+        NSColor.windowBackgroundColor.setFill()
         fullPath.fill()
         
         let size = NSSize(width: bounds.width * CGFloat(doubleValue), height: bounds.height)
