@@ -247,7 +247,7 @@ class JSPlayerViewController: NSViewController {
         startLoading()
         initWebView()
         
-        danmakuWS = .init(id: "", site: .local, url: "", webview: webView)
+        danmakuWS = .init(id: "", site: .local, url: "", contextName: "", webview: webView)
         danmakuWS.version = 1
     }
     
