@@ -12,18 +12,15 @@ import NIO
 import NIOHTTP1
 
 
-
 @MainActor
 class HttpServer: NSObject {
     
 	private var dash = [String: String]()
 	
-	
     private var danmukuObservers: [NSObjectProtocol] = []
     
     private var httpFilesURL: URL?
     
-    let videoDecoder = VideoDecoder()
     
     let nioServer = NIOHTTPServer()
 
@@ -40,71 +37,22 @@ class HttpServer: NSObject {
         }
         
         
-//        // Video API
-//        server.POST["/video/danmakuurl"] = { request -> HttpResponse in
-//            guard let url = request.parameters["url"],
-//				  let json = try? await self.decode(url),
-//                  let key = json.videos.first?.key,
-//                  let data = json.danmakuUrl(key)?.data(using: .utf8) else {
-//                return .badRequest(nil)
-//            }
-//            return HttpResponse.ok(.data(data))
-//        }
-//        
-//        server.POST["/video/iinaurl"] = { request -> HttpResponse in
-//            
-//            var type = IINAUrlType.normal
-//            if let tStr = request.parameters["type"],
-//               let t = IINAUrlType(rawValue: tStr) {
-//                type = t
-//            }
-//            
-//            guard let url = request.parameters["url"],
-//                  let json = try? await self.decode(url),
-//                  let key = json.videos.first?.key,
-//                  let data = json.iinaURLScheme(key, type: type)?.data(using: .utf8) else {
-//                return .badRequest(nil)
-//            }
-//            return HttpResponse.ok(.data(data))
-//        }
-//		
+		
 //		server.get["/dash/**"] = { request -> HttpResponse in
 //			let id = request.path.subString(from: "/dash/", to: ".mpd")
 //			guard let content = self.dash[id]?.data(using: .utf8) else { return .badRequest(.none) }
 //			
 //			return .ok(.data(content))
 //		}
-//        
-//        server.get["/video"] = { request -> HttpResponse in
-//            let encoder = JSONEncoder()
-//            encoder.outputFormatting = .prettyPrinted
-//            var pars = [String: String]()
-//            request.queryParams.forEach {
-//                pars[$0.0] = $0.1.removingPercentEncoding
-//            }
-//            let key = pars["key"] ?? ""
-//            
-//            guard let url = pars["url"],
-//                  let json = try? await self.decode(url, key: key),
-//                  let data = pars["pluginAPI"] == nil ? try? encoder.encode(json) : json.iinaPlusArgsString(key)?.data(using: .utf8)
-//            else {
-//                return .badRequest(nil)
-//            }
-//            
-//            return HttpResponse.ok(.data(data))
-//        }
+        
+        
+//
 //        
 //        // Danmaku API
 //        server["/danmaku/:path"] = directoryBrowser(dir)
-//        
-//        server["/danmaku-websocket"] = websocket(text:{ [weak self] session, text in
-//			self?.websocketReceived(session, text: text)
-//        }, connected: { [weak self] session in
-//			self?.websocketConnected(session)
-//        }, disconnected: { [weak self] session in
-//			self?.websocketDisconnected(session)
-//        })
-                          
+//
+        
+        
 
         
         /*
@@ -172,10 +120,9 @@ class HttpServer: NSObject {
     
 
     func stop() {
-//        server.stop()
-//        danmukuObservers.forEach {
-//            NotificationCenter.default.removeObserver($0)
-//        }
+        danmukuObservers.forEach {
+            NotificationCenter.default.removeObserver($0)
+        }
     }
     
     
@@ -207,12 +154,7 @@ class HttpServer: NSObject {
     
     
     
-    private func decode(_ url: String, key: String = "") async throws -> YouGetJSON? {
-		var json = try await self.videoDecoder.decodeUrl(url)
-		json = try await videoDecoder.prepareVideoUrl(json, key)
-		
-        return json
-    }
+
 	
 	@MainActor
 	func registerDash(_ bvid: String, content: String) -> String {
