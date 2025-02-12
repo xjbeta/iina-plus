@@ -69,9 +69,11 @@ class DouYinDM: NSObject {
 		
 		if let rid = (info as? DouYinEnterData.DouYinLiveInfo)?.roomId {
 			return rid
-		} else {
-			return (info as! DouYinInfo).roomId
-		}
+        } else if let rid = (info as? DouYinInfo)?.roomId {
+			return rid
+        } else {
+            throw VideoGetError.cantFindIdForDM
+        }
 	}
 	
 	enum DouYinDMError: Error {
