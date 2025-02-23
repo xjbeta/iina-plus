@@ -119,6 +119,11 @@ struct YouGetJSON: Unmarshaling, Codable {
 		default:
 			args.append(contentsOf: ["\(MPVOption.ProgramBehavior.ytdl)=no"])
 		}
+        
+        // reconnect
+        // https://github.com/mpv-player/mpv/issues/8779#issuecomment-1011066498
+        args.append("\(MPVOption.Miscellaneous.streamLavfO)=reconnect_streamed=yes")
+        
 		return args
     }
     
