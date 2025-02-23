@@ -19,7 +19,7 @@ actor Huya: SupportSiteProtocol {
         configuration.headers.add(.userAgent(ua))
         return Session(configuration: configuration)
     }()
-	
+    
 	// T.a.uid
 	private let huyaUid = (Int(Date().timeIntervalSince1970 * 1000) % Int(1e10) * Int(1e3) + Int.random(in: Int(1e2)..<Int(1e3))) % 4294967295
     
@@ -27,7 +27,7 @@ actor Huya: SupportSiteProtocol {
 		try await getHuyaInfoMP(url)
 	}
 	
-	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+    func decodeUrl(_ url: String) async throws -> YouGetJSON {
 		let info = try await getHuyaInfoMP(url)
 		return info.videos(url, uid: huyaUid)
 	}
@@ -446,6 +446,8 @@ struct HuyaInfoMP: Unmarshaling, LiveInfo {
 	
 	var streamInfos: [HuyaInfoM.StreamInfo]
 	var bitRateInfos: [HuyaInfoM.BitRateInfo]
+    
+    var rid: Int
 	
 	init(object: any Marshal.MarshaledObject) throws {
 		let name1: String = try object.value(for: "data.liveData.roomName")
@@ -475,12 +477,15 @@ struct HuyaInfoMP: Unmarshaling, LiveInfo {
 			streamInfos = []
 			bitRateInfos = []
 		}
+        
+        rid = try object.value(for: "data.liveData.profileRoom")
 	}
 	
 	
 	func videos(_ url: String, uid: Int) -> YouGetJSON {
 		var yougetJson = YouGetJSON(rawUrl: url)
 		yougetJson.title = title
+        yougetJson.id = rid
 		
 		let urls = streamInfos
 //			.sorted { i1, i2 -> Bool in
