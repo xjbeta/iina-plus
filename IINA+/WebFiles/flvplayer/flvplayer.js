@@ -38,22 +38,22 @@ window.openUrl = function(url) {
 
         var mediaDataSource = {
             type: 'flv',
-			enableWorker: true,
+            isLive: true,
             hasAudio: true,
             hasVideo: true,
-            isLive: true,
             withCredentials: false,
-			lazyLoad: false,
-			rangeLoadZeroStart: true,
             url: url
         };
 
         player = mpegts.createPlayer(mediaDataSource, {
-            lazyLoadMaxDuration: 3 * 60,
-            seekType: 'range',
+            enableWorker: true,
+            enableWorkerForMSE: true,
             liveBufferLatencyChasing: true,
-            liveBufferLatencyMaxLatency: 8,
-            liveBufferLatencyMinRemain: 0.5,
+            liveBufferLatencyChasingOnPaused: true,
+            liveBufferLatencyMaxLatency: 5.0,
+            liveSync: true,
+            lazyLoad: false,
+            rangeLoadZeroStart: true,
         });
 
         mpegts.LoggingControl.addLogListener(playerLogListener);
