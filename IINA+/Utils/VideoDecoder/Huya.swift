@@ -478,9 +478,14 @@ struct HuyaInfoMP: Unmarshaling, LiveInfo {
 			bitRateInfos = []
 		}
         
-        rid = try object.value(for: "data.liveData.profileRoom")
+        let ridPath = "data.liveData.profileRoom"
+        if let sid: String = try? object.value(for: ridPath),
+           let id = Int(sid) {
+            rid = id
+        } else {
+            rid = try object.value(for: ridPath)
+        }
 	}
-	
 	
 	func videos(_ url: String, uid: Int) -> YouGetJSON {
 		var yougetJson = YouGetJSON(rawUrl: url)
