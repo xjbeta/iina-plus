@@ -51,6 +51,8 @@ class SelectVideoViewController: NSViewController {
         (
             collectionView.collectionViewLayout as? NSCollectionViewFlowLayout
         )?.sectionHeadersPinToVisibleBounds = true
+        
+        collectionView.register(SelectVideoCollectionViewItem.self, forItemWithIdentifier: .init("SelectVideoCollectionViewItem"))
     }
     
     func videoInfos(at section: Int) -> [VideoSelector] {
