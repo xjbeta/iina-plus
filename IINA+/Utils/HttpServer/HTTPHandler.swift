@@ -28,16 +28,21 @@ final class HTTPHandler: ChannelInboundHandler, RemovableChannelHandler {
         switch reqPart {
         case .head(let head):
             let u = head.uri
+            
             let up = u.split(separator: "?", maxSplits: 1).map(String.init)
-            guard up.count == 2 else {
+            
+            if up.count == 2 {
+                currentURL = up[0]
+                currentMethod = head.method
+                parameters = parameters(up[1])
+            } else if up.count == 1, head.method == .GET {
+                currentURL = up[0]
+                currentMethod = head.method
+            } else {
                 currentURL = ""
                 currentMethod = .UNBIND
                 parameters = [:]
-                return
             }
-            currentURL = up[0]
-            currentMethod = head.method
-            parameters = parameters(up[1])
         case .body:
             break
         case .end:
@@ -88,6 +93,10 @@ final class HTTPHandler: ChannelInboundHandler, RemovableChannelHandler {
             sendResponse(context: context, bodyData: data)
         case (let url, .GET) where url.starts(with: "/dash/"):
             break
+        case ("/danmaku/test.htm", .GET):
+            guard let path = Bundle.main.path(forResource: "test", ofType: "htm"),
+                  let data = FileManager.default.contents(atPath: path) else { return }
+            sendResponse(context: context, bodyData: data)
         default:
             sendBadRequest(context: context)
         }
