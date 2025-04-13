@@ -97,6 +97,10 @@ final class HTTPHandler: ChannelInboundHandler, RemovableChannelHandler {
             guard let path = Bundle.main.path(forResource: "test", ofType: "htm"),
                   let data = FileManager.default.contents(atPath: path) else { return }
             sendResponse(context: context, bodyData: data)
+        case (_, .GET) where currentURL.starts(with: "/video.mp4"):
+            guard let path = Bundle.main.path(forResource: "empty", ofType: "m4a"),
+                  let data = FileManager.default.contents(atPath: path) else { return }
+            sendResponse(context: context, bodyData: data)
         default:
             sendBadRequest(context: context)
         }

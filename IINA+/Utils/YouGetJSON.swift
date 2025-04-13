@@ -192,10 +192,10 @@ struct YouGetJSON: Unmarshaling, Codable {
 		}
 		
 		let u = "iina://open?"
-		
+        let port = Preferences.shared.dmPort
 		var args = [
 			"new_window=1",
-			"url=-",
+			"url=http://127.0.0.1:\(port)/video.mp4?",
 			"mpv_\(MPVOption.ProgramBehavior.scriptOpts)=iinaPlusArgs=\(argsStr)"
 		]
 		args = args.compactMap { kvs -> String? in
@@ -208,7 +208,10 @@ struct YouGetJSON: Unmarshaling, Codable {
 			let k = kv[0]
 			return "\(k)=\(v)"
 		}
-		
+        
+        guard args.count == 3 else { return nil }
+        args[1] = args[1] + String(args[2].suffix(25))
+        
 		return u + args.joined(separator: "&")
 	}
 	

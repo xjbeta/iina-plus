@@ -142,6 +142,7 @@
 		01EDCCA82A791EE0001DC138 /* test.htm in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01EDCCA62A791EB5001DC138 /* test.htm */; };
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
+		01F716DB2DAA4EB300308663 /* empty.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 01F716DA2DAA4EB300308663 /* empty.m4a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -318,6 +319,7 @@
 		01F46CDC2108C55C00FE9DAD /* iina+.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iina+.entitlements"; sourceTree = "<group>"; };
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
 		01F6C4F2213396B20009672A /* iina+-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iina+-Bridging-Header.h"; sourceTree = "<group>"; };
+		01F716DA2DAA4EB300308663 /* empty.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.m4a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -545,6 +547,7 @@
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				013850F9214EA2AA003817CE /* huya.js */,
 				01E40FF822C39E7100864118 /* Localizable.strings */,
+				01F716DA2DAA4EB300308663 /* empty.m4a */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -775,6 +778,7 @@
 				017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */,
 				01AEC8AF20EDFD02001406E8 /* Assets.xcassets in Resources */,
 				01C373592429F2C2006778D1 /* README.md in Resources */,
+				01F716DB2DAA4EB300308663 /* empty.m4a in Resources */,
 				01D8762927D459C5001140DD /* crypto-js.js in Resources */,
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */,
