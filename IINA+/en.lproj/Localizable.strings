@@ -10,6 +10,18 @@
 /* You need to install the Danmaku plugin for IINA */
 "Danmaku plugin Install Alert messageText" = "You need to install the Danmaku plugin for IINA";
 
+/* Plugin status unknown. */
+"decode.plugin.error" = "Plugin status unknown.";
+
+/* Multiple plugins detected. */
+"decode.plugin.multiple" = "Multiple plugins detected.";
+
+/* Plugin not installed. */
+"decode.plugin.needsInstall" = "Plugin not installed.";
+
+/* Plugin update required. */
+"decode.plugin.needsUpdate" = "Plugin update required.";
+
 /* All */
 "LiveSite.All" = "All";
 
@@ -67,6 +79,9 @@
 /* the host is not online. */
 "VideoGetError.isNotLiving" = "the host is not online.";
 
+/* need login. */
+"VideoGetError.needLogin" = "need Login.";
+
 /* need vip. */
 "VideoGetError.needVip" = "need vip.";
 
@@ -75,6 +90,3 @@
 
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  oops, ";
-
-/* need login. */
-"VideoGetError.needLogin" = "need Login.";

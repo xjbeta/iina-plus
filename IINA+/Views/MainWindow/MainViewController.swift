@@ -354,6 +354,9 @@ class MainViewController: NSViewController {
         default:
             break
         }
+        if item != .search {
+            pluginUpdateButton.isHidden = true
+        }
         self.reloadTableView()
     }
     
@@ -476,34 +479,34 @@ class MainViewController: NSViewController {
 
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
         
-        if !proc.iina.pluginVerified {
-            proc.iina.pluginVerified = true
-            pluginUpdateButton.isHidden = true
-            
-            let state = IINAApp.pluginState()
-            switch state {
-            case .ok(_), .isDev:
-                break
-            case .needsUpdate(_):
-                pluginUpdateButton.isHidden = false
-                pluginUpdateButton.title = "Plugin update required."
-            case .needsInstall:
-                pluginUpdateButton.isHidden = false
-                pluginUpdateButton.title = "Plugin not installed."
-            case .newer(_):
-                break
-            case .multiple:
-                pluginUpdateButton.isHidden = false
-                pluginUpdateButton.title = "Multiple plugins detected."
-            case .error(_):
-                pluginUpdateButton.isHidden = false
-                pluginUpdateButton.title = "Plugin status unknown."
-            }
-            if !pluginUpdateButton.isHidden {
-                return
-            }
+        
+        // check plugin state
+        pluginUpdateButton.isHidden = true
+        let state = IINAApp.pluginState()
+        switch state {
+        case .ok(_), .isDev:
+            break
+        case .needsUpdate(_):
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.needsUpdate", comment: "Plugin update required.")
+        case .needsInstall:
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.needsInstall", comment: "Plugin not installed.")
+        case .newer(_):
+            break
+        case .multiple:
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.multiple", comment: "Multiple plugins detected.")
+        case .error(_):
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.error", comment: "Plugin status unknown.")
+        }
+        if !pluginUpdateButton.isHidden {
+            return
         }
         
+        
+        // start decoding
         await MainActor.run {
             isSearching = true
             progressStatusChanged(true)

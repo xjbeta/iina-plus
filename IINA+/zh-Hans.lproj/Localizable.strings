@@ -13,11 +13,17 @@
 /* All */
 "LiveSite.All" = "全部";
 
+/* Loading... */
+"Loading..." = "加载中....";
+
 /* No comment provided by engineer. */
 "mainMenu.view.reloadBilibiliList" = "重新加载 Bilibili 列表";
 
 /* No comment provided by engineer. */
 "mainMenu.view.reloadLiveStatus" = "重新加载直播状态";
+
+/* plugin install finish */
+"PluginInstaller.tips" = "\n准备就绪  ✅\n重启 IINA 以生效";
 
 /* Quit anyway button title */
 "Quit anyway" = "确认退出";
@@ -61,6 +67,9 @@
 /* the host is not online. */
 "VideoGetError.isNotLiving" = "主播不在家.";
 
+/* need login. */
+"VideoGetError.needLogin" = "需要登录";
+
 /* need vip. */
 "VideoGetError.needVip" = "需要大会员.";
 
@@ -70,11 +79,14 @@
 /* ಠ_ಠ  oops,  */
 "VideoGetError.oops" = "ಠ_ಠ  哦嚯, ";
 
-/* plugin install finish */
-"PluginInstaller.tips" = "\n准备就绪  ✅\n重启 IINA 以生效";
+/* Plugin status unknown. */
+"decode.plugin.error" = "插件状态未知.";
 
-/* Loading... */
-"Loading..." = "加载中....";
+/* Multiple plugins detected. */
+"decode.plugin.multiple" = "识别到多个插件.";
 
-/* need login. */
-"VideoGetError.needLogin" = "需要登录";
+/* Plugin not installed. */
+"decode.plugin.needsInstall" = "插件未安装.";
+
+/* Plugin update required. */
+"decode.plugin.needsUpdate" = "插件需要更新.";
