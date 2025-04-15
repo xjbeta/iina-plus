@@ -252,7 +252,8 @@ class MainViewController: NSViewController {
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
             case 53:
-                guard let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
+                guard NSApp.keyWindow == self.view.window,
+                      let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
                       let item = SidebarItem(rawValue: str) else { return event }
                 
                 let oldItem = self.mainTabViewOldItem
