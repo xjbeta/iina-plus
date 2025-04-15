@@ -47,6 +47,9 @@ actor IINAApp {
 	
 	var buildVersion: Int = 0
 	var archiveType: IINAUrlType = .none
+    
+    @MainActor
+    var pluginVerified = false
 	
 	func updateIINAState() {
 		buildVersion = IINAApp.getBuildVersion()
