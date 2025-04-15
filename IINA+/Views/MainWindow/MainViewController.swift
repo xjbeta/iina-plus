@@ -167,6 +167,8 @@ class MainViewController: NSViewController {
     @IBOutlet weak var suggestionsTableView: NSTableView!
     @IBOutlet var noticeTabView: NSTabView!
     
+    @IBOutlet weak var pluginUpdateButton: NSButton!
+    
     var bookmarkArrayCountObserver: NSKeyValueObservation?
     
     var isSearching = false {
@@ -250,7 +252,8 @@ class MainViewController: NSViewController {
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             switch event.keyCode {
             case 53:
-                guard let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
+                guard NSApp.keyWindow == self.view.window,
+                      let str = self.mainTabView.selectedTabViewItem?.identifier as? String,
                       let item = SidebarItem(rawValue: str) else { return event }
                 
                 let oldItem = self.mainTabViewOldItem
@@ -352,6 +355,9 @@ class MainViewController: NSViewController {
         default:
             break
         }
+        if item != .search {
+            pluginUpdateButton.isHidden = true
+        }
         self.reloadTableView()
     }
     
@@ -447,12 +453,14 @@ class MainViewController: NSViewController {
     func startSearchingUrl(_ url: String,
                            directly: Bool = false,
                            with option: Bool = false) async throws {
+        let proc = Processes.shared
+        
 		await MainActor.run {
-			Processes.shared.stopDecodeURL()
+            proc.stopDecodeURL()
 			waitingErrorMessage = nil
 			yougetResult = nil
 		}
-		
+        
 		guard url != "" else {
 			await MainActor.run {
 				isSearching = false
@@ -469,16 +477,44 @@ class MainViewController: NSViewController {
 			}
             return
         }
-        
-		await MainActor.run {
-			isSearching = true
-			progressStatusChanged(true)
-		}
 
         NotificationCenter.default.post(name: .updateSideBarSelection, object: nil, userInfo: ["newItem": SidebarItem.search])
-        var str = url
         
-		let urlString = try await Processes.shared.videoDecoder.bilibiliUrlFormatter(url)
+        
+        // check plugin state
+        pluginUpdateButton.isHidden = true
+        let state = IINAApp.pluginState()
+        switch state {
+        case .ok(_), .isDev:
+            break
+        case .needsUpdate(_):
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.needsUpdate", comment: "Plugin update required.")
+        case .needsInstall:
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.needsInstall", comment: "Plugin not installed.")
+        case .newer(_):
+            break
+        case .multiple:
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.multiple", comment: "Multiple plugins detected.")
+        case .error(_):
+            pluginUpdateButton.isHidden = false
+            pluginUpdateButton.title = NSLocalizedString("decode.plugin.error", comment: "Plugin status unknown.")
+        }
+        if !pluginUpdateButton.isHidden {
+            return
+        }
+        
+        
+        // start decoding
+        await MainActor.run {
+            isSearching = true
+            progressStatusChanged(true)
+        }
+        
+        var str = url
+		let urlString = try await proc.videoDecoder.bilibiliUrlFormatter(url)
 		
 		await MainActor.run {
 			if searchField.stringValue == str {
@@ -682,30 +718,32 @@ class MainViewController: NSViewController {
 			return
 		}
 		
-		@MainActor
-		func showInstallAlert() {
-			let alert = NSAlert()
-			alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
-			alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "")
-			
-			alert.alertStyle = .warning
-			alert.addButton(withTitle: "OK")
-			let _ = alert.runModal()
-		}
-		
-		switch IINAApp.pluginState() {
-		case .needsUpdate(let plugin) where plugin.ghVersion < 4:
-			Log("Open result failed, plugin outdate.")
-			showInstallAlert()
-		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
-			Log("Open result with plugin")
-			try await proc.openWithPlayer(yougetJSON, key)
-		case .needsInstall, .multiple:
-			Log("Open result failed, pluginNotFound.")
-			showInstallAlert()
-		case .error(let error):
-			throw error
-		}
+//		@MainActor
+//		func showInstallAlert() {
+//			let alert = NSAlert()
+//			alert.messageText = NSLocalizedString("Danmaku plugin Install Alert messageText", comment: "You need to install the Danmaku plugin for IINA")
+//			alert.informativeText = NSLocalizedString("Danmaku plugin Install Alert informativeText", comment: "")
+//			
+//			alert.alertStyle = .warning
+//			alert.addButton(withTitle: "OK")
+//			let _ = alert.runModal()
+//		}
+//		
+//		switch IINAApp.pluginState() {
+//		case .needsUpdate(let plugin) where plugin.ghVersion < 4:
+//			Log("Open result failed, plugin outdate.")
+//			showInstallAlert()
+//		case .isDev, .needsUpdate(_), .ok(_), .newer(_):
+//			Log("Open result with plugin")
+//			try await proc.openWithPlayer(yougetJSON, key)
+//		case .needsInstall, .multiple:
+//			Log("Open result failed, pluginNotFound.")
+//			showInstallAlert()
+//		case .error(let error):
+//			throw error
+//		}
+        
+        try await proc.openWithPlayer(yougetJSON, key)
 	}
     
 	

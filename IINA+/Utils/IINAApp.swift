@@ -40,13 +40,14 @@ actor IINAApp {
 		}
 	}
 	
-	static let internalPluginVersion = "0.1.12"
-	static let internalPluginBuild = 9
+	static let internalPluginVersion = "0.1.14"
+	static let internalPluginBuild = 11
 	
 	static let minIINABuild = 135
 	
 	var buildVersion: Int = 0
 	var archiveType: IINAUrlType = .none
+    
 	
 	func updateIINAState() {
 		buildVersion = IINAApp.getBuildVersion()
