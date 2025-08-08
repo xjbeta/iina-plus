@@ -274,7 +274,7 @@ addXMLRequestCallback(function (xhr) {
 			"Cookie": cookie
 		])
 		
-		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=1&enter_source=&is_need_double_stream=true"
+		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=MacIntel&browser_name=Safari&browser_version=18.6&web_rid=1&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason=&msToken=&a_bogus="
 		
 		do {
 			let _ = try await AF.request(u, headers: headers).serializingData().value
@@ -347,15 +347,14 @@ extension DouyinCookiesManager: WKScriptMessageHandler {
 			douyinWebcastUpdated?()
 		}
 		
-		if msg.contains("webcast/im/push/v2") {
-			post()
-		} else if msg.contains("live.douyin.com/webcast/im/fetch"),
-				  msg.contains("last_rtt=-1") {
-			post()
-		} else if msg.contains("live.douyin.com/aweme/v1/web/emoji/list") {
-			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-				post()
-			}
-		}
+        let endpoints = [
+            "webcast/im/push/v2",
+            "aweme/v1/web/get/user/settings",
+            "aweme/v1/web/emoji/list"
+        ]
+
+        if endpoints.contains(where: { msg.contains($0) }) {
+            post()
+        }
 	}
 }

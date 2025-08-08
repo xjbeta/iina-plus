@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -57,6 +57,7 @@
 		015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */; };
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
 		015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EDE26273D333900271901 /* LiveStateTransformers.swift */; };
+		015F06982DCC73CB00501A03 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 015F06972DCC73CA00501A03 /* Localizable.xcstrings */; };
 		016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E0212BBB43003517A7 /* SelectVideoViewController.swift */; };
 		016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */; };
 		016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */; };
@@ -132,7 +133,6 @@
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
 		01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */; };
 		01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E40FEA22C304E800864118 /* ImageLoader.swift */; };
-		01E40FF622C39E7100864118 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 01E40FF822C39E7100864118 /* Localizable.strings */; };
 		01E668D02CEA322F008C51E7 /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 01E668CF2CEA322F008C51E7 /* NIOCore */; };
 		01E668D22CEA322F008C51E7 /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 01E668D12CEA322F008C51E7 /* NIOFoundationCompat */; };
 		01E668D42CEA322F008C51E7 /* NIOHTTP1 in Frameworks */ = {isa = PBXBuildFile; productRef = 01E668D32CEA322F008C51E7 /* NIOHTTP1 */; };
@@ -244,6 +244,10 @@
 		015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Plus.xml"; sourceTree = "<group>"; };
 		015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Block-List-Basic.xml"; sourceTree = "<group>"; };
 		015EDE26273D333900271901 /* LiveStateTransformers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateTransformers.swift; sourceTree = "<group>"; };
+		015F06962DCC73CA00501A03 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/Main.xcstrings; sourceTree = "<group>"; };
+		015F06972DCC73CA00501A03 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		015F06992DCC73CB00501A03 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/JSPlayer.xcstrings; sourceTree = "<group>"; };
+		015F069A2DCC73CB00501A03 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/Preferences.xcstrings; sourceTree = "<group>"; };
 		016792E0212BBB43003517A7 /* SelectVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoViewController.swift; sourceTree = "<group>"; };
 		016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewItem.swift; sourceTree = "<group>"; };
 		016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewItem.xib; sourceTree = "<group>"; };
@@ -255,7 +259,6 @@
 		016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuBiliLive.swift; sourceTree = "<group>"; };
 		016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BiliLiveDMv2.pb.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
-		016E07C326BB8FDF000AB100 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
 		0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinPushFrame.pb.swift; sourceTree = "<group>"; };
 		0184D7112B2025FF00C7901A /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
@@ -298,9 +301,7 @@
 		01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliDynamicManger.swift; sourceTree = "<group>"; };
 		01BC354A29AF2BC000B45577 /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
-		01C0807427BB5CF500E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/JSPlayer.strings"; sourceTree = "<group>"; };
 		01C0807627BB5CFD00E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Preferences.storyboard; sourceTree = "<group>"; };
-		01C0807927BB5CFF00E87A8C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Preferences.strings"; sourceTree = "<group>"; };
 		01C248B42A623EC000C92639 /* IINAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IINAApp.swift; sourceTree = "<group>"; };
 		01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iina-plugin-danmaku.iinaplgz"; sourceTree = "<group>"; };
 		01C248C92CE480670074A76F /* TokenBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenBucket.swift; sourceTree = "<group>"; };
@@ -311,8 +312,6 @@
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
 		01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BilibiliDMMessage.swift; sourceTree = "<group>"; };
 		01E40FEA22C304E800864118 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
-		01E40FF722C39E7100864118 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		01E40FF922C39E7700864118 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		01E6A09B211AD62800C6EF98 /* VideoDurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationFormatter.swift; sourceTree = "<group>"; };
 		01EDCCA62A791EB5001DC138 /* test.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.htm; sourceTree = "<group>"; };
 		01F46CA02102EF4600FE9DAD /* GereralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GereralViewController.swift; sourceTree = "<group>"; };
@@ -546,7 +545,7 @@
 				015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */,
 				015C19F5218FC9A8003B2F3A /* Block-List-Plus.xml */,
 				013850F9214EA2AA003817CE /* huya.js */,
-				01E40FF822C39E7100864118 /* Localizable.strings */,
+				015F06972DCC73CA00501A03 /* Localizable.xcstrings */,
 				01F716DA2DAA4EB300308663 /* empty.m4a */,
 			);
 			name = Resources;
@@ -783,7 +782,7 @@
 				015C19F7218FC9A8003B2F3A /* Block-List-Plus.xml in Resources */,
 				01C0807027BB5CF300E87A8C /* JSPlayer.storyboard in Resources */,
 				016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */,
-				01E40FF622C39E7100864118 /* Localizable.strings in Resources */,
+				015F06982DCC73CB00501A03 /* Localizable.xcstrings in Resources */,
 				01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */,
 				01BC354B29AF2BC000B45577 /* douyin.html in Resources */,
 				013850FA214EA2AA003817CE /* huya.js in Resources */,
@@ -928,7 +927,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				01AEC8B120EDFD02001406E8 /* Base */,
-				016E07C326BB8FDF000AB100 /* zh-Hans */,
+				015F06962DCC73CA00501A03 /* mul */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -937,7 +936,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				01C0807127BB5CF300E87A8C /* Base */,
-				01C0807427BB5CF500E87A8C /* zh-Hans */,
+				015F06992DCC73CB00501A03 /* mul */,
 			);
 			name = JSPlayer.storyboard;
 			sourceTree = "<group>";
@@ -946,18 +945,9 @@
 			isa = PBXVariantGroup;
 			children = (
 				01C0807627BB5CFD00E87A8C /* Base */,
-				01C0807927BB5CFF00E87A8C /* zh-Hans */,
+				015F069A2DCC73CB00501A03 /* mul */,
 			);
 			name = Preferences.storyboard;
-			sourceTree = "<group>";
-		};
-		01E40FF822C39E7100864118 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				01E40FF722C39E7100864118 /* zh-Hans */,
-				01E40FF922C39E7700864118 /* en */,
-			);
-			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -1019,11 +1009,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
 			};
@@ -1079,10 +1071,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
 			};
@@ -1106,7 +1100,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.7;
+				MARKETING_VERSION = 0.8.8;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1133,7 +1127,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.7;
+				MARKETING_VERSION = 0.8.8;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

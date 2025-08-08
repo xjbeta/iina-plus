@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="pu0-ea-1qY">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="pu0-ea-1qY">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22690"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -53,7 +53,7 @@
                                         </columns>
                                         <gridCells>
                                             <gridCell row="vxX-Qe-faS" column="2qP-0h-LYg" id="cBF-wB-rx7">
-                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H3j-02-9do">
+                                                <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H3j-02-9do">
                                                     <rect key="frame" x="-2" y="98" width="53" height="20"/>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Video:" id="ZVh-Bq-cDj">
                                                         <font key="font" metaFont="system" size="17"/>
@@ -64,7 +64,7 @@
                                             </gridCell>
                                             <gridCell row="vxX-Qe-faS" column="Fmz-vV-9jE" id="WkC-2L-IeR"/>
                                             <gridCell row="qgg-zV-drn" column="2qP-0h-LYg" xPlacement="fill" id="Pcc-o7-IUZ">
-                                                <textField key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fbu-er-y34">
+                                                <textField key="contentView" wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fbu-er-y34">
                                                     <rect key="frame" x="0.0" y="65" width="391" height="21"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="BV1Ht411M75h / video" id="3IV-o9-jO0">
                                                         <font key="font" metaFont="system"/>
@@ -89,7 +89,7 @@
                                                 </button>
                                             </gridCell>
                                             <gridCell row="yg5-ht-5bw" column="2qP-0h-LYg" id="sc5-lS-90B">
-                                                <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="M7h-Bz-OgL">
+                                                <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="M7h-Bz-OgL">
                                                     <rect key="frame" x="-2" y="33" width="81" height="20"/>
                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Danmaku:" id="HBD-4N-KE1">
                                                         <font key="font" metaFont="system" size="17"/>
@@ -100,7 +100,7 @@
                                             </gridCell>
                                             <gridCell row="yg5-ht-5bw" column="Fmz-vV-9jE" id="NDX-sy-ggG"/>
                                             <gridCell row="Vn6-Ou-se2" column="2qP-0h-LYg" xPlacement="fill" id="4pg-Dw-Y10">
-                                                <textField key="contentView" wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j64-Kn-Usz">
+                                                <textField key="contentView" wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j64-Kn-Usz">
                                                     <rect key="frame" x="0.0" y="0.0" width="391" height="21"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="BV1Ht411M75h / select xml file" id="fYG-PN-XX8">
                                                         <font key="font" metaFont="system"/>

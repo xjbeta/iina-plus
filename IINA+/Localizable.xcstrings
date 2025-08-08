@@ -1,0 +1,501 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Cancel" : {
+      "comment" : "Cancel button title",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出"
+          }
+        }
+      }
+    },
+    "Could not save changes while quitting. Quit anyway?" : {
+      "comment" : "Quit without saves error question message",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出时无法保存更改。 确认退出？"
+          }
+        }
+      }
+    },
+    "Danmaku plugin Install Alert informativeText" : {
+      "comment" : "Click OK for detailed installation guide.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open IINA-PLUS Preferences to install."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开IINA-PLUS 的设置进行安装."
+          }
+        }
+      }
+    },
+    "Danmaku plugin Install Alert messageText" : {
+      "comment" : "You need to install the Danmaku plugin for IINA",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You need to install the Danmaku plugin for IINA"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你需要为IINA 安装弹幕插件"
+          }
+        }
+      }
+    },
+    "decode.plugin.error" : {
+      "comment" : "Plugin status unknown.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugin status unknown."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件状态未知."
+          }
+        }
+      }
+    },
+    "decode.plugin.multiple" : {
+      "comment" : "Multiple plugins detected.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multiple plugins detected."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "识别到多个插件."
+          }
+        }
+      }
+    },
+    "decode.plugin.needsInstall" : {
+      "comment" : "Plugin not installed.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugin not installed."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件未安装."
+          }
+        }
+      }
+    },
+    "decode.plugin.needsUpdate" : {
+      "comment" : "Plugin update required.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plugin update required."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件需要更新."
+          }
+        }
+      }
+    },
+    "LiveSite.All" : {
+      "comment" : "All",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
+          }
+        }
+      }
+    },
+    "Loading..." : {
+      "comment" : "Loading...",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载中...."
+          }
+        }
+      }
+    },
+    "mainMenu.view.reloadBilibiliList" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload Bilibili List"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新加载 Bilibili 列表"
+          }
+        }
+      }
+    },
+    "mainMenu.view.reloadLiveStatus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload Live Status"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新加载直播状态"
+          }
+        }
+      }
+    },
+    "PluginInstaller.tips" : {
+      "comment" : "plugin install finish",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\nEverything OK  ✅\nRestart IINA to take effect"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\n准备就绪  ✅\n重启 IINA 以生效"
+          }
+        }
+      }
+    },
+    "Quit anyway" : {
+      "comment" : "Quit anyway button title",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确认退出"
+          }
+        }
+      }
+    },
+    "Quitting now will lose any changes you have made since the last successful save" : {
+      "comment" : "Quit without saves error question info",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在退出将丢失自上次成功保存以来所做的任何更改"
+          }
+        }
+      }
+    },
+    "SupportSites.Bilibili" : {
+      "comment" : "Bilibili",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili"
+          }
+        }
+      }
+    },
+    "SupportSites.Bilibili Bangumi" : {
+      "comment" : "Bilibili Bangumi",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili Bangumi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili 番剧"
+          }
+        }
+      }
+    },
+    "SupportSites.Bilibili Live" : {
+      "comment" : "Bilibili Live",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili Live"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bilibili 直播"
+          }
+        }
+      }
+    },
+    "SupportSites.CC163" : {
+      "comment" : "CC163",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CC163"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网易CC"
+          }
+        }
+      }
+    },
+    "SupportSites.DouYin" : {
+      "comment" : "DouYin",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DouYin"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "抖音"
+          }
+        }
+      }
+    },
+    "SupportSites.Douyu" : {
+      "comment" : "Douyu",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Douyu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斗鱼"
+          }
+        }
+      }
+    },
+    "SupportSites.Huya" : {
+      "comment" : "Huya",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huya"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "虎牙"
+          }
+        }
+      }
+    },
+    "SupportSites.QQLive" : {
+      "comment" : "QQ Live",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QQ Live"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "企鹅体育"
+          }
+        }
+      }
+    },
+    "SupportSites.Unsupported" : {
+      "comment" : "Unsupported",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持"
+          }
+        }
+      }
+    },
+    "VideoGetError.default" : {
+      "comment" : "something went wrong.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "something went wrong."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出了些问题."
+          }
+        }
+      }
+    },
+    "VideoGetError.invalidLink" : {
+      "comment" : "invalid url.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "invalid url."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无效链接."
+          }
+        }
+      }
+    },
+    "VideoGetError.isNotLiving" : {
+      "comment" : "isNotLiving\nthe host is not online.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the host is not online."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主播不在家."
+          }
+        }
+      }
+    },
+    "VideoGetError.needLogin" : {
+      "comment" : "need login.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "need Login."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要登录"
+          }
+        }
+      }
+    },
+    "VideoGetError.needVip" : {
+      "comment" : "need vip.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "need vip."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要大会员."
+          }
+        }
+      }
+    },
+    "VideoGetError.notSupported" : {
+      "comment" : "the website is not supported.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the website is not supported."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网站不支持或链接格式错误."
+          }
+        }
+      }
+    },
+    "VideoGetError.oops" : {
+      "comment" : "ಠ_ಠ  oops, ",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಠ_ಠ  oops, "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಠ_ಠ  哦嚯, "
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
