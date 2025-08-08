@@ -60,7 +60,7 @@ actor DouYin: SupportSiteProtocol {
 			}
 		}()
 		
-		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=en-US&cookie_enabled=true&browser_language=en-US&browser_platform=Mac&browser_name=Safari&browser_version=16&web_rid=\(rid)&enter_source=&is_need_double_stream=true"
+		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=MacIntel&browser_name=Safari&browser_version=18.6&web_rid=\(rid)&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason=&msToken=&a_bogus="
 
 		
 		do {
