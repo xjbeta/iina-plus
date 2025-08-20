@@ -56,6 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Processes.shared.httpServer.start()
 		
 		showUpdateAlert()
+
     }
 
 

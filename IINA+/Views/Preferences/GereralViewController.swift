@@ -133,9 +133,20 @@ class GereralViewController: NSViewController, NSMenuDelegate {
 
 
 
-enum LivePlayer: String {
+enum LivePlayer: String, CaseIterable, Identifiable {
+    var id: Self { self }
+    
     case iina = "/Applications/IINA.app/Contents/MacOS/iina-cli"
     case mpv = "mpv"
+    
+    var name: String {
+        switch self {
+        case .iina:
+            return "IINA"
+        case .mpv:
+            return "mpv"
+        }
+    }
     
     init(raw: String) {
         if let player = LivePlayer.init(rawValue: raw) {
