@@ -9,6 +9,8 @@
 import Foundation
 import Alamofire
 import Marshal
+import CommonCrypto
+import CryptoSwift
 
 actor BilibiliShare {
     
@@ -83,6 +85,62 @@ actor BilibiliShare {
         }
         
         return yougetJson
+    }
+    
+    
+    // https://github.com/SocialSisterYi/bilibili-API-collect/blob/f1001353f83e12e018ae6bc42fa73654986eb544/docs/misc/sign/wbi.md#swift
+    
+    func biliWbiSign(param: String, wbiImg: String, wbiSub: String) -> String {
+        func getMixinKey(orig: String) -> String {
+            String(mixinKeyEncTab.map { orig[orig.index(orig.startIndex, offsetBy: $0)] }.prefix(32))
+        }
+        
+        func encWbi(params: [String: Any], imgKey: String, subKey: String) -> [String: Any] {
+            var params = params
+            let mixinKey = getMixinKey(orig: imgKey + subKey)
+            let currTime = Int(Date().timeIntervalSince1970)
+            params["wts"] = currTime
+            
+            let query = params.sorted {
+                $0.key < $1.key
+            }.map { (key, value) -> String in
+                let stringValue: String
+                
+                if let doubleValue = value as? Double, doubleValue.truncatingRemainder(dividingBy: 1) == 0 {
+                    stringValue = String(Int(doubleValue))
+                } else {
+                    stringValue = String(describing: value)
+                }
+                
+                let filteredValue = stringValue.filter { !"!'()*".contains($0) }
+                
+                return "\(key)=\(filteredValue)"
+            }.joined(separator: "&")
+            
+            let wbiSign = (query + mixinKey).md5()
+            params["w_rid"] = wbiSign
+            
+            return params
+        }
+        
+        let mixinKeyEncTab = [
+            46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
+            33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
+            61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
+            36, 20, 34, 44, 52
+        ]
+        
+        let spdParam = param.components(separatedBy: "&")
+        var spdDicParam = [String: String]()
+        for pair in spdParam {
+            let components = pair.components(separatedBy: "=")
+            if components.count == 2 {
+                spdDicParam[components[0]] = components[1]
+            }
+        }
+        
+        let signedParams = encWbi(params: spdDicParam, imgKey: wbiImg, subKey: wbiSub)
+        return signedParams.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
     }
 }
 

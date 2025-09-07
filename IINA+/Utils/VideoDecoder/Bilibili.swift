@@ -15,6 +15,9 @@ actor Bilibili: SupportSiteProtocol {
     let biliShare = BilibiliShare()
     let bangumi = Bangumi()
     
+    private var wbiKeys: (img: String, sub: String)?
+    private var wbiRefreshDate: Date?
+    
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		let isBangumi = SupportSites(url: url) == .bangumi
 		
@@ -191,12 +194,25 @@ actor Bilibili: SupportSiteProtocol {
 		let data = try await AF.request("https://api.bilibili.com/x/web-interface/nav").serializingData().value
 		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
 		let isLogin: Bool = try json.value(for: "data.isLogin")
+        
 		NotificationCenter.default.post(name: .biliStatusChanged, object: nil, userInfo: ["isLogin": isLogin])
 		var name = ""
-		if isLogin {
-			name = try json.value(for: "data.uname")
-		}
-		
+        
+        guard isLogin else {
+            return (isLogin, name)
+        }
+        
+        name = try json.value(for: "data.uname")
+        guard let s1: String = try? json.value(for: "data.wbi_img.img_url"),
+              let s2: String = try? json.value(for: "data.wbi_img.sub_url"),
+              let img = URL(string: s1)?.deletingPathExtension().lastPathComponent,
+              let sub = URL(string: s2)?.deletingPathExtension().lastPathComponent else {
+            Log("Bilibili wbi keys not found")
+            return (false, name)
+        }
+        
+        wbiKeys = (img, sub)
+        
 		return (isLogin, name)
     }
     
@@ -213,6 +229,30 @@ actor Bilibili: SupportSiteProtocol {
 		let data = try await AF.request("https://api.bilibili.com/x/web-interface/nav").serializingData().value
 		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
 		return try json.value(for: "data.mid")
+    }
+    
+    func wbiSign(_ param: String) async throws -> String {
+        let now = Date()
+        var needsRefresh = true
+        
+        if let lastRefresh = wbiRefreshDate {
+            var calendar = Calendar.current
+            calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+            if calendar.isDate(lastRefresh, inSameDayAs: now) {
+                needsRefresh = false
+            }
+        }
+        
+        if needsRefresh || wbiKeys == nil {
+            let _ = try await isLogin()
+            self.wbiRefreshDate = now
+        }
+        
+        guard let wbiKeys else {
+            return ""
+        }
+        
+        return await biliShare.biliWbiSign(param: param, wbiImg: wbiKeys.img, wbiSub: wbiKeys.sub)
     }
     
     func dynamicList(_ uid: Int,
