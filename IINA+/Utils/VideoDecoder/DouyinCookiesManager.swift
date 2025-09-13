@@ -302,7 +302,7 @@ addXMLRequestCallback(function (xhr) {
 	
 	
 	func deinitWebViewAsync() {
-//		deinitWebView()
+		deinitWebView()
 	}
     
     private func generateRandomString(length: Int) -> String {
