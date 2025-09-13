@@ -13,7 +13,6 @@ import WebKit
 class DouYinDM: NSObject {
 	var url = ""
 	
-	
 	private var webView = WKWebView()
 	var requestPrepared: ((URLRequest) -> Void)?
 	
@@ -81,28 +80,6 @@ class DouYinDM: NSObject {
 		case cookiesCount
 	}
 	
-	func prepareCookies() async {
-		let douyin = await Processes.shared.videoDecoder.douyin
-		
-		let storageDic = douyin.cookiesManager.storageDic
-		let privateKeys = douyin.cookiesManager.privateKeys
-		
-		let kvs = [
-			privateKeys[0].base64Decode(),
-			privateKeys[1].base64Decode()
-		].compactMap {
-			storageDic[$0] == nil ? nil : ($0, storageDic[$0]!)
-		}
-		
-		if kvs.count != 2 {
-			Log("DouYinDMError.cookiesCount")
-		}
-		
-		for kv in kvs {
-			let _ = try? await webView.evaluateJavaScriptAsync("window.sessionStorage.setItem('\(kv.0)', '\(kv.1)')", type: String.self)
-		}
-	}
-	
 	func startRequests() {
 		Task {
             do {
@@ -110,9 +87,8 @@ class DouYinDM: NSObject {
 				let douyin = await Processes.shared.videoDecoder.douyin
 				
 				let cookies = try await douyin.cookiesManager.cookies()
-				let ua = await douyin.cookiesManager.douyinUA()
-				
-				await prepareCookies()
+                let ua = douyin.cookiesManager.douyinUA
+                
 				let req = try await initWS(rid, cookies: cookies, ua: ua)
 				
 				requestPrepared?(req)
