@@ -71,7 +71,6 @@
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
 		017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */ = {isa = PBXBuildFile; fileRef = 01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */; };
 		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
-		0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */; };
 		0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0184D7112B2025FF00C7901A /* DateExtension.swift */; };
 		018739EE2852135200156F3F /* QQLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018739ED2852135200156F3F /* QQLive.swift */; };
 		01892C7827C0CDA400494AFD /* DouYin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01892C7727C0CDA400494AFD /* DouYin.swift */; };
@@ -261,7 +260,6 @@
 		016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BiliLiveDMv2.pb.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
 		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
-		0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinPushFrame.pb.swift; sourceTree = "<group>"; };
 		0184D7112B2025FF00C7901A /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
 		01892C7727C0CDA400494AFD /* DouYin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYin.swift; sourceTree = "<group>"; };
@@ -604,7 +602,6 @@
 				013CE8DD2184459E000271FB /* Danmaku.swift */,
 				016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */,
 				01942A3327C3BED70092FA5A /* DouYinDM.swift */,
-				0182F5DE295FDAB600DB8BDD /* DouYinPushFrame.pb.swift */,
 				0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */,
 				01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */,
 				01DCD2F8259710D800D286C8 /* BilibiliDMMessage.swift */,
@@ -854,7 +851,6 @@
 				013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */,
 				013598982CEC95AE00B3EFC0 /* BilbiliShare.swift in Sources */,
 				010BEA6C2C4FE2C60061E1DC /* BilibiliDash.swift in Sources */,
-				0182F5DF295FDAB600DB8BDD /* DouYinPushFrame.pb.swift in Sources */,
 				0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */,
 				0199489E2742852E00C71708 /* SupportSites.swift in Sources */,
 				01AEC8AD20EDFD01001406E8 /* MainViewController.swift in Sources */,

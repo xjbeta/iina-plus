@@ -15,9 +15,9 @@ import SDWebImage
 //@objc(Bookmark)
 public class Bookmark: NSManagedObject {
 
-    lazy var site: SupportSites = {
+    var site: SupportSites {
         SupportSites(url: url)
-    }()
+    }
     
     @objc dynamic var image: NSImage?
     
