@@ -41,8 +41,6 @@ actor DouYin: SupportSiteProtocol {
     
 	
 	func getEnterContent(_ url: String) async throws -> LiveInfo {
-		var headers = try await cookiesManager.headers()
-		headers.add(name: "referer", value: url)
 		
 		guard let pc = NSURL(string: url)?.pathComponents,
 			  pc.count >= 2,
@@ -60,11 +58,10 @@ actor DouYin: SupportSiteProtocol {
 			}
 		}()
 		
-		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=MacIntel&browser_name=Safari&browser_version=18.6&web_rid=\(rid)&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason=&msToken=&a_bogus="
-
-		
+		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=MacIntel&browser_name=Safari&browser_version=18.6&web_rid=\(rid)&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason="
+        
 		do {
-			let data = try await AF.request(u, headers: headers).serializingData().value
+			let data = try await cookiesManager.request(u).serializingData().value
 			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
 			let enterData = try DouYinEnterData(object: jsonObj)
 			

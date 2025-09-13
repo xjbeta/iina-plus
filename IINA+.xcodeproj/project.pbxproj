@@ -128,6 +128,7 @@
 		01C248CD2CE480F30074A76F /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 01C248CC2CE480F30074A76F /* DequeModule */; };
 		01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C338B428E47B3F004CC0B8 /* MBGA.swift */; };
 		01C373592429F2C2006778D1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 01C373582429F2C2006778D1 /* README.md */; };
+		01CF4C632E74227000CECD08 /* douyin.js in Resources */ = {isa = PBXBuildFile; fileRef = 01CF4C622E74227000CECD08 /* douyin.js */; };
 		01D482BB2CAF978C00F636EE /* CharacterSetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D482BA2CAF978C00F636EE /* CharacterSetExtension.swift */; };
 		01D8282A2AC3E1D6003A73BA /* mpegts.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 01D828282AC3E1A6003A73BA /* mpegts.js */; };
 		01D8762927D459C5001140DD /* crypto-js.js in Resources */ = {isa = PBXBuildFile; fileRef = 01D8762827D459C5001140DD /* crypto-js.js */; };
@@ -307,6 +308,7 @@
 		01C248C92CE480670074A76F /* TokenBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenBucket.swift; sourceTree = "<group>"; };
 		01C338B428E47B3F004CC0B8 /* MBGA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBGA.swift; sourceTree = "<group>"; };
 		01C373582429F2C2006778D1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		01CF4C622E74227000CECD08 /* douyin.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = douyin.js; sourceTree = "<group>"; };
 		01D482BA2CAF978C00F636EE /* CharacterSetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterSetExtension.swift; sourceTree = "<group>"; };
 		01D828282AC3E1A6003A73BA /* mpegts.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = mpegts.js; path = "IINA+/WebFiles/node_modules/mpegts.js/dist/mpegts.js"; sourceTree = SOURCE_ROOT; };
 		01D8762827D459C5001140DD /* crypto-js.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "crypto-js.js"; path = "IINA+/WebFiles/node_modules/crypto-js/crypto-js.js"; sourceTree = SOURCE_ROOT; };
@@ -547,6 +549,7 @@
 				013850F9214EA2AA003817CE /* huya.js */,
 				015F06972DCC73CA00501A03 /* Localizable.xcstrings */,
 				01F716DA2DAA4EB300308663 /* empty.m4a */,
+				01CF4C622E74227000CECD08 /* douyin.js */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -790,6 +793,7 @@
 				015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */,
 				01C0807527BB5CFD00E87A8C /* Preferences.storyboard in Resources */,
 				014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */,
+				01CF4C632E74227000CECD08 /* douyin.js in Resources */,
 				01EDCCA72A791EB5001DC138 /* test.htm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1100,7 +1104,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.9;
+				MARKETING_VERSION = 0.8.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1127,7 +1131,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.9;
+				MARKETING_VERSION = 0.8.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
