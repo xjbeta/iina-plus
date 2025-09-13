@@ -257,7 +257,7 @@ class Danmaku: NSObject {
                         self.loadDM()
                         return
                     }
-                    var pf = DouYinPushFrame()
+                    var pf = Douyin_PushFrame()
                     pf.payloadType = "hb"
                     try socket.sendPing(pf.serializedData())
                 default:
@@ -604,9 +604,9 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                 
                 guard ree.needAck else { return }
                 
-                var pf = DouYinPushFrame()
+                var pf = Douyin_PushFrame()
                 pf.payloadType = "ack"
-                pf.logid = re.wssPushLogID
+                pf.logID = UInt64(re.wssPushLogID)
                 
                 let payload: [UInt8] = {
                     var t = [UInt8]()
@@ -634,7 +634,7 @@ new Uint8Array(sendRegisterGroups(["live:\(id)", "chat:\(id)"]));
                     return t
                 }()
                 
-                pf.data = Data(payload)
+                pf.payload = Data(payload)
                 
                 try? webSocket.send(data: pf.serializedData())
                 

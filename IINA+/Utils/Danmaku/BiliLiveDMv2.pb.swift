@@ -9,11 +9,6 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
-///https://s1.hdslb.com/bfs/static/blive/blfe-live-room/static/js/app.****.js
-///https://s1.hdslb.com/bfs/static/player/main/core.****.js
-/// DANMU_MSG dm_v2
-
-import Foundation
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -40,41 +35,41 @@ enum BilibiliDm_Community_Service_Dm_Live_BizScene: SwiftProtobuf.Enum, Swift.Ca
   case UNRECOGNIZED(Int)
 
   init() {
-	self = .none
+    self = .none
   }
 
   init?(rawValue: Int) {
-	switch rawValue {
-	case 0: self = .none
-	case 1: self = .lottery
-	case 2: self = .survive
-	case 3: self = .voiceConn
-	case 4: self = .playBack
-	case 5: self = .vote
-	default: self = .UNRECOGNIZED(rawValue)
-	}
+    switch rawValue {
+    case 0: self = .none
+    case 1: self = .lottery
+    case 2: self = .survive
+    case 3: self = .voiceConn
+    case 4: self = .playBack
+    case 5: self = .vote
+    default: self = .UNRECOGNIZED(rawValue)
+    }
   }
 
   var rawValue: Int {
-	switch self {
-	case .none: return 0
-	case .lottery: return 1
-	case .survive: return 2
-	case .voiceConn: return 3
-	case .playBack: return 4
-	case .vote: return 5
-	case .UNRECOGNIZED(let i): return i
-	}
+    switch self {
+    case .none: return 0
+    case .lottery: return 1
+    case .survive: return 2
+    case .voiceConn: return 3
+    case .playBack: return 4
+    case .vote: return 5
+    case .UNRECOGNIZED(let i): return i
+    }
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   static let allCases: [BilibiliDm_Community_Service_Dm_Live_BizScene] = [
-	.none,
-	.lottery,
-	.survive,
-	.voiceConn,
-	.playBack,
-	.vote,
+    .none,
+    .lottery,
+    .survive,
+    .voiceConn,
+    .playBack,
+    .vote,
   ]
 
 }
@@ -88,32 +83,32 @@ enum BilibiliDm_Community_Service_Dm_Live_DmType: SwiftProtobuf.Enum, Swift.Case
   case UNRECOGNIZED(Int)
 
   init() {
-	self = .normal
+    self = .normal
   }
 
   init?(rawValue: Int) {
-	switch rawValue {
-	case 0: self = .normal
-	case 1: self = .emoticon
-	case 2: self = .voice
-	default: self = .UNRECOGNIZED(rawValue)
-	}
+    switch rawValue {
+    case 0: self = .normal
+    case 1: self = .emoticon
+    case 2: self = .voice
+    default: self = .UNRECOGNIZED(rawValue)
+    }
   }
 
   var rawValue: Int {
-	switch self {
-	case .normal: return 0
-	case .emoticon: return 1
-	case .voice: return 2
-	case .UNRECOGNIZED(let i): return i
-	}
+    switch self {
+    case .normal: return 0
+    case .emoticon: return 1
+    case .voice: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   static let allCases: [BilibiliDm_Community_Service_Dm_Live_DmType] = [
-	.normal,
-	.emoticon,
-	.voice,
+    .normal,
+    .emoticon,
+    .voice,
   ]
 
 }
@@ -123,95 +118,95 @@ struct BilibiliDm_Community_Service_Dm_Live_Dm: @unchecked Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// [0][15].extra.id_str 新idstr
-  var idStr: String {
-	get {return _storage._idStr}
-	set {_uniqueStorage()._idStr = newValue}
+  /// [0][15].extra.id_str ex:id_str
+  var dmid: String {
+    get {return _storage._dmid}
+    set {_uniqueStorage()._dmid = newValue}
   }
 
-  /// [0] [1] 弹幕类型
+  /// [0] [1]  弹幕类型
   var mode: Int32 {
-	get {return _storage._mode}
-	set {_uniqueStorage()._mode = newValue}
+    get {return _storage._mode}
+    set {_uniqueStorage()._mode = newValue}
   }
 
-  /// [0] [2] 弹幕字号
+  /// [0] [2]  弹幕字号
   var size: Int32 {
-	get {return _storage._size}
-	set {_uniqueStorage()._size = newValue}
+    get {return _storage._size}
+    set {_uniqueStorage()._size = newValue}
   }
 
-  /// [0] [3] 弹幕颜色
+  /// [0] [3]  弹幕颜色
   var color: UInt32 {
-	get {return _storage._color}
-	set {_uniqueStorage()._color = newValue}
+    get {return _storage._color}
+    set {_uniqueStorage()._color = newValue}
   }
 
-  /// [0] [7] 发送者midHash
+  /// [0] [7]  发送者 ex:mid_hash
   var uhash: String {
-	get {return _storage._uhash}
-	set {_uniqueStorage()._uhash = newValue}
+    get {return _storage._uhash}
+    set {_uniqueStorage()._uhash = newValue}
   }
 
-  /// [1]     弹幕正文
+  /// [1]      弹幕正文 ex:content
   var text: String {
-	get {return _storage._text}
-	set {_uniqueStorage()._text = newValue}
+    get {return _storage._text}
+    set {_uniqueStorage()._text = newValue}
   }
 
-  /// [0] [4] 发送时间TimeStamp(ms)
+  /// [0] [4]  发送时间TimeStamp(ms) ex:ctime
   var date: Int64 {
-	get {return _storage._date}
-	set {_uniqueStorage()._date = newValue}
+    get {return _storage._date}
+    set {_uniqueStorage()._date = newValue}
   }
 
   var weight: Int32 {
-	get {return _storage._weight}
-	set {_uniqueStorage()._weight = newValue}
+    get {return _storage._weight}
+    set {_uniqueStorage()._weight = newValue}
   }
 
   /// [0] [5]
   var rnd: Int64 {
-	get {return _storage._rnd}
-	set {_uniqueStorage()._rnd = newValue}
+    get {return _storage._rnd}
+    set {_uniqueStorage()._rnd = newValue}
   }
 
   var attr: Int64 {
-	get {return _storage._attr}
-	set {_uniqueStorage()._attr = newValue}
+    get {return _storage._attr}
+    set {_uniqueStorage()._attr = newValue}
   }
 
   var bizScene: BilibiliDm_Community_Service_Dm_Live_BizScene {
-	get {return _storage._bizScene}
-	set {_uniqueStorage()._bizScene = newValue}
+    get {return _storage._bizScene}
+    set {_uniqueStorage()._bizScene = newValue}
   }
 
-  /// [0][11] chatBubble
+  /// [0][11]  chatBubble
   var bubble: BilibiliDm_Community_Service_Dm_Live_Bubble {
-	get {return _storage._bubble ?? BilibiliDm_Community_Service_Dm_Live_Bubble()}
-	set {_uniqueStorage()._bubble = newValue}
+    get {return _storage._bubble ?? BilibiliDm_Community_Service_Dm_Live_Bubble()}
+    set {_uniqueStorage()._bubble = newValue}
   }
   /// Returns true if `bubble` has been explicitly set.
   var hasBubble: Bool {return _storage._bubble != nil}
   /// Clears the value of `bubble`. Subsequent reads from it will return its default value.
   mutating func clearBubble() {_uniqueStorage()._bubble = nil}
 
-  /// [0][12] DmType
+  /// [0][12]  DmType
   var dmType: BilibiliDm_Community_Service_Dm_Live_DmType {
-	get {return _storage._dmType}
-	set {_uniqueStorage()._dmType = newValue}
+    get {return _storage._dmType}
+    set {_uniqueStorage()._dmType = newValue}
   }
 
-  /// map<string,Emoticon>    emoticons       = 14;   // [0][15] 表情 repeated
+  /// map<string,Emoticon>    emoticons       = 14;   // [0][15]  表情 repeated
   var emoticons: [BilibiliDm_Community_Service_Dm_Live_emots_temp] {
-	get {return _storage._emoticons}
-	set {_uniqueStorage()._emoticons = newValue}
+    get {return _storage._emoticons}
+    set {_uniqueStorage()._emoticons = newValue}
   }
 
   /// [0][14]
   var voice: BilibiliDm_Community_Service_Dm_Live_Voice {
-	get {return _storage._voice ?? BilibiliDm_Community_Service_Dm_Live_Voice()}
-	set {_uniqueStorage()._voice = newValue}
+    get {return _storage._voice ?? BilibiliDm_Community_Service_Dm_Live_Voice()}
+    set {_uniqueStorage()._voice = newValue}
   }
   /// Returns true if `voice` has been explicitly set.
   var hasVoice: Bool {return _storage._voice != nil}
@@ -219,14 +214,14 @@ struct BilibiliDm_Community_Service_Dm_Live_Dm: @unchecked Sendable {
   mutating func clearVoice() {_uniqueStorage()._voice = nil}
 
   var animation: String {
-	get {return _storage._animation}
-	set {_uniqueStorage()._animation = newValue}
+    get {return _storage._animation}
+    set {_uniqueStorage()._animation = newValue}
   }
 
-  /// [0][16] 抽奖
+  /// [0][16]  抽奖
   var aggregation: BilibiliDm_Community_Service_Dm_Live_Aggregation {
-	get {return _storage._aggregation ?? BilibiliDm_Community_Service_Dm_Live_Aggregation()}
-	set {_uniqueStorage()._aggregation = newValue}
+    get {return _storage._aggregation ?? BilibiliDm_Community_Service_Dm_Live_Aggregation()}
+    set {_uniqueStorage()._aggregation = newValue}
   }
   /// Returns true if `aggregation` has been explicitly set.
   var hasAggregation: Bool {return _storage._aggregation != nil}
@@ -235,34 +230,34 @@ struct BilibiliDm_Community_Service_Dm_Live_Dm: @unchecked Sendable {
 
   /// [0][15].extra
   var sendFromMe: Bool {
-	get {return _storage._sendFromMe}
-	set {_uniqueStorage()._sendFromMe = newValue}
+    get {return _storage._sendFromMe}
+    set {_uniqueStorage()._sendFromMe = newValue}
   }
 
   /// [9]
   var check: BilibiliDm_Community_Service_Dm_Live_Check {
-	get {return _storage._check ?? BilibiliDm_Community_Service_Dm_Live_Check()}
-	set {_uniqueStorage()._check = newValue}
+    get {return _storage._check ?? BilibiliDm_Community_Service_Dm_Live_Check()}
+    set {_uniqueStorage()._check = newValue}
   }
   /// Returns true if `check` has been explicitly set.
   var hasCheck: Bool {return _storage._check != nil}
   /// Clears the value of `check`. Subsequent reads from it will return its default value.
   mutating func clearCheck() {_uniqueStorage()._check = nil}
 
-  /// [2]    用户主站信息
+  /// [2]      用户主站信息
   var user: BilibiliDm_Community_Service_Dm_Live_User {
-	get {return _storage._user ?? BilibiliDm_Community_Service_Dm_Live_User()}
-	set {_uniqueStorage()._user = newValue}
+    get {return _storage._user ?? BilibiliDm_Community_Service_Dm_Live_User()}
+    set {_uniqueStorage()._user = newValue}
   }
   /// Returns true if `user` has been explicitly set.
   var hasUser: Bool {return _storage._user != nil}
   /// Clears the value of `user`. Subsequent reads from it will return its default value.
   mutating func clearUser() {_uniqueStorage()._user = nil}
 
-  /// [3]    粉丝勋章
+  /// [3]      粉丝勋章
   var room: BilibiliDm_Community_Service_Dm_Live_Room {
-	get {return _storage._room ?? BilibiliDm_Community_Service_Dm_Live_Room()}
-	set {_uniqueStorage()._room = newValue}
+    get {return _storage._room ?? BilibiliDm_Community_Service_Dm_Live_Room()}
+    set {_uniqueStorage()._room = newValue}
   }
   /// Returns true if `room` has been explicitly set.
   var hasRoom: Bool {return _storage._room != nil}
@@ -271,8 +266,8 @@ struct BilibiliDm_Community_Service_Dm_Live_Dm: @unchecked Sendable {
 
   /// [0][15].extra
   var icon: BilibiliDm_Community_Service_Dm_Live_Icon {
-	get {return _storage._icon ?? BilibiliDm_Community_Service_Dm_Live_Icon()}
-	set {_uniqueStorage()._icon = newValue}
+    get {return _storage._icon ?? BilibiliDm_Community_Service_Dm_Live_Icon()}
+    set {_uniqueStorage()._icon = newValue}
   }
   /// Returns true if `icon` has been explicitly set.
   var hasIcon: Bool {return _storage._icon != nil}
@@ -280,58 +275,13 @@ struct BilibiliDm_Community_Service_Dm_Live_Dm: @unchecked Sendable {
   mutating func clearIcon() {_uniqueStorage()._icon = nil}
 
   var reply: BilibiliDm_Community_Service_Dm_Live_Reply {
-	get {return _storage._reply ?? BilibiliDm_Community_Service_Dm_Live_Reply()}
-	set {_uniqueStorage()._reply = newValue}
+    get {return _storage._reply ?? BilibiliDm_Community_Service_Dm_Live_Reply()}
+    set {_uniqueStorage()._reply = newValue}
   }
   /// Returns true if `reply` has been explicitly set.
   var hasReply: Bool {return _storage._reply != nil}
   /// Clears the value of `reply`. Subsequent reads from it will return its default value.
   mutating func clearReply() {_uniqueStorage()._reply = nil}
-
-  var unknown24: Data {
-	get {return _storage._unknown24}
-	set {_uniqueStorage()._unknown24 = newValue}
-  }
-
-  var unknown25: Data {
-	get {return _storage._unknown25}
-	set {_uniqueStorage()._unknown25 = newValue}
-  }
-
-  var unknown26: Data {
-	get {return _storage._unknown26}
-	set {_uniqueStorage()._unknown26 = newValue}
-  }
-
-  var unknown27: Data {
-	get {return _storage._unknown27}
-	set {_uniqueStorage()._unknown27 = newValue}
-  }
-
-  var unknown28: Data {
-	get {return _storage._unknown28}
-	set {_uniqueStorage()._unknown28 = newValue}
-  }
-
-  var unknown29: Data {
-	get {return _storage._unknown29}
-	set {_uniqueStorage()._unknown29 = newValue}
-  }
-
-  var unknown30: Data {
-	get {return _storage._unknown30}
-	set {_uniqueStorage()._unknown30 = newValue}
-  }
-
-  var unknown31: Data {
-	get {return _storage._unknown31}
-	set {_uniqueStorage()._unknown31 = newValue}
-  }
-
-  var unknown32: Data {
-	get {return _storage._unknown32}
-	set {_uniqueStorage()._unknown32 = newValue}
-  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -370,7 +320,7 @@ struct BilibiliDm_Community_Service_Dm_Live_Room: Sendable {
   var name: String = String()
 
   /// 当前直播间 长ID ！非官方
-  var roomid: UInt32 = 0
+  var roomid: UInt64 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -408,8 +358,8 @@ struct BilibiliDm_Community_Service_Dm_Live_emots_temp: Sendable {
 
   /// [0][15].extra.emots
   var value: BilibiliDm_Community_Service_Dm_Live_Emoticon {
-	get {return _value ?? BilibiliDm_Community_Service_Dm_Live_Emoticon()}
-	set {_value = newValue}
+    get {return _value ?? BilibiliDm_Community_Service_Dm_Live_Emoticon()}
+    set {_value = newValue}
   }
   /// Returns true if `value` has been explicitly set.
   var hasValue: Bool {return self._value != nil}
@@ -512,68 +462,68 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
 
   ///bilibiliDm.community.service.dm.live.User
   var uid: Int64 {
-	get {return _storage._uid}
-	set {_uniqueStorage()._uid = newValue}
+    get {return _storage._uid}
+    set {_uniqueStorage()._uid = newValue}
   }
 
   /// [2][1] 昵称
   var name: String {
-	get {return _storage._name}
-	set {_uniqueStorage()._name = newValue}
+    get {return _storage._name}
+    set {_uniqueStorage()._name = newValue}
   }
 
   /// [2][7] usernameColor
   var nameColor: String {
-	get {return _storage._nameColor}
-	set {_uniqueStorage()._nameColor = newValue}
+    get {return _storage._nameColor}
+    set {_uniqueStorage()._nameColor = newValue}
   }
 
   /// 用户头像URL
   var face: String {
-	get {return _storage._face}
-	set {_uniqueStorage()._face = newValue}
+    get {return _storage._face}
+    set {_uniqueStorage()._face = newValue}
   }
 
   /// [2][3]
   var vip: Int64 {
-	get {return _storage._vip}
-	set {_uniqueStorage()._vip = newValue}
+    get {return _storage._vip}
+    set {_uniqueStorage()._vip = newValue}
   }
 
   /// [2][4]
   var svip: Int64 {
-	get {return _storage._svip}
-	set {_uniqueStorage()._svip = newValue}
+    get {return _storage._svip}
+    set {_uniqueStorage()._svip = newValue}
   }
 
   /// [2][5]
   var rank: Int32 {
-	get {return _storage._rank}
-	set {_uniqueStorage()._rank = newValue}
+    get {return _storage._rank}
+    set {_uniqueStorage()._rank = newValue}
   }
 
   /// [2][6] 手机号验证
   var mobileVerify: Int32 {
-	get {return _storage._mobileVerify}
-	set {_uniqueStorage()._mobileVerify = newValue}
+    get {return _storage._mobileVerify}
+    set {_uniqueStorage()._mobileVerify = newValue}
   }
 
   /// [14]?
   var lplStatus: Int64 {
-	get {return _storage._lplStatus}
-	set {_uniqueStorage()._lplStatus = newValue}
+    get {return _storage._lplStatus}
+    set {_uniqueStorage()._lplStatus = newValue}
   }
 
   /// [2][2] 房管 isAdmin
   var attr: Int64 {
-	get {return _storage._attr}
-	set {_uniqueStorage()._attr = newValue}
+    get {return _storage._attr}
+    set {_uniqueStorage()._attr = newValue}
   }
 
   /// [3] 粉丝勋章
   var medal: BilibiliDm_Community_Service_Dm_Live_Medal {
-	get {return _storage._medal ?? BilibiliDm_Community_Service_Dm_Live_Medal()}
-	set {_uniqueStorage()._medal = newValue}
+    get {return _storage._medal ?? BilibiliDm_Community_Service_Dm_Live_Medal()}
+    set {_uniqueStorage()._medal = newValue}
   }
   /// Returns true if `medal` has been explicitly set.
   var hasMedal: Bool {return _storage._medal != nil}
@@ -582,8 +532,8 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
 
   /// [4] 用户直播区信息
   var level: BilibiliDm_Community_Service_Dm_Live_UserLevel {
-	get {return _storage._level ?? BilibiliDm_Community_Service_Dm_Live_UserLevel()}
-	set {_uniqueStorage()._level = newValue}
+    get {return _storage._level ?? BilibiliDm_Community_Service_Dm_Live_UserLevel()}
+    set {_uniqueStorage()._level = newValue}
   }
   /// Returns true if `level` has been explicitly set.
   var hasLevel: Bool {return _storage._level != nil}
@@ -592,8 +542,8 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
 
   /// [5] 头衔
   var title: BilibiliDm_Community_Service_Dm_Live_Title {
-	get {return _storage._title ?? BilibiliDm_Community_Service_Dm_Live_Title()}
-	set {_uniqueStorage()._title = newValue}
+    get {return _storage._title ?? BilibiliDm_Community_Service_Dm_Live_Title()}
+    set {_uniqueStorage()._title = newValue}
   }
   /// Returns true if `title` has been explicitly set.
   var hasTitle: Bool {return _storage._title != nil}
@@ -601,8 +551,8 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
   mutating func clearTitle() {_uniqueStorage()._title = nil}
 
   var identify: BilibiliDm_Community_Service_Dm_Live_Identify {
-	get {return _storage._identify ?? BilibiliDm_Community_Service_Dm_Live_Identify()}
-	set {_uniqueStorage()._identify = newValue}
+    get {return _storage._identify ?? BilibiliDm_Community_Service_Dm_Live_Identify()}
+    set {_uniqueStorage()._identify = newValue}
   }
   /// Returns true if `identify` has been explicitly set.
   var hasIdentify: Bool {return _storage._identify != nil}
@@ -611,8 +561,8 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
 
   /// 20230601~20230620
   var wealth: BilibiliDm_Community_Service_Dm_Live_Wealth {
-	get {return _storage._wealth ?? BilibiliDm_Community_Service_Dm_Live_Wealth()}
-	set {_uniqueStorage()._wealth = newValue}
+    get {return _storage._wealth ?? BilibiliDm_Community_Service_Dm_Live_Wealth()}
+    set {_uniqueStorage()._wealth = newValue}
   }
   /// Returns true if `wealth` has been explicitly set.
   var hasWealth: Bool {return _storage._wealth != nil}
@@ -620,8 +570,8 @@ struct BilibiliDm_Community_Service_Dm_Live_User: @unchecked Sendable {
   mutating func clearWealth() {_uniqueStorage()._wealth = nil}
 
   var groupMedal: BilibiliDm_Community_Service_Dm_Live_GroupMedal {
-	get {return _storage._groupMedal ?? BilibiliDm_Community_Service_Dm_Live_GroupMedal()}
-	set {_uniqueStorage()._groupMedal = newValue}
+    get {return _storage._groupMedal ?? BilibiliDm_Community_Service_Dm_Live_GroupMedal()}
+    set {_uniqueStorage()._groupMedal = newValue}
   }
   /// Returns true if `groupMedal` has been explicitly set.
   var hasGroupMedal: Bool {return _storage._groupMedal != nil}
@@ -662,7 +612,7 @@ struct BilibiliDm_Community_Service_Dm_Live_Medal: Sendable {
   ///bilibiliDm.community.service.dm.live.Medal
   var level: Int64 = 0
 
-  /// [3][1] 粉丝勋章称号
+  /// [3][1]   粉丝勋章称号
   var name: String = String()
 
   /// [3][5]
@@ -683,7 +633,7 @@ struct BilibiliDm_Community_Service_Dm_Live_Medal: Sendable {
   /// [3][9]
   var gradientEndColor: Int64 = 0
 
-  /// [3][10] 粉丝勋章 舰长等级
+  /// [3][10]  粉丝勋章 舰长等级
   var privilege: Int64 = 0
 
   /// [3][11]
@@ -709,7 +659,7 @@ struct BilibiliDm_Community_Service_Dm_Live_UserLevel: Sendable {
   /// [4][3]
   var rank: String = String()
 
-  /// [4][4] 高能榜实时排名(仅前三)
+  /// [4][4]   高能榜实时排名(仅前三)
   var onlineRank: Int64 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -763,6 +713,29 @@ struct BilibiliDm_Community_Service_Dm_Live_Wealth: Sendable {
   init() {}
 }
 
+///23
+struct BilibiliDm_Community_Service_Dm_Live_Reply: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  ///[0][15].extra
+  var showReply: Bool = false
+
+  ///[0][15].extra
+  var replyMid: Int64 = 0
+
+  ///[0][15].extra
+  var replyUname: String = String()
+
+  ///[0][15].extra
+  var replyUnameColor: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 ///22
 struct BilibiliDm_Community_Service_Dm_Live_Icon: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -771,8 +744,8 @@ struct BilibiliDm_Community_Service_Dm_Live_Icon: Sendable {
 
   /// bilibiliDm.community.service.dm.live.Icon
   var prefix: BilibiliDm_Community_Service_Dm_Live_Prefix {
-	get {return _prefix ?? BilibiliDm_Community_Service_Dm_Live_Prefix()}
-	set {_prefix = newValue}
+    get {return _prefix ?? BilibiliDm_Community_Service_Dm_Live_Prefix()}
+    set {_prefix = newValue}
   }
   /// Returns true if `prefix` has been explicitly set.
   var hasPrefix: Bool {return self._prefix != nil}
@@ -821,1366 +794,1136 @@ struct BilibiliDm_Community_Service_Dm_Live_GroupMedal: Sendable {
   init() {}
 }
 
-///23
-struct BilibiliDm_Community_Service_Dm_Live_Reply: Sendable {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  ///[0][15].extra
-  var showReply: Bool = false
-
-  ///[0][15].extra
-  var replyMid: Int64 = 0
-
-  ///[0][15].extra
-  var replyUname: String = String()
-
-  ///[0][15].extra
-  var replyUnameColor: String = String()
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-}
-
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "bilibiliDm.community.service.dm.live"
 
 extension BilibiliDm_Community_Service_Dm_Live_BizScene: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	0: .same(proto: "BizSceneNone"),
-	1: .same(proto: "BizSceneLottery"),
-	2: .same(proto: "BizSceneSurvive"),
-	3: .same(proto: "BizSceneVoiceConn"),
-	4: .same(proto: "BizScenePlayBack"),
-	5: .same(proto: "BizSceneVote"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0BizSceneNone\0\u{1}BizSceneLottery\0\u{1}BizSceneSurvive\0\u{1}BizSceneVoiceConn\0\u{1}BizScenePlayBack\0\u{1}BizSceneVote\0")
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_DmType: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	0: .same(proto: "DmTypeNormal"),
-	1: .same(proto: "DmTypeEmoticon"),
-	2: .same(proto: "DmTypeVoice"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DmTypeNormal\0\u{1}DmTypeEmoticon\0\u{1}DmTypeVoice\0")
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Dm: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Dm"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .standard(proto: "id_str"),
-	2: .same(proto: "mode"),
-	3: .same(proto: "size"),
-	4: .same(proto: "color"),
-	5: .same(proto: "uhash"),
-	6: .same(proto: "text"),
-	7: .same(proto: "date"),
-	8: .same(proto: "weight"),
-	9: .same(proto: "rnd"),
-	10: .same(proto: "attr"),
-	11: .standard(proto: "biz_scene"),
-	12: .same(proto: "bubble"),
-	13: .standard(proto: "dm_type"),
-	14: .same(proto: "emoticons"),
-	15: .same(proto: "voice"),
-	16: .same(proto: "animation"),
-	17: .same(proto: "aggregation"),
-	18: .standard(proto: "send_from_me"),
-	19: .same(proto: "check"),
-	20: .same(proto: "user"),
-	21: .same(proto: "room"),
-	22: .same(proto: "icon"),
-	23: .same(proto: "reply"),
-	24: .same(proto: "unknown24"),
-	25: .same(proto: "unknown25"),
-	26: .same(proto: "unknown26"),
-	27: .same(proto: "unknown27"),
-	28: .same(proto: "unknown28"),
-	29: .same(proto: "unknown29"),
-	30: .same(proto: "unknown30"),
-	31: .same(proto: "unknown31"),
-	32: .same(proto: "unknown32"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}dmid\0\u{1}mode\0\u{1}size\0\u{1}color\0\u{1}uhash\0\u{1}text\0\u{1}date\0\u{1}weight\0\u{1}rnd\0\u{1}attr\0\u{3}biz_scene\0\u{1}bubble\0\u{3}dm_type\0\u{1}emoticons\0\u{1}voice\0\u{1}animation\0\u{1}aggregation\0\u{3}send_from_me\0\u{1}check\0\u{1}user\0\u{1}room\0\u{1}icon\0\u{1}reply\0")
 
   fileprivate class _StorageClass {
-	var _idStr: String = String()
-	var _mode: Int32 = 0
-	var _size: Int32 = 0
-	var _color: UInt32 = 0
-	var _uhash: String = String()
-	var _text: String = String()
-	var _date: Int64 = 0
-	var _weight: Int32 = 0
-	var _rnd: Int64 = 0
-	var _attr: Int64 = 0
-	var _bizScene: BilibiliDm_Community_Service_Dm_Live_BizScene = .none
-	var _bubble: BilibiliDm_Community_Service_Dm_Live_Bubble? = nil
-	var _dmType: BilibiliDm_Community_Service_Dm_Live_DmType = .normal
-	var _emoticons: [BilibiliDm_Community_Service_Dm_Live_emots_temp] = []
-	var _voice: BilibiliDm_Community_Service_Dm_Live_Voice? = nil
-	var _animation: String = String()
-	var _aggregation: BilibiliDm_Community_Service_Dm_Live_Aggregation? = nil
-	var _sendFromMe: Bool = false
-	var _check: BilibiliDm_Community_Service_Dm_Live_Check? = nil
-	var _user: BilibiliDm_Community_Service_Dm_Live_User? = nil
-	var _room: BilibiliDm_Community_Service_Dm_Live_Room? = nil
-	var _icon: BilibiliDm_Community_Service_Dm_Live_Icon? = nil
-	var _reply: BilibiliDm_Community_Service_Dm_Live_Reply? = nil
-	var _unknown24: Data = Data()
-	var _unknown25: Data = Data()
-	var _unknown26: Data = Data()
-	var _unknown27: Data = Data()
-	var _unknown28: Data = Data()
-	var _unknown29: Data = Data()
-	var _unknown30: Data = Data()
-	var _unknown31: Data = Data()
-	var _unknown32: Data = Data()
+    var _dmid: String = String()
+    var _mode: Int32 = 0
+    var _size: Int32 = 0
+    var _color: UInt32 = 0
+    var _uhash: String = String()
+    var _text: String = String()
+    var _date: Int64 = 0
+    var _weight: Int32 = 0
+    var _rnd: Int64 = 0
+    var _attr: Int64 = 0
+    var _bizScene: BilibiliDm_Community_Service_Dm_Live_BizScene = .none
+    var _bubble: BilibiliDm_Community_Service_Dm_Live_Bubble? = nil
+    var _dmType: BilibiliDm_Community_Service_Dm_Live_DmType = .normal
+    var _emoticons: [BilibiliDm_Community_Service_Dm_Live_emots_temp] = []
+    var _voice: BilibiliDm_Community_Service_Dm_Live_Voice? = nil
+    var _animation: String = String()
+    var _aggregation: BilibiliDm_Community_Service_Dm_Live_Aggregation? = nil
+    var _sendFromMe: Bool = false
+    var _check: BilibiliDm_Community_Service_Dm_Live_Check? = nil
+    var _user: BilibiliDm_Community_Service_Dm_Live_User? = nil
+    var _room: BilibiliDm_Community_Service_Dm_Live_Room? = nil
+    var _icon: BilibiliDm_Community_Service_Dm_Live_Icon? = nil
+    var _reply: BilibiliDm_Community_Service_Dm_Live_Reply? = nil
 
-	#if swift(>=5.10)
-	  // This property is used as the initial default value for new instances of the type.
-	  // The type itself is protecting the reference to its storage via CoW semantics.
-	  // This will force a copy to be made of this reference when the first mutation occurs;
-	  // hence, it is safe to mark this as `nonisolated(unsafe)`.
-	  static nonisolated(unsafe) let defaultInstance = _StorageClass()
-	#else
-	  static let defaultInstance = _StorageClass()
-	#endif
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
 
-	private init() {}
+    private init() {}
 
-	init(copying source: _StorageClass) {
-	  _idStr = source._idStr
-	  _mode = source._mode
-	  _size = source._size
-	  _color = source._color
-	  _uhash = source._uhash
-	  _text = source._text
-	  _date = source._date
-	  _weight = source._weight
-	  _rnd = source._rnd
-	  _attr = source._attr
-	  _bizScene = source._bizScene
-	  _bubble = source._bubble
-	  _dmType = source._dmType
-	  _emoticons = source._emoticons
-	  _voice = source._voice
-	  _animation = source._animation
-	  _aggregation = source._aggregation
-	  _sendFromMe = source._sendFromMe
-	  _check = source._check
-	  _user = source._user
-	  _room = source._room
-	  _icon = source._icon
-	  _reply = source._reply
-	  _unknown24 = source._unknown24
-	  _unknown25 = source._unknown25
-	  _unknown26 = source._unknown26
-	  _unknown27 = source._unknown27
-	  _unknown28 = source._unknown28
-	  _unknown29 = source._unknown29
-	  _unknown30 = source._unknown30
-	  _unknown31 = source._unknown31
-	  _unknown32 = source._unknown32
-	}
+    init(copying source: _StorageClass) {
+      _dmid = source._dmid
+      _mode = source._mode
+      _size = source._size
+      _color = source._color
+      _uhash = source._uhash
+      _text = source._text
+      _date = source._date
+      _weight = source._weight
+      _rnd = source._rnd
+      _attr = source._attr
+      _bizScene = source._bizScene
+      _bubble = source._bubble
+      _dmType = source._dmType
+      _emoticons = source._emoticons
+      _voice = source._voice
+      _animation = source._animation
+      _aggregation = source._aggregation
+      _sendFromMe = source._sendFromMe
+      _check = source._check
+      _user = source._user
+      _room = source._room
+      _icon = source._icon
+      _reply = source._reply
+    }
   }
 
   fileprivate mutating func _uniqueStorage() -> _StorageClass {
-	if !isKnownUniquelyReferenced(&_storage) {
-	  _storage = _StorageClass(copying: _storage)
-	}
-	return _storage
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
   }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	_ = _uniqueStorage()
-	try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-	  while let fieldNumber = try decoder.nextFieldNumber() {
-		// The use of inline closures is to circumvent an issue where the compiler
-		// allocates stack space for every case branch when no optimizations are
-		// enabled. https://github.com/apple/swift-protobuf/issues/1034
-		switch fieldNumber {
-		case 1: try { try decoder.decodeSingularStringField(value: &_storage._idStr) }()
-		case 2: try { try decoder.decodeSingularInt32Field(value: &_storage._mode) }()
-		case 3: try { try decoder.decodeSingularInt32Field(value: &_storage._size) }()
-		case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._color) }()
-		case 5: try { try decoder.decodeSingularStringField(value: &_storage._uhash) }()
-		case 6: try { try decoder.decodeSingularStringField(value: &_storage._text) }()
-		case 7: try { try decoder.decodeSingularInt64Field(value: &_storage._date) }()
-		case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._weight) }()
-		case 9: try { try decoder.decodeSingularInt64Field(value: &_storage._rnd) }()
-		case 10: try { try decoder.decodeSingularInt64Field(value: &_storage._attr) }()
-		case 11: try { try decoder.decodeSingularEnumField(value: &_storage._bizScene) }()
-		case 12: try { try decoder.decodeSingularMessageField(value: &_storage._bubble) }()
-		case 13: try { try decoder.decodeSingularEnumField(value: &_storage._dmType) }()
-		case 14: try { try decoder.decodeRepeatedMessageField(value: &_storage._emoticons) }()
-		case 15: try { try decoder.decodeSingularMessageField(value: &_storage._voice) }()
-		case 16: try { try decoder.decodeSingularStringField(value: &_storage._animation) }()
-		case 17: try { try decoder.decodeSingularMessageField(value: &_storage._aggregation) }()
-		case 18: try { try decoder.decodeSingularBoolField(value: &_storage._sendFromMe) }()
-		case 19: try { try decoder.decodeSingularMessageField(value: &_storage._check) }()
-		case 20: try { try decoder.decodeSingularMessageField(value: &_storage._user) }()
-		case 21: try { try decoder.decodeSingularMessageField(value: &_storage._room) }()
-		case 22: try { try decoder.decodeSingularMessageField(value: &_storage._icon) }()
-		case 23: try { try decoder.decodeSingularMessageField(value: &_storage._reply) }()
-		case 24: try { try decoder.decodeSingularBytesField(value: &_storage._unknown24) }()
-		case 25: try { try decoder.decodeSingularBytesField(value: &_storage._unknown25) }()
-		case 26: try { try decoder.decodeSingularBytesField(value: &_storage._unknown26) }()
-		case 27: try { try decoder.decodeSingularBytesField(value: &_storage._unknown27) }()
-		case 28: try { try decoder.decodeSingularBytesField(value: &_storage._unknown28) }()
-		case 29: try { try decoder.decodeSingularBytesField(value: &_storage._unknown29) }()
-		case 30: try { try decoder.decodeSingularBytesField(value: &_storage._unknown30) }()
-		case 31: try { try decoder.decodeSingularBytesField(value: &_storage._unknown31) }()
-		case 32: try { try decoder.decodeSingularBytesField(value: &_storage._unknown32) }()
-		default: break
-		}
-	  }
-	}
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._dmid) }()
+        case 2: try { try decoder.decodeSingularInt32Field(value: &_storage._mode) }()
+        case 3: try { try decoder.decodeSingularInt32Field(value: &_storage._size) }()
+        case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._color) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._uhash) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._text) }()
+        case 7: try { try decoder.decodeSingularInt64Field(value: &_storage._date) }()
+        case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._weight) }()
+        case 9: try { try decoder.decodeSingularInt64Field(value: &_storage._rnd) }()
+        case 10: try { try decoder.decodeSingularInt64Field(value: &_storage._attr) }()
+        case 11: try { try decoder.decodeSingularEnumField(value: &_storage._bizScene) }()
+        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._bubble) }()
+        case 13: try { try decoder.decodeSingularEnumField(value: &_storage._dmType) }()
+        case 14: try { try decoder.decodeRepeatedMessageField(value: &_storage._emoticons) }()
+        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._voice) }()
+        case 16: try { try decoder.decodeSingularStringField(value: &_storage._animation) }()
+        case 17: try { try decoder.decodeSingularMessageField(value: &_storage._aggregation) }()
+        case 18: try { try decoder.decodeSingularBoolField(value: &_storage._sendFromMe) }()
+        case 19: try { try decoder.decodeSingularMessageField(value: &_storage._check) }()
+        case 20: try { try decoder.decodeSingularMessageField(value: &_storage._user) }()
+        case 21: try { try decoder.decodeSingularMessageField(value: &_storage._room) }()
+        case 22: try { try decoder.decodeSingularMessageField(value: &_storage._icon) }()
+        case 23: try { try decoder.decodeSingularMessageField(value: &_storage._reply) }()
+        default: break
+        }
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every if/case branch local when no optimizations
-	  // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-	  // https://github.com/apple/swift-protobuf/issues/1182
-	  if !_storage._idStr.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._idStr, fieldNumber: 1)
-	  }
-	  if _storage._mode != 0 {
-		try visitor.visitSingularInt32Field(value: _storage._mode, fieldNumber: 2)
-	  }
-	  if _storage._size != 0 {
-		try visitor.visitSingularInt32Field(value: _storage._size, fieldNumber: 3)
-	  }
-	  if _storage._color != 0 {
-		try visitor.visitSingularUInt32Field(value: _storage._color, fieldNumber: 4)
-	  }
-	  if !_storage._uhash.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._uhash, fieldNumber: 5)
-	  }
-	  if !_storage._text.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._text, fieldNumber: 6)
-	  }
-	  if _storage._date != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._date, fieldNumber: 7)
-	  }
-	  if _storage._weight != 0 {
-		try visitor.visitSingularInt32Field(value: _storage._weight, fieldNumber: 8)
-	  }
-	  if _storage._rnd != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._rnd, fieldNumber: 9)
-	  }
-	  if _storage._attr != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._attr, fieldNumber: 10)
-	  }
-	  if _storage._bizScene != .none {
-		try visitor.visitSingularEnumField(value: _storage._bizScene, fieldNumber: 11)
-	  }
-	  try { if let v = _storage._bubble {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
-	  } }()
-	  if _storage._dmType != .normal {
-		try visitor.visitSingularEnumField(value: _storage._dmType, fieldNumber: 13)
-	  }
-	  if !_storage._emoticons.isEmpty {
-		try visitor.visitRepeatedMessageField(value: _storage._emoticons, fieldNumber: 14)
-	  }
-	  try { if let v = _storage._voice {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
-	  } }()
-	  if !_storage._animation.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._animation, fieldNumber: 16)
-	  }
-	  try { if let v = _storage._aggregation {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
-	  } }()
-	  if _storage._sendFromMe != false {
-		try visitor.visitSingularBoolField(value: _storage._sendFromMe, fieldNumber: 18)
-	  }
-	  try { if let v = _storage._check {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
-	  } }()
-	  try { if let v = _storage._user {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
-	  } }()
-	  try { if let v = _storage._room {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
-	  } }()
-	  try { if let v = _storage._icon {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
-	  } }()
-	  try { if let v = _storage._reply {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
-	  } }()
-	  if !_storage._unknown24.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown24, fieldNumber: 24)
-	  }
-	  if !_storage._unknown25.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown25, fieldNumber: 25)
-	  }
-	  if !_storage._unknown26.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown26, fieldNumber: 26)
-	  }
-	  if !_storage._unknown27.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown27, fieldNumber: 27)
-	  }
-	  if !_storage._unknown28.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown28, fieldNumber: 28)
-	  }
-	  if !_storage._unknown29.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown29, fieldNumber: 29)
-	  }
-	  if !_storage._unknown30.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown30, fieldNumber: 30)
-	  }
-	  if !_storage._unknown31.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown31, fieldNumber: 31)
-	  }
-	  if !_storage._unknown32.isEmpty {
-		try visitor.visitSingularBytesField(value: _storage._unknown32, fieldNumber: 32)
-	  }
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if !_storage._dmid.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._dmid, fieldNumber: 1)
+      }
+      if _storage._mode != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._mode, fieldNumber: 2)
+      }
+      if _storage._size != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._size, fieldNumber: 3)
+      }
+      if _storage._color != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._color, fieldNumber: 4)
+      }
+      if !_storage._uhash.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._uhash, fieldNumber: 5)
+      }
+      if !_storage._text.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._text, fieldNumber: 6)
+      }
+      if _storage._date != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._date, fieldNumber: 7)
+      }
+      if _storage._weight != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._weight, fieldNumber: 8)
+      }
+      if _storage._rnd != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._rnd, fieldNumber: 9)
+      }
+      if _storage._attr != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._attr, fieldNumber: 10)
+      }
+      if _storage._bizScene != .none {
+        try visitor.visitSingularEnumField(value: _storage._bizScene, fieldNumber: 11)
+      }
+      try { if let v = _storage._bubble {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+      } }()
+      if _storage._dmType != .normal {
+        try visitor.visitSingularEnumField(value: _storage._dmType, fieldNumber: 13)
+      }
+      if !_storage._emoticons.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._emoticons, fieldNumber: 14)
+      }
+      try { if let v = _storage._voice {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+      } }()
+      if !_storage._animation.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._animation, fieldNumber: 16)
+      }
+      try { if let v = _storage._aggregation {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+      } }()
+      if _storage._sendFromMe != false {
+        try visitor.visitSingularBoolField(value: _storage._sendFromMe, fieldNumber: 18)
+      }
+      try { if let v = _storage._check {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
+      } }()
+      try { if let v = _storage._user {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
+      } }()
+      try { if let v = _storage._room {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      } }()
+      try { if let v = _storage._icon {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+      } }()
+      try { if let v = _storage._reply {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Dm, rhs: BilibiliDm_Community_Service_Dm_Live_Dm) -> Bool {
-	if lhs._storage !== rhs._storage {
-	  let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-		let _storage = _args.0
-		let rhs_storage = _args.1
-		if _storage._idStr != rhs_storage._idStr {return false}
-		if _storage._mode != rhs_storage._mode {return false}
-		if _storage._size != rhs_storage._size {return false}
-		if _storage._color != rhs_storage._color {return false}
-		if _storage._uhash != rhs_storage._uhash {return false}
-		if _storage._text != rhs_storage._text {return false}
-		if _storage._date != rhs_storage._date {return false}
-		if _storage._weight != rhs_storage._weight {return false}
-		if _storage._rnd != rhs_storage._rnd {return false}
-		if _storage._attr != rhs_storage._attr {return false}
-		if _storage._bizScene != rhs_storage._bizScene {return false}
-		if _storage._bubble != rhs_storage._bubble {return false}
-		if _storage._dmType != rhs_storage._dmType {return false}
-		if _storage._emoticons != rhs_storage._emoticons {return false}
-		if _storage._voice != rhs_storage._voice {return false}
-		if _storage._animation != rhs_storage._animation {return false}
-		if _storage._aggregation != rhs_storage._aggregation {return false}
-		if _storage._sendFromMe != rhs_storage._sendFromMe {return false}
-		if _storage._check != rhs_storage._check {return false}
-		if _storage._user != rhs_storage._user {return false}
-		if _storage._room != rhs_storage._room {return false}
-		if _storage._icon != rhs_storage._icon {return false}
-		if _storage._reply != rhs_storage._reply {return false}
-		if _storage._unknown24 != rhs_storage._unknown24 {return false}
-		if _storage._unknown25 != rhs_storage._unknown25 {return false}
-		if _storage._unknown26 != rhs_storage._unknown26 {return false}
-		if _storage._unknown27 != rhs_storage._unknown27 {return false}
-		if _storage._unknown28 != rhs_storage._unknown28 {return false}
-		if _storage._unknown29 != rhs_storage._unknown29 {return false}
-		if _storage._unknown30 != rhs_storage._unknown30 {return false}
-		if _storage._unknown31 != rhs_storage._unknown31 {return false}
-		if _storage._unknown32 != rhs_storage._unknown32 {return false}
-		return true
-	  }
-	  if !storagesAreEqual {return false}
-	}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._dmid != rhs_storage._dmid {return false}
+        if _storage._mode != rhs_storage._mode {return false}
+        if _storage._size != rhs_storage._size {return false}
+        if _storage._color != rhs_storage._color {return false}
+        if _storage._uhash != rhs_storage._uhash {return false}
+        if _storage._text != rhs_storage._text {return false}
+        if _storage._date != rhs_storage._date {return false}
+        if _storage._weight != rhs_storage._weight {return false}
+        if _storage._rnd != rhs_storage._rnd {return false}
+        if _storage._attr != rhs_storage._attr {return false}
+        if _storage._bizScene != rhs_storage._bizScene {return false}
+        if _storage._bubble != rhs_storage._bubble {return false}
+        if _storage._dmType != rhs_storage._dmType {return false}
+        if _storage._emoticons != rhs_storage._emoticons {return false}
+        if _storage._voice != rhs_storage._voice {return false}
+        if _storage._animation != rhs_storage._animation {return false}
+        if _storage._aggregation != rhs_storage._aggregation {return false}
+        if _storage._sendFromMe != rhs_storage._sendFromMe {return false}
+        if _storage._check != rhs_storage._check {return false}
+        if _storage._user != rhs_storage._user {return false}
+        if _storage._room != rhs_storage._room {return false}
+        if _storage._icon != rhs_storage._icon {return false}
+        if _storage._reply != rhs_storage._reply {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Check: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Check"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "token"),
-	2: .same(proto: "ts"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}token\0\u{1}ts\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.token) }()
-	  case 2: try { try decoder.decodeSingularInt64Field(value: &self.ts) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.token) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.ts) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.token.isEmpty {
-	  try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
-	}
-	if self.ts != 0 {
-	  try visitor.visitSingularInt64Field(value: self.ts, fieldNumber: 2)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.token.isEmpty {
+      try visitor.visitSingularStringField(value: self.token, fieldNumber: 1)
+    }
+    if self.ts != 0 {
+      try visitor.visitSingularInt64Field(value: self.ts, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Check, rhs: BilibiliDm_Community_Service_Dm_Live_Check) -> Bool {
-	if lhs.token != rhs.token {return false}
-	if lhs.ts != rhs.ts {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.token != rhs.token {return false}
+    if lhs.ts != rhs.ts {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Room: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Room"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "uid"),
-	2: .same(proto: "name"),
-	3: .same(proto: "roomid"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}uid\0\u{1}name\0\u{1}roomid\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.uid) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-	  case 3: try { try decoder.decodeSingularUInt32Field(value: &self.roomid) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.uid) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.roomid) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.uid != 0 {
-	  try visitor.visitSingularInt64Field(value: self.uid, fieldNumber: 1)
-	}
-	if !self.name.isEmpty {
-	  try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
-	}
-	if self.roomid != 0 {
-	  try visitor.visitSingularUInt32Field(value: self.roomid, fieldNumber: 3)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.uid != 0 {
+      try visitor.visitSingularInt64Field(value: self.uid, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if self.roomid != 0 {
+      try visitor.visitSingularUInt64Field(value: self.roomid, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Room, rhs: BilibiliDm_Community_Service_Dm_Live_Room) -> Bool {
-	if lhs.uid != rhs.uid {return false}
-	if lhs.name != rhs.name {return false}
-	if lhs.roomid != rhs.roomid {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.uid != rhs.uid {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.roomid != rhs.roomid {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Bubble: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Bubble"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "id"),
-	2: .same(proto: "color"),
-	3: .standard(proto: "id_v2"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}color\0\u{3}id_v2\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.id) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.color) }()
-	  case 3: try { try decoder.decodeSingularInt64Field(value: &self.idV2) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.color) }()
+      case 3: try { try decoder.decodeSingularInt64Field(value: &self.idV2) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.id != 0 {
-	  try visitor.visitSingularInt64Field(value: self.id, fieldNumber: 1)
-	}
-	if !self.color.isEmpty {
-	  try visitor.visitSingularStringField(value: self.color, fieldNumber: 2)
-	}
-	if self.idV2 != 0 {
-	  try visitor.visitSingularInt64Field(value: self.idV2, fieldNumber: 3)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.id != 0 {
+      try visitor.visitSingularInt64Field(value: self.id, fieldNumber: 1)
+    }
+    if !self.color.isEmpty {
+      try visitor.visitSingularStringField(value: self.color, fieldNumber: 2)
+    }
+    if self.idV2 != 0 {
+      try visitor.visitSingularInt64Field(value: self.idV2, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Bubble, rhs: BilibiliDm_Community_Service_Dm_Live_Bubble) -> Bool {
-	if lhs.id != rhs.id {return false}
-	if lhs.color != rhs.color {return false}
-	if lhs.idV2 != rhs.idV2 {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.id != rhs.id {return false}
+    if lhs.color != rhs.color {return false}
+    if lhs.idV2 != rhs.idV2 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_emots_temp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".emots_temp"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "key"),
-	2: .same(proto: "value"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}value\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.key) }()
-	  case 2: try { try decoder.decodeSingularMessageField(value: &self._value) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.key) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._value) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	// The use of inline closures is to circumvent an issue where the compiler
-	// allocates stack space for every if/case branch local when no optimizations
-	// are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-	// https://github.com/apple/swift-protobuf/issues/1182
-	if !self.key.isEmpty {
-	  try visitor.visitSingularStringField(value: self.key, fieldNumber: 1)
-	}
-	try { if let v = self._value {
-	  try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-	} }()
-	try unknownFields.traverse(visitor: &visitor)
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.key.isEmpty {
+      try visitor.visitSingularStringField(value: self.key, fieldNumber: 1)
+    }
+    try { if let v = self._value {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_emots_temp, rhs: BilibiliDm_Community_Service_Dm_Live_emots_temp) -> Bool {
-	if lhs.key != rhs.key {return false}
-	if lhs._value != rhs._value {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.key != rhs.key {return false}
+    if lhs._value != rhs._value {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Emoticon: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Emoticon"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "unique"),
-	2: .same(proto: "url"),
-	3: .standard(proto: "is_dynamic"),
-	4: .standard(proto: "in_player_area"),
-	5: .standard(proto: "bulge_display"),
-	6: .same(proto: "height"),
-	7: .same(proto: "width"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}unique\0\u{1}url\0\u{3}is_dynamic\0\u{3}in_player_area\0\u{3}bulge_display\0\u{1}height\0\u{1}width\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.unique) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.url) }()
-	  case 3: try { try decoder.decodeSingularBoolField(value: &self.isDynamic) }()
-	  case 4: try { try decoder.decodeSingularInt64Field(value: &self.inPlayerArea) }()
-	  case 5: try { try decoder.decodeSingularInt64Field(value: &self.bulgeDisplay) }()
-	  case 6: try { try decoder.decodeSingularInt64Field(value: &self.height) }()
-	  case 7: try { try decoder.decodeSingularInt64Field(value: &self.width) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.unique) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.url) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.isDynamic) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.inPlayerArea) }()
+      case 5: try { try decoder.decodeSingularInt64Field(value: &self.bulgeDisplay) }()
+      case 6: try { try decoder.decodeSingularInt64Field(value: &self.height) }()
+      case 7: try { try decoder.decodeSingularInt64Field(value: &self.width) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.unique.isEmpty {
-	  try visitor.visitSingularStringField(value: self.unique, fieldNumber: 1)
-	}
-	if !self.url.isEmpty {
-	  try visitor.visitSingularStringField(value: self.url, fieldNumber: 2)
-	}
-	if self.isDynamic != false {
-	  try visitor.visitSingularBoolField(value: self.isDynamic, fieldNumber: 3)
-	}
-	if self.inPlayerArea != 0 {
-	  try visitor.visitSingularInt64Field(value: self.inPlayerArea, fieldNumber: 4)
-	}
-	if self.bulgeDisplay != 0 {
-	  try visitor.visitSingularInt64Field(value: self.bulgeDisplay, fieldNumber: 5)
-	}
-	if self.height != 0 {
-	  try visitor.visitSingularInt64Field(value: self.height, fieldNumber: 6)
-	}
-	if self.width != 0 {
-	  try visitor.visitSingularInt64Field(value: self.width, fieldNumber: 7)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.unique.isEmpty {
+      try visitor.visitSingularStringField(value: self.unique, fieldNumber: 1)
+    }
+    if !self.url.isEmpty {
+      try visitor.visitSingularStringField(value: self.url, fieldNumber: 2)
+    }
+    if self.isDynamic != false {
+      try visitor.visitSingularBoolField(value: self.isDynamic, fieldNumber: 3)
+    }
+    if self.inPlayerArea != 0 {
+      try visitor.visitSingularInt64Field(value: self.inPlayerArea, fieldNumber: 4)
+    }
+    if self.bulgeDisplay != 0 {
+      try visitor.visitSingularInt64Field(value: self.bulgeDisplay, fieldNumber: 5)
+    }
+    if self.height != 0 {
+      try visitor.visitSingularInt64Field(value: self.height, fieldNumber: 6)
+    }
+    if self.width != 0 {
+      try visitor.visitSingularInt64Field(value: self.width, fieldNumber: 7)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Emoticon, rhs: BilibiliDm_Community_Service_Dm_Live_Emoticon) -> Bool {
-	if lhs.unique != rhs.unique {return false}
-	if lhs.url != rhs.url {return false}
-	if lhs.isDynamic != rhs.isDynamic {return false}
-	if lhs.inPlayerArea != rhs.inPlayerArea {return false}
-	if lhs.bulgeDisplay != rhs.bulgeDisplay {return false}
-	if lhs.height != rhs.height {return false}
-	if lhs.width != rhs.width {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.unique != rhs.unique {return false}
+    if lhs.url != rhs.url {return false}
+    if lhs.isDynamic != rhs.isDynamic {return false}
+    if lhs.inPlayerArea != rhs.inPlayerArea {return false}
+    if lhs.bulgeDisplay != rhs.bulgeDisplay {return false}
+    if lhs.height != rhs.height {return false}
+    if lhs.width != rhs.width {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Voice: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Voice"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "url"),
-	2: .standard(proto: "file_format"),
-	3: .same(proto: "text"),
-	4: .standard(proto: "file_duration"),
-	5: .standard(proto: "file_id"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}url\0\u{3}file_format\0\u{1}text\0\u{3}file_duration\0\u{3}file_id\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.url) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.fileFormat) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.text) }()
-	  case 4: try { try decoder.decodeSingularInt64Field(value: &self.fileDuration) }()
-	  case 5: try { try decoder.decodeSingularStringField(value: &self.fileID) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.url) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.fileFormat) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.text) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.fileDuration) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.fileID) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.url.isEmpty {
-	  try visitor.visitSingularStringField(value: self.url, fieldNumber: 1)
-	}
-	if !self.fileFormat.isEmpty {
-	  try visitor.visitSingularStringField(value: self.fileFormat, fieldNumber: 2)
-	}
-	if !self.text.isEmpty {
-	  try visitor.visitSingularStringField(value: self.text, fieldNumber: 3)
-	}
-	if self.fileDuration != 0 {
-	  try visitor.visitSingularInt64Field(value: self.fileDuration, fieldNumber: 4)
-	}
-	if !self.fileID.isEmpty {
-	  try visitor.visitSingularStringField(value: self.fileID, fieldNumber: 5)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.url.isEmpty {
+      try visitor.visitSingularStringField(value: self.url, fieldNumber: 1)
+    }
+    if !self.fileFormat.isEmpty {
+      try visitor.visitSingularStringField(value: self.fileFormat, fieldNumber: 2)
+    }
+    if !self.text.isEmpty {
+      try visitor.visitSingularStringField(value: self.text, fieldNumber: 3)
+    }
+    if self.fileDuration != 0 {
+      try visitor.visitSingularInt64Field(value: self.fileDuration, fieldNumber: 4)
+    }
+    if !self.fileID.isEmpty {
+      try visitor.visitSingularStringField(value: self.fileID, fieldNumber: 5)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Voice, rhs: BilibiliDm_Community_Service_Dm_Live_Voice) -> Bool {
-	if lhs.url != rhs.url {return false}
-	if lhs.fileFormat != rhs.fileFormat {return false}
-	if lhs.text != rhs.text {return false}
-	if lhs.fileDuration != rhs.fileDuration {return false}
-	if lhs.fileID != rhs.fileID {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.url != rhs.url {return false}
+    if lhs.fileFormat != rhs.fileFormat {return false}
+    if lhs.text != rhs.text {return false}
+    if lhs.fileDuration != rhs.fileDuration {return false}
+    if lhs.fileID != rhs.fileID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Aggregation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Aggregation"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .standard(proto: "is_aggregation"),
-	2: .standard(proto: "activity_source"),
-	3: .standard(proto: "activity_identity"),
-	4: .standard(proto: "not_show"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}is_aggregation\0\u{3}activity_source\0\u{3}activity_identity\0\u{3}not_show\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularBoolField(value: &self.isAggregation) }()
-	  case 2: try { try decoder.decodeSingularInt64Field(value: &self.activitySource) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.activityIdentity) }()
-	  case 4: try { try decoder.decodeSingularInt32Field(value: &self.notShow) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.isAggregation) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.activitySource) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.activityIdentity) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.notShow) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.isAggregation != false {
-	  try visitor.visitSingularBoolField(value: self.isAggregation, fieldNumber: 1)
-	}
-	if self.activitySource != 0 {
-	  try visitor.visitSingularInt64Field(value: self.activitySource, fieldNumber: 2)
-	}
-	if !self.activityIdentity.isEmpty {
-	  try visitor.visitSingularStringField(value: self.activityIdentity, fieldNumber: 3)
-	}
-	if self.notShow != 0 {
-	  try visitor.visitSingularInt32Field(value: self.notShow, fieldNumber: 4)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.isAggregation != false {
+      try visitor.visitSingularBoolField(value: self.isAggregation, fieldNumber: 1)
+    }
+    if self.activitySource != 0 {
+      try visitor.visitSingularInt64Field(value: self.activitySource, fieldNumber: 2)
+    }
+    if !self.activityIdentity.isEmpty {
+      try visitor.visitSingularStringField(value: self.activityIdentity, fieldNumber: 3)
+    }
+    if self.notShow != 0 {
+      try visitor.visitSingularInt32Field(value: self.notShow, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Aggregation, rhs: BilibiliDm_Community_Service_Dm_Live_Aggregation) -> Bool {
-	if lhs.isAggregation != rhs.isAggregation {return false}
-	if lhs.activitySource != rhs.activitySource {return false}
-	if lhs.activityIdentity != rhs.activityIdentity {return false}
-	if lhs.notShow != rhs.notShow {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.isAggregation != rhs.isAggregation {return false}
+    if lhs.activitySource != rhs.activitySource {return false}
+    if lhs.activityIdentity != rhs.activityIdentity {return false}
+    if lhs.notShow != rhs.notShow {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_User: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".User"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "uid"),
-	2: .same(proto: "name"),
-	3: .standard(proto: "name_color"),
-	4: .same(proto: "face"),
-	5: .same(proto: "vip"),
-	6: .same(proto: "svip"),
-	7: .same(proto: "rank"),
-	8: .standard(proto: "mobile_verify"),
-	9: .standard(proto: "lpl_status"),
-	10: .same(proto: "attr"),
-	11: .same(proto: "medal"),
-	12: .same(proto: "level"),
-	13: .same(proto: "title"),
-	14: .same(proto: "identify"),
-	15: .same(proto: "wealth"),
-	16: .standard(proto: "group_medal"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}uid\0\u{1}name\0\u{3}name_color\0\u{1}face\0\u{1}vip\0\u{1}svip\0\u{1}rank\0\u{3}mobile_verify\0\u{3}lpl_status\0\u{1}attr\0\u{1}medal\0\u{1}level\0\u{1}title\0\u{1}identify\0\u{1}wealth\0\u{3}group_medal\0")
 
   fileprivate class _StorageClass {
-	var _uid: Int64 = 0
-	var _name: String = String()
-	var _nameColor: String = String()
-	var _face: String = String()
-	var _vip: Int64 = 0
-	var _svip: Int64 = 0
-	var _rank: Int32 = 0
-	var _mobileVerify: Int32 = 0
-	var _lplStatus: Int64 = 0
-	var _attr: Int64 = 0
-	var _medal: BilibiliDm_Community_Service_Dm_Live_Medal? = nil
-	var _level: BilibiliDm_Community_Service_Dm_Live_UserLevel? = nil
-	var _title: BilibiliDm_Community_Service_Dm_Live_Title? = nil
-	var _identify: BilibiliDm_Community_Service_Dm_Live_Identify? = nil
-	var _wealth: BilibiliDm_Community_Service_Dm_Live_Wealth? = nil
-	var _groupMedal: BilibiliDm_Community_Service_Dm_Live_GroupMedal? = nil
+    var _uid: Int64 = 0
+    var _name: String = String()
+    var _nameColor: String = String()
+    var _face: String = String()
+    var _vip: Int64 = 0
+    var _svip: Int64 = 0
+    var _rank: Int32 = 0
+    var _mobileVerify: Int32 = 0
+    var _lplStatus: Int64 = 0
+    var _attr: Int64 = 0
+    var _medal: BilibiliDm_Community_Service_Dm_Live_Medal? = nil
+    var _level: BilibiliDm_Community_Service_Dm_Live_UserLevel? = nil
+    var _title: BilibiliDm_Community_Service_Dm_Live_Title? = nil
+    var _identify: BilibiliDm_Community_Service_Dm_Live_Identify? = nil
+    var _wealth: BilibiliDm_Community_Service_Dm_Live_Wealth? = nil
+    var _groupMedal: BilibiliDm_Community_Service_Dm_Live_GroupMedal? = nil
 
-	#if swift(>=5.10)
-	  // This property is used as the initial default value for new instances of the type.
-	  // The type itself is protecting the reference to its storage via CoW semantics.
-	  // This will force a copy to be made of this reference when the first mutation occurs;
-	  // hence, it is safe to mark this as `nonisolated(unsafe)`.
-	  static nonisolated(unsafe) let defaultInstance = _StorageClass()
-	#else
-	  static let defaultInstance = _StorageClass()
-	#endif
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
 
-	private init() {}
+    private init() {}
 
-	init(copying source: _StorageClass) {
-	  _uid = source._uid
-	  _name = source._name
-	  _nameColor = source._nameColor
-	  _face = source._face
-	  _vip = source._vip
-	  _svip = source._svip
-	  _rank = source._rank
-	  _mobileVerify = source._mobileVerify
-	  _lplStatus = source._lplStatus
-	  _attr = source._attr
-	  _medal = source._medal
-	  _level = source._level
-	  _title = source._title
-	  _identify = source._identify
-	  _wealth = source._wealth
-	  _groupMedal = source._groupMedal
-	}
+    init(copying source: _StorageClass) {
+      _uid = source._uid
+      _name = source._name
+      _nameColor = source._nameColor
+      _face = source._face
+      _vip = source._vip
+      _svip = source._svip
+      _rank = source._rank
+      _mobileVerify = source._mobileVerify
+      _lplStatus = source._lplStatus
+      _attr = source._attr
+      _medal = source._medal
+      _level = source._level
+      _title = source._title
+      _identify = source._identify
+      _wealth = source._wealth
+      _groupMedal = source._groupMedal
+    }
   }
 
   fileprivate mutating func _uniqueStorage() -> _StorageClass {
-	if !isKnownUniquelyReferenced(&_storage) {
-	  _storage = _StorageClass(copying: _storage)
-	}
-	return _storage
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
   }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	_ = _uniqueStorage()
-	try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-	  while let fieldNumber = try decoder.nextFieldNumber() {
-		// The use of inline closures is to circumvent an issue where the compiler
-		// allocates stack space for every case branch when no optimizations are
-		// enabled. https://github.com/apple/swift-protobuf/issues/1034
-		switch fieldNumber {
-		case 1: try { try decoder.decodeSingularInt64Field(value: &_storage._uid) }()
-		case 2: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
-		case 3: try { try decoder.decodeSingularStringField(value: &_storage._nameColor) }()
-		case 4: try { try decoder.decodeSingularStringField(value: &_storage._face) }()
-		case 5: try { try decoder.decodeSingularInt64Field(value: &_storage._vip) }()
-		case 6: try { try decoder.decodeSingularInt64Field(value: &_storage._svip) }()
-		case 7: try { try decoder.decodeSingularInt32Field(value: &_storage._rank) }()
-		case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._mobileVerify) }()
-		case 9: try { try decoder.decodeSingularInt64Field(value: &_storage._lplStatus) }()
-		case 10: try { try decoder.decodeSingularInt64Field(value: &_storage._attr) }()
-		case 11: try { try decoder.decodeSingularMessageField(value: &_storage._medal) }()
-		case 12: try { try decoder.decodeSingularMessageField(value: &_storage._level) }()
-		case 13: try { try decoder.decodeSingularMessageField(value: &_storage._title) }()
-		case 14: try { try decoder.decodeSingularMessageField(value: &_storage._identify) }()
-		case 15: try { try decoder.decodeSingularMessageField(value: &_storage._wealth) }()
-		case 16: try { try decoder.decodeSingularMessageField(value: &_storage._groupMedal) }()
-		default: break
-		}
-	  }
-	}
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularInt64Field(value: &_storage._uid) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._nameColor) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._face) }()
+        case 5: try { try decoder.decodeSingularInt64Field(value: &_storage._vip) }()
+        case 6: try { try decoder.decodeSingularInt64Field(value: &_storage._svip) }()
+        case 7: try { try decoder.decodeSingularInt32Field(value: &_storage._rank) }()
+        case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._mobileVerify) }()
+        case 9: try { try decoder.decodeSingularInt64Field(value: &_storage._lplStatus) }()
+        case 10: try { try decoder.decodeSingularInt64Field(value: &_storage._attr) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._medal) }()
+        case 12: try { try decoder.decodeSingularMessageField(value: &_storage._level) }()
+        case 13: try { try decoder.decodeSingularMessageField(value: &_storage._title) }()
+        case 14: try { try decoder.decodeSingularMessageField(value: &_storage._identify) }()
+        case 15: try { try decoder.decodeSingularMessageField(value: &_storage._wealth) }()
+        case 16: try { try decoder.decodeSingularMessageField(value: &_storage._groupMedal) }()
+        default: break
+        }
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every if/case branch local when no optimizations
-	  // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-	  // https://github.com/apple/swift-protobuf/issues/1182
-	  if _storage._uid != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._uid, fieldNumber: 1)
-	  }
-	  if !_storage._name.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._name, fieldNumber: 2)
-	  }
-	  if !_storage._nameColor.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._nameColor, fieldNumber: 3)
-	  }
-	  if !_storage._face.isEmpty {
-		try visitor.visitSingularStringField(value: _storage._face, fieldNumber: 4)
-	  }
-	  if _storage._vip != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._vip, fieldNumber: 5)
-	  }
-	  if _storage._svip != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._svip, fieldNumber: 6)
-	  }
-	  if _storage._rank != 0 {
-		try visitor.visitSingularInt32Field(value: _storage._rank, fieldNumber: 7)
-	  }
-	  if _storage._mobileVerify != 0 {
-		try visitor.visitSingularInt32Field(value: _storage._mobileVerify, fieldNumber: 8)
-	  }
-	  if _storage._lplStatus != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._lplStatus, fieldNumber: 9)
-	  }
-	  if _storage._attr != 0 {
-		try visitor.visitSingularInt64Field(value: _storage._attr, fieldNumber: 10)
-	  }
-	  try { if let v = _storage._medal {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-	  } }()
-	  try { if let v = _storage._level {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
-	  } }()
-	  try { if let v = _storage._title {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
-	  } }()
-	  try { if let v = _storage._identify {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
-	  } }()
-	  try { if let v = _storage._wealth {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
-	  } }()
-	  try { if let v = _storage._groupMedal {
-		try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
-	  } }()
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if _storage._uid != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._uid, fieldNumber: 1)
+      }
+      if !_storage._name.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._name, fieldNumber: 2)
+      }
+      if !_storage._nameColor.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._nameColor, fieldNumber: 3)
+      }
+      if !_storage._face.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._face, fieldNumber: 4)
+      }
+      if _storage._vip != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._vip, fieldNumber: 5)
+      }
+      if _storage._svip != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._svip, fieldNumber: 6)
+      }
+      if _storage._rank != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._rank, fieldNumber: 7)
+      }
+      if _storage._mobileVerify != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._mobileVerify, fieldNumber: 8)
+      }
+      if _storage._lplStatus != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._lplStatus, fieldNumber: 9)
+      }
+      if _storage._attr != 0 {
+        try visitor.visitSingularInt64Field(value: _storage._attr, fieldNumber: 10)
+      }
+      try { if let v = _storage._medal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      } }()
+      try { if let v = _storage._level {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+      } }()
+      try { if let v = _storage._title {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
+      } }()
+      try { if let v = _storage._identify {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
+      } }()
+      try { if let v = _storage._wealth {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._groupMedal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_User, rhs: BilibiliDm_Community_Service_Dm_Live_User) -> Bool {
-	if lhs._storage !== rhs._storage {
-	  let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-		let _storage = _args.0
-		let rhs_storage = _args.1
-		if _storage._uid != rhs_storage._uid {return false}
-		if _storage._name != rhs_storage._name {return false}
-		if _storage._nameColor != rhs_storage._nameColor {return false}
-		if _storage._face != rhs_storage._face {return false}
-		if _storage._vip != rhs_storage._vip {return false}
-		if _storage._svip != rhs_storage._svip {return false}
-		if _storage._rank != rhs_storage._rank {return false}
-		if _storage._mobileVerify != rhs_storage._mobileVerify {return false}
-		if _storage._lplStatus != rhs_storage._lplStatus {return false}
-		if _storage._attr != rhs_storage._attr {return false}
-		if _storage._medal != rhs_storage._medal {return false}
-		if _storage._level != rhs_storage._level {return false}
-		if _storage._title != rhs_storage._title {return false}
-		if _storage._identify != rhs_storage._identify {return false}
-		if _storage._wealth != rhs_storage._wealth {return false}
-		if _storage._groupMedal != rhs_storage._groupMedal {return false}
-		return true
-	  }
-	  if !storagesAreEqual {return false}
-	}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._uid != rhs_storage._uid {return false}
+        if _storage._name != rhs_storage._name {return false}
+        if _storage._nameColor != rhs_storage._nameColor {return false}
+        if _storage._face != rhs_storage._face {return false}
+        if _storage._vip != rhs_storage._vip {return false}
+        if _storage._svip != rhs_storage._svip {return false}
+        if _storage._rank != rhs_storage._rank {return false}
+        if _storage._mobileVerify != rhs_storage._mobileVerify {return false}
+        if _storage._lplStatus != rhs_storage._lplStatus {return false}
+        if _storage._attr != rhs_storage._attr {return false}
+        if _storage._medal != rhs_storage._medal {return false}
+        if _storage._level != rhs_storage._level {return false}
+        if _storage._title != rhs_storage._title {return false}
+        if _storage._identify != rhs_storage._identify {return false}
+        if _storage._wealth != rhs_storage._wealth {return false}
+        if _storage._groupMedal != rhs_storage._groupMedal {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Identify: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Identify"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .standard(proto: "beginning_url"),
-	2: .standard(proto: "ending_url"),
-	3: .standard(proto: "jump_to_url"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}beginning_url\0\u{3}ending_url\0\u{3}jump_to_url\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.beginningURL) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.endingURL) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.jumpToURL) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.beginningURL) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.endingURL) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.jumpToURL) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.beginningURL.isEmpty {
-	  try visitor.visitSingularStringField(value: self.beginningURL, fieldNumber: 1)
-	}
-	if !self.endingURL.isEmpty {
-	  try visitor.visitSingularStringField(value: self.endingURL, fieldNumber: 2)
-	}
-	if !self.jumpToURL.isEmpty {
-	  try visitor.visitSingularStringField(value: self.jumpToURL, fieldNumber: 3)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.beginningURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.beginningURL, fieldNumber: 1)
+    }
+    if !self.endingURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.endingURL, fieldNumber: 2)
+    }
+    if !self.jumpToURL.isEmpty {
+      try visitor.visitSingularStringField(value: self.jumpToURL, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Identify, rhs: BilibiliDm_Community_Service_Dm_Live_Identify) -> Bool {
-	if lhs.beginningURL != rhs.beginningURL {return false}
-	if lhs.endingURL != rhs.endingURL {return false}
-	if lhs.jumpToURL != rhs.jumpToURL {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.beginningURL != rhs.beginningURL {return false}
+    if lhs.endingURL != rhs.endingURL {return false}
+    if lhs.jumpToURL != rhs.jumpToURL {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Medal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Medal"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "level"),
-	2: .same(proto: "name"),
-	3: .same(proto: "special"),
-	4: .same(proto: "color"),
-	5: .standard(proto: "icon_id"),
-	6: .standard(proto: "border_color"),
-	7: .standard(proto: "gradient_start_color"),
-	8: .standard(proto: "gradient_end_color"),
-	9: .same(proto: "privilege"),
-	10: .same(proto: "light"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}level\0\u{1}name\0\u{1}special\0\u{1}color\0\u{3}icon_id\0\u{3}border_color\0\u{3}gradient_start_color\0\u{3}gradient_end_color\0\u{1}privilege\0\u{1}light\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.special) }()
-	  case 4: try { try decoder.decodeSingularInt64Field(value: &self.color) }()
-	  case 5: try { try decoder.decodeSingularInt64Field(value: &self.iconID) }()
-	  case 6: try { try decoder.decodeSingularInt64Field(value: &self.borderColor) }()
-	  case 7: try { try decoder.decodeSingularInt64Field(value: &self.gradientStartColor) }()
-	  case 8: try { try decoder.decodeSingularInt64Field(value: &self.gradientEndColor) }()
-	  case 9: try { try decoder.decodeSingularInt64Field(value: &self.privilege) }()
-	  case 10: try { try decoder.decodeSingularInt64Field(value: &self.light) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.special) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.color) }()
+      case 5: try { try decoder.decodeSingularInt64Field(value: &self.iconID) }()
+      case 6: try { try decoder.decodeSingularInt64Field(value: &self.borderColor) }()
+      case 7: try { try decoder.decodeSingularInt64Field(value: &self.gradientStartColor) }()
+      case 8: try { try decoder.decodeSingularInt64Field(value: &self.gradientEndColor) }()
+      case 9: try { try decoder.decodeSingularInt64Field(value: &self.privilege) }()
+      case 10: try { try decoder.decodeSingularInt64Field(value: &self.light) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.level != 0 {
-	  try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
-	}
-	if !self.name.isEmpty {
-	  try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
-	}
-	if !self.special.isEmpty {
-	  try visitor.visitSingularStringField(value: self.special, fieldNumber: 3)
-	}
-	if self.color != 0 {
-	  try visitor.visitSingularInt64Field(value: self.color, fieldNumber: 4)
-	}
-	if self.iconID != 0 {
-	  try visitor.visitSingularInt64Field(value: self.iconID, fieldNumber: 5)
-	}
-	if self.borderColor != 0 {
-	  try visitor.visitSingularInt64Field(value: self.borderColor, fieldNumber: 6)
-	}
-	if self.gradientStartColor != 0 {
-	  try visitor.visitSingularInt64Field(value: self.gradientStartColor, fieldNumber: 7)
-	}
-	if self.gradientEndColor != 0 {
-	  try visitor.visitSingularInt64Field(value: self.gradientEndColor, fieldNumber: 8)
-	}
-	if self.privilege != 0 {
-	  try visitor.visitSingularInt64Field(value: self.privilege, fieldNumber: 9)
-	}
-	if self.light != 0 {
-	  try visitor.visitSingularInt64Field(value: self.light, fieldNumber: 10)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.level != 0 {
+      try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if !self.special.isEmpty {
+      try visitor.visitSingularStringField(value: self.special, fieldNumber: 3)
+    }
+    if self.color != 0 {
+      try visitor.visitSingularInt64Field(value: self.color, fieldNumber: 4)
+    }
+    if self.iconID != 0 {
+      try visitor.visitSingularInt64Field(value: self.iconID, fieldNumber: 5)
+    }
+    if self.borderColor != 0 {
+      try visitor.visitSingularInt64Field(value: self.borderColor, fieldNumber: 6)
+    }
+    if self.gradientStartColor != 0 {
+      try visitor.visitSingularInt64Field(value: self.gradientStartColor, fieldNumber: 7)
+    }
+    if self.gradientEndColor != 0 {
+      try visitor.visitSingularInt64Field(value: self.gradientEndColor, fieldNumber: 8)
+    }
+    if self.privilege != 0 {
+      try visitor.visitSingularInt64Field(value: self.privilege, fieldNumber: 9)
+    }
+    if self.light != 0 {
+      try visitor.visitSingularInt64Field(value: self.light, fieldNumber: 10)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Medal, rhs: BilibiliDm_Community_Service_Dm_Live_Medal) -> Bool {
-	if lhs.level != rhs.level {return false}
-	if lhs.name != rhs.name {return false}
-	if lhs.special != rhs.special {return false}
-	if lhs.color != rhs.color {return false}
-	if lhs.iconID != rhs.iconID {return false}
-	if lhs.borderColor != rhs.borderColor {return false}
-	if lhs.gradientStartColor != rhs.gradientStartColor {return false}
-	if lhs.gradientEndColor != rhs.gradientEndColor {return false}
-	if lhs.privilege != rhs.privilege {return false}
-	if lhs.light != rhs.light {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.level != rhs.level {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.special != rhs.special {return false}
+    if lhs.color != rhs.color {return false}
+    if lhs.iconID != rhs.iconID {return false}
+    if lhs.borderColor != rhs.borderColor {return false}
+    if lhs.gradientStartColor != rhs.gradientStartColor {return false}
+    if lhs.gradientEndColor != rhs.gradientEndColor {return false}
+    if lhs.privilege != rhs.privilege {return false}
+    if lhs.light != rhs.light {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_UserLevel: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".UserLevel"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "level"),
-	2: .same(proto: "color"),
-	3: .same(proto: "rank"),
-	4: .standard(proto: "online_rank"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}level\0\u{1}color\0\u{1}rank\0\u{3}online_rank\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
-	  case 2: try { try decoder.decodeSingularInt64Field(value: &self.color) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.rank) }()
-	  case 4: try { try decoder.decodeSingularInt64Field(value: &self.onlineRank) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.color) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.rank) }()
+      case 4: try { try decoder.decodeSingularInt64Field(value: &self.onlineRank) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.level != 0 {
-	  try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
-	}
-	if self.color != 0 {
-	  try visitor.visitSingularInt64Field(value: self.color, fieldNumber: 2)
-	}
-	if !self.rank.isEmpty {
-	  try visitor.visitSingularStringField(value: self.rank, fieldNumber: 3)
-	}
-	if self.onlineRank != 0 {
-	  try visitor.visitSingularInt64Field(value: self.onlineRank, fieldNumber: 4)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.level != 0 {
+      try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
+    }
+    if self.color != 0 {
+      try visitor.visitSingularInt64Field(value: self.color, fieldNumber: 2)
+    }
+    if !self.rank.isEmpty {
+      try visitor.visitSingularStringField(value: self.rank, fieldNumber: 3)
+    }
+    if self.onlineRank != 0 {
+      try visitor.visitSingularInt64Field(value: self.onlineRank, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_UserLevel, rhs: BilibiliDm_Community_Service_Dm_Live_UserLevel) -> Bool {
-	if lhs.level != rhs.level {return false}
-	if lhs.color != rhs.color {return false}
-	if lhs.rank != rhs.rank {return false}
-	if lhs.onlineRank != rhs.onlineRank {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.level != rhs.level {return false}
+    if lhs.color != rhs.color {return false}
+    if lhs.rank != rhs.rank {return false}
+    if lhs.onlineRank != rhs.onlineRank {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Title: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Title"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "title"),
-	2: .standard(proto: "old_title"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}title\0\u{3}old_title\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.title) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.oldTitle) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.title) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.oldTitle) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.title.isEmpty {
-	  try visitor.visitSingularStringField(value: self.title, fieldNumber: 1)
-	}
-	if !self.oldTitle.isEmpty {
-	  try visitor.visitSingularStringField(value: self.oldTitle, fieldNumber: 2)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.title.isEmpty {
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 1)
+    }
+    if !self.oldTitle.isEmpty {
+      try visitor.visitSingularStringField(value: self.oldTitle, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Title, rhs: BilibiliDm_Community_Service_Dm_Live_Title) -> Bool {
-	if lhs.title != rhs.title {return false}
-	if lhs.oldTitle != rhs.oldTitle {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.title != rhs.title {return false}
+    if lhs.oldTitle != rhs.oldTitle {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Record: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Record"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "dmid"),
-	2: .standard(proto: "time_offset"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}dmid\0\u{3}time_offset\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularStringField(value: &self.dmid) }()
-	  case 2: try { try decoder.decodeSingularInt64Field(value: &self.timeOffset) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.dmid) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.timeOffset) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if !self.dmid.isEmpty {
-	  try visitor.visitSingularStringField(value: self.dmid, fieldNumber: 1)
-	}
-	if self.timeOffset != 0 {
-	  try visitor.visitSingularInt64Field(value: self.timeOffset, fieldNumber: 2)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if !self.dmid.isEmpty {
+      try visitor.visitSingularStringField(value: self.dmid, fieldNumber: 1)
+    }
+    if self.timeOffset != 0 {
+      try visitor.visitSingularInt64Field(value: self.timeOffset, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Record, rhs: BilibiliDm_Community_Service_Dm_Live_Record) -> Bool {
-	if lhs.dmid != rhs.dmid {return false}
-	if lhs.timeOffset != rhs.timeOffset {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.dmid != rhs.dmid {return false}
+    if lhs.timeOffset != rhs.timeOffset {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Wealth: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Wealth"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "level"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}level\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.level) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.level != 0 {
-	  try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.level != 0 {
+      try visitor.visitSingularInt64Field(value: self.level, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Wealth, rhs: BilibiliDm_Community_Service_Dm_Live_Wealth) -> Bool {
-	if lhs.level != rhs.level {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
-  }
-}
-
-extension BilibiliDm_Community_Service_Dm_Live_Icon: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Icon"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "prefix"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularMessageField(value: &self._prefix) }()
-	  default: break
-	  }
-	}
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	// The use of inline closures is to circumvent an issue where the compiler
-	// allocates stack space for every if/case branch local when no optimizations
-	// are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-	// https://github.com/apple/swift-protobuf/issues/1182
-	try { if let v = self._prefix {
-	  try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-	} }()
-	try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Icon, rhs: BilibiliDm_Community_Service_Dm_Live_Icon) -> Bool {
-	if lhs._prefix != rhs._prefix {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
-  }
-}
-
-extension BilibiliDm_Community_Service_Dm_Live_Prefix: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Prefix"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .same(proto: "type"),
-	2: .same(proto: "resource"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt32Field(value: &self.type) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.resource) }()
-	  default: break
-	  }
-	}
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.type != 0 {
-	  try visitor.visitSingularInt32Field(value: self.type, fieldNumber: 1)
-	}
-	if !self.resource.isEmpty {
-	  try visitor.visitSingularStringField(value: self.resource, fieldNumber: 2)
-	}
-	try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Prefix, rhs: BilibiliDm_Community_Service_Dm_Live_Prefix) -> Bool {
-	if lhs.type != rhs.type {return false}
-	if lhs.resource != rhs.resource {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
-  }
-}
-
-extension BilibiliDm_Community_Service_Dm_Live_GroupMedal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".GroupMedal"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .standard(proto: "medal_id"),
-	2: .same(proto: "name"),
-	3: .standard(proto: "is_lighted"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularInt64Field(value: &self.medalID) }()
-	  case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
-	  case 3: try { try decoder.decodeSingularInt64Field(value: &self.isLighted) }()
-	  default: break
-	  }
-	}
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.medalID != 0 {
-	  try visitor.visitSingularInt64Field(value: self.medalID, fieldNumber: 1)
-	}
-	if !self.name.isEmpty {
-	  try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
-	}
-	if self.isLighted != 0 {
-	  try visitor.visitSingularInt64Field(value: self.isLighted, fieldNumber: 3)
-	}
-	try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_GroupMedal, rhs: BilibiliDm_Community_Service_Dm_Live_GroupMedal) -> Bool {
-	if lhs.medalID != rhs.medalID {return false}
-	if lhs.name != rhs.name {return false}
-	if lhs.isLighted != rhs.isLighted {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.level != rhs.level {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
 
 extension BilibiliDm_Community_Service_Dm_Live_Reply: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Reply"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-	1: .standard(proto: "show_reply"),
-	2: .standard(proto: "reply_mid"),
-	3: .standard(proto: "reply_uname"),
-	4: .standard(proto: "reply_uname_color"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}show_reply\0\u{3}reply_mid\0\u{3}reply_uname\0\u{3}reply_uname_color\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-	while let fieldNumber = try decoder.nextFieldNumber() {
-	  // The use of inline closures is to circumvent an issue where the compiler
-	  // allocates stack space for every case branch when no optimizations are
-	  // enabled. https://github.com/apple/swift-protobuf/issues/1034
-	  switch fieldNumber {
-	  case 1: try { try decoder.decodeSingularBoolField(value: &self.showReply) }()
-	  case 2: try { try decoder.decodeSingularInt64Field(value: &self.replyMid) }()
-	  case 3: try { try decoder.decodeSingularStringField(value: &self.replyUname) }()
-	  case 4: try { try decoder.decodeSingularStringField(value: &self.replyUnameColor) }()
-	  default: break
-	  }
-	}
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.showReply) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.replyMid) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.replyUname) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.replyUnameColor) }()
+      default: break
+      }
+    }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-	if self.showReply != false {
-	  try visitor.visitSingularBoolField(value: self.showReply, fieldNumber: 1)
-	}
-	if self.replyMid != 0 {
-	  try visitor.visitSingularInt64Field(value: self.replyMid, fieldNumber: 2)
-	}
-	if !self.replyUname.isEmpty {
-	  try visitor.visitSingularStringField(value: self.replyUname, fieldNumber: 3)
-	}
-	if !self.replyUnameColor.isEmpty {
-	  try visitor.visitSingularStringField(value: self.replyUnameColor, fieldNumber: 4)
-	}
-	try unknownFields.traverse(visitor: &visitor)
+    if self.showReply != false {
+      try visitor.visitSingularBoolField(value: self.showReply, fieldNumber: 1)
+    }
+    if self.replyMid != 0 {
+      try visitor.visitSingularInt64Field(value: self.replyMid, fieldNumber: 2)
+    }
+    if !self.replyUname.isEmpty {
+      try visitor.visitSingularStringField(value: self.replyUname, fieldNumber: 3)
+    }
+    if !self.replyUnameColor.isEmpty {
+      try visitor.visitSingularStringField(value: self.replyUnameColor, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Reply, rhs: BilibiliDm_Community_Service_Dm_Live_Reply) -> Bool {
-	if lhs.showReply != rhs.showReply {return false}
-	if lhs.replyMid != rhs.replyMid {return false}
-	if lhs.replyUname != rhs.replyUname {return false}
-	if lhs.replyUnameColor != rhs.replyUnameColor {return false}
-	if lhs.unknownFields != rhs.unknownFields {return false}
-	return true
+    if lhs.showReply != rhs.showReply {return false}
+    if lhs.replyMid != rhs.replyMid {return false}
+    if lhs.replyUname != rhs.replyUname {return false}
+    if lhs.replyUnameColor != rhs.replyUnameColor {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BilibiliDm_Community_Service_Dm_Live_Icon: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Icon"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}prefix\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._prefix) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._prefix {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Icon, rhs: BilibiliDm_Community_Service_Dm_Live_Icon) -> Bool {
+    if lhs._prefix != rhs._prefix {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BilibiliDm_Community_Service_Dm_Live_Prefix: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Prefix"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}resource\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.type) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.resource) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.type != 0 {
+      try visitor.visitSingularInt32Field(value: self.type, fieldNumber: 1)
+    }
+    if !self.resource.isEmpty {
+      try visitor.visitSingularStringField(value: self.resource, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_Prefix, rhs: BilibiliDm_Community_Service_Dm_Live_Prefix) -> Bool {
+    if lhs.type != rhs.type {return false}
+    if lhs.resource != rhs.resource {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BilibiliDm_Community_Service_Dm_Live_GroupMedal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupMedal"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}medal_id\0\u{1}name\0\u{3}is_lighted\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt64Field(value: &self.medalID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularInt64Field(value: &self.isLighted) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.medalID != 0 {
+      try visitor.visitSingularInt64Field(value: self.medalID, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if self.isLighted != 0 {
+      try visitor.visitSingularInt64Field(value: self.isLighted, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: BilibiliDm_Community_Service_Dm_Live_GroupMedal, rhs: BilibiliDm_Community_Service_Dm_Live_GroupMedal) -> Bool {
+    if lhs.medalID != rhs.medalID {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.isLighted != rhs.isLighted {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
   }
 }
