@@ -41,6 +41,7 @@
 		013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
 		013CE8E021854813000271FB /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoDecoder.swift */; };
+		013E85262E790ED00029621A /* NonePocketScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013E85252E790ED00029621A /* NonePocketScrollView.swift */; };
 		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
 		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
 		014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */; };
@@ -238,6 +239,7 @@
 		013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableView.swift; sourceTree = "<group>"; };
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
 		013CE8DF21854813000271FB /* VideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
+		013E85252E790ED00029621A /* NonePocketScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonePocketScrollView.swift; sourceTree = "<group>"; };
 		014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OpenFilesWindow.storyboard; sourceTree = "<group>"; };
 		014327B822AF5BED00651064 /* OpenFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesViewController.swift; sourceTree = "<group>"; };
 		014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesWindowController.swift; sourceTree = "<group>"; };
@@ -489,6 +491,7 @@
 				019948BE2743DF3600C71708 /* ObjMenuItem.swift */,
 				01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */,
 				01010136211EFA75002F0F7F /* SuggestionsTableView.swift */,
+				013E85252E790ED00029621A /* NonePocketScrollView.swift */,
 			);
 			path = MainWindow;
 			sourceTree = "<group>";
@@ -891,6 +894,7 @@
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
 				0120FDBF2C725E9800526079 /* DouyinCookiesManager.swift in Sources */,
 				01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */,
+				013E85262E790ED00029621A /* NonePocketScrollView.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
