@@ -1,6 +1,27 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+      "shouldTranslate" : false
+    },
+    "# %lld" : {
+      "shouldTranslate" : false
+    },
+    "%@ - Index %lld" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ - Index %2$lld"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "19080" : {
+      "shouldTranslate" : false
+    },
     "Cancel" : {
       "comment" : "Cancel button title",
       "localizations" : {
@@ -125,6 +146,19 @@
         }
       }
     },
+    "Example" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例"
+          }
+        }
+      }
+    },
+    "GitHub" : {
+
+    },
     "LiveSite.All" : {
       "comment" : "All",
       "localizations" : {
@@ -181,6 +215,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新加载直播状态"
+          }
+        }
+      }
+    },
+    "mpv path" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mpv路径"
+          }
+        }
+      }
+    },
+    "Open Terminal" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开终端"
           }
         }
       }

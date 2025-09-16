@@ -46,6 +46,12 @@ class MainMenu: NSObject, NSMenuItemValidation {
         if menuItem.action == #selector(log) {
             return true
         }
+        if menuItem.action == #selector(preferences) {
+            return true
+        }
+        if menuItem.action == #selector(about) {
+            return true
+        }
         return false
     }
     
@@ -64,6 +70,7 @@ class MainMenu: NSObject, NSMenuItemValidation {
             appDelegate.persistentContainer.viewContext.redo()
         }
     }
+    
     @IBAction func help(_ sender: Any) {
         if let url = URL(string: "https://github.com/xjbeta/iina-plus") {
             NSWorkspace.shared.open(url)
@@ -77,4 +84,11 @@ class MainMenu: NSObject, NSMenuItemValidation {
         }
     }
     
+    @IBAction func about(_ sender: NSMenuItem) {
+        WindowManger.shared.showSettings(.about)
+    }
+    
+    @IBAction func preferences(_ sender: NSMenuItem) {
+        WindowManger.shared.showSettings()
+    }
 }

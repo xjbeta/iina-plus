@@ -20,7 +20,6 @@
 		010BEA6C2C4FE2C60061E1DC /* BilibiliDash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010BEA6B2C4FE2C60061E1DC /* BilibiliDash.swift */; };
 		010F0EF220F890DB00F33553 /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0EF120F890DB00F33553 /* MainWindowController.swift */; };
 		010F0F1320FE1DD100F33553 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1220FE1DD100F33553 /* Preferences.swift */; };
-		010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */; };
 		011329262C06252300ED0D78 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011329252C06252300ED0D78 /* AboutViewController.swift */; };
 		011E4D3321E99CA400997633 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011E4D3221E99CA300997633 /* Log.swift */; };
 		0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0120934127A40869002C7FD3 /* JSPlayerWindowController.swift */; };
@@ -32,14 +31,17 @@
 		012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012738C02C731EEB0031E643 /* TaskExtension.swift */; };
 		0132B2E32123D05E001EB7DC /* BilibiliCardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */; };
 		0132B2E52123D68D001EB7DC /* BilibiliCardImageBoxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */; };
+		0133ED242DD70B0800A12FE6 /* PluginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0133ED232DD70B0800A12FE6 /* PluginSheetView.swift */; };
 		013598962CEC8EC400B3EFC0 /* Bangumi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013598952CEC8EC400B3EFC0 /* Bangumi.swift */; };
 		013598982CEC95AE00B3EFC0 /* BilbiliShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013598972CEC95AE00B3EFC0 /* BilbiliShare.swift */; };
 		013850FA214EA2AA003817CE /* huya.js in Resources */ = {isa = PBXBuildFile; fileRef = 013850F9214EA2AA003817CE /* huya.js */; };
 		01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398984210F27A600B7042F /* PreferencesWindowController.swift */; };
 		01398987210F58E500B7042F /* MainWindowTableRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01398986210F58E500B7042F /* MainWindowTableRowView.swift */; };
+		0139E67A2E535F150099FD1E /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = 0139E6792E535F150099FD1E /* Settings */; };
 		013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */; };
 		013CE8DE2184459E000271FB /* Danmaku.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DD2184459E000271FB /* Danmaku.swift */; };
 		013CE8E021854813000271FB /* VideoDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013CE8DF21854813000271FB /* VideoDecoder.swift */; };
+		013E85262E790ED00029621A /* NonePocketScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013E85252E790ED00029621A /* NonePocketScrollView.swift */; };
 		014327B722AF5BE100651064 /* OpenFilesWindow.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */; };
 		014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327B822AF5BED00651064 /* OpenFilesViewController.swift */; };
 		014327BD22AF5C9D00651064 /* OpenFilesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */; };
@@ -58,6 +60,8 @@
 		015C19F8218FC9A8003B2F3A /* Block-List-Basic.xml in Resources */ = {isa = PBXBuildFile; fileRef = 015C19F6218FC9A8003B2F3A /* Block-List-Basic.xml */; };
 		015EDE27273D333900271901 /* LiveStateTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015EDE26273D333900271901 /* LiveStateTransformers.swift */; };
 		015F06982DCC73CB00501A03 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 015F06972DCC73CA00501A03 /* Localizable.xcstrings */; };
+		015F069F2DCDC0DA00501A03 /* GeneralPrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015F069B2DCDC0DA00501A03 /* GeneralPrefsView.swift */; };
+		015F06A12DCDCE3A00501A03 /* LocalizedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015F06A02DCDCE3A00501A03 /* LocalizedText.swift */; };
 		016792E1212BBB43003517A7 /* SelectVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E0212BBB43003517A7 /* SelectVideoViewController.swift */; };
 		016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */; };
 		016792E7212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */; };
@@ -69,6 +73,7 @@
 		016A71ED2A91AA48007B4CA3 /* DanmakuBiliLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */; };
 		016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */; };
 		016D772427B0CD4300358E2F /* WaitTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 016D772327B0CD4300358E2F /* WaitTimer.swift */; };
+		016FB4C72E559C57003A5960 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 016FB4C22E559C57003A5960 /* DataModel.xcdatamodeld */; };
 		017F0C502A63C24400043338 /* iina-plugin-danmaku.iinaplgz in Resources */ = {isa = PBXBuildFile; fileRef = 01C248B62A62418E00C92639 /* iina-plugin-danmaku.iinaplgz */; };
 		0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */; };
 		0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0184D7112B2025FF00C7901A /* DateExtension.swift */; };
@@ -84,6 +89,12 @@
 		01942A3227C345060092FA5A /* DouYinDMResponse.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */; };
 		01942A3427C3BED70092FA5A /* DouYinDM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3327C3BED70092FA5A /* DouYinDM.swift */; };
 		01942A3627C49D850092FA5A /* WKWebViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01942A3527C49D850092FA5A /* WKWebViewExtension.swift */; };
+		0195C0BA2E471F0000E8BB36 /* AdvancedPrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0B92E471F0000E8BB36 /* AdvancedPrefsView.swift */; };
+		0195C0BE2E476C3D00E8BB36 /* Color+NSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0BD2E476C3D00E8BB36 /* Color+NSColor.swift */; };
+		0195C0C02E476F0B00E8BB36 /* SitePrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0BF2E476F0B00E8BB36 /* SitePrefsView.swift */; };
+		0195C0C22E47851E00E8BB36 /* BiliLoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0C12E47851E00E8BB36 /* BiliLoginSheetView.swift */; };
+		0195C0C42E4789AF00E8BB36 /* BiliLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0C32E4789AF00E8BB36 /* BiliLoginViewController.swift */; };
+		0195C0C62E48E2FE00E8BB36 /* AboutPrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0C52E48E2FE00E8BB36 /* AboutPrefsView.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
@@ -108,6 +119,8 @@
 		01B53B6627B64FD20051F7B4 /* flvplayer.js in Copy Web Files */ = {isa = PBXBuildFile; fileRef = 0120932927A3B441002C7FD3 /* flvplayer.js */; };
 		01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */; };
 		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
+		01B86E0D2E5590220099C320 /* WindowManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E0C2E5590220099C320 /* WindowManger.swift */; };
+		01B86E1B2E5598CD0099C320 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 01B86E1A2E5598CD0099C320 /* SDWebImageSwiftUI */; };
 		01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */; };
 		01BC354B29AF2BC000B45577 /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
 		01BC354C29AF2BD700B45577 /* douyin.html in Copy DouYin */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
@@ -203,7 +216,6 @@
 		010BEA6B2C4FE2C60061E1DC /* BilibiliDash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliDash.swift; sourceTree = "<group>"; };
 		010F0EF120F890DB00F33553 /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		010F0F1220FE1DD100F33553 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
 		011329252C06252300ED0D78 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		011E4D3221E99CA300997633 /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		0120932827A3B441002C7FD3 /* flvplayer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = flvplayer.css; sourceTree = "<group>"; };
@@ -218,6 +230,7 @@
 		012738C02C731EEB0031E643 /* TaskExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskExtension.swift; sourceTree = "<group>"; };
 		0132B2E22123D05E001EB7DC /* BilibiliCardProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardProgressView.swift; sourceTree = "<group>"; };
 		0132B2E42123D68D001EB7DC /* BilibiliCardImageBoxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliCardImageBoxView.swift; sourceTree = "<group>"; };
+		0133ED232DD70B0800A12FE6 /* PluginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSheetView.swift; sourceTree = "<group>"; };
 		013598952CEC8EC400B3EFC0 /* Bangumi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bangumi.swift; sourceTree = "<group>"; };
 		013598972CEC95AE00B3EFC0 /* BilbiliShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilbiliShare.swift; sourceTree = "<group>"; };
 		013850F9214EA2AA003817CE /* huya.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = huya.js; sourceTree = "<group>"; };
@@ -226,6 +239,7 @@
 		013A05EE2BC8052900AD63DD /* MainWindowTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowTableView.swift; sourceTree = "<group>"; };
 		013CE8DD2184459E000271FB /* Danmaku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Danmaku.swift; sourceTree = "<group>"; };
 		013CE8DF21854813000271FB /* VideoDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDecoder.swift; sourceTree = "<group>"; };
+		013E85252E790ED00029621A /* NonePocketScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonePocketScrollView.swift; sourceTree = "<group>"; };
 		014327B622AF5BE100651064 /* OpenFilesWindow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OpenFilesWindow.storyboard; sourceTree = "<group>"; };
 		014327B822AF5BED00651064 /* OpenFilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesViewController.swift; sourceTree = "<group>"; };
 		014327BC22AF5C9D00651064 /* OpenFilesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFilesWindowController.swift; sourceTree = "<group>"; };
@@ -234,7 +248,6 @@
 		01479CD6210B35480046AAAD /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		014B447B210069FF00E7AA6A /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
 		014B447C210069FF00E7AA6A /* BookmarkExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkExtension.swift; sourceTree = "<group>"; };
-		014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
 		0155C38F2CF481B9004A2042 /* DanmakuWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuWS.swift; sourceTree = "<group>"; };
 		0155C3912CF481B9004A2042 /* HttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpServer.swift; sourceTree = "<group>"; };
 		0155C3932CF481B9004A2042 /* NIOHTTPServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NIOHTTPServer.swift; sourceTree = "<group>"; };
@@ -248,6 +261,8 @@
 		015F06972DCC73CA00501A03 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		015F06992DCC73CB00501A03 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/JSPlayer.xcstrings; sourceTree = "<group>"; };
 		015F069A2DCC73CB00501A03 /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/Preferences.xcstrings; sourceTree = "<group>"; };
+		015F069B2DCDC0DA00501A03 /* GeneralPrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralPrefsView.swift; sourceTree = "<group>"; };
+		015F06A02DCDCE3A00501A03 /* LocalizedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizedText.swift; sourceTree = "<group>"; };
 		016792E0212BBB43003517A7 /* SelectVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoViewController.swift; sourceTree = "<group>"; };
 		016792E4212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewItem.swift; sourceTree = "<group>"; };
 		016792E5212BDEE5003517A7 /* SelectVideoCollectionViewItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewItem.xib; sourceTree = "<group>"; };
@@ -259,6 +274,9 @@
 		016A71EC2A91AA48007B4CA3 /* DanmakuBiliLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuBiliLive.swift; sourceTree = "<group>"; };
 		016A71F22A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BiliLiveDMv2.pb.swift; sourceTree = "<group>"; };
 		016D772327B0CD4300358E2F /* WaitTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitTimer.swift; sourceTree = "<group>"; };
+		016FB4C32E559C57003A5960 /* Bookmark.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Bookmark.xcdatamodel; sourceTree = "<group>"; };
+		016FB4C42E559C57003A5960 /* Bookmark v0.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.2.xcdatamodel"; sourceTree = "<group>"; };
+		016FB4C52E559C57003A5960 /* Bookmark v0.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.3.xcdatamodel"; sourceTree = "<group>"; };
 		0182F5DC295F108D00DB8BDD /* DouYinResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinResponse.pb.swift; sourceTree = "<group>"; };
 		0184D7112B2025FF00C7901A /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		018739ED2852135200156F3F /* QQLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QQLive.swift; sourceTree = "<group>"; };
@@ -273,10 +291,15 @@
 		01942A3127C345060092FA5A /* DouYinDMResponse.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DouYinDMResponse.pb.swift; sourceTree = "<group>"; };
 		01942A3327C3BED70092FA5A /* DouYinDM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouYinDM.swift; sourceTree = "<group>"; };
 		01942A3527C49D850092FA5A /* WKWebViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewExtension.swift; sourceTree = "<group>"; };
+		0195C0B92E471F0000E8BB36 /* AdvancedPrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPrefsView.swift; sourceTree = "<group>"; };
+		0195C0BD2E476C3D00E8BB36 /* Color+NSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+NSColor.swift"; sourceTree = "<group>"; };
+		0195C0BF2E476F0B00E8BB36 /* SitePrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SitePrefsView.swift; sourceTree = "<group>"; };
+		0195C0C12E47851E00E8BB36 /* BiliLoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLoginSheetView.swift; sourceTree = "<group>"; };
+		0195C0C32E4789AF00E8BB36 /* BiliLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLoginViewController.swift; sourceTree = "<group>"; };
+		0195C0C52E48E2FE00E8BB36 /* AboutPrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPrefsView.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
-		019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Bookmark v0.3.xcdatamodel"; sourceTree = "<group>"; };
 		019F584E2AF1450800235BAE /* JSPlayerURLSchemeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSPlayerURLSchemeHandler.swift; sourceTree = "<group>"; };
 		01A183DA2B789728006FA874 /* HuyaUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuyaUrl.swift; sourceTree = "<group>"; };
 		01AEC8A720EDFD01001406E8 /* IINA+.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "IINA+.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -297,6 +320,7 @@
 		01B53B5C27B64F420051F7B4 /* style.min.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = style.min.css; path = "IINA+/WebFiles/node_modules/comment-core-library/dist/css/style.min.css"; sourceTree = SOURCE_ROOT; };
 		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
 		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
+		01B86E0C2E5590220099C320 /* WindowManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManger.swift; sourceTree = "<group>"; };
 		01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliDynamicManger.swift; sourceTree = "<group>"; };
 		01BC354A29AF2BC000B45577 /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
@@ -330,8 +354,10 @@
 				01C0809127BC05A500E87A8C /* Gzip in Frameworks */,
 				01C0809D27BC0BC400E87A8C /* SocketRocket in Frameworks */,
 				01C0808827BC049500E87A8C /* CryptoSwift in Frameworks */,
+				01B86E1B2E5598CD0099C320 /* SDWebImageSwiftUI in Frameworks */,
 				01E668D22CEA322F008C51E7 /* NIOFoundationCompat in Frameworks */,
 				01C0809427BC06EC00E87A8C /* SwiftProtobuf in Frameworks */,
+				0139E67A2E535F150099FD1E /* Settings in Frameworks */,
 				01C248CD2CE480F30074A76F /* DequeModule in Frameworks */,
 				01E668D62CEA322F008C51E7 /* NIOWebSocket in Frameworks */,
 				01E668D42CEA322F008C51E7 /* NIOHTTP1 in Frameworks */,
@@ -393,7 +419,7 @@
 		010F0F2E20FF414E00F33553 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
-				010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */,
+				016FB4C22E559C57003A5960 /* DataModel.xcdatamodeld */,
 				014B447B210069FF00E7AA6A /* Bookmark.swift */,
 				014B447C210069FF00E7AA6A /* BookmarkExtension.swift */,
 				01479CD2210AF5F40046AAAD /* DataManager.swift */,
@@ -465,6 +491,7 @@
 				019948BE2743DF3600C71708 /* ObjMenuItem.swift */,
 				01479CD4210AFACB0046AAAD /* AddBookmarkViewController.swift */,
 				01010136211EFA75002F0F7F /* SuggestionsTableView.swift */,
+				013E85252E790ED00029621A /* NonePocketScrollView.swift */,
 			);
 			path = MainWindow;
 			sourceTree = "<group>";
@@ -486,6 +513,21 @@
 				0155C3A02CF493BC004A2042 /* HTTPHandler.swift */,
 			);
 			path = HttpServer;
+			sourceTree = "<group>";
+		};
+		015F069D2DCDC0DA00501A03 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				015F069B2DCDC0DA00501A03 /* GeneralPrefsView.swift */,
+				0133ED232DD70B0800A12FE6 /* PluginSheetView.swift */,
+				015F06A02DCDCE3A00501A03 /* LocalizedText.swift */,
+				0195C0BF2E476F0B00E8BB36 /* SitePrefsView.swift */,
+				0195C0C12E47851E00E8BB36 /* BiliLoginSheetView.swift */,
+				0195C0C32E4789AF00E8BB36 /* BiliLoginViewController.swift */,
+				0195C0B92E471F0000E8BB36 /* AdvancedPrefsView.swift */,
+				0195C0C52E48E2FE00E8BB36 /* AboutPrefsView.swift */,
+			);
+			path = Preferences;
 			sourceTree = "<group>";
 		};
 		016792E8212BF89A003517A7 /* SelectVideoCollectionView */ = {
@@ -579,6 +621,7 @@
 				01AEC8BA20EDFD3F001406E8 /* Assets */,
 				010F0F2E20FF414E00F33553 /* Core Data */,
 				012601722119BA6D00C9C639 /* Utils */,
+				01B86E0B2E55843D0099C320 /* Views SwiftUI */,
 				010F0EF320F8930500F33553 /* Views */,
 				01AEC8AA20EDFD01001406E8 /* AppDelegate.swift */,
 				010F0F1220FE1DD100F33553 /* Preferences.swift */,
@@ -631,6 +674,15 @@
 			path = Danmaku;
 			sourceTree = "<group>";
 		};
+		01B86E0B2E55843D0099C320 /* Views SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				015F069D2DCDC0DA00501A03 /* Preferences */,
+				01B86E0C2E5590220099C320 /* WindowManger.swift */,
+			);
+			path = "Views SwiftUI";
+			sourceTree = "<group>";
+		};
 		01BAD2AD2B13960600A64D55 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -639,6 +691,7 @@
 				01010124211DBC27002F0F7F /* StringExtension.swift */,
 				0184D7112B2025FF00C7901A /* DateExtension.swift */,
 				012738C02C731EEB0031E643 /* TaskExtension.swift */,
+				0195C0BD2E476C3D00E8BB36 /* Color+NSColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -703,6 +756,8 @@
 				01E668D12CEA322F008C51E7 /* NIOFoundationCompat */,
 				01E668D32CEA322F008C51E7 /* NIOHTTP1 */,
 				01E668D52CEA322F008C51E7 /* NIOWebSocket */,
+				0139E6792E535F150099FD1E /* Settings */,
+				01B86E1A2E5598CD0099C320 /* SDWebImageSwiftUI */,
 			);
 			productName = "iina+";
 			productReference = 01AEC8A720EDFD01001406E8 /* IINA+.app */;
@@ -759,6 +814,8 @@
 				010CE8C72A911010002FA130 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
 				01C248CB2CE480F30074A76F /* XCRemoteSwiftPackageReference "swift-collections" */,
 				01E668CE2CEA322F008C51E7 /* XCRemoteSwiftPackageReference "swift-nio" */,
+				0139E6782E535F150099FD1E /* XCRemoteSwiftPackageReference "Settings" */,
+				01B86E192E5598CD0099C320 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = 01AEC8A820EDFD01001406E8 /* Products */;
 			projectDirPath = "";
@@ -825,16 +882,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
+				016FB4C72E559C57003A5960 /* DataModel.xcdatamodeld in Sources */,
 				01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */,
 				01A183DB2B789728006FA874 /* HuyaUrl.swift in Sources */,
 				012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */,
-				010F0F1920FE4F0900F33553 /* DataModel.xcdatamodeld in Sources */,
+				0195C0C62E48E2FE00E8BB36 /* AboutPrefsView.swift in Sources */,
 				0120934227A40869002C7FD3 /* JSPlayerWindowController.swift in Sources */,
 				016792E6212BDEE5003517A7 /* SelectVideoCollectionViewItem.swift in Sources */,
 				0101013921200DC5002F0F7F /* LiveUrlTableCellView.swift in Sources */,
+				0195C0BA2E471F0000E8BB36 /* AdvancedPrefsView.swift in Sources */,
 				018F4F6A2812D95C0045B67C /* CC163.swift in Sources */,
 				0120FDBF2C725E9800526079 /* DouyinCookiesManager.swift in Sources */,
 				01C338B528E47B3F004CC0B8 /* MBGA.swift in Sources */,
+				013E85262E790ED00029621A /* NonePocketScrollView.swift in Sources */,
 				01479CD3210AF5F40046AAAD /* DataManager.swift in Sources */,
 				01398985210F27A600B7042F /* PreferencesWindowController.swift in Sources */,
 				01AEC8BE20EE108B001406E8 /* Processes.swift in Sources */,
@@ -844,8 +904,10 @@
 				01AEC8C220EFBCCF001406E8 /* MPVOption.swift in Sources */,
 				0155C3A12CF493BC004A2042 /* HTTPHandler.swift in Sources */,
 				014327BA22AF5BED00651064 /* OpenFilesViewController.swift in Sources */,
+				015F06A12DCDCE3A00501A03 /* LocalizedText.swift in Sources */,
 				016792EE212C421F003517A7 /* SelectVideoCollectionViewItemView.swift in Sources */,
 				0189534F27A138310011BAAC /* JSPlayerViewController.swift in Sources */,
+				015F069F2DCDC0DA00501A03 /* GeneralPrefsView.swift in Sources */,
 				01AEC8C920F1081C001406E8 /* Identifiers.swift in Sources */,
 				01010125211DBC27002F0F7F /* StringExtension.swift in Sources */,
 				013A05EF2BC8052900AD63DD /* MainWindowTableView.swift in Sources */,
@@ -860,20 +922,25 @@
 				0155C39C2CF481B9004A2042 /* NIOHTTPServer.swift in Sources */,
 				019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */,
 				01683DDB2118905D0016A886 /* Bilibili.swift in Sources */,
+				0133ED242DD70B0800A12FE6 /* PluginSheetView.swift in Sources */,
 				0182F5DD295F108D00DB8BDD /* DouYinResponse.pb.swift in Sources */,
 				01260178211ABD3B00C9C639 /* VideoViewsFormatter.swift in Sources */,
 				016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */,
 				01C248CA2CE480670074A76F /* TokenBucket.swift in Sources */,
+				0195C0C22E47851E00E8BB36 /* BiliLoginSheetView.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
 				01C248B52A623EC000C92639 /* IINAApp.swift in Sources */,
 				016A71ED2A91AA48007B4CA3 /* DanmakuBiliLive.swift in Sources */,
+				0195C0C02E476F0B00E8BB36 /* SitePrefsView.swift in Sources */,
 				01479CD7210B35480046AAAD /* MainMenu.swift in Sources */,
 				01E40FEB22C304E800864118 /* ImageLoader.swift in Sources */,
+				01B86E0D2E5590220099C320 /* WindowManger.swift in Sources */,
 				01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */,
 				015C19DC218B0D4F003B2F3A /* VideoGetStructs.swift in Sources */,
 				013CE8DE2184459E000271FB /* Danmaku.swift in Sources */,
+				0195C0BE2E476C3D00E8BB36 /* Color+NSColor.swift in Sources */,
 				013598962CEC8EC400B3EFC0 /* Bangumi.swift in Sources */,
 				0101012B211DCE1C002F0F7F /* SidebarTableCellView.swift in Sources */,
 				0184D7122B2025FF00C7901A /* DateExtension.swift in Sources */,
@@ -904,6 +971,7 @@
 				013CE8E021854813000271FB /* VideoDecoder.swift in Sources */,
 				01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
+				0195C0C42E4789AF00E8BB36 /* BiliLoginViewController.swift in Sources */,
 				0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */,
 				0106179D2AF34EFF005C7877 /* JSPlayerURL.swift in Sources */,
 				01D482BB2CAF978C00F636EE /* CharacterSetExtension.swift in Sources */,
@@ -1099,8 +1167,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.11;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 0.8.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1126,8 +1194,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
-				MARKETING_VERSION = 0.8.11;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 0.8.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1167,6 +1235,22 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.1.0;
+			};
+		};
+		0139E6782E535F150099FD1E /* XCRemoteSwiftPackageReference "Settings" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Settings";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.1;
+			};
+		};
+		01B86E192E5598CD0099C320 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.3;
 			};
 		};
 		01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
@@ -1260,6 +1344,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0139E6792E535F150099FD1E /* Settings */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0139E6782E535F150099FD1E /* XCRemoteSwiftPackageReference "Settings" */;
+			productName = Settings;
+		};
+		01B86E1A2E5598CD0099C320 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01B86E192E5598CD0099C320 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
 		01C0807B27BC00EA00E87A8C /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 01C0807A27BC00EA00E87A8C /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -1333,14 +1427,14 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		010F0F1720FE4F0900F33553 /* DataModel.xcdatamodeld */ = {
+		016FB4C22E559C57003A5960 /* DataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */,
-				014FD3A42115CB3000F05399 /* Bookmark v0.2.xcdatamodel */,
-				010F0F1820FE4F0900F33553 /* Bookmark.xcdatamodel */,
+				016FB4C32E559C57003A5960 /* Bookmark.xcdatamodel */,
+				016FB4C42E559C57003A5960 /* Bookmark v0.2.xcdatamodel */,
+				016FB4C52E559C57003A5960 /* Bookmark v0.3.xcdatamodel */,
 			);
-			currentVersion = 019AFB5F27380DEA00B4E458 /* Bookmark v0.3.xcdatamodel */;
+			currentVersion = 016FB4C52E559C57003A5960 /* Bookmark v0.3.xcdatamodel */;
 			path = DataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

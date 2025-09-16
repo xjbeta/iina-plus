@@ -3,11 +3,10 @@
   "strings" : {
     "0dj-e7-0em.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Speed:\"; ObjectID = \"0dj-e7-0em\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Speed:"
           }
         },
@@ -21,11 +20,10 @@
     },
     "03k-iW-imw.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Item 1\"; ObjectID = \"03k-iW-imw\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Item 1"
           }
         },
@@ -57,11 +55,10 @@
     },
     "Fns-6s-teh.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Loading...\"; ObjectID = \"Fns-6s-teh\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Loading..."
           }
         },
@@ -75,11 +72,10 @@
     },
     "h3R-Bz-Wpa.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Item 3\"; ObjectID = \"h3R-Bz-Wpa\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Item 3"
           }
         },
@@ -93,11 +89,10 @@
     },
     "K36-Zb-kEo.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Opacity:\"; ObjectID = \"K36-Zb-kEo\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Opacity:"
           }
         },
@@ -111,11 +106,10 @@
     },
     "KNO-9C-XR9.title" : {
       "comment" : "Class = \"NSWindow\"; title = \"Loading...\"; ObjectID = \"KNO-9C-XR9\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Loading..."
           }
         },
@@ -165,11 +159,10 @@
     },
     "ne7-fA-9VC.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"00:00\"; ObjectID = \"ne7-fA-9VC\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "00:00"
           }
         },
@@ -201,11 +194,10 @@
     },
     "Rpe-rD-fwd.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"Enable\"; ObjectID = \"Rpe-rD-fwd\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Enable"
           }
         },
@@ -237,11 +229,10 @@
     },
     "V1i-DZ-62a.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"1080P\"; ObjectID = \"V1i-DZ-62a\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "1080P"
           }
         },
@@ -255,11 +246,10 @@
     },
     "zlW-lq-SDz.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Item 2\"; ObjectID = \"zlW-lq-SDz\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Item 2"
           }
         },
