@@ -61,7 +61,7 @@ struct PluginSheetView: View {
                         Button {
                             stepValue += 1
                         } label: {
-                            //                        LocalizedText("cgt-Fm-5UC.title", tableName: .preferences)
+//                            LocalizedText("cgt-Fm-5UC.title", tableName: .preferences)
                             Text(installPluginTitle)
                         }
                         .opacity(stepValue != 1 ? 0 : 1)
@@ -82,11 +82,7 @@ struct PluginSheetView: View {
             }
             
             if stepValue == 3 {
-//                Text(k)
-//                    .padding(.horizontal)
-                
                 Text(NSLocalizedString("PluginInstaller.tips", comment: ""))
-                
             }
             
             Spacer(minLength: 15)
@@ -104,7 +100,7 @@ struct PluginSheetView: View {
         }
         .padding()
         .onAppear {
-//            initPluginStates()
+            initPluginStates()
         }
     }
     

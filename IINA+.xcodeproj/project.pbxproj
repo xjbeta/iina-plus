@@ -119,11 +119,6 @@
 		01B82B3728EEF74800928F61 /* SelectVideoCollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */; };
 		01B82B3928EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */; };
 		01B86E0D2E5590220099C320 /* WindowManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E0C2E5590220099C320 /* WindowManger.swift */; };
-		01B86E132E5598180099C320 /* LivingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E112E5598180099C320 /* LivingItemView.swift */; };
-		01B86E142E5598180099C320 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E122E5598180099C320 /* MainContentView.swift */; };
-		01B86E152E5598180099C320 /* DecodeSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E102E5598180099C320 /* DecodeSheetView.swift */; };
-		01B86E162E5598180099C320 /* BookmarksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E0F2E5598180099C320 /* BookmarksListView.swift */; };
-		01B86E182E5598440099C320 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B86E172E5598440099C320 /* PersistenceController.swift */; };
 		01B86E1B2E5598CD0099C320 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 01B86E1A2E5598CD0099C320 /* SDWebImageSwiftUI */; };
 		01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */; };
 		01BC354B29AF2BC000B45577 /* douyin.html in Resources */ = {isa = PBXBuildFile; fileRef = 01BC354A29AF2BC000B45577 /* douyin.html */; };
@@ -324,11 +319,6 @@
 		01B82B3628EEF74800928F61 /* SelectVideoCollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectVideoCollectionViewHeader.xib; sourceTree = "<group>"; };
 		01B82B3828EEF9D300928F61 /* SelectVideoCollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVideoCollectionViewHeader.swift; sourceTree = "<group>"; };
 		01B86E0C2E5590220099C320 /* WindowManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManger.swift; sourceTree = "<group>"; };
-		01B86E0F2E5598180099C320 /* BookmarksListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksListView.swift; sourceTree = "<group>"; };
-		01B86E102E5598180099C320 /* DecodeSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeSheetView.swift; sourceTree = "<group>"; };
-		01B86E112E5598180099C320 /* LivingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivingItemView.swift; sourceTree = "<group>"; };
-		01B86E122E5598180099C320 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
-		01B86E172E5598440099C320 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		01B881362C4128E900E44B97 /* BilibiliDynamicManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilibiliDynamicManger.swift; sourceTree = "<group>"; };
 		01BC354A29AF2BC000B45577 /* douyin.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = douyin.html; sourceTree = "<group>"; };
 		01C0807127BB5CF300E87A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/JSPlayer.storyboard; sourceTree = "<group>"; };
@@ -684,23 +674,10 @@
 		01B86E0B2E55843D0099C320 /* Views SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				01B86E0E2E5597B30099C320 /* Main */,
 				015F069D2DCDC0DA00501A03 /* Preferences */,
 				01B86E0C2E5590220099C320 /* WindowManger.swift */,
-				01B86E172E5598440099C320 /* PersistenceController.swift */,
 			);
 			path = "Views SwiftUI";
-			sourceTree = "<group>";
-		};
-		01B86E0E2E5597B30099C320 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				01B86E0F2E5598180099C320 /* BookmarksListView.swift */,
-				01B86E102E5598180099C320 /* DecodeSheetView.swift */,
-				01B86E112E5598180099C320 /* LivingItemView.swift */,
-				01B86E122E5598180099C320 /* MainContentView.swift */,
-			);
-			path = Main;
 			sourceTree = "<group>";
 		};
 		01BAD2AD2B13960600A64D55 /* Extensions */ = {
@@ -902,11 +879,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0189533F279FBC470011BAAC /* ColorPickButton.swift in Sources */,
-				01B86E132E5598180099C320 /* LivingItemView.swift in Sources */,
-				01B86E142E5598180099C320 /* MainContentView.swift in Sources */,
 				016FB4C72E559C57003A5960 /* DataModel.xcdatamodeld in Sources */,
-				01B86E152E5598180099C320 /* DecodeSheetView.swift in Sources */,
-				01B86E162E5598180099C320 /* BookmarksListView.swift in Sources */,
 				01DCD2F9259710D800D286C8 /* BilibiliDMMessage.swift in Sources */,
 				01A183DB2B789728006FA874 /* HuyaUrl.swift in Sources */,
 				012738C12C731EEB0031E643 /* TaskExtension.swift in Sources */,
@@ -993,7 +966,6 @@
 				0189534827A0F5A90011BAAC /* LiveStateTextField.swift in Sources */,
 				013CE8E021854813000271FB /* VideoDecoder.swift in Sources */,
 				01683DDE211924160016A886 /* BilibiliViewController.swift in Sources */,
-				01B86E182E5598440099C320 /* PersistenceController.swift in Sources */,
 				01AEC8AB20EDFD01001406E8 /* AppDelegate.swift in Sources */,
 				0195C0C42E4789AF00E8BB36 /* BiliLoginViewController.swift in Sources */,
 				0102924627ACF8AC00CB74B5 /* ControllersVisualEffectView.swift in Sources */,
@@ -1191,7 +1163,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 0.8.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1218,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 0.8.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";

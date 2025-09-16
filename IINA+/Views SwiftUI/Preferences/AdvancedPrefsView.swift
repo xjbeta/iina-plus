@@ -25,7 +25,9 @@ struct AdvancedPrefsView: View {
                 
                 Button {
                     SDImageCache.shared.clearDisk {
-                        initCacheSize()
+                        Task { @MainActor in
+                            initCacheSize()
+                        }
                     }
                     WKWebsiteDataStore.default().removeData(ofTypes: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache], modifiedSince: Date(timeIntervalSince1970: 0), completionHandler:{ })
                     initCacheSize()
@@ -38,7 +40,7 @@ struct AdvancedPrefsView: View {
             Divider()
                 .padding(.horizontal, -8)
             
-            GridRow {
+            GridRow(alignment: .center) {
                 LocalizedText("CfS-Ci-nxw.title", tableName: .preferences)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 
@@ -52,7 +54,7 @@ struct AdvancedPrefsView: View {
                     .labelsHidden()
             }
             
-            GridRow {
+            GridRow(alignment: .center) {
                 Spacer()
                 
                 LocalizedText("Of0-KI-IUP.title", tableName: .preferences)
@@ -65,7 +67,7 @@ struct AdvancedPrefsView: View {
                     .labelsHidden()
             }
             
-            GridRow {
+            GridRow(alignment: .center) {
                 Spacer()
                 
                 LocalizedText("9Rb-3A-pS4.title", tableName: .preferences)
@@ -78,7 +80,7 @@ struct AdvancedPrefsView: View {
                     .labelsHidden()
             }
             
-            GridRow {
+            GridRow(alignment: .center) {
                 Spacer()
                 
                 LocalizedText("o7B-lQ-AHT.title", tableName: .preferences)
@@ -101,7 +103,9 @@ struct AdvancedPrefsView: View {
     
     func initCacheSize() {
         SDImageCache.shared.calculateSize { count, size in
-            cacheSizeText = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+            Task { @MainActor in
+                cacheSizeText = String(format: "%.2f MB", Double(size) / 1024 / 1024)
+            }
         }
     }
 }
