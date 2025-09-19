@@ -323,19 +323,19 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="dDP-PF-C0a">
-                                <rect key="frame" x="0.0" y="0.0" width="72" height="412"/>
+                                <rect key="frame" x="0.0" y="0.0" width="72" height="410"/>
                                 <subviews>
                                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="JWL-uO-Ceb">
                                         <rect key="frame" x="28" y="20" width="16" height="16"/>
                                     </progressIndicator>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="74" horizontalPageScroll="10" verticalLineScroll="74" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="99a-57-nij">
-                                        <rect key="frame" x="0.0" y="61" width="72" height="311"/>
+                                        <rect key="frame" x="0.0" y="61" width="72" height="309"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="mxK-09-4I5">
-                                            <rect key="frame" x="0.0" y="0.0" width="72" height="311"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="72" height="309"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" viewBased="YES" id="fYM-Cq-LN4" customClass="SidebarTableView" customModule="IINA_" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="72" height="311"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="72" height="309"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="1" height="25"/>
                                                     <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -444,11 +444,11 @@
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="57" horizontalPageScroll="10" verticalLineScroll="57" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="txu-4A-pVl" customClass="NonePocketScrollView" customModule="IINA_" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="377" height="633"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="4Jt-mc-KNh">
-                                                        <rect key="frame" x="0.0" y="0.0" width="377" height="613"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="377" height="616"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="57" viewBased="YES" id="9PD-kf-1gB" customClass="MainWindowTableView" customModule="IINA_" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="399" height="597"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="399" height="600"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -610,9 +610,9 @@
                                                         <nil key="backgroundColor"/>
                                                         <edgeInsets key="contentInsets" left="11" right="11" top="8" bottom="8"/>
                                                     </clipView>
-                                                    <edgeInsets key="scrollerInsets" left="0.0" right="0.0" top="-25" bottom="3"/>
+                                                    <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.25" horizontal="YES" id="pPI-Nn-fv1">
-                                                        <rect key="frame" x="0.0" y="613" width="377" height="17"/>
+                                                        <rect key="frame" x="0.0" y="616" width="377" height="17"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="fcK-y5-QLE">
@@ -873,7 +873,6 @@
                                                         <nil key="backgroundColor"/>
                                                         <edgeInsets key="contentInsets" left="11" right="11" top="8" bottom="8"/>
                                                     </clipView>
-                                                    <edgeInsets key="scrollerInsets" left="0.0" right="0.0" top="-25" bottom="3"/>
                                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="0.5" horizontal="YES" id="baG-5p-gSI">
                                                         <rect key="frame" x="0.0" y="633" width="389" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
@@ -912,7 +911,7 @@
                                                     <rect key="frame" x="20" y="20" width="340" height="570"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="UI5-GE-yfn">
                                                         <rect key="frame" x="0.0" y="0.0" width="340" height="570"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="30" viewBased="YES" id="XaB-Al-kaU" customClass="SuggestionsTableView" customModule="IINA_" customModuleProvider="target">
                                                                 <rect key="frame" x="0.0" y="0.0" width="340" height="570"/>

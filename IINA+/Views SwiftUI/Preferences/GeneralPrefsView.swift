@@ -31,6 +31,16 @@ struct GeneralPrefsView: View {
         formatter.usesGroupingSeparator = false
         return formatter
     }()
+    
+    @AppStorage(PreferenceKeys.enableFlvjs.rawValue)
+    private var enableFlvjs: Bool = false
+    
+    @AppStorage(PreferenceKeys.autoOpenResult.rawValue)
+    private var autoOpenResult: Bool = false
+    
+    @AppStorage(PreferenceKeys.enableDanmaku.rawValue)
+    private var enableDanmaku: Bool = false
+    
 
     var body: some View {
         Grid(alignment: .leading) {
@@ -96,11 +106,7 @@ struct GeneralPrefsView: View {
             
             GridRow {
                 Spacer()
-                Toggle(isOn: .init(get: {
-                    Preferences.shared.enableFlvjs
-                }, set: {
-                    Preferences.shared.enableFlvjs = $0
-                })) {
+                Toggle(isOn: $enableFlvjs) {
                     LocalizedText("nYK-y9-7tF.title", tableName: .preferences)
                 }
                 .toggleStyle(.checkbox)
@@ -108,11 +114,7 @@ struct GeneralPrefsView: View {
             
             GridRow {
                 Spacer()
-                Toggle(isOn: .init(get: {
-                    Preferences.shared.autoOpenResult
-                }, set: {
-                    Preferences.shared.autoOpenResult = $0
-                })) {
+                Toggle(isOn: $autoOpenResult) {
                     LocalizedText("hPC-yj-akr.title", tableName: .preferences)
                 }
                 .toggleStyle(.checkbox)
@@ -138,11 +140,7 @@ struct GeneralPrefsView: View {
             GridRow {
                 LocalizedText("wRZ-RD-AEu.title", tableName: .preferences)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                Toggle(isOn: .init(get: {
-                    Preferences.shared.enableDanmaku
-                }, set: {
-                    Preferences.shared.enableDanmaku = $0
-                })) {
+                Toggle(isOn: $enableDanmaku) {
                     
                 }
                 .toggleStyle(.switch)

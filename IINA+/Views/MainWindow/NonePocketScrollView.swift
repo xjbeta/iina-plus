@@ -16,6 +16,13 @@ class NonePocketScrollView: NSScrollView {
         // Drawing code here.
     }
     
+    override var automaticallyAdjustsContentInsets: Bool {
+        get {
+            false
+        }
+        set { }
+    }
+    
     override func addSubview(_ view: NSView) {
         let name = String(describing: type(of: view))
         if name == "NSScrollPocket" {
