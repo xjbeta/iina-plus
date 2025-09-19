@@ -37,6 +37,15 @@ struct SitePrefsView: View {
     @State var biliStatus: Status = .loading
     @State var biliUserName = ""
     @State var biliLoginSheet = false
+
+    @AppStorage(PreferenceKeys.bilibiliCodec.rawValue)
+    private var bilibiliCodec: Int = BiliCodec.avc.id
+    
+    @AppStorage(PreferenceKeys.bililiveHevc.rawValue)
+    private var bililiveHevc: Bool = false
+    
+    @AppStorage(PreferenceKeys.bilibiliHTMLDecoder.rawValue)
+    private var bilibiliHTMLDecoder: Bool = false
     
     var body: some View {
         VStack {
@@ -94,11 +103,7 @@ struct SitePrefsView: View {
                     LocalizedText("QVl-54-yko.title", tableName: .preferences)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     
-                    Picker("", selection: .init(get: {
-                        Preferences.shared.bilibiliCodec
-                    }, set: {
-                        Preferences.shared.bilibiliCodec = $0
-                    })) {
+                    Picker("", selection: $bilibiliCodec) {
                         ForEach(BiliCodec.allCases) {
                             Text($0.name).tag($0.rawValue)
                         }
@@ -111,11 +116,7 @@ struct SitePrefsView: View {
                     LocalizedText("iTL-J0-MpL.title", tableName: .preferences)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     
-                    Toggle(isOn: .init(get: {
-                        Preferences.shared.bililiveHevc
-                    }, set: {
-                        Preferences.shared.bililiveHevc = $0
-                    })) {
+                    Toggle(isOn: $bililiveHevc) {
                     }
                     .toggleStyle(.checkbox)
                 }
@@ -124,11 +125,7 @@ struct SitePrefsView: View {
                     LocalizedText("vR2-ZU-hgL.title", tableName: .preferences)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     
-                    Toggle(isOn: .init(get: {
-                        Preferences.shared.bilibiliHTMLDecoder
-                    }, set: {
-                        Preferences.shared.bilibiliHTMLDecoder = $0
-                    })) {
+                    Toggle(isOn: $bilibiliHTMLDecoder) {
                     }
                     .toggleStyle(.checkbox)
                 }
