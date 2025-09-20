@@ -9,13 +9,13 @@ on:
 
 jobs:
   release-osx:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: irgaly/xcode-cache@v1
         with:
@@ -37,14 +37,13 @@ jobs:
           p12-file-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           p12-password: ${{ secrets.P12_PASSWORD }}
 
-      - name: Show Build Version
-        run: xcodebuild -version
 
-      - name: Show Build Settings
-        run: xcodebuild -showBuildSettings
-
-      - name: Show Build SDK
-        run: xcodebuild -showsdks
+      - name: Build Environment Info
+        run: |
+          security find-identity -v -p codesigning
+          xcodebuild -version
+          xcodebuild -showBuildSettings
+          xcodebuild -showsdks
 
       - name: Prepare create-dmg
         run: |
