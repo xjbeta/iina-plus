@@ -74,9 +74,9 @@ jobs:
         shell: zsh {0}
         run: |
           cd archive/IINA+.xcarchive/Products/Applications/
-          codesign --deep --force --timestamp --sign ${{ secrets.SIGN_NAME }} *.app
+          codesign --deep --force --timestamp --sign `${{ secrets.SIGN_NAME }}` *.app
           create-dmg *.app
-          codesign --deep --force --timestamp --sign ${{ secrets.SIGN_NAME }} *.dmg
+          codesign --deep --force --timestamp --sign `${{ secrets.SIGN_NAME }}` *.dmg
 
           ditto -c -k --sequesterRsrc --keepParent *.app "$(basename *.dmg .dmg)".zip
           ditto -c -k --sequesterRsrc --keepParent ../../dSYMs dSYMs.zip
