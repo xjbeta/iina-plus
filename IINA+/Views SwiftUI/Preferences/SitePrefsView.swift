@@ -46,7 +46,10 @@ struct SitePrefsView: View {
     
     @AppStorage(PreferenceKeys.bilibiliHTMLDecoder.rawValue)
     private var bilibiliHTMLDecoder: Bool = false
-    
+
+    @AppStorage(PreferenceKeys.bilibiliSponsorBlock.rawValue)
+    private var bilibiliSponsorBlock: Bool = false
+
     var body: some View {
         VStack {
             switch biliStatus {
@@ -111,7 +114,7 @@ struct SitePrefsView: View {
                     .labelsHidden()
                     .pickerStyle(.segmented)
                 }
-                
+
                 GridRow(alignment: .center) {
                     LocalizedText("iTL-J0-MpL.title", tableName: .preferences)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -120,12 +123,21 @@ struct SitePrefsView: View {
                     }
                     .toggleStyle(.checkbox)
                 }
-                
+
                 GridRow(alignment: .center) {
                     LocalizedText("vR2-ZU-hgL.title", tableName: .preferences)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     
                     Toggle(isOn: $bilibiliHTMLDecoder) {
+                    }
+                    .toggleStyle(.checkbox)
+                }
+
+                GridRow(alignment: .center) {
+                    LocalizedText("bilibiliSponsorBlock.title", tableName: .preferences)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+
+                    Toggle(isOn: $bilibiliSponsorBlock) {
                     }
                     .toggleStyle(.checkbox)
                 }

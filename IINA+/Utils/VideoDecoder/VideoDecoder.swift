@@ -130,15 +130,32 @@ actor VideoDecoder {
 				json.streams[key]?.dashUrl = await Processes.shared.httpServer.registerDash(json.bvid, content: content)
 				return json
 			}
+
+            func registerSponsorBlock(_ json: YouGetJSON) async -> YouGetJSON {
+                guard Preferences.shared.bilibiliSponsorBlock,
+                      json.site == .bilibili,
+                      json.bvid != "",
+                      json.id != -1 else {
+                    return json
+                }
+
+                var json = json
+                json.sponsorBlockSegments = await bilibili.sponsorBlockSegments(
+                    bvid: json.bvid,
+                    cid: json.id)
+                return json
+            }
 			
 			guard let stream = json.streams[key],
 				  stream.url == "" else {
-				return await registerDash(json)
+                let json = await registerDash(json)
+				return await registerSponsorBlock(json)
 			}
 			
 			let qn = stream.quality
             let json = try await bilibili.biliShare.bilibiliPlayUrl(yougetJson: json, json.site == .bangumi, qn)
-			return await registerDash(json)
+            let dashJson = await registerDash(json)
+			return await registerSponsorBlock(dashJson)
 		case .biliLive:
 			guard let stream = json.streams[key],
 				  stream.quality != -1 else {

@@ -173,7 +173,16 @@ final class Preferences: NSObject, Sendable {
 			defaultsSet(newValue, forKey: .bilibiliHTMLDecoder)
 		}
 	}
-    
+
+    @objc dynamic var bilibiliSponsorBlock: Bool {
+        get {
+            return defaults(.bilibiliSponsorBlock) as? Bool ?? false
+        }
+        set {
+            defaultsSet(newValue, forKey: .bilibiliSponsorBlock)
+        }
+    }
+
     @objc dynamic var bilibiliCodec: Int {
         get {
             return defaults(.bilibiliCodec) as? Int ?? 1
@@ -254,6 +263,7 @@ enum PreferenceKeys: String {
     case stateUnknown
     
 	case bilibiliHTMLDecoder
+    case bilibiliSponsorBlock
     case bilibiliCodec
     case bililiveHevc
 	

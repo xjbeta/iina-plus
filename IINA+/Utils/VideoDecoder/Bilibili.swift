@@ -283,7 +283,49 @@ actor Bilibili: SupportSiteProtocol {
 		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
 		return try BilibiliPvideo(object: json)
     }
-    
+
+    func sponsorBlockSegments(bvid: String, cid: Int) async -> [SponsorBlockSegment] {
+        guard bvid != "", cid > 0 else { return [] }
+
+        let headers = HTTPHeaders([
+            "origin": "iina-plus://app",
+            "x-ext-version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        ])
+
+        let response = await AF.request(
+            "https://bsbsb.top/api/skipSegments",
+            parameters: [
+                "videoID": bvid,
+                "cid": "\(cid)"
+            ],
+            headers: headers
+        ).serializingData().response
+
+        guard let statusCode = response.response?.statusCode else {
+            Log("Bilibili SponsorBlock request failed: no status code.")
+            return []
+        }
+
+        guard statusCode != 404 else { return [] }
+        guard (200..<300).contains(statusCode),
+              let data = response.data else {
+            Log("Bilibili SponsorBlock request failed: \(statusCode).")
+            return []
+        }
+
+        do {
+            let json: [JSONObject] = try JSONParser.JSONArrayWithData(data)
+            return json.compactMap {
+                try? SponsorBlockSegment(object: $0)
+            }.filter {
+                $0.actionType == "skip"
+            }
+        } catch let error {
+            Log("Bilibili SponsorBlock parse failed: \(error).")
+            return []
+        }
+    }
+
     func getVideoList(_ url: String) async throws -> [(String, [BiliVideoSelector])] {
         var aid = -1
         var bvid = ""

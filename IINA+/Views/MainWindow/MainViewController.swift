@@ -283,9 +283,7 @@ class MainViewController: NSViewController {
         }
         
         bookmarkArrayCountObserver = bookmarkArrayController.observe(\.arrangedObjects, options: [.new, .initial]) { [unowned self] arrayController, _ in
-            Task {
-                await updateNoticeTabView()
-            }
+            updateNoticeTabView()
         }
     }
     

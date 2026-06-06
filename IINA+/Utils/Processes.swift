@@ -123,13 +123,16 @@ final class Processes: NSObject, Sendable {
 			try openWithURLScheme(urlScheme)
 		case .iina where type == .danmaku && buildVersion < 15:
 			// IINA-Danmaku cli
-			try await openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
+			let url = json.playbackURL(key)
+			try await openWithProcess(url, args: json.mpvOptions, uuid: json.uuid)
         case .iina where type == .normal && buildVersion >= 56:
 			// IINA Official with cli
 			// iinc-cli build 56
-            try await openWithProcess(json.videoUrl(key, forDash: true), args: json.mpvOptions, uuid: json.uuid)
+			let url = json.playbackURL(key, forDash: true)
+            try await openWithProcess(url, args: json.mpvOptions, uuid: json.uuid)
         case .mpv:
-            try await openWithProcess(json.videoUrl(key), args: json.mpvOptions, uuid: json.uuid)
+			let url = json.playbackURL(key)
+            try await openWithProcess(url, args: json.mpvOptions, uuid: json.uuid)
         default:
 			throw ProcessesError.notSupported
         }
