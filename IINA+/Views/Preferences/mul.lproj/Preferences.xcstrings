@@ -630,6 +630,23 @@
         }
       }
     },
+    "bilibiliSponsorBlock.title" : {
+      "comment" : "Bilibili SponsorBlock setting title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SponsorBlock:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空降助手:"
+          }
+        }
+      }
+    },
     "RGN-E6-zAU.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Player:\"; ObjectID = \"RGN-E6-zAU\";",
       "localizations" : {

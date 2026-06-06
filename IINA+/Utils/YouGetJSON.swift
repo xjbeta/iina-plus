@@ -28,6 +28,7 @@ struct DanmakuPluginOptions: Encodable {
     var xmlPath: String?
 	
 	var edl: String?
+    var sponsorBlockSegments: [SponsorBlockSegment] = []
     
     init(rawUrl: String,
          mpvScript: String,
@@ -49,6 +50,28 @@ struct DanmakuPluginOptions: Encodable {
     }
 }
 
+struct SponsorBlockSegment: Unmarshaling, Codable, Sendable {
+    let start: Double
+    let end: Double
+    let cid: String
+    let uuid: String
+    let category: String
+    let actionType: String
+
+    init(object: MarshaledObject) throws {
+        let segment: [Double] = try object.value(for: "segment")
+        guard segment.count >= 2 else {
+            throw VideoGetError.notFountData
+        }
+        start = segment[0]
+        end = segment[1]
+        cid = (try? object.value(for: "cid")) ?? ""
+        uuid = (try? object.value(for: "UUID")) ?? ""
+        category = (try? object.value(for: "category")) ?? ""
+        actionType = (try? object.value(for: "actionType")) ?? ""
+    }
+}
+
 enum IINAUrlType: String {
     case normal, danmaku, plugin, none
 }
@@ -59,6 +82,7 @@ struct YouGetJSON: Unmarshaling, Codable {
     
     let uuid = UUID().uuidString
     var bvid = ""
+    var sponsorBlockSegments: [SponsorBlockSegment] = []
     
     var title: String = ""
     var streams: [String: Stream] = [:]
@@ -289,7 +313,7 @@ struct YouGetJSON: Unmarshaling, Codable {
             currentLine: 0,
             port: Preferences.shared.dmPort)
 
-//		opts.edl = edl(key: key)
+        opts.sponsorBlockSegments = sponsorBlockSegments
 		
         if Preferences.shared.enableDanmaku {
             opts.type = PluginOptionsType.ws.rawValue
@@ -310,29 +334,10 @@ struct YouGetJSON: Unmarshaling, Codable {
         return data.toHexString()
     }
 	
-	func edl(key: String) -> String? {
-//		mpv.set("stream-open-filename", opts.edl);
-		guard let stream = streams[key],
-			  stream.url != nil else { return nil }
-		
-		var edl = "edl://"
-		
-		func appendUrl(_ url: String) {
-			edl += "!new_stream;!no_clip;!no_chapters;"
-			edl += "%\(url.count)%"
-			edl += url
-			edl += ";"
-		}
-		
-		appendUrl(stream.url!)
-		
-		if audio != "" {
-			appendUrl(audio)
-		}
-		
-		return edl
-	}
-    
+    func playbackURL(_ key: String, forDash: Bool = false) -> String? {
+        return videoUrl(key, forDash: forDash) ?? videoUrl(key)
+    }
+
     func m3uContent(key: String) -> Data? {
         guard let stream = streams[key],
               stream.url != nil else { return nil }
