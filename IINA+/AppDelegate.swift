@@ -13,7 +13,7 @@ import Sparkle
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-	let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+	@MainActor lazy var updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 	
     lazy var logUrl: URL? = {
         do {
