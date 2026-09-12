@@ -26,8 +26,13 @@ actor CC163: SupportSiteProtocol {
 	}
 	
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
-		let ccid = try await getCC163Ccid(url)
-		let cid = try await getCC163ChannelID(ccid)
+		let cid: Int
+		if let channelID = cc163ChannelID(url) {
+			cid = channelID
+		} else {
+			let ccid = try await getCC163Ccid(url)
+			cid = try await getCC163ChannelID(ccid)
+		}
 		let videos = try await getCC163Videos(cid)
 		guard let v = videos.first else { throw VideoGetError.notFountData }
 		let json = v.write(to: YouGetJSON(rawUrl: url))
@@ -47,6 +52,13 @@ actor CC163: SupportSiteProtocol {
     }
     
     func getCC163State(_ url: String) async throws -> (info: LiveInfo?, list: [CC163ChannelInfo]) {
+		
+		// cc.163.com/{roomId}/{channelId} now redirects to the ds.163.com SPA,
+		// which no longer embeds __NEXT_DATA__. Fetch the channel info via API instead.
+		if let channelID = cc163ChannelID(url) {
+			let info = try await getCC163ZtState(cid: "\(channelID)")
+			return (info, [])
+		}
 		
 		let re = try await AF.request(url).serializingString().value
 		
@@ -141,6 +153,16 @@ actor CC163: SupportSiteProtocol {
 			
 			return "\(ccid)"
         }
+    }
+    
+    private func cc163ChannelID(_ url: String) -> Int? {
+        // String.pathComponents is the project's path-based extension:
+        // "https://cc.163.com/24/6924324" -> ["https:", "cc.163.com", "24", "6924324"]
+        let pcs = url.pathComponents
+        guard pcs.count == 4,
+              let _ = Int(pcs[2]),
+              let channelID = Int(pcs[3]) else { return nil }
+        return channelID
     }
     
 	func getCC163ChannelID(_ ccid: String) async throws -> Int {
