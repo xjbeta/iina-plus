@@ -104,23 +104,26 @@ extension HuyaStream {
 			let port = Preferences.shared.dmPort
 			let huyaUrl = "http://127.0.0.1:\(port)/huya/\(yougetJson.uuid).flv"
 			
-			// One entry per resolution (sDisplayName + iBitRate).
-			// Resolution stays app-side (Stream.quality = iBitRate, 0 original -> 9999999),
-			// never in the URL; open() passes rate to startPrewarm, the proxy
-			// recognizes the tier via the /huya/{uuid}.flv session.
-			// A resolution may exist as both H.264 and H.265 (same sDisplayName,
-			// different iCodecType): when deduping same-name entries prefer 265
-			var chosen: [String: StreamInfo] = [:]
-			vMultiStreamInfo.forEach { info in
-				if let cur = chosen[info.sDisplayName],
-				   cur.iCodecType != 0 && info.iCodecType == 0 {
-					return  // 265 already kept, skip 264
+			// One entry per resolution: quality = server iBitRate (0 = 原画),
+			// qualityIndex = position in vMultiStreamInfo (menu order follows
+			// it, e.g. lpl 2K before 蓝光10M); same-name pairs dedupe to 265
+			var best = [String: StreamInfo]()
+			for info in vMultiStreamInfo {
+				if let cur = best[info.sDisplayName] {
+					if cur.iCodecType == 0 && info.iCodecType != 0 {
+						best[info.sDisplayName] = info  // prefer 265
+					}
+				} else {
+					best[info.sDisplayName] = info
 				}
-				chosen[info.sDisplayName] = info
 			}
-			chosen.values.forEach { info in
+			var seen = Set<String>()
+			for (idx, info) in vMultiStreamInfo.enumerated() {
+				guard best[info.sDisplayName]?.iCodecType == info.iCodecType,
+					  seen.insert(info.sDisplayName).inserted else { continue }
 				var s = Stream(url: huyaUrl)
-				s.quality = info.iBitRate == 0 ? 9999999 : info.iBitRate
+				s.quality = info.iBitRate
+				s.qualityIndex = idx
 				yougetJson.streams[info.sDisplayName] = s
 			}
 			

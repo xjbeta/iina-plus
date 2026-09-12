@@ -80,14 +80,15 @@ public actor HuyaProxyServer {
     }
 
     func getCodecType(roomId: String, rate: Int? = nil) async throws -> (codecType: Int, displayName: String) {
-        // rate in cache key so different qualities don't share entries
-        let cacheKey = "\(roomId)#\(rate ?? 0)"
+        // nil = auto, kept distinct from explicit 0 in the key
+        let cacheKey = "\(roomId)#\(rate.map { String($0) } ?? "auto")"
         if let cached = codecCache[cacheKey] {
             return cached
         }
         let info = try await getStreamInfo(roomId: roomId)
         let result: (codecType: Int, displayName: String)
-        if let rate, rate > 0 {
+        // any explicit rate, incl. 0, takes the exact-match path
+        if let rate {
             result = Self.selectCodecType(
                 forRate: rate,
                 vMultiStreamInfo: info.vMultiStreamInfo,

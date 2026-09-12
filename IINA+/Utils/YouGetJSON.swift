@@ -70,7 +70,12 @@ struct YouGetJSON: Unmarshaling, Codable {
     var videos: [(key: String, value: Stream)] {
         get {
             return streams.sorted {
-                $0.value.quality > $1.value.quality
+                // huya: menu order = server vMultiStreamInfo order
+                if $0.value.qualityIndex >= 0, $1.value.qualityIndex >= 0,
+                   $0.value.qualityIndex != $1.value.qualityIndex {
+                    return $0.value.qualityIndex < $1.value.qualityIndex
+                }
+                return $0.value.quality > $1.value.quality
             }
         }
     }
@@ -404,6 +409,8 @@ struct YouGetJSON: Unmarshaling, Codable {
 
 struct Stream: Unmarshaling, Codable {
     var quality: Int = -1
+    /// Menu order (huya server list position); -1 = sort by quality only
+    var qualityIndex: Int = -1
     var rate: Int = -1
     var url: String?
     var videoProfile: String?

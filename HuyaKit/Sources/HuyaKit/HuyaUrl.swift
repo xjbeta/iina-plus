@@ -81,14 +81,12 @@ enum HuyaUrl {
 
     /// Pick the highest-quality codecType from vMultiStreamInfo
     ///
-    /// Matches official createStreamId (vplayer.js L43841-43858):
-    /// - isH265 is decided by the top-level codecType (isH265CodecType,
-    ///   not the per-option iCodecType)
-    /// - codecType = _getCodec(isH265 ? 2 : 3, top-level iBitRate/SrcBitRate)
-    /// - independent of vMultiStreamInfo entries
+    /// Official createStreamId (vplayer.js L43841-43858):
+    /// - isH265 from top-level codecType
+    /// - codecType = _getCodec(isH265 ? 2 : 3, picked entry's iBitRate)
     ///
-    /// 264/265 comes entirely from the site data; local code handles
-    /// whatever format is given
+    /// Page bitRate matches no tier (nominal); using it 404s. `srcBitrate`
+    /// is only a fallback when no matching family entry exists.
     static func selectBestCodecType(
         vMultiStreamInfo: [HuyaStream.StreamInfo],
         srcBitrate: Int = 0,
@@ -101,10 +99,9 @@ enum HuyaUrl {
         // official createStreamId logic
         let isH265 = isH265CodecType(topCodecType)
         let family = isH265 ? CODEC_FAMILY_H265 : CODEC_FAMILY_H264
-        let ct = getCodec(codecFamily: family, bitrate: srcBitrate)
-        let displayName = vMultiStreamInfo
-            .first { isH265CodecType($0.iCodecType) == isH265 }
-            .map { $0.sDisplayName } ?? (isH265 ? "H.265" : "H.264")
+        let picked = vMultiStreamInfo.first { isH265CodecType($0.iCodecType) == isH265 }
+        let ct = getCodec(codecFamily: family, bitrate: picked?.iBitRate ?? srcBitrate)
+        let displayName = picked?.sDisplayName ?? (isH265 ? "H.265" : "H.264")
         return (ct, family, displayName)
     }
 
