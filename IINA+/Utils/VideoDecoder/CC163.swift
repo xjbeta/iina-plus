@@ -34,7 +34,9 @@ actor CC163: SupportSiteProtocol {
 		if let channelID = cc163ChannelID(url) {
 			cid = channelID
 		} else if let ds = DS163Glive(url: url) {
-			if let ccid = ds.ccid {
+			if let channelID = ds.channelID {
+				cid = channelID
+			} else if let ccid = ds.ccid {
 				cid = try await getCC163ChannelID(ccid)
 			} else if let appKey = ds.appKey {
 				let info = try await getCC163Info(url)
@@ -69,8 +71,12 @@ actor CC163: SupportSiteProtocol {
     
     func getCC163State(_ url: String) async throws -> (info: LiveInfo?, list: [CC163ChannelInfo]) {
 		
-		// ds.163.com/glive: ?ccid= single room, ?appKey= room list
+		// ds.163.com/glive: single room (?ccRoomid=/?ccChannelid= or ?ccid=), list (?appKey=)
 		if let ds = DS163Glive(url: url) {
+			if let channelID = ds.channelID {
+				let info = try await getCC163ZtState(cid: "\(channelID)")
+				return (info, [])
+			}
 			if let ccid = ds.ccid {
 				let channelID = try await getCC163ChannelID(ccid)
 				let info = try await getCC163ZtState(cid: "\(channelID)")
@@ -188,27 +194,32 @@ actor CC163: SupportSiteProtocol {
             return pcs[3]
         } else {
 			let info = try await getCC163Info(url)
-			guard let ccid = (info as? CC163ChannelInfo)?.ccid else {
-				throw VideoGetError.notFountData
+			// single-room page -> CC163Info, channel list -> CC163ChannelInfo
+			if let channelInfo = info as? CC163ChannelInfo {
+				return "\(channelInfo.ccid)"
 			}
-			
-			return "\(ccid)"
+			if let roomInfo = info as? CC163Info {
+				return roomInfo.ccid
+			}
+			throw VideoGetError.notFountData
         }
     }
     
     private func cc163ChannelID(_ url: String) -> Int? {
-        // String.pathComponents is the project's path-based extension:
-        // "https://cc.163.com/24/6924324" -> ["https:", "cc.163.com", "24", "6924324"]
-        let pcs = url.pathComponents
-        guard pcs.count == 4,
-              let _ = Int(pcs[2]),
-              let channelID = Int(pcs[3]) else { return nil }
+        // use URLComponents.path: String.pathComponents keeps "?a=1" in the last segment
+        guard let comps = URLComponents(string: url) else { return nil }
+        let segs = comps.path.split(separator: "/").map(String.init)
+        guard segs.count == 2,
+              let _ = Int(segs[0]),
+              let channelID = Int(segs[1]) else { return nil }
         return channelID
     }
     
     private struct DS163Glive {
         let ccid: String?
         let appKey: String?
+        /// cc.163.com 301 target form: ?ccRoomid=..&ccChannelid=..
+        let channelID: Int?
         
         init?(url: String) {
             guard let comps = URLComponents(string: url),
@@ -220,6 +231,7 @@ actor CC163: SupportSiteProtocol {
             }
             ccid = query("ccid")
             appKey = query("appKey")
+            channelID = query("ccChannelid").flatMap { Int($0) }
         }
     }
     
@@ -241,7 +253,10 @@ actor CC163: SupportSiteProtocol {
         return content
     }
     
-    private func getCC163AppKeyRooms(_ targetURL: String) async throws -> [CC163ChannelInfo] {
+    private func getCC163AppKeyRooms(_ targetURL: String, depth: Int = 0) async throws -> [CC163ChannelInfo] {
+        // cap redirect hops: a looping redirect_url would spin forever
+        guard depth < 3 else { throw VideoGetError.notFountData }
+        
         let re = try await AF.request(targetURL).serializingString().value
         guard let jsonData = re.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">").data(using: .utf8) else {
             throw VideoGetError.notFountData
@@ -257,16 +272,27 @@ actor CC163: SupportSiteProtocol {
         // room page: follow the server-side redirect first (e.g. d90 -> NBPL event page)
         if let ccid: String = try? jsonObj.value(for: "query.ccid") {
             if let redirectURL: String = try? jsonObj.value(for: "props.pageProps.roomInfoInitData.redirect_url") {
-                return try await getCC163AppKeyRooms(redirectURL)
+                return try await getCC163AppKeyRooms(redirectURL, depth: depth + 1)
             }
-            if let channelID = try? await getCC163ChannelID(ccid),
-               let info = try? await getCC163ZtState(cid: "\(channelID)") as? CC163ChannelInfo {
-                return [info]
+            if let channelID = try? await getCC163ChannelID(ccid) {
+                do {
+                    if let info = try await getCC163ZtState(cid: "\(channelID)") as? CC163ChannelInfo {
+                        return [info]
+                    }
+                } catch {
+                    // keep isNotLiving so the UI reports it instead of "no data"
+                    if let e = error as? VideoGetError, case .isNotLiving = e { throw e }
+                }
             }
         }
-        if let cid: String = try? jsonObj.value(for: "query.subcId"),
-           let info = try? await getCC163ZtState(cid: cid) as? CC163ChannelInfo {
-            return [info]
+        if let cid: String = try? jsonObj.value(for: "query.subcId") {
+            do {
+                if let info = try await getCC163ZtState(cid: cid) as? CC163ChannelInfo {
+                    return [info]
+                }
+            } catch {
+                if let e = error as? VideoGetError, case .isNotLiving = e { throw e }
+            }
         }
         throw VideoGetError.notFountData
     }
@@ -361,7 +387,8 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
             isLiving = true
         }
         
-        if channel.isEmpty {
+        // nolive rooms have no ccid (it holds roomid, often 0)
+        if channel.isEmpty, ccid > 0 {
             channel = "https://cc.163.com/ccid/\(ccid)"
         }
         
