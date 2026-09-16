@@ -152,7 +152,10 @@ enum HTTPHandler {
             try await sendResponse(outbound: outbound, bodyData: data)
 
         case (_, .GET) where url.hasPrefix("/huya/"):
-            // Huya .slice proxy (HuyaKit)
+            // Huya .slice proxy (HuyaKit): FLV relay。
+            // `.ts` 路线已于 2026-09-15 废弃 —— 实测 FLV 容器在 mpv/ffmpeg 下 0 错误解码，
+            // 原始阻塞点是超分档(codecType=2)的私有 slice NAL，与容器无关，且已被
+            // 「胶囊档回退同名 H.264/H.265 变体」绕过，故不需要 TS 复用。
             guard let roomId = URL(string: url)?.deletingPathExtension().lastPathComponent,
                   !roomId.isEmpty else {
                 try await sendBadRequest(outbound: outbound)
