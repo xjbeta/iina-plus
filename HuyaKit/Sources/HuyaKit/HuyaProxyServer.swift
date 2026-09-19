@@ -22,8 +22,11 @@ public actor HuyaProxyServer {
     public static let shared = HuyaProxyServer()
 
     private var streamInfoCache: [String: (HuyaStream, Date)] = [:]
-    private var codecCache: [String: (codecType: Int, displayName: String)] = [:]
-    private var firstTagsCache: [String: [HuyaFlvTag]] = [:]
+    private var codecCache: [String: (codecType: Int, displayName: String, isH265: Bool)] = [:]
+    /// Sniffed first-slice tags per requested codecType（参数集不常变，短期复用省一次首片下载）；
+    /// 连同嗅探**修正后**的 codecType 一起存，命中时一并返回，避免 tags 与拉流档位不一致
+    private var firstTagsByCodec: [String: (codecType: Int, isH265: Bool, tags: [HuyaFlvTag], date: Date)] = [:]
+    private let firstTagsTTL: TimeInterval = 120
 
     // Unified registry for all huya background tasks (key -> HuyaTask)
     // - .prewarm:  key = uuid (= /huya/{uuid}.flv path token), background prefetch;
@@ -75,95 +78,68 @@ public actor HuyaProxyServer {
         streamInfoCache[roomId] = (info, Date())
         // Invalidate caches tied to the old streamInfo
         codecCache = codecCache.filter { !$0.key.hasPrefix("\(roomId)#") }
-        firstTagsCache.removeAll()
+        firstTagsByCodec = firstTagsByCodec.filter { !$0.key.hasPrefix("\(roomId)#") }
         return info
     }
 
-    func getCodecType(roomId: String, rate: Int? = nil) async throws -> (codecType: Int, displayName: String) {
-        // rate in cache key so different qualities don't share entries
-        let cacheKey = "\(roomId)#\(rate ?? 0)"
+    func getCodecType(roomId: String, rate: Int? = nil) async throws -> (codecType: Int, displayName: String, isH265: Bool) {
+        // nil = auto, kept distinct from explicit 0 in the key
+        let cacheKey = "\(roomId)#\(rate.map { String($0) } ?? "auto")"
         if let cached = codecCache[cacheKey] {
             return cached
         }
         let info = try await getStreamInfo(roomId: roomId)
-        let result: (codecType: Int, displayName: String)
-        if let rate, rate > 0 {
-            result = Self.selectCodecType(
-                forRate: rate,
-                vMultiStreamInfo: info.vMultiStreamInfo,
-                srcBitrate: info.bitRate
-            )
+        let result: (codecType: Int, displayName: String, isH265: Bool)
+        if let rate {
+            // 选档走官方口径的翻译（与冷路径 codecType(forRate:) 同源）
+            let mapped = Self.codecType(forRate: rate, stream: info)
+            guard mapped.codecType >= 0 else {
+                throw HuyaError.parseError("rate=\(rate) has no third-party-decodable variant")
+            }
+            let displayName = info.playableStreamInfo.first {
+                $0.iBitRate == rate
+            }?.sDisplayName ?? "蓝光"
+            result = (mapped.codecType, displayName, mapped.isH265)
         } else {
-            // codec comes from the site data; handle whatever format is given
-            let r = try HuyaUrl.buildSliceUrl(stream: info)
-            result = (r.codecType, r.displayName)
+            // 自动档：以 API 档位列表为准取最高的一条可解档（不硬编码兜底）
+            guard let best = HuyaUrl.selectBestCodecType(stream: info) else {
+                throw HuyaError.parseError("room \(roomId): no playable gear in vMultiStreamInfo")
+            }
+            result = (best.codecType, best.displayName, best.codecFamily == HuyaOfficialCodec.familyH265)
         }
         codecCache[cacheKey] = result
         return result
     }
 
-    /// Pick the codecType for the user-selected quality (iBitRate)
-    ///
-    /// Match iBitRate in vMultiStreamInfo and compute codecType from that
-    /// entry's iCodecType family (0=H.264, else H.265, official _getCodec);
-    /// prefer H.265 when both exist at the same rate; fall back to
-    /// auto-select if no matching entry
-    nonisolated static func selectCodecType(
-        forRate rate: Int,
-        vMultiStreamInfo: [HuyaStream.StreamInfo],
-        srcBitrate: Int
-    ) -> (codecType: Int, displayName: String) {
-        let candidates = vMultiStreamInfo.filter { v in
-            v.iBitRate == rate
-                // Skip HDR (iCompatibleFlag=16384, official ie() L48672)
-                && v.iCompatibleFlag != 16384
-        }
-        if let v = candidates.first(where: { $0.iCodecType != 0 })
-            ?? candidates.first {
-            let iCodecType = v.iCodecType
-            let family = iCodecType == 0 ? CODEC_FAMILY_H264 : CODEC_FAMILY_H265
-            let displayName = v.sDisplayName
-            let codecType = HuyaUrl.getCodec(codecFamily: family, bitrate: rate)
-            HuyaLogger.log("HuyaProxy: selectCodecType rate=\(rate) (\(displayName), \(iCodecType == 0 ? "H.264" : "H.265")) codecType=\(codecType)", level: .debug)
-            return (codecType, displayName)
-        }
-        let r = HuyaUrl.selectBestCodecType(
-            vMultiStreamInfo: vMultiStreamInfo,
-            srcBitrate: srcBitrate
-        )
-        HuyaLogger.log("HuyaProxy: no entry for rate=\(rate), fallback auto-select (\(r.displayName))", level: .debug)
-        return (r.codecType, r.displayName)
-    }
-
-    /// Download the first slice, sniff the actual codec (hvcC vs avcC) and
-    /// correct codecType if needed: don't trust the codecType marker, and
-    /// re-download at the correct family's top bitrate on mismatch.
-    ///
-    /// Cached under a fresh UUID key per connection so 264/265 first slices
-    /// are never mixed across connections
+    /// 下载首片、嗅探实际编码族（hvcC vs avcC）并按需纠正 codecType；结果按
+    /// `roomId#codecType` 缓存 120s（参数集不常变，重连/重复播放可跳过首片下载）
     func getFirstTagsVerified(
         roomId: String,
         codecType: Int,
         expectedIsH265: Bool
-    ) async throws -> (codecType: Int, tags: [HuyaFlvTag]) {
+    ) async throws -> (codecType: Int, isH265: Bool, tags: [HuyaFlvTag]) {
+        let cacheKey = "\(roomId)#\(codecType)"
+        if let cached = firstTagsByCodec[cacheKey],
+           Date().timeIntervalSince(cached.date) < firstTagsTTL {
+            HuyaLogger.log("HuyaProxy:\(roomId) first-tags cache hit ct=\(codecType)→\(cached.codecType)", level: .debug)
+            // 返回嗅探修正后的 codecType + 编码族，与缓存里的 tags 同源
+            return (cached.codecType, cached.isH265, cached.tags)
+        }
+
         let info = try await getStreamInfo(roomId: roomId)
         var current = codecType
+        var currentIsH265 = expectedIsH265
         var tags: [HuyaFlvTag] = []
 
         for attempt in 0..<2 {
             let (url, _, _) = try HuyaUrl.buildSliceUrl(stream: info, codecType: current)
             do {
-                // Adaptive early stop: CDN serves history at the live bitrate
-                // (1MB ≈ 12s of history, ~9.6s measured); playback only needs
-                // seq header + first keyframe, so stop once the header-level
-                // check passes. streamLoop resumes from the live edge and
-                // proxyState dedups by fid, so a short first slice doesn't
-                // break continuity. Hard cap at 1MB as a fallback.
+                // 自适应提前停止（见 downloadSlice）；1MB 是这里的兜底上限
                 let data = try await Self.downloadSlice(url: url, maxSize: 1_000_000)
                 tags = HuyaSliceDecoder.decode(sliceData: data)
             } catch {
                 HuyaLogger.log("HuyaProxy:\(roomId) first-slice download failed: \(error)", level: .error)
-                return (current, [])
+                return (current, currentIsH265, [])
             }
 
             guard let actualIsH265 = Self.sniffIsH265(tags) else {
@@ -176,24 +152,78 @@ public actor HuyaProxyServer {
                 + "\(tags.count) tags)")
 
             if attempt == 0 && actualIsH265 != expectedIsH265 {
-                // Marker disagrees with the sniffed codec -> switch family and re-download
-                HuyaLogger.log("HuyaProxy:\(roomId) codec mismatch, switching to "
-                    + "\(actualIsH265 ? "H.265" : "H.264")")
-                current = Self.fallbackCodecType(
-                    vMultiStreamInfo: info.vMultiStreamInfo,
+                // 只换编码族、不换档：反查该 codecType 对应的档位后换族重下；
+                // 反查不到就保持原 codecType（宁可让上层报错，也不跨档兜底）
+                guard let switched = Self.switchFamilyCodecType(
+                    codecType: current,
                     actualIsH265: actualIsH265,
-                    srcBitrate: info.bitRate
-                )
+                    stream: info
+                ) else {
+                    HuyaLogger.log("HuyaProxy:\(roomId) codec mismatch but no same-gear "
+                        + "\(actualIsH265 ? "H.265" : "H.264") variant, keeping codecType=\(current)",
+                        level: .error)
+                    break
+                }
+                HuyaLogger.log("HuyaProxy:\(roomId) codec mismatch, same-gear switch to "
+                    + "\(actualIsH265 ? "H.265" : "H.264") codecType=\(switched)")
+                current = switched
+                currentIsH265 = actualIsH265
                 continue
             }
             break
         }
 
-        if firstTagsCache.count > 4 {
-            firstTagsCache.removeAll()
+        firstTagsByCodec = firstTagsByCodec.filter { _, entry in
+            Date().timeIntervalSince(entry.date) < firstTagsTTL
         }
-        firstTagsCache[UUID().uuidString] = tags
-        return (current, tags)
+        firstTagsByCodec[cacheKey] = (current, currentIsH265, tags, Date())
+        return (current, currentIsH265, tags)
+    }
+
+    /// 用户选择档位（`iBitRate`）→ slice URL 的 codecType + 是否 HEVC。
+    ///
+    /// 官方 `createStreamId`：`codecType = _getCodec(族, 该档自己的 iBitRate)`（族 2=H265 / 3=H264）。
+    /// **族逐档判定**（`HuyaOfficialCodec.isH265Gear`），不可用房间顶层 `codecType` 覆盖。
+    /// 档位来源恒为 `stream.playableStreamInfo`；不硬编码、不跨档兜底。
+    ///
+    /// 唯一偏离官方：官方能解 0 码率 HEVC 档（`getCodec(H265,0)` = 私有胶囊），我们解不了 →
+    /// 退到**同名档**的 H.264 变体；没有就返回 -1 交上层报错。
+    /// 细节与踩坑：MEMORY.md §3.3 / §4.2 / §5.1
+    nonisolated static func codecType(
+        forRate rate: Int,
+        stream: HuyaStream
+    ) -> (codecType: Int, isH265: Bool) {
+        let gears = stream.playableStreamInfo
+        guard let entry = gears.first(where: { $0.iBitRate == rate }) else {
+            // 区分"API 里根本没这个档"与"有但被 HDR 策略丢掉了"，便于排查
+            if stream.vMultiStreamInfo.contains(where: { $0.iBitRate == rate }) {
+                HuyaLogger.log("HuyaProxy: rate=\(rate) 只存在于 HDR 档，已按策略丢弃", level: .error)
+            } else {
+                HuyaLogger.log("HuyaProxy: rate=\(rate) not found in vMultiStreamInfo", level: .error)
+            }
+            return (-1, false)
+        }
+        let isH265 = HuyaOfficialCodec.isH265Gear(
+            iBitRate: entry.iBitRate,
+            iCodecType: entry.iCodecType,
+            iHEVCBitRate: entry.iHEVCBitRate,
+            isHEVCSupport: stream.primaryStream?.iIsHEVCSupport ?? 0
+        )
+        let family = isH265 ? HuyaOfficialCodec.familyH265 : HuyaOfficialCodec.familyH264
+        let ct = HuyaOfficialCodec.getCodec(codecFamily: family, bitrate: entry.iBitRate)
+        guard ct == HuyaOfficialCodec.h265Capsule else {
+            return (ct, isH265)
+        }
+        // 0 码率 HEVC 档 → 私有胶囊，第三方解码器拉不到可解流；退到同名档的 H.264 变体
+        if let sameName = gears.first(where: {
+            $0.sDisplayName == entry.sDisplayName && $0.iCodecType == 0
+        }) {
+            HuyaLogger.log("HuyaProxy: rate=\(rate) (\(entry.sDisplayName)) HEVC 变体为私有胶囊，"
+                + "改用同名 H.264 档 iBitRate=\(sameName.iBitRate)", level: .debug)
+            return (HuyaOfficialCodec.getCodec(codecFamily: HuyaOfficialCodec.familyH264, bitrate: sameName.iBitRate), false)
+        }
+        HuyaLogger.log("HuyaProxy: rate=\(rate) (\(entry.sDisplayName)) 无第三方可解变体", level: .error)
+        return (-1, false)
     }
 
     /// Sniff the actual codec (hvcC vs avcC) from decoded first-slice tags
@@ -220,25 +250,23 @@ public actor HuyaProxyServer {
         return nil
     }
 
-    /// Highest codecType of the sniffed family from vMultiStreamInfo
-    nonisolated static func fallbackCodecType(
-        vMultiStreamInfo: [HuyaStream.StreamInfo],
+    /// 嗅探到实际编码族与预期不符时的纠错：只允许**换编码族、不换清晰度档**。
+    ///
+    /// 反查 codecType 属于哪一档的 iBitRate（getCodec 对固定族单射、两族区间不重叠 ⇒ 唯一），
+    /// 再用同一 iBitRate 换族。反查不到或结果是私有胶囊 → nil，调用方保持原 codecType。
+    /// 官方无此步（直接信任自己算出的 codecType）。
+    nonisolated static func switchFamilyCodecType(
+        codecType: Int,
         actualIsH265: Bool,
-        srcBitrate: Int
-    ) -> Int {
-        var bestBitrate = 0
-        for v in vMultiStreamInfo {
-            let iCodecType = v.iCodecType
-            if HuyaUrl.isH265CodecType(iCodecType) != actualIsH265 { continue }
-            // Skip HDR (iCompatibleFlag=16384, official ie() L48672)
-            if v.iCompatibleFlag == 16384 { continue }
-            let iBitRate = v.iBitRate
-            let eff = iBitRate > 0 ? iBitRate : srcBitrate
-            if eff > bestBitrate { bestBitrate = eff }
-        }
-        let bitrate = bestBitrate > 0 ? bestBitrate : 4000
-        let family = actualIsH265 ? CODEC_FAMILY_H265 : CODEC_FAMILY_H264
-        return HuyaUrl.getCodec(codecFamily: family, bitrate: bitrate)
+        stream: HuyaStream
+    ) -> Int? {
+        guard let gear = stream.playableStreamInfo.first(where: { v in
+            HuyaOfficialCodec.getCodec(codecFamily: HuyaOfficialCodec.familyH265, bitrate: v.iBitRate) == codecType
+                || HuyaOfficialCodec.getCodec(codecFamily: HuyaOfficialCodec.familyH264, bitrate: v.iBitRate) == codecType
+        }) else { return nil }
+        let family = actualIsH265 ? HuyaOfficialCodec.familyH265 : HuyaOfficialCodec.familyH264
+        let switched = HuyaOfficialCodec.getCodec(codecFamily: family, bitrate: gear.iBitRate)
+        return switched == HuyaOfficialCodec.h265Capsule ? nil : switched
     }
 
     // MARK: - Prewarm
@@ -256,15 +284,15 @@ public actor HuyaProxyServer {
         let task = Task { () throws -> HuyaPrewarmSession in
             let streamInfo = try await self.getStreamInfo(roomId: roomId)
             let codecResult = try await self.getCodecType(roomId: roomId, rate: rate)
-            let expectedIsH265 = HuyaUrl.isH265CodecType(streamInfo.codecType)
             let verified = try await self.getFirstTagsVerified(
                 roomId: roomId,
                 codecType: codecResult.codecType,
-                expectedIsH265: expectedIsH265
+                expectedIsH265: codecResult.isH265
             )
             return HuyaPrewarmSession(
                 roomId: roomId,
                 codecType: verified.codecType,
+                isH265: verified.isH265,
                 displayName: codecResult.displayName,
                 streamInfo: streamInfo,
                 firstTags: verified.tags,
@@ -290,61 +318,96 @@ public actor HuyaProxyServer {
     // MARK: - HTTP request handling
 
     /// Handle /huya/{token}.flv (called by HTTPHandler).
-    ///
-    /// token first matches a prewarm session uuid -> skip the serial prep
-    /// (streamInfo/codecType/firstTags already prefetched); otherwise treat
-    /// it as a roomId and go through the cold path
+    /// token 先按 prewarm 会话 uuid 匹配（命中则跳过串行准备）；否则当 roomId 走冷路径
     public func handleHuyaRequest(
         roomId: String,
-        outbound: NIOAsyncChannelOutboundWriter<HTTPPart<HTTPResponseHead, ByteBuffer>>
+        outbound: NIOAsyncChannelOutboundWriter<HTTPPart<HTTPResponseHead, ByteBuffer>>,
+        rate: Int? = nil
     ) async throws {
+        // Slice -> FLV：官方增强 FLV('hvc1') 标准 HEVC 流，mpv/ffmpeg 直接可解。
+        // 清晰度由调用方给定：prewarm 会话里存着用户选定的 codecType，只有冷路径才需要 rate / 默认值。
         let streamInfo: HuyaStream
-        let codecType: Int
-        let displayName: String
-        let firstTags: [HuyaFlvTag]
         let effectiveRoomId: String
+        var prewarmed: HuyaPrewarmSession?
 
         if case let .prewarm(task, _)? = tasks[roomId] {
-            // Task stays cached until cleanupExpiredPrewarms, so reconnects on
-            // the same /huya/{uuid}.flv URL hit it again
             do {
                 let session = try await task.value
                 effectiveRoomId = session.roomId
                 streamInfo = session.streamInfo
-                codecType = session.codecType
-                displayName = session.displayName
-                firstTags = session.firstTags
+                prewarmed = session
                 HuyaLogger.log("HuyaProxy:\(session.roomId) prewarm hit uuid=\(roomId.prefix(8))… "
                     + "\(session.displayName) (codecType=\(session.codecType))", level: .debug)
             } catch {
+                // 记日志：这类失败（页面抓取瞬时失败/限流）只回客户端的话无从排查
+                HuyaLogger.log("HuyaProxy:\(roomId) prewarm failed: \(error)", level: .error)
                 try await Self.sendError(outbound: outbound, message: "room \(roomId) prewarm failed: \(error)")
                 return
             }
         } else if roomId.contains("-") {
-            // Opaque session id with no session: don't treat it as a roomId
             try await Self.sendError(outbound: outbound, message: "room \(roomId) prewarm session not found")
             return
         } else {
             effectiveRoomId = roomId
             do {
                 streamInfo = try await getStreamInfo(roomId: roomId)
-                let initialCodec = try await getCodecType(roomId: roomId)
-                // Download first slice + sniff the actual codec; re-download
-                // at the correct codecType if the marker disagrees
-                let expectedIsH265 = HuyaUrl.isH265CodecType(streamInfo.codecType)
-                let verified = try await getFirstTagsVerified(
-                    roomId: roomId,
-                    codecType: initialCodec.codecType,
-                    expectedIsH265: expectedIsH265
-                )
-                firstTags = verified.tags
-                codecType = verified.codecType
-                displayName = initialCodec.displayName
             } catch {
+                HuyaLogger.log("HuyaProxy:\(roomId) stream info fetch failed: \(error)", level: .error)
                 try await Self.sendError(outbound: outbound, message: "room \(roomId) fetch failed: \(error)")
                 return
             }
-            HuyaLogger.log("HuyaProxy:\(roomId) \(displayName) (codecType=\(codecType))", level: .debug)
+            HuyaLogger.log("HuyaProxy:\(roomId) slice->FLV", level: .debug)
+        }
+
+        // 档位 → codecType 与首片，全部在写响应头之前完成：
+        // 失败时还能回 500（写过头之后再 sendError 会发出第二个 head）
+        let verified: (codecType: Int, isH265: Bool, tags: [HuyaFlvTag])
+        do {
+            if let session = prewarmed {
+                // prewarm 已完成档位翻译 + 首片嗅探校验，直接复用：用户选的是哪一档，拉的就是哪一档
+                if session.firstTags.isEmpty {
+                    // prewarm 时首片下载失败 → 用同一 codecType 重试（不重算档位）
+                    verified = try await self.getFirstTagsVerified(
+                        roomId: effectiveRoomId,
+                        codecType: session.codecType,
+                        expectedIsH265: session.isH265
+                    )
+                } else {
+                    verified = (session.codecType, session.isH265, session.firstTags)
+                }
+            } else {
+                let sliceCT: Int
+                let expectedIsH265: Bool
+                if let rate {
+                    let mapped = Self.codecType(forRate: rate, stream: streamInfo)
+                    guard mapped.codecType >= 0 else {
+                        try await Self.sendError(outbound: outbound, message: "room \(effectiveRoomId) rate=\(rate) has no third-party-decodable variant")
+                        return
+                    }
+                    sliceCT = mapped.codecType
+                    expectedIsH265 = mapped.isH265
+                } else {
+                    // 无会话、无档位的冷路径（CLI / 直连 roomId）：以 API 档位列表为准，
+                    // 取该房间最高的一条可解档。列表里挑不出来就报错，不硬编码兜底。
+                    guard let auto = HuyaUrl.selectBestCodecType(stream: streamInfo) else {
+                        try await Self.sendError(outbound: outbound, message: "room \(effectiveRoomId) has no playable gear in vMultiStreamInfo")
+                        return
+                    }
+                    sliceCT = auto.codecType
+                    expectedIsH265 = auto.codecFamily == HuyaOfficialCodec.familyH265
+                }
+                verified = try await self.getFirstTagsVerified(
+                    roomId: effectiveRoomId,
+                    codecType: sliceCT,
+                    expectedIsH265: expectedIsH265
+                )
+            }
+        } catch {
+            // buildSliceUrl 失败（如房间无 gameStreamInfo）等：头还没写，干净回 500，
+            // 不能让错误逃出去导致客户端拿到一个被掐断的连接
+            HuyaLogger.log("HuyaProxy:\(effectiveRoomId) stream setup failed: \(error)", level: .error)
+            try await Self.sendError(outbound: outbound, message: "room \(effectiveRoomId) stream setup failed: \(error)")
+            return
         }
 
         var headers = NIOHTTP1.HTTPHeaders()
@@ -354,18 +417,16 @@ public actor HuyaProxyServer {
         let responseHead = HTTPResponseHead(version: .http1_1, status: .ok, headers: headers)
         try await outbound.write(.head(responseHead))
 
-        try await outbound.write(.body(HuyaFlvBuilder.flvHeader))
-
         // Register the pull in tasks; withTaskCancellationHandler keeps the
         // "client disconnect -> cancel pull" semantics
         let sessionKey = "\(effectiveRoomId)#\(UUID().uuidString)"
         let pull = Task { () throws in
-            try await streamLoop(
+            try await self.streamLoop(
                 outbound: outbound,
                 roomId: effectiveRoomId,
                 streamInfo: streamInfo,
-                codecType: codecType,
-                firstTags: firstTags
+                codecType: verified.codecType,
+                firstTags: verified.tags
             )
         }
         tasks[sessionKey] = .livePull(task: pull)
@@ -390,7 +451,9 @@ public actor HuyaProxyServer {
     // MARK: - Stream loop
 
     /// Long-lived stream loop; all state (tupParser, decoder, proxyState) is
-    /// local, processed sequentially in a single Task, no actor isolation needed
+    /// local, processed sequentially in a single Task, no actor isolation needed.
+    /// Pulls the official .slice stream (Enhanced-FLV 'hvc1' HEVC) and forwards
+    /// FLV tags to the client.
     nonisolated private func streamLoop(
         outbound: NIOAsyncChannelOutboundWriter<HTTPPart<HTTPResponseHead, ByteBuffer>>,
         roomId: String,
@@ -411,7 +474,13 @@ public actor HuyaProxyServer {
         // per-connection proxy state (dedup + ts rewrite)
         var proxyState = HuyaFlvProxyState()
 
-        // 1. send pre-cached first_tags
+        // 1. FLV file header (9) + PrevTagSize0(4)
+        var head = ByteBufferAllocator().buffer(capacity: 13)
+        head.writeBytes([0x46, 0x4C, 0x56, 0x01, 0x05, 0x00, 0x00, 0x00, 0x09])
+        head.writeInteger(UInt32(0), endianness: .big)
+        try await Self.writeData(outbound: outbound, data: head)
+
+        // 2. send pre-cached first_tags
         let firstTagsData = proxyState.processFirstTags(firstTags)
         for data in firstTagsData {
             try await Self.writeData(outbound: outbound, data: data)
@@ -484,7 +553,8 @@ public actor HuyaProxyServer {
                             total += chunk.readableBytes
                             if try await !Self.processChunk(
                                 chunk, tupParser: &tupParser, decoder: &decoder,
-                                proxyState: &proxyState, outbound: outbound, roomId: roomId
+                                proxyState: &proxyState,
+                                outbound: outbound, roomId: roomId
                             ) {
                                 clientGone = true
                                 break
@@ -513,7 +583,8 @@ public actor HuyaProxyServer {
                             total += buffer.readableBytes
                             if try await !Self.processChunk(
                                 buffer, tupParser: &tupParser, decoder: &decoder,
-                                proxyState: &proxyState, outbound: outbound, roomId: roomId
+                                proxyState: &proxyState,
+                                outbound: outbound, roomId: roomId
                             ) {
                                 dataStreamRequest.cancel()
                                 break downloadStream
@@ -605,11 +676,8 @@ public actor HuyaProxyServer {
 
     /// Download .slice data (first-slice pre-cache)
     ///
-    /// Adaptive early stop: the CDN serves history at the live bitrate
-    /// (1MB ≈ 12s of history, ~9.6s measured); playback only needs the seq
-    /// header + first complete keyframe (~100-400KB). HuyaFirstKeyframeTracker
-    /// inspects slice headers chunk by chunk and cancels as soon as the first
-    /// complete keyframe arrives; maxSize is the hard fallback
+    /// 自适应提前停止：播放只需 seq header + 首个完整关键帧，`HuyaFirstKeyframeTracker`
+    /// 逐块查 slice 头、凑齐即取消；`maxSize` 只是兜底上限。实测数据见 doc/03 §4
     nonisolated static func downloadSlice(
         url: String,
         maxSize: Int = 2_000_000
@@ -720,9 +788,13 @@ enum HuyaTask {
 // MARK: - HuyaPrewarmSession
 
 /// Prefetched data enabling /huya/{uuid}.flv to skip the serial prep path
+///
+/// `codecType`/`isH265`/`firstTags` 存的都是**嗅探校验后**的结果，handleHuyaRequest 直接复用，
+/// 不再重算档位、不再重下首片（重算会换档，重下会白拉 1MB）
 struct HuyaPrewarmSession: Sendable {
     let roomId: String
     let codecType: Int
+    let isH265: Bool
     let displayName: String
     let streamInfo: HuyaStream
     let firstTags: [HuyaFlvTag]
@@ -750,11 +822,8 @@ struct HuyaFlvProxyState: Sendable {
     var lastAacSeqData: ByteBuffer?
     var firstIFrameSent = false
 
-    // Gap-skip state: on a fid jump, drop broken video frames until the next
-    // keyframe while keeping audio continuous (matches official behavior).
-    // Recovery follows official setNextIFrame: video jumps forward on its own
-    // source dts (forward PTS jumps allowed), player (mpv) resyncs A/V;
-    // audio stays continuous on its own timeline
+    // Gap-skip：fid 跳变时丢到下一个关键帧，音频保持连续（与官方一致）。
+    // 恢复走官方 setNextIFrame —— 视频按自身 dts 前跳，mpv 自行重同步 A/V。
     var skipUntilKeyframe = false
     var skipDropCount = 0       // frames dropped (diagnostics)
 
@@ -952,7 +1021,7 @@ struct HuyaFlvProxyState: Sendable {
             newTs = ts
         }
 
-        let newData = HuyaFlvBuilder.rewriteFlvTagTs(tagData, newTs: newTs)
+        let newData = HuyaFlvTimestamp.rewrite(tagData, newTs: newTs)
 
         // Advance frameId cursors
         if fid >= 0 {

@@ -45,7 +45,8 @@ enum SupportSites {
             "huya.com"
         ],
         .cc163: [
-            "cc.163.com"
+            "cc.163.com",
+            "ds.163.com"
         ],
         .douyin: [
             "live.douyin.com",

@@ -12,6 +12,10 @@ import Marshal
 import SwiftSoup
 
 actor CC163: SupportSiteProtocol {
+    
+    // ds common config id, hardcoded in the official SPA, do not randomize
+    private static let dsCommonAppConfigId = "67b32cdd1801fc391a6c2657"
+    
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
 		if url.pathComponents.count == 4,
 		   url.pathComponents[2] == "ccid" {
@@ -26,8 +30,27 @@ actor CC163: SupportSiteProtocol {
 	}
 	
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
-		let ccid = try await getCC163Ccid(url)
-		let cid = try await getCC163ChannelID(ccid)
+		let cid: Int
+		if let channelID = cc163ChannelID(url) {
+			cid = channelID
+		} else if let ds = DS163Glive(url: url) {
+			if let channelID = ds.channelID {
+				cid = channelID
+			} else if let ccid = ds.ccid {
+				cid = try await getCC163ChannelID(ccid)
+			} else if let appKey = ds.appKey {
+				let info = try await getCC163Info(url)
+				guard let ccid = (info as? CC163ChannelInfo)?.ccid else {
+					throw VideoGetError.notFountData
+				}
+				cid = try await getCC163ChannelID("\(ccid)")
+			} else {
+				throw VideoGetError.invalidLink
+			}
+		} else {
+			let ccid = try await getCC163Ccid(url)
+			cid = try await getCC163ChannelID(ccid)
+		}
 		let videos = try await getCC163Videos(cid)
 		guard let v = videos.first else { throw VideoGetError.notFountData }
 		let json = v.write(to: YouGetJSON(rawUrl: url))
@@ -47,6 +70,42 @@ actor CC163: SupportSiteProtocol {
     }
     
     func getCC163State(_ url: String) async throws -> (info: LiveInfo?, list: [CC163ChannelInfo]) {
+		
+		// ds.163.com/glive: single room (?ccRoomid=/?ccChannelid= or ?ccid=), list (?appKey=)
+		if let ds = DS163Glive(url: url) {
+			if let channelID = ds.channelID {
+				let info = try await getCC163ZtState(cid: "\(channelID)")
+				return (info, [])
+			}
+			if let ccid = ds.ccid {
+				let channelID = try await getCC163ChannelID(ccid)
+				let info = try await getCC163ZtState(cid: "\(channelID)")
+				return (info, [])
+			}
+			if let appKey = ds.appKey {
+				let target = try await cc163AppKeyTargetURL(appKey)
+				let list = try await getCC163AppKeyRooms(target)
+				guard let first = list.first else {
+					throw VideoGetError.notFountData
+				}
+				return (first, list)
+			}
+			throw VideoGetError.invalidLink
+		}
+		
+		// cc.163.com/{roomId}/{channelId} now redirects to the ds.163.com SPA
+		if let channelID = cc163ChannelID(url) {
+			let info = try await getCC163ZtState(cid: "\(channelID)")
+			return (info, [])
+		}
+		
+		// cc.163.com/ccid/{ccid} is the app's canonical room link, not a real page
+		let pcs = url.pathComponents
+		if pcs.count == 4, pcs[2] == "ccid" {
+			let channelID = try await getCC163ChannelID(pcs[3])
+			let info = try await getCC163ZtState(cid: "\(channelID)")
+			return (info, [])
+		}
 		
 		let re = try await AF.request(url).serializingString().value
 		
@@ -135,12 +194,107 @@ actor CC163: SupportSiteProtocol {
             return pcs[3]
         } else {
 			let info = try await getCC163Info(url)
-			guard let ccid = (info as? CC163ChannelInfo)?.ccid else {
-				throw VideoGetError.notFountData
+			// single-room page -> CC163Info, channel list -> CC163ChannelInfo
+			if let channelInfo = info as? CC163ChannelInfo {
+				return "\(channelInfo.ccid)"
 			}
-			
-			return "\(ccid)"
+			if let roomInfo = info as? CC163Info {
+				return roomInfo.ccid
+			}
+			throw VideoGetError.notFountData
         }
+    }
+    
+    private func cc163ChannelID(_ url: String) -> Int? {
+        // use URLComponents.path: String.pathComponents keeps "?a=1" in the last segment
+        guard let comps = URLComponents(string: url) else { return nil }
+        let segs = comps.path.split(separator: "/").map(String.init)
+        guard segs.count == 2,
+              let _ = Int(segs[0]),
+              let channelID = Int(segs[1]) else { return nil }
+        return channelID
+    }
+    
+    private struct DS163Glive {
+        let ccid: String?
+        let appKey: String?
+        /// cc.163.com 301 target form: ?ccRoomid=..&ccChannelid=..
+        let channelID: Int?
+        
+        init?(url: String) {
+            guard let comps = URLComponents(string: url),
+                  comps.host == "ds.163.com",
+                  comps.path == "/glive" || comps.path == "/glive/" else { return nil }
+            let items = comps.queryItems ?? []
+            func query(_ name: String) -> String? {
+                items.first { $0.name == name }?.value
+            }
+            ccid = query("ccid")
+            appKey = query("appKey")
+            channelID = query("ccChannelid").flatMap { Int($0) }
+        }
+    }
+    
+    // resolve appKey -> cc.163.com target page from the ds commonAppConfig
+    private func cc163AppKeyTargetURL(_ appKey: String) async throws -> String {
+        let u = "https://inf-act.ds.163.com/v1/act-web/pageConf/commonAppConfig"
+        let data = try await AF.request(u,
+                                        method: .post,
+                                        parameters: ["id": Self.dsCommonAppConfigId],
+                                        encoding: JSONEncoding.default).serializingData().value
+        let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+        let items: [[String: Any]] = try jsonObj.value(for: "result.itemList")
+        guard let entry = items.first(where: { ($0["name"] as? String) == "直播入口列表" }),
+              let list = entry["itemList"] as? [[String: Any]],
+              let match = list.first(where: { ($0["name"] as? String) == appKey }),
+              let content = match["content"] as? String else {
+            throw VideoGetError.notSupported
+        }
+        return content
+    }
+    
+    private func getCC163AppKeyRooms(_ targetURL: String, depth: Int = 0) async throws -> [CC163ChannelInfo] {
+        // cap redirect hops: a looping redirect_url would spin forever
+        guard depth < 3 else { throw VideoGetError.notFountData }
+        
+        let re = try await AF.request(targetURL).serializingString().value
+        guard let jsonData = re.subString(from: "__NEXT_DATA__", to: "</script>").subString(from: ">").data(using: .utf8) else {
+            throw VideoGetError.notFountData
+        }
+        let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(jsonData)
+        
+        if let _: String = try? jsonObj.value(for: "query.domain") {
+            return try getCC163ZtRoomList(jsonObj)
+        }
+        if let lives: [CC163ChannelInfo] = try? jsonObj.value(for: "props.pageProps.gametypeData.lives") {
+            return lives
+        }
+        // room page: follow the server-side redirect first (e.g. d90 -> NBPL event page)
+        if let ccid: String = try? jsonObj.value(for: "query.ccid") {
+            if let redirectURL: String = try? jsonObj.value(for: "props.pageProps.roomInfoInitData.redirect_url") {
+                return try await getCC163AppKeyRooms(redirectURL, depth: depth + 1)
+            }
+            if let channelID = try? await getCC163ChannelID(ccid) {
+                do {
+                    if let info = try await getCC163ZtState(cid: "\(channelID)") as? CC163ChannelInfo {
+                        return [info]
+                    }
+                } catch {
+                    // keep isNotLiving so the UI reports it instead of "no data"
+                    if let e = error as? VideoGetError, case .isNotLiving = e { throw e }
+                }
+            }
+        }
+        if let cid: String = try? jsonObj.value(for: "query.subcId") {
+            do {
+                if let info = try await getCC163ZtState(cid: cid) as? CC163ChannelInfo {
+                    return [info]
+                }
+            } catch {
+                if let e = error as? VideoGetError, case .isNotLiving = e { throw e }
+            }
+        }
+        throw VideoGetError.notFountData
     }
     
 	func getCC163ChannelID(_ ccid: String) async throws -> Int {
@@ -225,9 +379,17 @@ struct CC163ChannelInfo: Unmarshaling, LiveInfo {
            nolive == 1 {
             ccid = try object.value(for: "roomid")
             isLiving = false
+        } else if let status: Int = try? object.value(for: "status") {
+            isLiving = status == 1
+            ccid = try object.value(for: "ccid")
         } else {
             ccid = try object.value(for: "ccid")
             isLiving = true
+        }
+        
+        // nolive rooms have no ccid (it holds roomid, often 0)
+        if channel.isEmpty, ccid > 0 {
+            channel = "https://cc.163.com/ccid/\(ccid)"
         }
         
 

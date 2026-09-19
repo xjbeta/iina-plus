@@ -67,6 +67,23 @@ final class HTTPByteBufferResponsePartHandler: ChannelOutboundHandler {
     }
 }
 
+// MARK: - Status-only response helper
+
+/// Write a bodyless response with the given status (400/404 etc.)
+func writeStatus(
+    outbound: NIOAsyncChannelOutboundWriter<HTTPPart<HTTPResponseHead, ByteBuffer>>,
+    status: HTTPResponseStatus
+) async throws {
+    var headers = NIOHTTP1.HTTPHeaders()
+    headers.add(name: "Content-Length", value: "0")
+    headers.add(name: "Connection", value: "close")
+    let head = HTTPResponseHead(version: .http1_1, status: status, headers: headers)
+    try await outbound.write(contentsOf: [
+        .head(head),
+        .end(nil),
+    ])
+}
+
 // MARK: - Server bootstrap
 
 let group = MultiThreadedEventLoopGroup.singleton
@@ -117,22 +134,40 @@ func handleChannel(
                     break
                 case .end:
                     if currentURL.hasPrefix("/huya/"), currentMethod == .GET {
-                        let token = currentURL
-                            .replacingOccurrences(of: "/huya/", with: "")
-                            .replacingOccurrences(of: ".flv", with: "")
-                        print("stream request roomId=\(token)")
-                        try await HuyaProxyServer.shared.handleHuyaRequest(roomId: token, outbound: outbound)
+                        // 后缀精确匹配而非 replacingOccurrences（那会误删 token 中段的 .flv）
+                        var token = String(currentURL.dropFirst("/huya/".count))
+                        if token.hasSuffix(".flv") {
+                            token = String(token.dropLast(4))
+                        }
+                        // token = {roomId} 或 {roomId}_{rate}；空 token（如 /huya/.flv）必须拦下，
+                        // 否则 parts[0] 越界直接崩掉整个代理进程
+                        let parts = token.split(separator: "_").map(String.init)
+                        guard let roomId = parts.first, !roomId.isEmpty else {
+                            print("stream request rejected: empty token (uri=\(currentURL))")
+                            try await writeStatus(outbound: outbound, status: .badRequest)
+                            return
+                        }
+                        // rate 必须能解析成整数；解析失败是**畸形请求**，必须拦下 ——
+                        // 否则会静默退化成「自动档」，让用户以为在用选定的清晰度（细节见 doc/03 §4）。
+                        var rate: Int?
+                        if parts.count > 1 {
+                            guard let r = Int(parts[1]) else {
+                                print("stream request rejected: bad rate token '\(parts[1])' (uri=\(currentURL))")
+                                try await writeStatus(outbound: outbound, status: .badRequest)
+                                return
+                            }
+                            rate = r
+                        }
+                        print("stream request roomId=\(roomId) rate=\(rate.map(String.init) ?? "default")")
+                        try await HuyaProxyServer.shared.handleHuyaRequest(
+                            roomId: roomId,
+                            outbound: outbound,
+                            rate: rate
+                        )
                         return
                     }
                     // Not found
-                    var headers = NIOHTTP1.HTTPHeaders()
-                    headers.add(name: "Content-Length", value: "0")
-                    headers.add(name: "Connection", value: "close")
-                    let head = HTTPResponseHead(version: .http1_1, status: .notFound, headers: headers)
-                    try await outbound.write(contentsOf: [
-                        .head(head),
-                        .end(nil),
-                    ])
+                    try await writeStatus(outbound: outbound, status: .notFound)
                 }
             }
         }

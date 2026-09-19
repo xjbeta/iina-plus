@@ -19,14 +19,18 @@ struct HuyaFlvTag: Sendable {
     let seq: UInt16       // seqNum (video) or 0 (audio)
     let frameId: Int32    // for dedup (-1 = seq header)
     let isSeqHeader: Bool
+    /// 关键帧的原始 AnnexB VPS/SPS/PPS（非关键帧为 nil）。当前**无读取点**，
+    /// 保留作超分私有档（codecType=2）逆向的原始素材（见 MEMORY.md §4.3 / doc/05）。
+    let annexHeader: ByteBuffer?
 
-    init(type: UInt8, timestamp: Int, data: ByteBuffer, seq: UInt16 = 0, frameId: Int32 = -1, isSeqHeader: Bool = false) {
+    init(type: UInt8, timestamp: Int, data: ByteBuffer, seq: UInt16 = 0, frameId: Int32 = -1, isSeqHeader: Bool = false, annexHeader: ByteBuffer? = nil) {
         self.type = type
         self.timestamp = timestamp
         self.data = data
         self.seq = seq
         self.frameId = frameId
         self.isSeqHeader = isSeqHeader
+        self.annexHeader = annexHeader
     }
 }
 
@@ -38,16 +42,17 @@ enum HuyaFrameExtractor {
     /// - H.264 keyframe: `[size_prefix(4)] + [AVCDecoderConfigurationRecord] + [FLV tag]`
     /// - H.265 keyframe: `[size_prefix(4)] + [AnnexB VPS+SPS+PPS] + [FLV tag (AnnexB payload)]`
     /// - non-keyframe: `[FLV tag]`
-    static func extract(merged: ByteBuffer, isKeyframe: Bool) -> (seqTag: ByteBuffer?, flvTag: HuyaFlvTag?) {
+    static func extract(merged: ByteBuffer, isKeyframe: Bool) -> (seqTag: ByteBuffer?, annexHeader: ByteBuffer?, flvTag: HuyaFlvTag?) {
         let bytes = merged.readableBytesView
         var pos = 0
         var seqTag: ByteBuffer? = nil
+        var annexHeader: ByteBuffer? = nil
 
         if isKeyframe {
-            guard bytes.count >= 4 else { return (nil, nil) }
+            guard bytes.count >= 4 else { return (nil, nil, nil) }
             let sizePrefix = merged.getInteger(at: 0, endianness: .little, as: UInt32.self) ?? 0
             let seqHeaderEnd = 4 + Int(sizePrefix)
-            guard seqHeaderEnd <= bytes.count else { return (nil, nil) }
+            guard seqHeaderEnd <= bytes.count else { return (nil, nil, nil) }
             let seqHeader = merged.getSlice(at: 4, length: Int(sizePrefix))!
 
             if seqHeader.readableBytes > 4 {
@@ -57,29 +62,30 @@ enum HuyaFrameExtractor {
                 let isAnnexB4 = shBytes.count >= 4 && shBytes[0] == 0 && shBytes[1] == 0 && shBytes[2] == 0 && shBytes[3] == 1
 
                 if isAnnexB3 || isAnnexB4 {
-                    // H.265: AnnexB → hvcC
-                    let nalus = HuyaFlvBuilder.parseHevcAnnexB(seqHeader)
-                    let vps = nalus.filter { $0.naluType == HEVC_NAL_VPS }.map { $0.naluData }
-                    let sps = nalus.filter { $0.naluType == HEVC_NAL_SPS }.map { $0.naluData }
-                    let pps = nalus.filter { $0.naluType == HEVC_NAL_PPS }.map { $0.naluData }
+                    // H.265: AnnexB → hvcC（另存原始 AnnexB 头，见 HuyaFlvTag.annexHeader）
+                    annexHeader = seqHeader
+                    let nalus = HuyaOfficialFlv.parseHevcAnnexB(seqHeader)
+                    let vps = nalus.filter { $0.naluType == HuyaOfficialFlv.nalVPS }.map { $0.naluData }
+                    let sps = nalus.filter { $0.naluType == HuyaOfficialFlv.nalSPS }.map { $0.naluData }
+                    let pps = nalus.filter { $0.naluType == HuyaOfficialFlv.nalPPS }.map { $0.naluData }
                     if !vps.isEmpty && !sps.isEmpty && !pps.isEmpty {
-                        if let hvcc = HuyaFlvBuilder.buildHvcc(vps: vps, sps: sps, pps: pps) {
-                            seqTag = HuyaFlvBuilder.buildHevcSeqTag(hvccData: hvcc)
+                        if let hvcc = HuyaOfficialFlv.buildHvcc(vps: vps, sps: sps, pps: pps) {
+                            seqTag = HuyaOfficialFlv.buildHevcSeqTag(hvccData: hvcc)
                         }
                     }
                 } else if shBytes[0] == 0x01 {
                     // H.264: AVCDecoderConfigurationRecord
-                    seqTag = HuyaFlvBuilder.buildAvcSeqTag(seqHeaderData: seqHeader)
+                    seqTag = HuyaOfficialFlv.buildAvcSeqTag(seqHeaderData: seqHeader)
                 }
             }
             pos = seqHeaderEnd
         }
 
         // read the FLV tag from pos
-        guard pos + 11 <= bytes.count else { return (seqTag, nil) }
+        guard pos + 11 <= bytes.count else { return (seqTag, annexHeader, nil) }
 
         let tagType = bytes[pos]
-        guard tagType == 8 || tagType == 9 || tagType == 18 else { return (seqTag, nil) }
+        guard tagType == 8 || tagType == 9 || tagType == 18 else { return (seqTag, annexHeader, nil) }
 
         let dataSize = (Int(bytes[pos+1]) << 16) | (Int(bytes[pos+2]) << 8) | Int(bytes[pos+3])
         let timestampLow = (Int(bytes[pos+4]) << 16) | (Int(bytes[pos+5]) << 8) | Int(bytes[pos+6])
@@ -89,7 +95,7 @@ enum HuyaFrameExtractor {
         if pos + tagTotal > bytes.count {
             tagTotal = 11 + dataSize
             if pos + tagTotal > bytes.count {
-                return (seqTag, nil)
+                return (seqTag, annexHeader, nil)
             }
         }
 
@@ -114,7 +120,7 @@ enum HuyaFrameExtractor {
                         needsConvert = false
                     }
                     if needsConvert {
-                        let newPayload = HuyaFlvBuilder.annexBToLengthPrefixed(oldPayload)
+                        let newPayload = HuyaOfficialFlv.annexBToLengthPrefixed(oldPayload)
                         // Enhanced FLV 4CC: b0(1) + 'hvc1'(4) + cts(3)
                         let newDataSize = 8 + newPayload.readableBytes
                         var newTag = ByteBufferAllocator().buffer(capacity: 11 + newDataSize + 4)
@@ -134,7 +140,7 @@ enum HuyaFrameExtractor {
                         newTag.writeInteger(UInt8(0x80 | (bytes[pos + 11] & 0xF0) | 0x01))
                         // 4CC 'hvc1'
                         newTag.writeBytes([0x68, 0x76, 0x63, 0x31])
-                        // cts: keep original (B-frame reordering, official vplayer.js L14084-14085)
+                        // cts：保留原值（B 帧重排需要；与官方一致）
                         newTag.writeBytes(bytes[pos + 13..<pos + 16])
                         // payload
                         newTag.writeImmutableBuffer(newPayload)
@@ -153,7 +159,7 @@ enum HuyaFrameExtractor {
             timestamp: fullTs,
             data: flvTagData
         )
-        return (seqTag, flvTag)
+        return (seqTag, annexHeader, flvTag)
     }
 }
 
@@ -168,11 +174,11 @@ enum HuyaSliceDecoder {
         var audioSlices: [HuyaAudioSlice] = []
 
         for pkt in packets {
-            if pkt.uri == UInt32(URI_VIDEO) {
+            if pkt.uri == UInt32(HuyaProtoUri.video) {
                 if let v = HuyaSliceParser.parseVideo(payload: pkt.payload) {
                     videoFrames[v.frameId, default: []].append(v)
                 }
-            } else if pkt.uri == UInt32(URI_AUDIO) {
+            } else if pkt.uri == UInt32(HuyaProtoUri.audio) {
                 if let a = HuyaSliceParser.parseAudio(payload: pkt.payload) {
                     audioSlices.append(a)
                 }
@@ -197,7 +203,7 @@ enum HuyaSliceDecoder {
             var merged = ByteBufferAllocator().buffer(capacity: totalSize)
             for s in slices { merged.writeImmutableBuffer(s.streamData) }
 
-            let (seqTag, flvTag) = HuyaFrameExtractor.extract(merged: merged, isKeyframe: isKeyframe)
+            let (seqTag, annexHeader, flvTag) = HuyaFrameExtractor.extract(merged: merged, isKeyframe: isKeyframe)
 
             if let st = seqTag {
                 allTags.append(HuyaFlvTag(
@@ -208,12 +214,13 @@ enum HuyaSliceDecoder {
             if let ft = flvTag {
                 allTags.append(HuyaFlvTag(
                     type: ft.type, timestamp: ft.timestamp, data: ft.data,
-                    seq: first.seqNum, frameId: Int32(fid)
+                    seq: first.seqNum, frameId: Int32(fid),
+                    annexHeader: annexHeader
                 ))
             }
         }
 
-        // audio (official readAacTag L19317-19329)
+        // 音频（官方 `readAacTag`，vplayer 搜 `readAacTag`）
         for audio in audioSlices {
             let sd = audio.streamData
             let sdBytes = sd.readableBytesView
@@ -282,6 +289,8 @@ struct HuyaSliceStreamDecoder: Sendable {
     /// the loss timeout
     private struct PendingFrame {
         var slices: [HuyaVideoSlice]
+        /// 该帧首个分片到达时的视频包计数（用于下面的包数预算判据）
+        let firstSlicePacketIndex: Int
         let receivedAtNanos: UInt64
     }
 
@@ -291,8 +300,14 @@ struct HuyaSliceStreamDecoder: Sendable {
     private var nextPlayFid: Int32 = -1
     /// Highest fid actually emitted (for dropping late slices of emitted frames)
     private(set) var lastEmittedFid: Int32 = -1
-    /// Frame-header wait timeout; beyond this a frame is truly lost
-    private let dropTimeoutNanos: UInt64 = 400_000_000   // 400ms
+    /// 收到的视频分片计数（单调递增）
+    private var videoPacketCount = 0
+    /// 「等齐」预算：以**视频包数**计，与码率/包率无关（256 对实测最大跨度 86 包留约 3 倍余量）。
+    /// 原为固定 400ms 墙钟 —— 预算单位是时间、跨度是包数，低码率（低包率）下同样的包跨度会超时，
+    /// 把**还在路上**的帧误判成丢失 → fid 空洞 → 卡顿。成因与实测：MEMORY.md §5.4 / §5.5
+    private let sliceSpanBudget = 256
+    /// 墙钟兜底：流卡住（不再来包）时包数判据永不触发
+    private let dropTimeoutNanos: UInt64 = 3_000_000_000   // 3s
 
     // ---- per-connection diagnostics ----
     private(set) var completedFrames = 0       // frames completed and emitted
@@ -310,9 +325,9 @@ struct HuyaSliceStreamDecoder: Sendable {
         // so the last slice of a frame arriving late (within the batch)
         // can still complete it
         for pkt in packets {
-            if pkt.uri == UInt32(URI_VIDEO) {
+            if pkt.uri == UInt32(HuyaProtoUri.video) {
                 appendVideoSlice(pkt)
-            } else if pkt.uri == UInt32(URI_AUDIO) {
+            } else if pkt.uri == UInt32(HuyaProtoUri.audio) {
                 tags.append(contentsOf: handleAudio(pkt))
             }
         }
@@ -325,6 +340,8 @@ struct HuyaSliceStreamDecoder: Sendable {
     mutating func flush() {
         videoFrames.removeAll()
         nextPlayFid = -1
+        // 重连后重置 AAC 配置头发送标记：新连接首包带配置，客户端重初始化安心
+        audioSeqSent = false
         completedFrames = 0
         droppedIncomplete = 0
         skippedBackward = 0
@@ -338,6 +355,7 @@ struct HuyaSliceStreamDecoder: Sendable {
     private mutating func appendVideoSlice(_ pkt: HuyaTupPacket) {
         guard let parsed = HuyaSliceParser.parseVideo(payload: pkt.payload) else { return }
         let fid = parsed.frameId
+        videoPacketCount += 1
         // Late slice of an already-emitted frame: drop (matches official
         // recvData's frameId <= lastPlayFrameId branch)
         if Int32(fid) <= lastEmittedFid {
@@ -347,6 +365,7 @@ struct HuyaSliceStreamDecoder: Sendable {
         if videoFrames[fid] == nil {
             videoFrames[fid] = PendingFrame(
                 slices: [],
+                firstSlicePacketIndex: videoPacketCount,
                 receivedAtNanos: DispatchTime.now().uptimeNanoseconds
             )
         }
@@ -392,10 +411,16 @@ struct HuyaSliceStreamDecoder: Sendable {
                 continue
             }
 
-            // incomplete: wait (don't emit later frames); lost past the timeout
-            if now - frame.receivedAtNanos > dropTimeoutNanos {
+            // incomplete: wait (don't emit later frames).
+            // 两种判据任一满足即认定它真的丢了：
+            //   ① 之后又来了 sliceSpanBudget 个视频包 → 它的分片早该到了（与码率无关，见属性注释）
+            //   ② 墙钟兜底（流卡住、不再来包时 ① 永不触发）
+            let packetsSince = videoPacketCount - frame.firstSlicePacketIndex
+            let elapsedMs = Int((now - frame.receivedAtNanos) / 1_000_000)
+            if packetsSince > sliceSpanBudget || now - frame.receivedAtNanos > dropTimeoutNanos {
                 HuyaLogger.log("HuyaProxy frame gap fid=\(nextPlayFid) expected \(pktNum) slices got \(frame.slices.count) "
-                    + "\(frame.slices[0].isKeyframe ? "KEY" : "P/B")")
+                    + "\(frame.slices[0].isKeyframe ? "KEY" : "P/B")"
+                    + " after \(packetsSince) pkts / \(elapsedMs)ms")
                 videoFrames.removeValue(forKey: UInt32(nextPlayFid))
                 droppedIncomplete += 1
                 nextPlayFid += 1
@@ -415,7 +440,7 @@ struct HuyaSliceStreamDecoder: Sendable {
         for s in sortedSlices { merged.writeImmutableBuffer(s.streamData) }
 
         let isKeyframe = first.isKeyframe
-        let (seqTag, flvTag) = HuyaFrameExtractor.extract(merged: merged, isKeyframe: isKeyframe)
+        let (seqTag, annexHeader, flvTag) = HuyaFrameExtractor.extract(merged: merged, isKeyframe: isKeyframe)
 
         if let st = seqTag {
             tags.append(HuyaFlvTag(
@@ -426,7 +451,8 @@ struct HuyaSliceStreamDecoder: Sendable {
         if let ft = flvTag {
             tags.append(HuyaFlvTag(
                 type: ft.type, timestamp: ft.timestamp, data: ft.data,
-                seq: first.seqNum, frameId: Int32(fid)
+                seq: first.seqNum, frameId: Int32(fid),
+                annexHeader: annexHeader
             ))
         }
 
@@ -447,9 +473,8 @@ struct HuyaSliceStreamDecoder: Sendable {
         let sd = parsed.streamData
         let sdBytes = sd.readableBytesView
 
-        // Every audio slice starts with an AAC seq header, skip it before
-        // reading records (official readAacConfig L19303-19310); the seq
-        // header is sent only once
+        // 每个音频 slice 开头都带 AAC seq header，读记录前先跳过它
+        // （官方 `readAacConfig`，vplayer 搜 `readAacConfig`）；seq header 只发一次
         var tags: [HuyaFlvTag] = []
         var pos = 0
         if sdBytes.count >= 19 && sdBytes[0] == 0x08 {

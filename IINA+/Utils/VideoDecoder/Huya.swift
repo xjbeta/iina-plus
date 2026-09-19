@@ -100,35 +100,38 @@ extension HuyaStream {
 				return yougetJson
 			}
 			
-			// Local proxy (.slice -> FLV); path token = uuid, matched by startPrewarm(uuid:)
+			// Local proxy (.slice -> FLV); path token = uuid, matched by
+			// startPrewarm(uuid:roomId:rate:)（选档在 prewarm 时确定 codecType）
 			let port = Preferences.shared.dmPort
 			let huyaUrl = "http://127.0.0.1:\(port)/huya/\(yougetJson.uuid).flv"
 			
-			// One entry per resolution (sDisplayName + iBitRate).
-			// Resolution stays app-side (Stream.quality = iBitRate, 0 original -> 9999999),
-			// never in the URL; open() passes rate to startPrewarm, the proxy
-			// recognizes the tier via the /huya/{uuid}.flv session.
-			// A resolution may exist as both H.264 and H.265 (same sDisplayName,
-			// different iCodecType): when deduping same-name entries prefer 265
-			var chosen: [String: StreamInfo] = [:]
-			vMultiStreamInfo.forEach { info in
-				if let cur = chosen[info.sDisplayName],
-				   cur.iCodecType != 0 && info.iCodecType == 0 {
-					return  // 265 already kept, skip 264
+			// One entry per resolution: quality = server iBitRate (0 = 原画/HEVC),
+			// qualityIndex = position in the playable list (menu order follows it,
+			// e.g. lpl 2K before 蓝光10M); same-name pairs keep the playable
+			// variant: 265 只在有等效码率(iHEVCBitRate>0)时优先，否则(0 码率胶囊)
+			// 保留 H.264 档（否则拉不到可解码率）
+			//
+			// 档位来源统一为 playableStreamInfo（API 档位列表去掉全部 HDR 档）——
+			// 与服务端选档同源，避免菜单里能选到一个服务端会拒绝的 HDR 档
+			let gears = playableStreamInfo
+			var best = [String: StreamInfo]()
+			for info in gears {
+				if let cur = best[info.sDisplayName] {
+					if cur.iCodecType == 0, info.iCodecType != 0, info.iHEVCBitRate > 0 {
+						best[info.sDisplayName] = info
+					}
+				} else {
+					best[info.sDisplayName] = info
 				}
-				chosen[info.sDisplayName] = info
 			}
-			chosen.values.forEach { info in
+			var seen = Set<String>()
+			for (idx, info) in gears.enumerated() {
+				guard best[info.sDisplayName]?.iCodecType == info.iCodecType,
+					  seen.insert(info.sDisplayName).inserted else { continue }
 				var s = Stream(url: huyaUrl)
-				s.quality = info.iBitRate == 0 ? 9999999 : info.iBitRate
+				s.quality = info.iBitRate
+				s.qualityIndex = idx
 				yougetJson.streams[info.sDisplayName] = s
-			}
-			
-			// Fallback: single "默认" entry when no resolution info is available
-			if yougetJson.streams.isEmpty {
-				var s = Stream(url: huyaUrl)
-				s.quality = 9999999
-				yougetJson.streams["默认"] = s
 			}
 		}
 		

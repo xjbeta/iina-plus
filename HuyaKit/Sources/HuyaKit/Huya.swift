@@ -55,14 +55,36 @@ public struct HuyaStream: Unmarshaling, Sendable {
         try await fetch(url: "https://www.huya.com/\(roomId)")
     }
 
-    /// First gameStreamInfo entry (sP2pUrl/sStreamName/sP2pAntiCode)
+    /// 线路择优后的 gameStreamInfo：官方优先级 HS > TX > AL（按下发顺序取最优）。
+    ///
+    /// 用 `min(by:)` 而非 `sorted(by:).first`：Swift 的 sort 不稳定，同 rank 线路顺序不定，
+    /// 会让同一房间两次播放选到不同线路；`min(by:)` 并列时保留靠前的一条。
     public var primaryStream: GameStreamInfo? {
-        data.first?.streamInfoList.first
+        guard let list = data.first?.streamInfoList, !list.isEmpty else { return nil }
+        func rank(_ gsi: GameStreamInfo) -> Int {
+            let cdn = gsi.sCdnType.lowercased()
+            if cdn.hasPrefix("hs") { return 0 }
+            if cdn.hasPrefix("tx") { return 1 }
+            if cdn.hasPrefix("al") { return 2 }
+            return 3
+        }
+        return list.min { rank($0) < rank($1) }
     }
 
-    /// Top-level codecType (gameLiveInfo.codecType, basis of official isH265CodecType)
+    /// Top-level codecType (gameLiveInfo.codecType)
+    ///
+    /// ⚠️ **不要用它判编码族** —— 它只说"房间有 HEVC 流"，族必须逐档判定（`isH265Gear`）；
+    /// 曾当全局覆盖 → 实测 404。见 MEMORY.md §3.3
     public var codecType: Int {
         data.first?.liveInfo.codecType ?? 0
+    }
+
+    /// 可播档位列表：官方 `vMultiStreamInfo` 去掉全部 HDR 档。
+    ///
+    /// 清晰度链路的**唯一**输入源（菜单 / 选档 / 自动档 / 族判定都从这里取），保留官方菜单顺序。
+    /// 过滤条件只此一处 —— 历史上散落的 4 处 `iCompatibleFlag != 16384` 写法互相不一致。
+    public var playableStreamInfo: [StreamInfo] {
+        vMultiStreamInfo.filter { !$0.isHDREntry }
     }
 
     static func braceMatchedJSON(_ s: String, after: String.Index) -> String? {
@@ -97,12 +119,26 @@ public struct HuyaStream: Unmarshaling, Sendable {
         public var iCompatibleFlag: Int
         public var iHEVCBitRate: Int
 
+        /// `iCompatibleFlag` 的 HDR 位（官方 `isHDR` = 8192、`isFakeHDR` = 16384）
+        public static let compatFlagHDR = 8192
+        public static let compatFlagFakeHDR = 16384
+
+        /// 该档是否带 HDR 标记（真 HDR 8192 / 伪 HDR 16384）。本项目策略：**两种一律不播**。
+        /// 真 HDR 官方 web 播放器自己也丢；伪 HDR 官方要先用 `mappingFakeHdrBitrate` 重写 `iBitRate`
+        /// 才拿去算 codecType，那张配置表我们没还原 ⇒ 留着只会用错的码率拉到错的档。
+        ///
+        /// ⚠️ 必须位与：写成 `!= 16384` 会漏掉 `24576`（两位都置）这类组合，也保不住 8192。
+        /// 决策与依据：MEMORY.md §4.1
+        public var isHDREntry: Bool {
+            (iCompatibleFlag & (Self.compatFlagHDR | Self.compatFlagFakeHDR)) != 0
+        }
+
         public init(object: any MarshaledObject) throws {
             sDisplayName = try object.value(for: "sDisplayName")
             iBitRate = try object.value(for: "iBitRate")
             iCodecType = try object.value(for: "iCodecType")
             iCompatibleFlag = try object.value(for: "iCompatibleFlag")
-            iHEVCBitRate = try object.value(for: "iHEVCBitRate")
+            iHEVCBitRate = (try? object.value(for: "iHEVCBitRate")) ?? -1
         }
     }
 
@@ -162,11 +198,35 @@ public struct HuyaStream: Unmarshaling, Sendable {
         public var sStreamName: String
         public var sP2pUrl: String
         public var sP2pAntiCode: String
+        /// CDN 类型（AL/TX/HS），线路择优依据（HS > TX > AL）
+        public var sCdnType: String = ""
+        /// 该线路是否支持 HEVC（官方 `isSupportedH265` 的第一个与项，缺它会把只有 H.264 的
+        /// 档误判成 HEVC，拉出 404）；0 = 不支持
+        public var iIsHEVCSupport: Int = 0
+        /// 该线路的 P2P 支持等级。官方 `createStreamId` 用它算 **cdnBrand**：
+        /// `cdnBrand = iIsP2PSupport > 1 ? iIsP2PSupport : 0`（是线路相关值，不是常量）。
+        /// `iIsP2PSupport = 0` 的老房不支持 slice（官方走 FLV 直链）。
+        public var iIsP2PSupport: Int = 0
+
+        // MARK: FLV 直链字段（保留解析；主路径为 slice，见 HuyaUrl.buildSliceUrl）
+        /// e.g. "http://al.flv.huya.com/src"
+        public var sFlvUrl: String
+        /// 通常为 "flv"
+        public var sFlvUrlSuffix: String
+        public var sFlvAntiCode: String
+
+        public var flvSuffix: String { sFlvUrlSuffix.isEmpty ? "flv" : sFlvUrlSuffix }
 
         public init(object: any MarshaledObject) throws {
             sStreamName = try object.value(for: "sStreamName")
             sP2pUrl = try object.value(for: "sP2pUrl")
             sP2pAntiCode = try object.value(for: "sP2pAntiCode")
+            sCdnType = (try? object.value(for: "sCdnType")) ?? ""
+            iIsHEVCSupport = (try? object.value(for: "iIsHEVCSupport")) ?? 0
+            iIsP2PSupport = (try? object.value(for: "iIsP2PSupport")) ?? 0
+            sFlvUrl = (try? object.value(for: "sFlvUrl")) ?? ""
+            sFlvUrlSuffix = (try? object.value(for: "sFlvUrlSuffix")) ?? ""
+            sFlvAntiCode = (try? object.value(for: "sFlvAntiCode")) ?? ""
         }
     }
 }
