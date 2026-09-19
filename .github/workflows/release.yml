@@ -44,16 +44,12 @@ jobs:
           xcodebuild -showBuildSettings
           xcodebuild -showsdks
 
-      - name: Prepare create-dmg
-        run: |
-          brew install node
-          npm install -g node-gyp 
-          npm install -g create-dmg
-
       - name: Install Dependencies
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash ./InstallDeps.sh $PLUGIN_TAG
+        run: |
+          brew install node
+          bash ./InstallDeps.sh $PLUGIN_TAG
 
       - name: SPM
         run: xcodebuild -resolvePackageDependencies
@@ -66,10 +62,8 @@ jobs:
         run: |
           cd archive/IINA+.xcarchive/Products/Applications/
           codesign --deep --force --timestamp --sign '${{ secrets.SIGN_NAME }}' *.app
-          create-dmg *.app
-          codesign --deep --force --timestamp --sign '${{ secrets.SIGN_NAME }}' *.dmg
 
-          ditto -c -k --sequesterRsrc --keepParent *.app "$(basename *.dmg .dmg)".zip
+          ditto -c -k --sequesterRsrc --keepParent *.app "IINA+ ${GITHUB_REF_NAME#v}.zip"
           ditto -c -k --sequesterRsrc --keepParent ../../dSYMs dSYMs.zip
 
       - name: Upload Artifact
@@ -79,7 +73,6 @@ jobs:
           name: archive
           path: |
             archive/IINA+.xcarchive/Products/Applications/*.zip
-            archive/IINA+.xcarchive/Products/Applications/*.dmg
             
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -88,7 +81,6 @@ jobs:
           generate_release_notes: true
           files: |
             archive/IINA+.xcarchive/Products/Applications/*.zip
-            archive/IINA+.xcarchive/Products/Applications/*.dmg
 
       - name: Sparkle
         shell: zsh {0}
@@ -103,5 +95,5 @@ jobs:
           cd AppUpdaterAppcasts
           # git checkout -b ci-test
           git add -A
-          git commit -m "$(basename ../archive/IINA+.xcarchive/Products/Applications/*.dmg dmg)"
+          git commit -m "IINA+ ${GITHUB_REF_NAME}."
           git push https://${{ secrets.PAT }}@github.com/xjbeta/AppUpdaterAppcasts.git
