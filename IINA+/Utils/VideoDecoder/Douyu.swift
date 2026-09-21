@@ -10,6 +10,7 @@ import Cocoa
 import Alamofire
 import Marshal
 import CryptoSwift
+import WebKit
 
 actor Douyu: SupportSiteProtocol {
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
@@ -20,6 +21,9 @@ actor Douyu: SupportSiteProtocol {
 	}
     
 	func decodeUrl(_ url: String) async throws -> YouGetJSON {
+		// Best-effort session renewal; never affects parsing.
+		await renewSessionIfNeeded()
+
 		let html = try await getDouyuHtml(url)
 		guard let rid = Int(html.roomId) else {
 			throw VideoGetError.douyuNotFoundRoomId
@@ -156,23 +160,25 @@ actor Douyu: SupportSiteProtocol {
 		let data = try await AF.request(url, method: .post, parameters: pars).serializingData().value
         
 		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-        
+		
 		var play = try DouyuH5Play(object: json)
 		play = try await douyuCDNs(play)
 		
-		return play.multirates.map { rate -> (String, Stream) in
+		return play.multirates.map { r -> (String, Stream) in
 			var s = Stream(url: "")
-			s.quality = rate.bit
-			s.rate = rate.rate
+			s.quality = r.bit
+			s.rate = r.rate
 			
 			var urls = play.p2pUrls
 			urls.append(play.flvUrl)
 			
-			if rate.rate == play.rate, urls.count > 0 {
+			// Server only issues the stream matching data.rate; rate 0 (original) falls back to that stream when the room has Blu-ray 4M.
+			let hasUrl = r.rate == play.rate || r.rate == rate
+			if hasUrl, urls.count > 0 {
 				s.url = urls.removeFirst()
 				s.src = urls
 			}
-			return (rate.name, s)
+			return (r.name, s)
 		}
     }
     
@@ -186,7 +192,8 @@ actor Douyu: SupportSiteProtocol {
             throw VideoGetError.douyuSignError
         }
         
-        return try DouyuEncryption(object: json)
+        let enc = try DouyuEncryption(object: json)
+        return enc
     }
     
     func douyuCDNs(_ info: DouyuH5Play) async throws -> DouyuH5Play {
@@ -204,8 +211,73 @@ actor Douyu: SupportSiteProtocol {
 		return info
     }
     
+    // MARK: - Login
+    
+    func isLogin() async throws -> (Bool, String) {
+        guard let url = URL(string: "https://www.douyu.com"),
+              let cookies = HTTPCookieStorage.shared.cookies(for: url) else {
+            return (false, "")
+        }
+        // Session is identified by the httpOnly dy_auth/acf_auth cookies.
+        let hasSession = cookies.contains { $0.name == "dy_auth" || $0.name == "acf_auth" }
+        // Prefer the nickname cookie, falling back to the uid.
+        let displayName = cookies.first { $0.name == "acf_nickname" }?.value
+            .removingPercentEncoding ?? ""
+        let uid = cookies.first { $0.name == "acf_uid" }?.value ?? ""
+        let name = displayName.isEmpty ? uid : displayName
+        return (hasSession && !uid.isEmpty, name)
+    }
+    
+    func logout() async throws {
+        // Invalidate the server-side session, then clear local and WebView douyu cookies.
+        if let url = URL(string: "https://passport.douyu.com/sso/logout") {
+            _ = try? await AF.request(url, parameters: ["client_id": "1",
+                                                        "callback_url": "https://www.douyu.com/"]).serializingString().value
+        }
+        (HTTPCookieStorage.shared.cookies ?? []).forEach {
+            if $0.domain.contains("douyu.com") {
+                HTTPCookieStorage.shared.deleteCookie($0)
+            }
+        }
+        let httpCookieStore = await MainActor.run {
+            WKWebsiteDataStore.default().httpCookieStore
+        }
+        let webCookies = await httpCookieStore.allCookies()
+        for cookie in webCookies where cookie.domain.contains("douyu.com") {
+            await httpCookieStore.deleteCookie(cookie)
+        }
+    }
+    
+    // MARK: - Session renewal
+    
+    // Visiting the passport login page while logged in re-issues the session cookies via Set-Cookie.
+    func renewSessionIfNeeded() async {
+        do {
+            guard try await isLogin().0 else { return }
+            guard let url = URL(string: "https://www.douyu.com"),
+                  let dyAuth = HTTPCookieStorage.shared.cookies(for: url)?
+                      .first(where: { $0.name == "dy_auth" }),
+                  let expires = dyAuth.expiresDate else { return }
+            // Renew only within 3 days of expiry.
+            guard expires.timeIntervalSinceNow < 3 * 86_400 else { return }
+            
+            let before = expires
+            do {
+                _ = try await AF.request("https://passport.douyu.com/index/login?client_id=1")
+                    .serializingData().value
+                let after = HTTPCookieStorage.shared.cookies(for: url)?
+                    .first(where: { $0.name == "dy_auth" })?.expiresDate ?? before
+                Log("Douyu session renewed: \(before) -> \(after)")
+            } catch let error {
+                Log("Douyu session renewal failed: \(error)")
+            }
+        } catch let error {
+            Log("Douyu session renewal check failed: \(error)")
+        }
+    }
+    
     func douyuRoomJsonFormatter(_ text: String) -> String? {
-        guard let index = text.index(of: #""NewPcBasicSwitchRoomAdvance""#)?.utf16Offset(in: text) else {
+		guard let index = text.index(of: #""NewPcBasicSwitchRoomAdvance""#)?.utf16Offset(in: text) else {
             return nil
         }
         
