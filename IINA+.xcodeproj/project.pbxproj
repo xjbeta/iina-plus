@@ -97,9 +97,6 @@
 		0195C0C02E476F0B00E8BB36 /* SitePrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0BF2E476F0B00E8BB36 /* SitePrefsView.swift */; };
 		0195C0C22E47851E00E8BB36 /* BiliLoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0C12E47851E00E8BB36 /* BiliLoginSheetView.swift */; };
 		0195C0C62E48E2FE00E8BB36 /* AboutPrefsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0195C0C52E48E2FE00E8BB36 /* AboutPrefsView.swift */; };
-		A1B2C3D4E5F600000000000031 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000032 /* LoginWebView.swift */; };
-		A1B2C3D4E5F600000000000033 /* DouyuLoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000034 /* DouyuLoginSheetView.swift */; };
-		A1B2C3D4E5F600000000000035 /* LoginSheetContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000036 /* LoginSheetContainer.swift */; };
 		0196CB6421214B4200BCD29E /* AdvancedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196CB6321214B4200BCD29E /* AdvancedViewController.swift */; };
 		0199489E2742852E00C71708 /* SupportSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0199489D2742852E00C71708 /* SupportSites.swift */; };
 		019948BF2743DF3600C71708 /* ObjMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019948BE2743DF3600C71708 /* ObjMenuItem.swift */; };
@@ -159,6 +156,9 @@
 		01F46CA12102EF4600FE9DAD /* GereralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F46CA02102EF4600FE9DAD /* GereralViewController.swift */; };
 		01F5151A2109F002007C7153 /* LiveStatusTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F515192109F002007C7153 /* LiveStatusTableCellView.swift */; };
 		01F716DB2DAA4EB300308663 /* empty.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 01F716DA2DAA4EB300308663 /* empty.m4a */; };
+		A1B2C3D4E5F600000000000031 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000032 /* LoginWebView.swift */; };
+		A1B2C3D4E5F600000000000033 /* DouyuLoginSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000034 /* DouyuLoginSheetView.swift */; };
+		A1B2C3D4E5F600000000000035 /* LoginSheetContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000036 /* LoginSheetContainer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -301,9 +301,6 @@
 		0195C0BF2E476F0B00E8BB36 /* SitePrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SitePrefsView.swift; sourceTree = "<group>"; };
 		0195C0C12E47851E00E8BB36 /* BiliLoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiliLoginSheetView.swift; sourceTree = "<group>"; };
 		0195C0C52E48E2FE00E8BB36 /* AboutPrefsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutPrefsView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F600000000000032 /* LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F600000000000034 /* DouyuLoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouyuLoginSheetView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F600000000000036 /* LoginSheetContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetContainer.swift; sourceTree = "<group>"; };
 		0196CB6321214B4200BCD29E /* AdvancedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedViewController.swift; sourceTree = "<group>"; };
 		0199489D2742852E00C71708 /* SupportSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportSites.swift; sourceTree = "<group>"; };
 		019948BE2743DF3600C71708 /* ObjMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjMenuItem.swift; sourceTree = "<group>"; };
@@ -349,6 +346,9 @@
 		01F515192109F002007C7153 /* LiveStatusTableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStatusTableCellView.swift; sourceTree = "<group>"; };
 		01F6C4F2213396B20009672A /* iina+-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iina+-Bridging-Header.h"; sourceTree = "<group>"; };
 		01F716DA2DAA4EB300308663 /* empty.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty.m4a; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000032 /* LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000034 /* DouyuLoginSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DouyuLoginSheetView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000036 /* LoginSheetContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSheetContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -936,10 +936,10 @@
 				016A71F32A91C50F007B4CA3 /* BiliLiveDMv2.pb.swift in Sources */,
 				01C248CA2CE480670074A76F /* TokenBucket.swift in Sources */,
 				0195C0C22E47851E00E8BB36 /* BiliLoginSheetView.swift in Sources */,
-			A1B2C3D4E5F600000000000031 /* LoginWebView.swift in Sources */,
-			A1B2C3D4E5F600000000000033 /* DouyuLoginSheetView.swift in Sources */,
-			A1B2C3D4E5F600000000000035 /* LoginSheetContainer.swift in Sources */,
-			016FAD1C2FE2957B007BA234 /* WebSocketClient.swift in Sources */,
+				A1B2C3D4E5F600000000000031 /* LoginWebView.swift in Sources */,
+				A1B2C3D4E5F600000000000033 /* DouyuLoginSheetView.swift in Sources */,
+				A1B2C3D4E5F600000000000035 /* LoginSheetContainer.swift in Sources */,
+				016FAD1C2FE2957B007BA234 /* WebSocketClient.swift in Sources */,
 				014B447E210069FF00E7AA6A /* BookmarkExtension.swift in Sources */,
 				01B881372C4128EA00E44B97 /* BilibiliDynamicManger.swift in Sources */,
 				01479CD5210AFACB0046AAAD /* AddBookmarkViewController.swift in Sources */,
@@ -1182,7 +1182,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 0.8.31;
+				MARKETING_VERSION = 0.8.32;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1210,7 +1210,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
-				MARKETING_VERSION = 0.8.31;
+				MARKETING_VERSION = 0.8.32;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xjbeta.iina-plus";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
