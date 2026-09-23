@@ -17,6 +17,7 @@ class DataManager: NSObject {
     
     private let tokenBucket = TokenBucket(tokens: 1)
     private var bookmarkReloadDate = [NSManagedObjectID: TimeInterval]()
+    private var updatingBookmarks = Set<NSManagedObjectID>()
     
     func requestData() -> [Bookmark] {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Bookmark")
@@ -42,6 +43,10 @@ class DataManager: NSObject {
     }
     
     func reloadBookmark(_ id: NSManagedObjectID) async {
+        // skip if this bookmark already has an in-flight refresh
+        guard updatingBookmarks.insert(id).inserted else { return }
+        defer { updatingBookmarks.remove(id) }
+        
         guard let obj = try? context.existingObject(with: id) as? Bookmark else { return }
         let site = SupportSites(url: obj.url)
         if site == .unsupported {
