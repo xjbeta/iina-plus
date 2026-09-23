@@ -35,8 +35,14 @@ actor Douyu: SupportSiteProtocol {
 		var yougetJson = YouGetJSON(rawUrl: url)
 		yougetJson.id = rid
 		yougetJson.title = info.title
-		urls.forEach {
-			yougetJson.streams[$0.0] = $0.1
+		let proxyURL = "http://127.0.0.1:\(Preferences.shared.dmPort)/douyu/\(rid).flv"
+		urls.forEach { name, decodedStream in
+			var stream = decodedStream
+			stream.url = "\(proxyURL)?rate=\(stream.rate)&line=0"
+			stream.src = decodedStream.src.enumerated().map {
+				"\(proxyURL)?rate=\(stream.rate)&line=\($0.offset + 1)"
+			}
+			yougetJson.streams[name] = stream
 		}
 		return yougetJson
 	}
@@ -131,7 +137,11 @@ actor Douyu: SupportSiteProtocol {
 		return try await AF.request(url).serializingDecodable(RoomOnlineStatus.self).value.data
     }
     
-    func getDouyuUrl(_ roomID: Int, rate: Int = 0) async throws -> [(String, Stream)] {
+    func getDouyuUrl(_ roomID: Int, rate: Int = 0, cdn: String = "") async throws -> [(String, Stream)] {
+        try await getDouyuPlayback(roomID, rate: rate, cdn: cdn).streams
+    }
+
+    func getDouyuPlayback(_ roomID: Int, rate: Int = 0, cdn: String = "") async throws -> (streams: [(String, Stream)], cdns: [String], selectedCDN: String) {
         let time = Int(Date().timeIntervalSince1970)
         let didStr: String = {
             let time = UInt32(NSDate().timeIntervalSinceReferenceDate)
@@ -149,7 +159,7 @@ actor Douyu: SupportSiteProtocol {
                      "tt": "\(time)",
                      "did": didStr,
                      "auth": auth,
-                     "cdn": "",
+                     "cdn": cdn,
                      "rate": "\(rate)",
                      "hevc": "1",
                      "fa": "0",
@@ -162,9 +172,11 @@ actor Douyu: SupportSiteProtocol {
 		let json: JSONObject = try JSONParser.JSONObjectWithData(data)
 		
 		var play = try DouyuH5Play(object: json)
-		play = try await douyuCDNs(play)
+		if let p2pPlay = try? await douyuCDNs(play) {
+			play = p2pPlay
+		}
 		
-		return play.multirates.map { r -> (String, Stream) in
+		let streams = play.multirates.map { r -> (String, Stream) in
 			var s = Stream(url: "")
 			s.quality = r.bit
 			s.rate = r.rate
@@ -180,6 +192,7 @@ actor Douyu: SupportSiteProtocol {
 			}
 			return (r.name, s)
 		}
+        return (streams, play.cdnNames, play.selectedCDN)
     }
     
     func getEncryption(_ did: String) async throws -> DouyuEncryption {
@@ -402,6 +415,8 @@ struct DouyuH5Play: Unmarshaling {
     let rtmpLive: String
     let rate: Int
     let multirates: [Rate]
+    let selectedCDN: String
+    let cdnNames: [String]
     
     let flvUrl: String
     let xsString: String?
@@ -420,6 +435,14 @@ struct DouyuH5Play: Unmarshaling {
             rate = try object.value(for: "rate")
             highBit = try object.value(for: "highBit")
             bit = try object.value(for: "bit")
+        }
+    }
+
+    struct CDN: Unmarshaling {
+        let cdn: String
+
+        init(object: MarshaledObject) throws {
+            cdn = try object.value(for: "cdn")
         }
     }
     
@@ -443,6 +466,9 @@ struct DouyuH5Play: Unmarshaling {
         rtmpLive = try object.value(for: "data.rtmp_live")
         multirates = try object.value(for: "data.multirates")
         rate = try object.value(for: "data.rate")
+        selectedCDN = (try? object.value(for: "data.rtmp_cdn")) ?? ""
+        let cdns: [CDN] = (try? object.value(for: "data.cdnsWithName")) ?? []
+        cdnNames = cdns.map(\.cdn)
         
         flvUrl = rtmpUrl + "/" + rtmpLive
         
@@ -473,4 +499,3 @@ struct DouyuH5Play: Unmarshaling {
         }
     }
 }
-

@@ -124,7 +124,9 @@ struct YouGetJSON: Unmarshaling, Codable {
         
         // reconnect
         // https://github.com/mpv-player/mpv/issues/8779#issuecomment-1011066498
-        if site != .huya {
+        if site == .douyu {
+            args.append("\(MPVOption.Miscellaneous.streamLavfO)=reconnect=yes,reconnect_streamed=yes,reconnect_at_eof=yes,reconnect_on_network_error=1,reconnect_on_http_error=5xx")
+        } else if site != .huya {
             args.append("\(MPVOption.Miscellaneous.streamLavfO)=reconnect_streamed=yes")
         }
         
