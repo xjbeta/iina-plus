@@ -222,27 +222,20 @@ actor Bilibili {
         return biliWbiSign(param: param, wbiImg: wbiKeys.img, wbiSub: wbiKeys.sub)
     }
     
-    func dynamicList(_ uid: Int,
-                     _ action: BilibiliDynamicAction = .init😅,
-                     _ dynamicID: Int = -1) async throws -> [BilibiliCard] {
-        
-        var http: DataRequest
-        let headers = HTTPHeaders(["referer": "https://www.bilibili.com/"])
-        
-        
-        switch action {
-        case .init😅:
-            http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&type=8", headers: headers)
-        case .history:
-            http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_history?uid=\(uid)&offset_dynamic_id=\(dynamicID)&type=8", headers: headers)
-        case .new:
-            http = AF.request("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_new?uid=\(uid)&current_dynamic_id=\(dynamicID)&type=8", headers: headers)
+    func dynamicList(_ action: BilibiliDynamicAction = .init😅,
+                     _ offset: String = "") async throws -> (cards: [BilibiliCard], nextOffset: String) {
+        // https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all
+        var u = "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?type=video&timezone_offset=-480"
+        if action == .history, !offset.isEmpty {
+            u += "&offset=\(offset)"
         }
         
-        let data = try await http.serializingData().value
+        let headers = HTTPHeaders(["referer": "https://www.bilibili.com/",
+                                   "user-agent": bilibiliUA])
+        let data = try await AF.request(u, headers: headers).serializingData().value
         let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-        let cards: [BilibiliCard]? = try? json.value(for: "data.cards")
-        return cards ?? []
+        let response = try BilibiliDynamicResponse(object: json)
+        return (response.items, response.offset)
     }
     
     func getPvideo(_ aid: Int) async throws -> BilibiliPvideo {
@@ -250,6 +243,24 @@ actor Bilibili {
         let json: JSONObject = try JSONParser.JSONObjectWithData(data)
         return try BilibiliPvideo(object: json)
     }
+}
+
+struct BilibiliDynamicResponse: Unmarshaling, Sendable {
+	var code: Int
+	var message: String
+	var items: [BilibiliCard]
+	var offset: String
+	var hasMore: Bool
+	
+	init(object: any Marshal.MarshaledObject) throws {
+		code = (try? object.value(for: "code")) ?? -1
+		message = (try? object.value(for: "message")) ?? ""
+		// Ignore non-archive items without failing the whole list
+		let rawItems: [JSONObject]? = try? object.value(for: "data.items")
+		items = rawItems?.compactMap { try? BilibiliCard(object: $0) } ?? []
+		offset = (try? object.value(for: "data.offset")) ?? ""
+		hasMore = (try? object.value(for: "data.has_more")) ?? false
+	}
 }
 
 struct BilibiliCard: Unmarshaling, Sendable, Hashable {
@@ -264,24 +275,43 @@ struct BilibiliCard: Unmarshaling, Sendable, Hashable {
     var videos: Int = 0
     
     init(object: any Marshal.MarshaledObject) throws {
-        dynamicId = try object.value(for: "desc.dynamic_id")
-        bvid = try object.value(for: "desc.bvid")
-        let jsonStr: String = try object.value(for: "card")
-        if let data = jsonStr.data(using: .utf8) {
-            let json: JSONObject = try JSONParser.JSONObjectWithData(data)
-            aid = try json.value(for: "aid")
-            title = try json.value(for: "title")
-            let picUrl: String = try json.value(for: "pic")
-            self.picUrl = picUrl.https()
-            duration = try json.value(for: "duration")
-            name = try json.value(for: "owner.name")
-            views = try json.value(for: "stat.view")
-            videos = try json.value(for: "videos")
+        guard (try? object.value(for: "modules.module_dynamic.major.type") as String) == "MAJOR_TYPE_ARCHIVE",
+              let bvid: String = try? object.value(for: "modules.module_dynamic.major.archive.bvid"),
+              !bvid.isEmpty else {
+            throw BilibiliCardError.notArchive
         }
+        self.bvid = bvid
+        dynamicId = Int((try? object.value(for: "id_str") as String) ?? "") ?? 0
+        aid = Int((try? object.value(for: "modules.module_dynamic.major.archive.aid") as String) ?? "") ?? 0
+        title = (try? object.value(for: "modules.module_dynamic.major.archive.title") as String) ?? ""
+        let cover: String? = try? object.value(for: "modules.module_dynamic.major.archive.cover")
+        picUrl = cover?.https() ?? ""
+        duration = Self.parseDuration((try? object.value(for: "modules.module_dynamic.major.archive.duration_text") as String) ?? "")
+        name = (try? object.value(for: "modules.module_author.name") as String) ?? ""
+        views = Self.parsePlayCount((try? object.value(for: "modules.module_dynamic.major.archive.stat.play") as String) ?? "")
+        videos = 0
+    }
+    
+    private static func parseDuration(_ text: String) -> TimeInterval {
+        text.split(separator: ":").compactMap { Double($0) }.reduce(0) { $0 * 60 + $1 }
+    }
+    
+    private static func parsePlayCount(_ text: String) -> Int {
+        if let n = Int(text) {
+            return n
+        }
+        if text.hasSuffix("万"), let v = Double(text.dropLast()) {
+            return Int(v * 10_000)
+        }
+        return 0
+    }
+    
+    enum BilibiliCardError: Error {
+        case notArchive
     }
 }
 
-enum BilibiliDynamicAction {
+enum BilibiliDynamicAction: Equatable {
     case init😅, new, history
 }
 

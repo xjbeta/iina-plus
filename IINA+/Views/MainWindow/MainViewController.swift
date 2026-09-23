@@ -1176,6 +1176,12 @@ extension MainViewController: BilibiliDynamicMangerDelegate {
         }
         bilibiliDataSource.apply(snapshot, animatingDifferences: false)
 	}
+
+	func bilibiliDynamicDeleteCards(_ cards: [BilibiliCard]) {
+        var snapshot = bilibiliDataSource.snapshot()
+        snapshot.deleteItems(cards)
+        bilibiliDataSource.apply(snapshot, animatingDifferences: false)
+	}
 	
 	func bilibiliDynamicCards() -> [BilibiliCard] {
         
