@@ -518,6 +518,10 @@ class MainViewController: NSViewController {
             isSearching = true
             progressStatusChanged(true)
         }
+        defer {
+            isSearching = false
+            progressStatusChanged(false)
+        }
         
         var str = url
 		let urlString = try await proc.videoDecoder.bilibiliUrlFormatter(url)
@@ -530,12 +534,6 @@ class MainViewController: NSViewController {
 		}
 		
 		try await decodeUrl(urlString, directly: directly, with: option)
-		
-		
-		await MainActor.run {
-			isSearching = false
-			progressStatusChanged(false)
-		}
 		
 		Log("decodeUrl success: \(str)")
 		
