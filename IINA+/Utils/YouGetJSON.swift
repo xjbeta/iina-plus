@@ -255,7 +255,7 @@ struct YouGetJSON: Unmarshaling, Codable {
 			return streams[key]?.dashUrl
         case .bilibili, .bangumi, .biliLive:
             return streams[key]?.url
-        case .huya:
+        case .huya, .douyu:
             return streams[key]?.url
         case .local:
             return streams.first?.value.url
