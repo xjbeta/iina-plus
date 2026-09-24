@@ -17,6 +17,7 @@ protocol BilibiliDynamicMangerDelegate: Sendable {
 	func bilibiliDynamicInitCards(_ cards: [BilibiliCard])
 	func bilibiliDynamicAppendCards(_ cards: [BilibiliCard])
 	func bilibiliDynamicInsertCards(_ cards: [BilibiliCard])
+	func bilibiliDynamicDeleteCards(_ cards: [BilibiliCard])
 	
 	func bilibiliDynamicCards() -> [BilibiliCard]
 }
@@ -28,6 +29,7 @@ actor BilibiliDynamicManger {
     private var initDate: Date?
     private var newDate: Date?
     private var historyDate: Date?
+    private var historyOffset = ""
 	
     var delegate: BilibiliDynamicMangerDelegate?
 	
@@ -46,34 +48,32 @@ actor BilibiliDynamicManger {
 	private func loadCards(_ action: BilibiliDynamicAction = .init😅) async {
         
         guard let delegate = delegate else { return }
-		
+			
 		let uuid = UUID().uuidString
 		
         await delegate.bilibiliDynamicStatusChanged(true)
-		
+			
         defer {
             Task {
                 await delegate.bilibiliDynamicStatusChanged(false)
             }
         }
         
-		var dynamicID = -1
-		
-        let bilibiliCards = await delegate.bilibiliDynamicCards()
-		
+		var offset = ""
+			
 		switch action {
 		case .history:
             if historyDate != nil, historyDate!.secondsSinceNow < 1 {
 //                Log("\(uuid), ignore, \(action)")
                 return
             }
-			dynamicID = bilibiliCards.last?.dynamicId ?? -1
+            guard !historyOffset.isEmpty else { return }
+            offset = historyOffset
 		case .new:
             if newDate != nil, newDate!.secondsSinceNow < 5 {
 //                Log("\(uuid), ignore, \(action)")
                 return
             }
-			dynamicID = bilibiliCards.first?.dynamicId ?? -1
         case .init😅:
             if initDate != nil, initDate!.secondsSinceNow < 15 {
 //                Log("\(uuid), ignore, \(action)")
@@ -81,15 +81,15 @@ actor BilibiliDynamicManger {
             }
 		}
 		
-		Log("\(uuid), start, \(action), \(dynamicID)")
+		Log("\(uuid), start, \(action), \(offset)")
 		
 		do {
-			let uid = try await Bilibili.shared.getUid()
-			let cards = try await Bilibili.shared.dynamicList(uid, action, dynamicID)
+			let (cards, nextOffset) = try await Bilibili.shared.dynamicList(action, offset)
 			
 			switch action {
 			case .init😅:
                 await delegate.bilibiliDynamicInitCards(cards)
+                self.historyOffset = nextOffset
                 self.initDate = Date()
 			case .history:
 				let appends = await withTaskGroup(of: BilibiliCard?.self) { group -> [BilibiliCard] in
@@ -112,9 +112,23 @@ actor BilibiliDynamicManger {
 					return results
 				}
                 await delegate.bilibiliDynamicAppendCards(appends)
+                Log("[BiliDynamic] history loaded=\(cards.count) appends=\(appends.count) nextOffset=\(nextOffset)")
+                self.historyOffset = nextOffset
                 self.historyDate = Date()
 			case .new:
-                
+				// Cards above the home feed tail but missing from it are removed posts
+				let homeDynamicIds = Set(cards.map { $0.dynamicId })
+				if let homeLastDynamicId = cards.last?.dynamicId, !cards.isEmpty {
+					let currentCards = await delegate.bilibiliDynamicCards()
+					let removed = currentCards.filter {
+						!homeDynamicIds.contains($0.dynamicId) && $0.dynamicId > homeLastDynamicId
+					}
+					if !removed.isEmpty {
+						Log("[BiliDynamic] new removed=\(removed.count)")
+						await delegate.bilibiliDynamicDeleteCards(removed)
+					}
+				}
+				
 				let appends = await withTaskGroup(of: BilibiliCard?.self) { group -> [BilibiliCard] in
 					for card in cards {
 						group.addTask {
@@ -135,15 +149,17 @@ actor BilibiliDynamicManger {
 					return results
 				}
 				if appends.count > 0 {
+					Log("[BiliDynamic] new inserted=\(appends.count)")
                     await delegate.bilibiliDynamicInsertCards(appends)
 				}
+                self.historyOffset = nextOffset
                 self.newDate = Date()
 			}
 		} catch let error {
 			Log("Get bilibili dynamicList error: \(error)")
 		}
 		
-		Log("\(uuid), finish, \(dynamicID)")
+		Log("\(uuid), finish, \(offset)")
 	}
 	
 }

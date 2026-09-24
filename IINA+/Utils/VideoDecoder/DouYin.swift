@@ -19,8 +19,29 @@ actor DouYin: SupportSiteProtocol {
     @MainActor
 	lazy var cookiesManager = DouyinCookiesManager()
 	
+	private let enterBucket = TokenBucket(tokens: 2)
+	
+	private struct CachedInfo {
+		let info: any LiveInfo
+		let time: Date = .init()
+		let ttl: TimeInterval = 3
+		var isTimeout: Bool {
+			Date().timeIntervalSince(time) >= ttl
+		}
+	}
+	private var liveInfoCache = [String: CachedInfo]()
+	
 	func liveInfo(_ url: String) async throws -> any LiveInfo {
-		let info = try await getEnterContent(url)
+		if let cached = liveInfoCache[url] {
+			if !cached.isTimeout {
+				return cached.info
+			}
+			liveInfoCache[url] = nil
+		}
+		let info = try await enterBucket.withToken {
+			try await self.getEnterContent(url)
+		}
+		liveInfoCache[url] = CachedInfo(info: info)
 		return info
 	}
 	
@@ -61,26 +82,41 @@ actor DouYin: SupportSiteProtocol {
 		let u = "https://live.douyin.com/webcast/room/web/enter/?aid=6383&app_name=douyin_web&live_id=1&device_platform=web&language=zh-CN&enter_from=page_refresh&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=MacIntel&browser_name=Safari&browser_version=18.6&web_rid=\(rid)&enter_source=&is_need_double_stream=false&insert_task_id=&live_reason="
         
 		do {
-			let data = try await cookiesManager.request(u).serializingData().value
-			let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
-			let enterData = try DouYinEnterData(object: jsonObj)
-			
-			if let info = enterData.infos.first {
-				return info
-			} else if let info = try? DouYinEnterData2(object: jsonObj) {
-				return info
-			} else {
-				throw VideoGetError.notFountData
-			}
-		} catch {
-			switch error {
-			case AFError.responseSerializationFailed(reason: .inputDataNilOrZeroLength):
-				Log("douyin inputDataNilOrZeroLength")
-			default:
-				break
-			}
-			throw error
+			return try await parseEnterContent(u)
+		} catch let error where self.isRetryable(error) {
+			// cached ttwid got flagged by the WAF, retry once with a fresh one
+			await self.cookiesManager.invalidateCookies()
+			try? await Task.sleep(seconds: 2)
+			return try await self.parseEnterContent(u)
 		}
+	}
+	
+	private func parseEnterContent(_ u: String) async throws -> LiveInfo {
+		let data = try await cookiesManager.request(u).serializingData().value
+		let jsonObj: JSONObject = try JSONParser.JSONObjectWithData(data)
+		let enterData = try DouYinEnterData(object: jsonObj)
+		
+		if let info = enterData.infos.first {
+			return info
+		} else if let info = try? DouYinEnterData2(object: jsonObj) {
+			return info
+		} else {
+			throw VideoGetError.notFountData
+		}
+	}
+	
+	private nonisolated func isRetryable(_ error: Error) -> Bool {
+		// douyin WAF returns HTML / empty body for a flagged ttwid
+		switch error {
+		case AFError.responseSerializationFailed:
+			return true
+		default:
+			break
+		}
+		if let e = error as? NSError, e.domain == NSCocoaErrorDomain, e.code == 3840 {
+			return true
+		}
+		return false
 	}
 	
     /*
