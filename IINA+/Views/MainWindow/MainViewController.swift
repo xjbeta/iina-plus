@@ -141,22 +141,13 @@ class MainViewController: NSViewController {
     
     @IBAction func sendBilibiliURL(_ sender: Any) {
         guard let card = bilibiliDataSource.itemIdentifier(forRow: bilibiliTableView.selectedRow) else { return }
-        
-        let bvid = card.bvid
-        if card.videos == 1 {
-            searchField.stringValue = "https://www.bilibili.com/video/\(bvid)"
-            searchField.becomeFirstResponder()
-            startSearch(self)
-        } else if card.videos > 1 {
-            Task {
-                do {
-                    let infos = try await Bilibili.shared.video.getVideoList("https://www.bilibili.com/video/\(bvid)")
-                    showSelectVideo(bvid, treeNodes: infos)
-                } catch let error {
-                    Log("Get video list error: \(error)")
-                }
-            }
-        }
+        decodeBilibiliVideo("https://www.bilibili.com/video/\(card.bvid)")
+    }
+    
+    private func decodeBilibiliVideo(_ url: String) {
+        searchField.stringValue = url
+        searchField.becomeFirstResponder()
+        startSearch(self)
     }
     
     // MARK: - Search Tab Item

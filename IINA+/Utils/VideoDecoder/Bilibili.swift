@@ -272,7 +272,6 @@ struct BilibiliCard: Unmarshaling, Sendable, Hashable {
     var name: String = ""
     var duration: TimeInterval = 0
     var views: Int = 0
-    var videos: Int = 0
     
     init(object: any Marshal.MarshaledObject) throws {
         guard (try? object.value(for: "modules.module_dynamic.major.type") as String) == "MAJOR_TYPE_ARCHIVE",
@@ -289,7 +288,6 @@ struct BilibiliCard: Unmarshaling, Sendable, Hashable {
         duration = Self.parseDuration((try? object.value(for: "modules.module_dynamic.major.archive.duration_text") as String) ?? "")
         name = (try? object.value(for: "modules.module_author.name") as String) ?? ""
         views = Self.parsePlayCount((try? object.value(for: "modules.module_dynamic.major.archive.stat.play") as String) ?? "")
-        videos = 0
     }
     
     private static func parseDuration(_ text: String) -> TimeInterval {
